@@ -103,6 +103,14 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - **2026-11-03 朝: HypeCoreも合格（2回目、`FCF-DEFINITION-SINGLE-SOURCE-1-2`＝段1の残りの公開 `65a9fbe4a2`）**。poc.jsonの印はscopeの7銘柄だけ・`method_change_prev_missing` 0件・CHECK-67なし、TANUKIの印は1回目だけscopeの7銘柄・2回目0、理論株価・判定は試算と96銘柄一致。[[METHOD-CHANGE-PUBLISH-TIMING-1]]をBACKLOG_DONE.mdへ移した。Stonks・ROTCEの最初の実行は未確認
    - **2026-11-03: TANUKI・Discordは合格（FCF-DEFINITION-SINGLE-SOURCE-1 段1・段1bの公開）、HypeCoreは次の計算方法の変更で確認**（前回の出力を公開の場所から読むように直した `e196105b5e`。今回のIDはHypeCoreのpoc.jsonに読んだ記録があり、今回は確かめられない）。移設は次の変更の確認の後。以下は11-03の記録: TANUKIの印はscopeの36銘柄だけ・2回目は0、理論株価・判定は試算と一致、Discordの🛠は6銘柄8件で「計算方法の分」「残り」つき。HypeCoreは前回の出力を`src/value/hypecore/data/`（CIに無い）から読み、印を付けない。直し方はチャット側の判断（BACKLOGの「手順21の確認」）。移設していない
 
+22. **計算方法の変更の印: Stonks・ROTCEの最初の実行**（`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の残りの確認、2026-11-03 チャット側の指示）
+   - 日時: Stonksは2026-11-04 朝の定時（Stonks Silo）、ROTCEは2026-11-08（日）のSEC_Data_Updateの後のMarket Data Daily（`common/sec_data/rotce.py`）
+   - 期限: 2026-11-09（ROTCEの回の翌日）
+   - 確認の手順:
+     - Stonks: `docs/value-monitor/stonks-silo/data/results.json`の先頭に`FCF-DEFINITION-SINGLE-SOURCE-1-2`の`method_change`が付き、`method_change_applied`にそのID、`method_change_prev_missing`が無い。その次の実行では`method_change`が付かない
+     - ROTCE: `docs/common/sec_data/rotce/_summary.json`の先頭に同じ印（scopeの銘柄の`{T}.json`にも）、`method_change_applied`にそのID、`method_change_prev_missing`が無い。rccのCHECK-67が出ない
+   - 不合格なら、BACKLOG_DONE.mdの`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`をBACKLOG.mdへ戻す（手順21の2回目の合格はTANUKI・HypeCore・Discordの分）
+
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
    - 期限: 2026-11-30
