@@ -113,6 +113,15 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - ROTCE: `docs/common/sec_data/rotce/_summary.json`の先頭に同じ印（scopeの銘柄の`{T}.json`にも）、`method_change_applied`にそのID、`method_change_prev_missing`が無い。rccのCHECK-67が出ない
    - 不合格なら、BACKLOG_DONE.mdの`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`をBACKLOG.mdへ戻す（手順21の2回目の合格はTANUKI・HypeCore・Discordの分）
 
+23. **System Healthの取得の失敗の重大度の表の最初の本番**（`[[CHECK-REFERENCE-DEFINITION-1]]`、2026-11-03 実装 `38e475edb7`）
+   - 日時: 2026-11-04 08:30 JST（23:30 UTC）の定時のSystem Health（`System_Health.yml`）
+   - 期限: 2026-11-05
+   - 確認の手順: その回のログ（`gh run view`）とDiscordの1行で、全15欄の重大度（✅・⚠️・🔴・⚪）が前の回（11-03 08:30 JST）と同じか。変わった欄があれば、
+     その理由が取得の失敗の表（`common/fetch_failure.py`: 全件の失敗・同じ項目の2日以上の失敗は🔴、一部で1日目は⚠️）で説明できるか
+     （[L]の文言は「全25系列取得成功」の形に変わる。[O]の欠け・[M]のFETCH_FAILEDは以前は✅・10%以上で🔴だった）。説明できない変化は不合格
+   - あわせて: `common/macro_data/macro_data_violations_log.json`に失敗の系列があれば`failed_since`が付いているか（成功の系列には付かない）
+   - 合格ならBACKLOG.mdの`[[CHECK-REFERENCE-DEFINITION-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
    - 期限: 2026-11-30
@@ -3226,7 +3235,7 @@ git pull --rebase origin kaihatsu
      395）の対応状況確認: `FIELD_DEFINITIONS.md`499項目調査
      （2026-08-15）ではyfinance/FRED由来18件のみを検証対象とし、
      SEC EDGAR由来4件はsec_data側フェーズDでの新DB参照切替状況を
-     未検証のまま残した。次回、`common/sec_data/reader`経由への
+     未検証のまま残した。次回、`common/sec_data/reader.py`経由への
      切替状況を個別に確認する調査から着手する
   4. 新DB構築プロジェクトの完全な区切り: sec_data/market_data/
      macro_dataの新設・切替という**本線タスクは完了**。以降は本線外・
@@ -4094,7 +4103,7 @@ Discoverサブシステム撤去と同じ「根拠不明の生成をそのまま
   XBRLタグから機械的に判定できないため）: Claude Codeが10-Kの
   "Segment Information"セクションを確認し、下記「新規銘柄のセグメント
   設定判断ルール」に従ってLLY型/LMT型を判定した上で、
-  `common/sec_data/data/{TICKER}/segment_review.json`に
+  `common/sec_data/data/{TICKER}/segment_review.json`（登録のときに作る。まだ無い銘柄もある）に
   `{"reviewed": true, "formal_segments": N, "result": "...",
   "note": "<10-Kの該当箇所の引用・確認内容>"}`を書き込んでから再実行する
   （LMT型の場合はあわせて`config/segment_config.json`も設定する）
@@ -4606,7 +4615,7 @@ with open('docs/market-monitor/market-pulse/data/market_data.csv') as f:
 ## サブシステム削除時の必須手順
 
 `[[DISCOVER-SUBSYSTEM-REMOVAL-1]]`（2026-09-01実装）で、削除対象自身の
-ディレクトリ（`docs/discover/`等）や個別ページの参照は洗い出せていた
+ディレクトリ（`docs/discover/`（`ec4590fd6e`〈2026-09-01〉で削除）等）や個別ページの参照は洗い出せていた
 一方、**サイトトップページ（`docs/index.html`）のカード導線**・
 **`docs/common/site-header.js`のようなサイト全体で共有される共通
 コンポーネント内の設定オブジェクト（`TOOL_META`のキー等）**の2箇所を
@@ -4740,7 +4749,7 @@ python scripts/audit_site_links.py
 **確認コマンド：**
 
 ```bash
-grep -n "data-tool" docs/path/to/new/index.html
+grep -n "data-tool" docs/{新しいページ}/index.html
 grep -n "key:.*'xxx'" docs/common/site-nav.js
 ```
 

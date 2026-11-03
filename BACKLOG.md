@@ -2212,7 +2212,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 ---
 
 ### [CHECK-REFERENCE-DEFINITION-1] 検査・一覧・説明文を、書き手のコードと実際に使った入力と照合する（実行の時刻・データの有無・過去のファイルで結果が変わらない）
-**型・処置（2026-11-01 束ね）:** 型E（中心）・A・C・根治策。登録だけ（実装の指示待ち）
+**型・処置（2026-11-01 束ね）:** 型E（中心）・A・C・根治策。**実装済み 2026-11-03（`38e475edb7`・`3683083bfc`）、次回の確認手順23の後に移設**
 **優先度:** 中
 **分類:** 根治策 / `common/system_health.py`・`scripts/inventory/`（`inventory_analysis.py::check_inventory`・`build_output_inventory.py --check`）・`browser_checks/check_macro_pulse.py`・各モジュールの説明文・`docs/architecture/`の文書・`.github/workflows/`・`config/workflow_dependencies.json`
 **登録日:** 2026-11-02
@@ -2225,7 +2225,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 #### 束ねた件
 - FINDINGS: 2026-10-30の2行（出力の一覧〈TAIL〉の`prediction_history.json`のキー・System Healthの`[L] MacroData`の重大度）・2026-10-23 `check_macro_pulse.py`の不一致（実行の時刻）・2026-10-21 一覧の「誰も読まないキー」の数・2026-10-20 `TANUKI_Score_Update.yml`の名前・2026-10-20 削除した文書の参照・2026-10-22・10-23の説明文（market_data・macro_data）・2026-11-01 CHECK-INVと`--check`（9行）
-- 束ねの後の発見（入力に入れていない。入れるかはチャット側の判断）: FINDINGS 2026-11-02（rccのCHECK-66がTTMの系列に無い四半期末まで印を求める）
+- 束ねの後の発見: FINDINGS 2026-11-02（rccのCHECK-66がTTMの系列に無い四半期末まで印を求める）は済（`20ef290ee5`）として、本項目の束ねた件に足す（2026-11-03 チャット側の指示）
 
 #### 始める段（CHAT_RULES 4）
 定義（検査・一覧・説明文が照合する相手の決まり）
@@ -2235,6 +2235,34 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 #### 規模の見込み
 中
+
+#### 実装（2026-11-03 `38e475edb7` コード・テスト、`3683083bfc` 文書・一覧。確認は次回の確認手順23、その後に移設）
+- **原則**: `CHAT_RULES.md`「発見の溜め方と根治の判断」7（照合する相手は書き手のコードと実際に読んだ入力。時刻・データの有無・過去のファイルで結果が変わる検査は誤り）
+- **A. System Healthの重大度**: 取得の失敗を数える欄（[L] MacroData・[M] FETCH_FAILED・[O] 5分足の欠け）の重大度を`common/fetch_failure.py::judge`の1つの表で決める
+  （🔴＝全件の失敗・同じ項目の失敗が2日以上、⚠️＝一部で1日目、✅＝失敗なし）。続いた日数は書き手が残す`failed_since`（`macro_data_violations_log.json`・
+  `_freshness.json`、前回も失敗なら引き継ぐ。[O]は前の取引日のファイル）。[L]は取得する系列（`series_meta.json`）だけを数え、ログに残る昔の系列（CFNAI・FTSD）は数えない。
+  通知の1行は切らずに「取得失敗 25/25系列（BAMLH0A0HYM2ほか24件）・全件が失敗」の形。[M]のFETCH_FAILEDは以前の「全銘柄の10%以上で🔴」をやめて表に合わせた
+  （一部で1日目は⚠️）。過去の再現: 10-25〜10-30の毎朝（gitのその時点のログ）は🔴（以前は⚠️）、10-31は✅。今のデータでは全15欄の重大度が前のコードと同じ
+- **B. 出力の一覧**: キーは書き手のコードが書くキー（書き手の.py・それをimportする呼び出し元・それらがimportする.pyの、dictのキー・dataclassの欄・
+  AIへの指示のJSONの型）を正にする。データにあっても書き手のコードに無いキーは「今の書き手のコードに無いキー」の欄に分け、誰も読まないキーに数えない
+  （TANUKI 51→13、10-21の9キーを含む。TAILの`predicted`・`actual`・`accuracy`は「この段階の書き手あり」）。`build_output_inventory.py --check`と
+  CHECK-INVは同じ`compare_saved_inventory`を呼び、`--check`の終了コードはNGだけで決める（細部の違いは出力に出すだけ）。11段階を作り直した。
+  TANUKIの画面が古い履歴にだけ残る7キーを読む件はFINDINGS 2026-11-03（一覧には「書き手なし」として載せた）
+- **C. check_macro_pulse.py**: MAC-09・10は画面が読む`05_events.csv`の`sp500_t0_asof`ごとの終値と比べ、D-01・03・05・07はそのCSVを書いた実行が読めた
+  系列ストアの版（CSVを書いた時刻〈updated_atの最大・ファイルを最後に変えたcommit〉の時点のgitの版）と比べる。`--now`で時計を固定。
+  10-23 07:56 JSTのcommit（`6088b8636f`）の状態をgit worktreeで再現: 古い比べ方 一致67・不一致5（MAC-09・10、D-01・03・07）、新しい比べ方 一致72・不一致0。今の状態も一致72・不一致0
+- **D. 説明文・文書・名前**: `common/market_data/__init__.py`・`reader.py`、`common/macro_data/__init__.py`・`fetcher.py`・`reader.py`の「消費者なし」を、出力の一覧の読み手を正とする書き方に。
+  文書のパス84か所（`docs/architecture/`・`SYSTEM_MAP.md`・`CHAT_RULES.md`・`CLAUDE_CODE_START.md`の手順の部分・説明文2件）を、gitで消したものは
+  「（commit〈日付〉で削除）」、台帳の設計の未作成のファイルは「（予定）」、書き方の誤りは今のパスに（TICKER_EXCEPTION_LEDGER.mdのspac_shell_detection_log・
+  share_unit_fix_log、INPUT_DATA_TOBE.mdのstore_v2を含む）。`TANUKI_Score_Update.yml`の表示名を「Portfolio Snapshot Update」に、`workflow_dependencies.json`の
+  キーを`Portfolio_Snapshot_Update`に（ファイル名はSystem Health [J]の監視と実行の履歴を保つため据え置き。表示名でつながる連鎖は無い）。
+  再発の検知はrccのCHECK-68（WARN、`common/reference_check.py`）: 文書・説明文のパスの存在、説明文の「消費者なし」と出力の一覧の読み手、
+  ワークフローの表示名・動かすスクリプトと`workflow_dependencies.json`の`name`・`scripts`（名前と中身の対応の1か所）。入れた時点でWARN 0。
+  PROJECT_STATUS.md・CLAUDE_CODE_START.mdの引き継ぎサマリー・BACKLOG_DONE・FINDINGS・BUNDLING・archiveは日付の記録として対象外
+- **E.** FINDINGS 2026-11-02（CHECK-66）は済（`20ef290ee5`）として束ねた件に足した
+- 確認: テスト（`test_system_health_macro_data.py`・`test_sec_freshness.py`・`test_market_pulse_intraday_store.py`・`test_output_inventory_check.py`・
+  `test_check_macro_pulse_reference.py`・`test_reference_check.py`）、ゲート3種、手元のSystem Health（前後で全欄同じ）・rcc（NG 0・WARN 222→219、WARN-68 0）・
+  一覧（11段階、前の一覧との比べ方 NGはTANUKIの上の7件だけで、作り直して0）。STEP 0で`pyproject.toml`の開発用の依存に`ruff==0.17.3`
 
 ---
 
