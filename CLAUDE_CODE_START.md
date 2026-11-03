@@ -122,6 +122,16 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - あわせて: `common/macro_data/macro_data_violations_log.json`に失敗の系列があれば`failed_since`が付いているか（成功の系列には付かない）
    - 合格ならBACKLOG.mdの`[[CHECK-REFERENCE-DEFINITION-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
 
+24. **日足の行の書き込みの1つの関数の最初の本番**（`[[MARKETDATA-DAILY-ROW-WRITE-1]]`、2026-11-03 実装 `2395a604b5`・`eaa2be2fef`）
+   - 日時: 2026-11-03（火）夜〜11-04 朝のMarket Data Daily（`Market_Data_Daily_Update.yml`、NYSEの引けの後）
+   - 期限: 2026-11-05
+   - 確認の手順:
+     - その回のStep Summaryの「確定の行への上書きを拒んだ記録」の件数と内容（`common/market_data/_daily_rejected_overwrites.json`のcommit）。
+       出たら、どの銘柄・日付・項目か、前と新しい値、経路を報告する（Yahooの改訂か、取り直しの窓の中の確定の行か）。0件でも合格
+     - `daily/`の行の数が前の回から取引日1日分だけ増え、既存の確定の行が変わっていない（`git show --stat`で銘柄ファイルの差分が新しい日付の行・暫定の行の置き換えだけ）
+     - NIY=Fの2026-10-05〜10-07が`_no_yahoo_bar`の印に変わり、rccのWARN-62の3件が消える（変わらなければ理由を確かめる）
+   - 合格ならBACKLOG.mdの`[[MARKETDATA-DAILY-ROW-WRITE-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
    - 期限: 2026-11-30

@@ -2808,7 +2808,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 ## 優先度：低（アイデア段階）
 
 ### [MARKETDATA-DAILY-ROW-WRITE-1] 日足の行の書き込みを1つの関数にし、確定の行は上書きしない（直すときは理由と前の値を残す）
-**型・処置（2026-11-01 束ね）:** 型C・根治策。登録だけ（実装の指示待ち）
+**型・処置（2026-11-01 束ね）:** 型C・根治策。**実装済み 2026-11-03（`2395a604b5`・`eaa2be2fef`）、次回の確認手順24の後に移設**
 **優先度:** 低
 **分類:** 根治策 / `common/market_data/fetcher.py`（毎日の取得・`backfill_daily_prices`・`--repair-provisional`）・`common/registration/register_ticker.py`（Step 1.5）・`common/market_data/calendar_universe.py`（暫定の足の判定）
 **登録日:** 2026-11-02
@@ -2830,6 +2830,28 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 #### 規模の見込み
 小〜中
+
+#### 実装（2026-11-03 `2395a604b5` コード・テスト、`eaa2be2fef` データ。確認は次回の確認手順24、その後に移設）
+- **列挙（STEP 0）**: daily/を書くのは`common/market_data/fetcher.py`の7関数だけだった（`_append_daily_record`〈毎日の取得の最新の足・欠けた日〉・
+  `_replace_provisional_records`・`mark_and_repair_provisional_rows`〈--repair-provisional〉・`_repair_close_missing_records`・`_mark_no_bar_rows`・
+  `backfill_daily_prices`〈--backfill、登録のStep 1.5は`register_ticker.py`がこのCLIを呼ぶ〉・`repair_missing_trading_days`）。株式分割の調整で
+  daily/を書く経路は無い（`split_adjust.py`はSECの株数だけ）。daily/を読むだけのもの（reader・rotce・daily_guard・Market Pulse等）は対象外
+- **1つの関数**: `write_daily_rows(symbol, rows, base_dir, now, source, reason)`。7関数はみなこれを呼ぶ。直接書く場所は
+  `tests/test_market_data_daily_write.py`の`DAILY_WRITE_ALLOWED`の1か所で禁止（AST。前のコードでは7関数を検出）
+- **確定の行**: `_provisional`でなく終値のある行は上書きしない。値（open・high・low・close・volume・限月の欄）が違えば書かずに
+  `common/market_data/_daily_rejected_overwrites.json`に記録（行・項目・前と新しい値・経路・回数・最初と最後の時刻、90日。同じ新しい値は1件にまとめる）。
+  Market_Data_Daily_Updateがcommitし、その実行の分をStep Summaryに出す。同じ値なら印も含めてそのまま。直すのは理由を指定した経路だけ
+  （`CORRECTION_REASONS`: split_adjust・provisional_final・manual。`correct_daily_rows`）で、行の`_corrections`に前の値・理由・時刻を残す
+- **暫定の印**: 書く行すべてに`is_provisional_bar`（先物の平らな足・^N225の出来高0・確定時刻の前）で付ける。以前は毎日の取得のときだけで、
+  --backfill・抜けた日の取り直し・終値の取り直しでは付かなかった。印だけを変える経路（--repair-provisional・足なしの印）は`reason=MARK_ONLY`で値を変えられない。
+  上書きのマージ（`_merge_daily_records`）は削除
+- **NIY=F**: 2026-10-05〜10-07の3行に`--repair-provisional`で印（値は同じ。Yahooの足も平らで置き換えなし）。rccにWARN-62が3件出る（確定時刻から11日を過ぎた暫定の行）。
+  次の夜の取得で取り直し→平らな足は「足が無い」扱い→足なしの印に変わって消える見込み（手順24）
+- **確認**: 今のdaily/の全855,773行を新しい関数に通した: 855,766行は同じ、7行は今の暫定の行（DX-Y.NYB・JPY=Xの11-02、NIY=Fの10-26〜10-30）が
+  確定時刻を過ぎて同じ足で確定する分（以前の`_replace_provisional_records`と同じ動き）、拒否0。テスト（`test_market_data_daily_write.py` 10本、
+  既存の2本〈同じ日付の上書き・backfillのマージ〉は新しい規則に書き換え）、ゲート3種（pytest 2750件成功・5件スキップ、audit 0、rcc NG 0・WARN 222〈+3はNIY=FのWARN-62〉）
+- **依頼と違った点**: 暫定の判定で印の無い過去の行は3行でなく779行（NIY=F 777・GC=F 2）。3行だけに付け、ほかはFINDINGS 2026-11-03。
+  分割の調整の経路は無く、理由つきの入口だけ用意（FINDINGS 2026-11-03）
 
 ---
 
