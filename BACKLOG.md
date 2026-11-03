@@ -2293,6 +2293,13 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 #### 完了の条件
 - JSONを返す呼び出し口で、2xxで中身がJSONでない応答が再試行され、尽きたら`ExternalApiError`になる。試験で確かめる
 
+#### 実装（2026-11-03、チャット側の方針どおり）
+- 判定は`common/external_api.py::_request`の1か所（`expect_json`、`_nonjson_reason()`）。JSONを期待する呼び出しで2xxの中身がJSONとして読めない（空・HTML等。先頭のBOMは許す）ときは、429・5xxと同じ回数（3回）・待ち時間（2秒・5秒）で再試行し、尽きたら`ExternalApiError`（理由「HTTP 200・2xx・非JSON（nバイト、先頭: '…'）」、先頭60文字。ログにも出る）。404等の2xx以外と、JSONを期待しない呼び出しの動きは変えない
+- `expect_json=True`: Grok（`grok_request`）・FRED（`fred_get`）は常に。SECはJSONを読む呼び出し（SEC層の`fetcher._get`〈submissions・companyfacts〉・登録の事前確認・dimension aggregateのindex.json・TAIL RSSのsubmissions 2か所とcompany_tickers.json・TAIL KPI XBRLのcompany_tickers.json・submissions・アーカイブ・EPSの会社の情報・EPSのcompany facts・TANUKIのインサイダー取引のsubmissions）、FRBはMarket Pulseの`/json/calendar.json`。テキスト・HTML・XMLの呼び出し（TAIL RSSのフィード・10-K/10-Qの本文〈sec_ctrl_fetcher・text_kpi_extractor〉・dimension aggregateのファイル・XBRLのXML・インサイダー取引のForm 4のXML・MACRO PULSEのFOMCの予定・声明のページ）は変えない。fredapiの`fred_client()`（マクロデータ層）は`_request`を通らないので対象外
+- 呼び出し元はどれも`except Exception`で受けるので、尽きたときは今までどおり失敗の扱い（SEC層の`fetcher.py:369`等、`resp.json()`が例外の外にあった所は、取得の失敗として受けられるようになる）
+- 試験: `tests/test_external_api.py`（空・HTMLの2xx→再試行→成功、3回とも非JSON→`ExternalApiError`と理由、JSONを期待しない呼び出しは1回、404・503は今までどおり、BOM付きのJSON、Grok）。手元でFRBの予定・FREDの経済指標を実際に取得して確認（6件・10件）
+- 確認: 次回の確認手順17に追加（11-04 06:30 JSTのMarket Pulseの回）。移設はその確認の後
+
 ---
 
 （[[METHOD-CHANGE-PUBLISH-TIMING-1]]は2026-11-03、手順21の2回目〈[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1の残りの公開〉でHypeCoreの印も確かめて完了、BACKLOG_DONE.md「2026-11-03（完了）」参照）
