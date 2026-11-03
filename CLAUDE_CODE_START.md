@@ -148,7 +148,8 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 - 2026-10-20（束ね済み・未修正）: `common/market_data/daily/NIY=F.json`の2026-10-05〜10-07の3行がO=H=L=C・出来高0の平らな足なのに印が無い（付け直しは`--repair-provisional`、daily/のNIY=Fを読むものは無い）
 
 **起きた回・いつでも**:
-2. **System HealthのDiscordの本文**（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）
+2. **System HealthのDiscordの本文**（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`）**済 2026-11-03（移設済み）**
+   - **2026-11-03: 2026-11-03、KoichiさんがDiscordの本文を確認。10-26〜10-30の5通とも先頭🟡・「WARNING」・MacroData⚠️で、Overall「⚠️ WARNING」・終了コード1と一致（10-31・11-01・11-02は🟢 HEALTHY・全欄✅）**
    - 日時: 毎日 08:30 JST（23:30 UTC）の実行の後。⚠️・🔴が出た日を少なくとも1回
    - 期限: ⚠️・🔴の日を確かめられるまで（10-12・10-13は全項目✅で、Overall・終了コードは一致）
    - 2026-10-30の確認（ログ）: 10-25〜10-30の6回（理由はどれも`[L] MacroData ⚠️ 取得失敗(25件)`）で、Overall「⚠️ WARNING（問題1件）」と終了コード1が一致。手元で`build_one_line()`に通した1行も🟡・WARNING・MacroData⚠️。残りはDiscordに実際に届いた本文（10-25〜10-30のどれか1通の先頭が🟡・WARNING、MacroDataの欄が⚠️）をKoichiさんが見ること。見たら移設する（BACKLOGの「追記（2026-10-30）」）
