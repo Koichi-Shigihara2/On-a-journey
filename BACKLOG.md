@@ -1885,43 +1885,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-### [MARKETPULSE-CALENDAR-ECON-FETCH-1] 予定（calendar）の経済指標（FRED）の取得が10-24から失敗し続けている
-**処理の順番:** 1/8（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] の流れ）
-**型・処置:** 不具合・直す
-**優先度:** 高
-**分類:** Market Pulse 段階8の予定 / `src/market/market_pulse/market_calendar.py`（`build_calendar`・`econ_events`）
-**登録日:** 2026-11-01
-**発見:** 2026-11-01 の大きく動いた日の事後分析の読み取りの調査。FINDINGS.md 2026-11-01（経済指標の取得の失敗）
-
-#### 内容（2026-11-01の読み取りの調査）
-- `market_data.json`の`calendar.failed`に「経済指標（FRED）」が入っているエントリは19件中8件。2026-10-20・10-22と、10-24以降の毎回（10-24・10-27〜10-31）。10-30の予定にも経済指標が入っていない
-- `build_calendar`が`econ_events(start, end, get_json)`に既定の`_http_json`を渡す（`market_calendar.py:198`）
-- `econ_events`は`get_json`があると`get_json("releases/dates", params)`と呼ぶ（`:72`）ため、パスをURLとして`requests.get`する。R-E2（`dbb8fb4694`、2026-10-24）で`econ_events`が`get_json`をFREDのパス形式で呼ぶ形に変わった後から毎回失敗（推定。実行して確かめていない）
-- 10-20・10-22の失敗はR-E2より前で、原因不明。合わせて調べる
-
-#### 完了の条件
-- 経済指標が予定に入る
-- 試験で、既定の経路（`get_json`を渡さない呼び出し）を通す
-- 10-20・10-22の原因が分かっている
-
-#### 段階1の調査（2026-11-01、読み取り・ワークフローのログ）
-- 10-24以降: ログで裏付けた。run `40019408216`（10-23 20:30:03 UTC）・`40395998274`・`40763740447`・`40949511133`・`41123569762`の
-  「予定の取得に失敗: 経済指標（FRED） (MissingSchema: Invalid URL 'releases/dates': No scheme supplied. …)」。R-E2（`dbb8fb4694`）の前は
-  `econ_events`の既定`get_json=_http_json`に完全なURLとapi_key・file_typeを渡していた。R-E2で`econ_events`はパスを受ける形に変わり、
-  呼び出し元の`build_calendar`（`:198`）は直していなかった
-- 10-20・10-22は別の原因（FRED側の一時的な不調、R-E2の前）: 10-20はrun `39319539706`の`ReadTimeout … (read timeout=30)`（当時は再試行なし）、
-  10-22はrun `39670586295`の`JSONDecodeError: Expecting value: line 1 column 1 (char 0)`（2xxで中身がJSONでない）。前後の10-21・10-23は成功
-- 同じ形の取り違えはほかに無い（R-E2で形が変わった取得の関数の引数は`econ_events`だけ。MACRO PULSEの`fred_get`・`frb_get`、TAIL、
-  Market Pulseのほかの差し替え口は形が合う）。`fed_events`はfederalreserve.govを`requests`で直接呼び、`external_api`を通っていなかった
-- 試験が通らなかった理由: 差し替えの試験だけで、既定の経路を通す試験が無かった。差し替えた関数は第1引数を見ず、`build_calendar`の試験は必ず失敗する関数を渡していた
-- 2xxで中身がJSONでない応答の再試行は、external_api全体の決まりのため[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]（優先度：中）に分けた
-
-#### 実装（2026-11-01 `8fcd156800`）
-- `econ_events(get_fred=_fred_json)`・`fed_events(get_frb=_frb_json)`に分け、`build_calendar(get_fred=None, get_frb=None)`は渡されたときだけ名前を付けて渡す。
-  `fed_events`も`external_api.frb_get`を通す（再試行あり、タイムアウトは20秒。前は30秒）。`_http_json`を削除
-- 既定の経路を通す試験`test_build_calendar_default_path_uses_external_api`（`requests.get`だけを差し替え、FREDのURL・api_key・file_type、FRBのURLを確かめる。
-  直す前のコードでは「想定外のURL: releases/dates」で落ちる）。手元で本物のFRED・FRBに通した`build_calendar`（保存なし）はfailedなし、11-03〜11-06の経済指標5件とFRBの講演が入った
-- 確認: CLAUDE_CODE_START.mdの次回の確認手順17（11-02 20:30 UTCの実行）。満たしたらBACKLOG_DONE.mdへ移す。それまで残す
+（[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]は2026-11-03、次回の確認手順17の3項目を11-03 06:33 JSTのエントリで満たして完了、BACKLOG_DONE.md「2026-11-03（完了）」参照）
 
 ---
 
@@ -2841,30 +2805,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 ---
 
-### [COMMON-PATH-GUARD-1] 共通化の後の抜け道をテストで禁止する（呼び出し口・日付・文字コード・集計ファイルの書き直し）
-**型・処置（2026-11-01 束ね）:** 型—・X・C・根治策。登録だけ（実装の指示待ち）
-**優先度:** 低
-**分類:** 根治策 / `tests/`（静的な検査のテスト）・`src/market/macro_pulse/05_main.py`（stooq）・`common/market_data/calendar_universe.py`・`src/portfolio/snapshot.py`ほか・`common/sec_data/rotce.py`
-**登録日:** 2026-11-02
-**発見:** 11-01（日）の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）
-
-#### 内容（チャット側の案の要旨、2026-11-02）
-- `common/external_api.py`以外の`requests.get`を禁止する（MACRO PULSEのstooqの取得2か所）
-- 市場の日付に連邦の営業日を使うことを禁止する（`05_events.csv`の`sp500_t1`〜`t20`）
-- 文字コードを指定しない`open`を禁止する（ruff PLW1514、8か所）
-- 集計ファイルを一部の銘柄で書き直すことを禁止する（`rotce.py`の`_summary.json`）
-
-#### 束ねた件
-- FINDINGS: 2026-10-28 `rotce.py`の`_summary.json`・2026-10-26 stooqの取得2か所（MACRO PULSEの行のうち。予備のFOMCの日付は[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）・2026-10-24 `snapshot.py`の文字コード・2026-10-23 `05_events.csv`のt+N（4行）
-
-#### 始める段（CHAT_RULES 4）
-取得の確認（共通化の後の抜け道をテストで検知する）
-
-#### 投資判断への影響
-なし〜小（t+Nの終値は点数・局面に使わない。stooqは呼び出し口の再試行・User-Agentの決まりの外）
-
-#### 規模の見込み
-小
+（[[COMMON-PATH-GUARD-1]]は2026-11-03、実装・push済み（`7c3f0c5744`・`9515653377`）で完了、BACKLOG_DONE.md「2026-11-03（完了）」参照）
 
 ---
 

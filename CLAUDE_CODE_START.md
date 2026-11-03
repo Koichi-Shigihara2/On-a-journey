@@ -52,7 +52,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: Vの7月の10-Q（`0001403161-26-000104`）がcompanyfactsに入るまで
    - 確認の手順: `common/sec_data/data/_freshness.json`でVがREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`のVの1件を消して移設する。入らないままなら直し方の候補2をチャット側が判断
 
-17. **Market Pulseの予定の経済指標（FRED）**（`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`、2026-11-01 実装 `8fcd156800`）
+17. **Market Pulseの予定の経済指標（FRED）**（`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`、2026-11-01 実装 `8fcd156800`）**本体は済 2026-11-03（移設済み）。`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`の11-04の回の確認（下の「追加」）だけ残る**
    - 日時: 2026-11-02 21:30 UTC頃（11-03 06:30 JST）のMarket Pulseの実行の後（冬時間〈11-01から〉は外部起動の21:25 UTCの回で取得し、Market Data Dailyの完了で起動。`gh run list --workflow Market_Pulse_Update.yml`で先に確かめる）
    - 期限: 2026-11-03
    - 確認の手順: `docs/market-monitor/market-pulse/data/market_data.json`の最新エントリで、
@@ -61,7 +61,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 経済指標の行が入っている（11-03〜の週のJOLTS・ADP・雇用統計など。手元の試し取得では11-03 JOLTS・製造業受注、11-04 ADP、11-05 新規失業保険申請件数、11-06 雇用統計）
    - 2026-11-03 の記録（読み取りだけ）: 11-03 06:33 JSTのエントリは`calendar.failed`が空、経済指標の行（JOLTS・製造業受注・ADP・新規失業保険申請件数・雇用統計）とFRBの行（Bowman副議長の講演）が入っている。移設はチャット側の判断（下の追加の確認と一緒にしてよい）
    - **追加（2026-11-03、`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`のpushの後）**: 次のMarket Pulseの実行（11-03 21:25 UTC頃＝11-04 06:30 JSTの回）でも、上の3つ（`calendar.failed`に「経済指標（FRED）」が無い・経済指標の行・FRBの行）が満たされる。ログに「2xx・非JSON」が出た回は、再試行の行（`→ 2秒待って再試行`）の後に取れているか、尽きたならログの「予定の取得に失敗」の行に「2xx・非JSON」と中身の先頭が出ているかを見る（`calendar.failed`は取得元の名前だけで理由は持たない）。満たしたら`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`もBACKLOG_DONE.mdへ移す（期限 2026-11-04）
-   - 満たしたらBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+   - 満たしたらBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す（`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`は2026-11-03に上の3つを満たして移設済み。残るのは`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`の移設だけ）
 
 18. **Market Pulseのニュースの見出しの配信元3本**（`[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]`、2026-11-01 実装 `faa452e1b9`）
    - 日時: 手順17と同じ2026-11-02 21:30 UTC頃（11-03 06:30 JST）のMarket Pulseの実行の後（平日の本番の実行）

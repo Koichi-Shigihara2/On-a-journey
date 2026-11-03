@@ -23,6 +23,7 @@
 5. （実装 2026-11-02 夜、`2b42795069`）`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`: 計算方法の変更の印を「新しいIDを初めて読んだ実行・scopeの銘柄と項目」に、scopeは`scripts/method_change_scope.py`で作る、変更のcommitで派生ファイルも作り直す、読み合いは手動で TANUKI → HypeCore → TANUKI（CLAUDE_CODE_START.md「計算方法の変更の手順」）。確認は次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）のときの「次回の確認手順」の21、それまでBACKLOGに残す。束ねの後: 残りのアクティブの件の判断（2026-11-02に登録した根治策4件の着手の順を含む。`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`は全銘柄のシミュレーションとmethod_changeの印つき）。次の大きな作業を銀行の貸倒引当金の機能（IDEAS_AND_WATCH.mdの`[[BANK-CREDIT-ALLOWANCE-OUTLOOK-1]]`）と画面のストーリー化（`[[UI-STORY-REDESIGN-1]]`）のどちらから始めるかもチャット側と決める
 6. いつでも: 「次回の確認手順」の2（`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`。ログでは一致、Discordの本文をKoichiさんが見たら移設）・9
 7. HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）: 再開の時期はチャット側の判断
+8. （済 2026-11-03、`7c3f0c5744`・`9515653377`）`[[COMMON-PATH-GUARD-1]]`: **MACRO PULSEの画面の過去の反応（発表の後のS&P500の終値 t+1・5・10・20）の表示が変わる。**`05_events.csv`の`sp500_t1`〜`t20`を連邦の営業日でなくNYSEの取引日で数えるようにし、過去の行を作り直した（451行・867欄、2016-09〜2026-10。コロンブス・デー・退役軍人の日・聖金曜日・ジューンティーンス・臨時の休場をまたぐ行）。t+Nは点数・局面に使わないため、計算方法の変更（method_change）の手順は使っていない
 
 **（旧）次の作業（2026-10-22 終業 更新〈R-Aの市場データ層・TAILの段階の後〉。上から順。2026-10-26に上へ置き換えた。記録として残す）**:
 1. （済 2026-10-19 夜）10-19の確認・初回の束ね・F5の直し
