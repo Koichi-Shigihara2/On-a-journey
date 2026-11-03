@@ -2,9 +2,9 @@
   "intrinsic_value_per_share": 22.41633482520355,
   "intrinsic_value_beta": 27.56,
   "upside_percent_beta": -87.7,
-  "intrinsic_value_rf": 140.35,
-  "upside_percent_rf": -37.3,
-  "intrinsic_value_rf_rate": 0.048940000534057615,
+  "intrinsic_value_rf": 136.26,
+  "upside_percent_rf": -39.2,
+  "intrinsic_value_rf_rate": 0.04952000141143799,
   "v0": 19142105589.307827,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
@@ -25,7 +25,7 @@
     "2年後": {
       "future_value": 23.62,
       "value_growth_pct": 5.4,
-      "expected_return_pct": -89.4
+      "expected_return_pct": -89.5
     },
     "3年後": {
       "future_value": 24.24,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -90.0,
-  "calculation_date": "2026-11-03T23:16:21+09:00",
+  "calculation_date": "2026-11-04T06:47:51+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -325,7 +325,7 @@
     "roe_10yr_avg": 0.2919913205352972,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 223.77000427246094,
+    "current_price": 224.0500030517578,
     "latest_revenue": 37442000000.0,
     "rpo": 18798000000,
     "beta": 0.888,
@@ -357,11 +357,11 @@
     "alpha_uncapped": 1.226363546248248,
     "per": 10.8244915,
     "per_is_forward": false,
-    "per_adjusted": 8.96,
+    "per_adjusted": 8.97,
     "peg": 3.0354,
     "ps": 1.8333865,
     "ev_ebitda": 8.935,
-    "ma200": 230.73170822143555,
+    "ma200": 230.7015125274658,
     "forward_eps": 9.85358,
     "next_quarter_eps": 2.45,
     "analyst_target_median": 254.0,
@@ -467,11 +467,11 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.004522084250450087,
-  "risk_free_rate_live": 0.048940000534057615,
-  "risk_free_rate_live_date": "2026-11-02",
+  "required_growth_rf_base": -0.00427308466013987,
+  "risk_free_rate_live": 0.04952000141143799,
+  "risk_free_rate_live_date": "2026-11-03",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.05390620132166557,
+  "required_growth_rf_live": 0.05922895422989094,
   "tanuki_score": "WATCH",
   "funda_score": 25,
   "score_comment": "DCF信頼性LOW(ベースが混在（事業の分離・売却等による組み替え）)のためupside依存判定を抑制→WATCH",
@@ -624,7 +624,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0049,
+  "erp": -0.0055,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
