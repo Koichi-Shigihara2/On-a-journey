@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 397.8,
-  "calculation_date": "2026-11-03T09:08:10+09:00",
+  "calculation_date": "2026-11-03T22:46:29+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -315,6 +315,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "FY2025",
     "fcf_value": 3971094000,
     "threshold_pct": 0.6,
     "deviation_pct": 151.4889809142684,
@@ -338,13 +339,14 @@
       "total_transient_amount": 11000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。"
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業再編に伴う一時的な費用と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($3971M)が5年平均($1579M)から151%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "FY2025 FCF($3971M)が5年平均($1579M)から151%乖離。一過性費用$11Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "FY2025",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
@@ -584,9 +586,11 @@
     "qx": true,
     "qy": true
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -84.5,
-  "calculation_date": "2026-11-03T09:09:01+09:00",
+  "calculation_date": "2026-11-03T22:47:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -173,6 +173,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-06-30",
     "fcf_value": 309000000.0,
     "threshold_pct": 0.6,
     "deviation_pct": 108.55244948796015,
@@ -180,6 +181,12 @@
       "found": true,
       "source": "adjusted_eps_analyzer",
       "items": [
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 15000000,
+          "reason": "マクロ変動による一時的影響"
+        },
         {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -191,40 +198,29 @@
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 6000000,
           "reason": "マクロ変動による一時的影響"
-        },
-        {
-          "category": "金融関連",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 13000000.0,
-          "reason": "マクロ変動による一時的影響"
-        },
-        {
-          "category": "金融関連",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 16000000,
-          "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 47000000.0,
+      "total_transient_amount": 33000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業の構造的悪化ではなく一過性の財務調整と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく一過性の財務調整と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($309M)が5年平均($-3613M)から109%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-06-30 FCF($309M)が5年平均($-3613M)から109%乖離。一過性費用$33Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 2042640000.0,
     "raw_fcf": 2042640000.0,
-    "capex": 2949000000,
-    "sbc": 385000000,
-    "ocf": 4237000000,
-    "da": 967000000,
-    "note": "OCF$4.24B - CapEx$2.95B（直近年。5yr/2yr平均・外れ値除外後の採用値は$2.04B）"
+    "capex": 3897000000.0,
+    "sbc": null,
+    "ocf": 4206000000.0,
+    "da": 1345000000.0,
+    "note": "OCF$4.21B - CapEx$3.90B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$2.04B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -349,7 +345,7 @@
     "alpha_uncapped": 0.47061540194465834,
     "per": 25.648096,
     "per_is_forward": false,
-    "per_adjusted": 31.49,
+    "per_adjusted": 27.77,
     "peg": 3.74,
     "ps": 2.972919,
     "ev_ebitda": 14.752,
@@ -422,9 +418,11 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

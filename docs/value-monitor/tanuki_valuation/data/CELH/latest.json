@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -6.2,
-  "calculation_date": "2026-11-03T09:09:13+09:00",
+  "calculation_date": "2026-11-03T22:47:07+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -255,6 +255,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-06-30",
     "fcf_value": 462774000.0,
     "threshold_pct": 0.6,
     "deviation_pct": 133.79991873470615,
@@ -262,6 +263,24 @@
       "found": true,
       "source": "adjusted_eps_analyzer",
       "items": [
+        {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
+          "amount": 80860000,
+          "reason": "一過性の事業再編費用"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3048000,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
+          "amount": 4427000,
+          "reason": "一過性の事業再編費用"
+        },
         {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -285,40 +304,29 @@
           "item_name": "リストラ費用",
           "amount": 246707000,
           "reason": "一過性の事業再編費用"
-        },
-        {
-          "category": "金融関連",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 3452000.0,
-          "reason": "マクロ変動による一時的影響"
-        },
-        {
-          "category": "金融関連",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 2077000,
-          "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 340364000.0,
+      "total_transient_amount": 423170000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響または一過性の事業再編費用と明記されており、構造的悪化を示す兆候はない。"
+        "reasoning": "すべての項目の理由欄に「一過性の事業再編費用」や「マクロ変動による一時的影響」と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($463M)が5年平均($198M)から134%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-06-30 FCF($463M)が5年平均($198M)から134%乖離。一過性費用$423Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 336807000.0,
     "raw_fcf": 336807000.0,
-    "capex": 36067000,
-    "sbc": 28050000,
-    "ocf": 359442000,
-    "da": 29451000,
-    "note": "OCF$0.36B - CapEx$0.04B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.34B）"
+    "capex": 45855000.0,
+    "sbc": 34778000.0,
+    "ocf": 508629000.0,
+    "da": 36959000.0,
+    "note": "OCF$0.51B - CapEx$0.05B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.34B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -516,9 +524,11 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

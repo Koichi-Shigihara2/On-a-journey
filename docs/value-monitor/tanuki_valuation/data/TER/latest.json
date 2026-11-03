@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -52.7,
-  "calculation_date": "2026-11-03T09:19:42+09:00",
+  "calculation_date": "2026-11-03T22:57:54+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -185,6 +185,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-09-27",
     "fcf_value": 1024864000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 78.3714768263834,
@@ -195,48 +196,49 @@
         {
           "category": "在庫・サプライチェーン関連",
           "item_name": "在庫評価損・減損",
+          "amount": 10932000,
+          "reason": "一過性の在庫評価損"
+        },
+        {
+          "category": "在庫・サプライチェーン関連",
+          "item_name": "在庫評価損・減損",
+          "amount": 3599000.0,
+          "reason": "一過性の在庫評価損"
+        },
+        {
+          "category": "在庫・サプライチェーン関連",
+          "item_name": "在庫評価損・減損",
+          "amount": 4682000,
+          "reason": "一過性の在庫評価損"
+        },
+        {
+          "category": "在庫・サプライチェーン関連",
+          "item_name": "在庫評価損・減損",
           "amount": 6607000,
-          "reason": "一過性の在庫評価損"
-        },
-        {
-          "category": "在庫・サプライチェーン関連",
-          "item_name": "在庫評価損・減損",
-          "amount": 6828000,
-          "reason": "一過性の在庫評価損"
-        },
-        {
-          "category": "在庫・サプライチェーン関連",
-          "item_name": "在庫評価損・減損",
-          "amount": 7402000.0,
-          "reason": "一過性の在庫評価損"
-        },
-        {
-          "category": "在庫・サプライチェーン関連",
-          "item_name": "在庫評価損・減損",
-          "amount": 4945000,
           "reason": "一過性の在庫評価損"
         }
       ],
-      "total_transient_amount": 25782000.0,
+      "total_transient_amount": 25820000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が『一過性の在庫評価損』と明記されており、事業運営上の一時的な在庫調整と判断される。構造的な収益力悪化を示す兆候はない。"
+        "reasoning": "すべての項目が『一過性の在庫評価損』と明記されており、事業運営上の一時的な在庫調整と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($1025M)が5年平均($575M)から78%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-09-27 FCF($1025M)が5年平均($575M)から78%乖離。一過性費用$26Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-09-27",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 574567200.0,
     "raw_fcf": 574567200.0,
-    "capex": 224009000,
-    "sbc": 63999000,
-    "ocf": 674415000,
-    "da": 127981000,
-    "note": "OCF$0.67B - CapEx$0.22B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.57B）"
+    "capex": 304650000.0,
+    "sbc": 80087000.0,
+    "ocf": 1329514000.0,
+    "da": 138955000,
+    "note": "OCF$1.33B - CapEx$0.30B（TTM 2026-09-27。5yr/2yr平均・外れ値除外後の採用値は$0.57B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -454,9 +456,11 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 90.4,
-  "calculation_date": "2026-11-03T09:08:50+09:00",
+  "calculation_date": "2026-11-03T22:46:58+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -191,6 +191,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-06-30",
     "fcf_value": 1176000000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 36.85027152831652,
@@ -213,36 +214,31 @@
         {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 5000000.0,
-          "reason": "マクロ変動による一時的影響"
-        },
-        {
-          "category": "金融関連",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 4000000,
+          "amount": 3000000,
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 15000000.0,
+      "total_transient_amount": 9000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由がマクロ変動による一時的影響と明記されており、事業運営の構造的悪化ではなく外部要因による一過性の費用と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく一過性の財務調整と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($1176M)が5年平均($859M)から37%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-06-30 FCF($1176M)が5年平均($859M)から37%乖離。一過性費用$9Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 859333333.3333334,
     "raw_fcf": 859333333.3333334,
-    "capex": 61000000,
-    "sbc": 352000000,
-    "ocf": 971000000,
-    "da": 91000000,
-    "note": "OCF$0.97B - CapEx$0.06B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.86B）"
+    "capex": 56000000.0,
+    "sbc": 401000000.0,
+    "ocf": 1232000000.0,
+    "da": 113000000.0,
+    "note": "OCF$1.23B - CapEx$0.06B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.86B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -438,9 +434,11 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

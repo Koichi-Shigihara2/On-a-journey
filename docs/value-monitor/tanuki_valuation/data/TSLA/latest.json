@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -90.0,
-  "calculation_date": "2026-11-03T09:14:56+09:00",
+  "calculation_date": "2026-11-03T22:52:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -276,6 +276,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-09-30",
     "fcf_value": 3303000000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 37.39575435936315,
@@ -288,34 +289,29 @@
           "item_name": "リストラ費用",
           "amount": 152000000.0,
           "reason": "一過性の事業再編費用"
-        },
-        {
-          "category": "リストラ・事業再編関連",
-          "item_name": "リストラ費用",
-          "amount": 238000000,
-          "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 390000000.0,
+      "total_transient_amount": 152000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、構造的悪化ではなく一時的な費用と判断される。"
+        "reasoning": "理由に『一過性の事業再編費用』と明記されており、リストラ費用は事業運営上の一時的な費用とみなされるため。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($3303M)が5年平均($5276M)から37%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-09-30 FCF($3303M)が5年平均($5276M)から37%乖離。一過性費用$152Mは乖離$1973Mの20%（$395M）に届かず除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-09-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 3303000000.0,
     "raw_fcf": 3303000000.0,
-    "capex": 8527000000,
-    "sbc": 2825000000,
-    "ocf": 14747000000,
-    "da": 5030000000,
-    "note": "OCF$14.75B - CapEx$8.53B（直近年。5yr/2yr平均・外れ値除外後の採用値は$3.30B）"
+    "capex": 15407000000.0,
+    "sbc": 4300000000.0,
+    "ocf": 18710000000.0,
+    "da": 5670000000,
+    "note": "OCF$18.71B - CapEx$15.41B（TTM 2026-09-30。5yr/2yr平均・外れ値除外後の採用値は$3.30B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -443,7 +439,7 @@
     "alpha_uncapped": 0.0,
     "per": 439.35162,
     "per_is_forward": false,
-    "per_adjusted": 244.0,
+    "per_adjusted": 238.88,
     "peg": 4.6625,
     "ps": 15.258676,
     "ev_ebitda": 157.751,
@@ -516,9 +512,11 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

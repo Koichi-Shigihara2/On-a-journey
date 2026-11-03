@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 35.6,
-  "calculation_date": "2026-11-03T09:15:33+09:00",
+  "calculation_date": "2026-11-03T22:52:51+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -203,6 +203,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2026,
+    "period_label": "TTM 2026-07-31",
     "fcf_value": 2839000000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 46.350767581165655,
@@ -210,6 +211,12 @@
       "found": true,
       "source": "adjusted_eps_analyzer",
       "items": [
+        {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
+          "amount": 30000000,
+          "reason": "一過性の事業再編費用"
+        },
         {
           "category": "リストラ・事業再編関連",
           "item_name": "リストラ費用",
@@ -221,40 +228,29 @@
           "item_name": "リストラ費用",
           "amount": 3000000,
           "reason": "一過性の事業再編費用"
-        },
-        {
-          "category": "リストラ・事業再編関連",
-          "item_name": "リストラ費用",
-          "amount": 3000000.0,
-          "reason": "一過性の事業再編費用"
-        },
-        {
-          "category": "リストラ・事業再編関連",
-          "item_name": "リストラ費用",
-          "amount": 91000000,
-          "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 197000000.0,
+      "total_transient_amount": 133000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄にすべて「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。"
+        "reasoning": "すべての項目が一過性の事業再編費用と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2026 FCF($2839M)が5年平均($1940M)から46%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-07-31 FCF($2839M)が5年平均($1940M)から46%乖離。一過性費用$133Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-07-31",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 1939860000.0,
     "raw_fcf": 1939860000.0,
-    "capex": 43000000,
-    "sbc": 788000000,
-    "ocf": 2452000000,
-    "da": 195000000,
-    "note": "OCF$2.45B - CapEx$0.04B（直近年。5yr/2yr平均・外れ値除外後の採用値は$1.94B）"
+    "capex": 57000000.0,
+    "sbc": 706000000.0,
+    "ocf": 2896000000.0,
+    "da": 201000000,
+    "note": "OCF$2.90B - CapEx$0.06B（TTM 2026-07-31。5yr/2yr平均・外れ値除外後の採用値は$1.94B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -473,9 +469,11 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

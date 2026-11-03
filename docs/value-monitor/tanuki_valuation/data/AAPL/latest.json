@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -53.0,
-  "calculation_date": "2026-11-03T09:07:33+09:00",
+  "calculation_date": "2026-11-03T22:46:09+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -197,6 +197,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-06-27",
     "fcf_value": 136683000000.0,
     "threshold_pct": 0.2,
     "deviation_pct": 25.219183729558885,
@@ -208,19 +209,20 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "FY2025 FCF($136683M)が5年平均($109155M)から25%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-06-27 FCF($136683M)が5年平均($109155M)から25%乖離。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-27",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 109155000000.0,
     "raw_fcf": 109155000000.0,
-    "capex": 12715000000,
-    "sbc": 12863000000,
-    "ocf": 111482000000,
-    "da": 11698000000,
-    "note": "OCF$111.48B - CapEx$12.71B（直近年。5yr/2yr平均・外れ値除外後の採用値は$109.16B）"
+    "capex": 10041000000.0,
+    "sbc": 13706000000.0,
+    "ocf": 146724000000.0,
+    "da": 13100000000.0,
+    "note": "OCF$146.72B - CapEx$10.04B（TTM 2026-06-27。5yr/2yr平均・外れ値除外後の採用値は$109.16B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -368,7 +370,7 @@
     "alpha_uncapped": 2.8069373757413816,
     "per": 39.52179,
     "per_is_forward": false,
-    "per_adjusted": 35.94,
+    "per_adjusted": 35.0,
     "peg": 2.7615,
     "ps": 10.774089,
     "ev_ebitda": 30.076,
@@ -426,7 +428,7 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.10301559430249418,
   "tanuki_score": "HOLD",
-  "funda_score": 90,
+  "funda_score": 80,
   "score_comment": "割高(-53%超)、FCF黒字、売上安定成長",
   "timing_score": 55,
   "sell_reason": null,
@@ -441,9 +443,11 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

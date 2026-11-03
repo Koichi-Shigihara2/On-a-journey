@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -30.3,
-  "calculation_date": "2026-11-03T09:16:37+09:00",
+  "calculation_date": "2026-11-03T22:53:58+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -209,6 +209,7 @@
     "detected": false,
     "rule": "none",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-09-30",
     "fcf_value": 1575191000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
@@ -223,16 +224,17 @@
     "note": ""
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-09-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 1334350800.0,
     "raw_fcf": 1334350800.0,
-    "capex": 39319000,
-    "sbc": 111343000,
-    "ocf": 1588446000,
-    "da": 23405000,
-    "note": "OCF$1.59B - CapEx$0.04B（直近年。5yr/2yr平均・外れ値除外後の採用値は$1.33B）"
+    "capex": 39639000.0,
+    "sbc": 126171000.0,
+    "ocf": 1614830000.0,
+    "da": 26071000.0,
+    "note": "OCF$1.61B - CapEx$0.04B（TTM 2026-09-30。5yr/2yr平均・外れ値除外後の採用値は$1.33B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -424,9 +426,11 @@
     "qx": false,
     "qy": true
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

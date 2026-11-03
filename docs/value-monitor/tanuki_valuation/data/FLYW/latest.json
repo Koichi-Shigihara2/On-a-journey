@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 121.6,
-  "calculation_date": "2026-11-03T09:18:08+09:00",
+  "calculation_date": "2026-11-03T22:55:51+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -162,24 +162,31 @@
   "fcf_base": {
     "base_fcf": 123261500.0,
     "method": "recent_2yr",
-    "fcf_5yr_avg": 53647800.0,
+    "fcf_5yr_avg": 74735750.0,
     "fcf_2yr_avg": 123261500.0,
-    "cv": 1.407,
+    "cv": 0.911,
     "cv_threshold": 0.5,
-    "ratio": 1.407,
+    "ratio": 0.911,
     "threshold": 0.5
   },
   "fcf_outlier": {
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-06-30",
     "fcf_value": 165280000.0,
     "threshold_pct": 0.6,
-    "deviation_pct": 208.0834628819821,
+    "deviation_pct": 121.15252740488988,
     "transient_evidence": {
       "found": true,
       "source": "adjusted_eps_analyzer",
       "items": [
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 147000,
+          "reason": "マクロ変動による一時的影響"
+        },
         {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -191,52 +198,29 @@
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 1377000,
           "reason": "マクロ変動による一時的影響"
-        },
-        {
-          "category": "金融関連",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 224000.0,
-          "reason": "マクロ変動による一時的影響"
-        },
-        {
-          "category": "リストラ・事業再編関連",
-          "item_name": "リストラ費用",
-          "amount": 1351000,
-          "reason": "一過性の事業再編費用"
-        },
-        {
-          "category": "金融関連",
-          "item_name": "貸倒引当金繰入（異常変動分）",
-          "amount": 28000,
-          "reason": "マクロ変動による一時的影響"
-        },
-        {
-          "category": "リストラ・事業再編関連",
-          "item_name": "リストラ費用",
-          "amount": 7339000,
-          "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 11051000.0,
+      "total_transient_amount": 2256000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による貸倒引当金繰入と一過性のリストラ費用が主で、いずれも理由から事業運営上の一時的影響と判断される。"
+        "reasoning": "いずれもマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。"
       }
     },
     "action": "flagged",
-    "note": "FY2025 FCF($165M)が5年平均($54M)から208%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-06-30 FCF($165M)が5年平均($75M)から121%乖離。一過性費用$2Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 123261500.0,
     "raw_fcf": 123261500.0,
-    "capex": 1350000,
-    "sbc": 71777000,
-    "ocf": 100175000,
-    "da": 26058000,
-    "note": "OCF$0.10B - CapEx$0.00B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.12B）"
+    "capex": 1028000.0,
+    "sbc": 70884000,
+    "ocf": 166308000.0,
+    "da": 29090000.0,
+    "note": "OCF$0.17B - CapEx$0.00B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.12B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -328,11 +312,11 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 5,
+  "fcf_ttm_periods": 4,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": 53647800.0,
+    "fcf_5yr_avg": 74735750.0,
     "fcf_2yr_avg": 123261500.0,
     "structural_deficit": false,
     "fcf_base_used": 133828166.66666666,
@@ -342,8 +326,7 @@
       165280000.0,
       81243000.0,
       47921000.0,
-      4499000.0,
-      -30704000
+      4499000.0
     ],
     "diluted_shares": 123540994,
     "roe_10yr_avg": -0.02621381859445087,
@@ -381,7 +364,7 @@
     "alpha_uncapped": 0.0,
     "per": 75.730774,
     "per_is_forward": false,
-    "per_adjusted": 21.65,
+    "per_adjusted": 21.78,
     "peg": null,
     "ps": 3.4090998,
     "ev_ebitda": 33.16,
@@ -455,9 +438,11 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

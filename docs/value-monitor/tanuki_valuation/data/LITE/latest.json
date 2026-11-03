@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -94.0,
-  "calculation_date": "2026-11-03T09:12:14+09:00",
+  "calculation_date": "2026-11-03T22:49:24+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -173,6 +173,7 @@
     "detected": true,
     "rule": "deviation_large",
     "fiscal_year": 2026,
+    "period_label": "TTM 2026-06-27",
     "fcf_value": 300100000.0,
     "threshold_pct": 0.6,
     "deviation_pct": 196.248766041461,
@@ -220,23 +221,24 @@
       "total_transient_amount": 12000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性の事業再編費用』または『マクロ変動による一時的影響』と明記されており、構造的な悪化を示す内容は含まれていない。"
+        "reasoning": "すべての項目が一過性の事業再編費用またはマクロ変動による一時的影響と明記されており、構造的悪化を示す内容ではない。"
       }
     },
     "action": "flagged",
-    "note": "FY2026 FCF($300M)が5年平均($101M)から196%乖離。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-06-27 FCF($300M)が5年平均($101M)から196%乖離。一過性費用$12Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-27",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 97700000.0,
     "raw_fcf": 97700000.0,
-    "capex": 451300000,
-    "sbc": 170200000,
-    "ocf": 751400000,
+    "capex": 451300000.0,
+    "sbc": 170200000.0,
+    "ocf": 751400000.0,
     "da": 128800000,
-    "note": "OCF$0.75B - CapEx$0.45B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.10B）"
+    "note": "OCF$0.75B - CapEx$0.45B（TTM 2026-06-27。5yr/2yr平均・外れ値除外後の採用値は$0.10B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -454,9 +456,11 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

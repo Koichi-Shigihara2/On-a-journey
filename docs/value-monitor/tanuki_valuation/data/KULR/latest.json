@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 230.9,
-  "calculation_date": "2026-11-03T09:16:18+09:00",
+  "calculation_date": "2026-11-03T22:53:36+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -177,6 +177,7 @@
     "detected": true,
     "rule": "latest_negative",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-06-30",
     "fcf_value": -44163468.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
@@ -184,6 +185,12 @@
       "found": true,
       "source": "adjusted_eps_analyzer",
       "items": [
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 1272889,
+          "reason": "マクロ変動による一時的影響"
+        },
         {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -197,26 +204,27 @@
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 2230643,
+      "total_transient_amount": 3503532,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的問題ではなく一過性の財務調整と判断される。"
+        "reasoning": "理由欄にマクロ変動による一時的影響と明記されており、事業運営上の一時的な信用コストと判断される。"
       }
     },
-    "action": "flagged",
-    "note": "FY2025 FCF($-44.2M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "action": "excluded",
+    "note": "TTM 2026-06-30 FCF($-44.2M)がマイナス。一過性費用合計$4M(金融関連(貸倒引当金繰入（異常変動分） $1M)、金融関連(貸倒引当金繰入（異常変動分） $1M)、金融関連(貸倒引当金繰入（異常変動分） $1M))による影響と判断し除外。5年平均($-29M)を採用。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 1293632.32,
     "raw_fcf": 1293632.32,
-    "capex": 2986503,
-    "sbc": 6522581,
-    "ocf": -44883648,
-    "da": 1398179,
-    "note": "OCF$-0.04B - CapEx$0.00B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.00B）"
+    "capex": 3049416.0,
+    "sbc": 5667937.0,
+    "ocf": -41114052.0,
+    "da": 1385168.0,
+    "note": "OCF$-0.04B - CapEx$0.00B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.00B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -415,9 +423,11 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {

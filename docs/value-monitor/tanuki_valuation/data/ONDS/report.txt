@@ -1,5 +1,5 @@
 ONDS INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-03T09:13:25+09:00
+Generated: 2026-11-03T22:50:54+09:00
 Price: $5.75
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -33,7 +33,7 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×N/A (OCF赤字)
-Key_Metric_Y: RICE = -5.555
+Key_Metric_Y: RICE = -0.338
 Deviation_Rate: -51.4%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -89,8 +89,8 @@ FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
    [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
     以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
     評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
-FCF_Base: $7.05M (5yr平均 + R&D補正) [実績avg: $-62.2M]
-FCF_Breakdown（直近年）: OCF=$-39M / CapEx=$2M / SBC(非現金)=$16M / D&A=$1M
+FCF_Base: $7.05M (4yr平均 + R&D補正) [実績avg: $-69.1M]
+FCF_Breakdown（TTM 2026-06-30）: OCF=$-161M / CapEx=$11M / SBC(非現金)=$101M / D&A=$2M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
@@ -111,6 +111,11 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   9.0%       $2.70  $2.87  $3.11
   10.0%       $2.65  $2.79  $2.99
   11.0%       $2.61  $2.74  $2.90
+DCF_FCF_Base_Detail: $7.0M (外れ値$-172M/FY2025除外後3点平均)
+DCF_FCF_Base_Excluded: FY2025=$-172M (outlier: >60% deviation from 3yr series)
+一過性費用の定性評価（AI・参考情報、action判定には未使用）:
+  Assessment: 一時的な問題と判断（参考）
+  Reasoning: 市場金利変動によるローン公正価値の評価損益であり、事業運営とは無関係の財務的評価替えのため一過性と判断。
 Financial_Health:
   Net_Debt: $-1.38B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.66B  ST_Invest: $0.73B
@@ -209,14 +214,14 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=-3.889
-BASE: RICE=-5.555
-BULL: RICE=-6.667
+BEAR: RICE=-0.237
+BASE: RICE=-0.338
+BULL: RICE=-0.406
 Components (BASE scenario):
 G  = 30.0%  [TANUKI forward growth rate]
 Q  = -0.6008   [OCF / (NetIncome + SBC), 3yr avg]
-CF = 3.0822  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
-CF_adj = 4.2898  [R&D除外・CapExのみ投資強度]
+CF = 0.1875  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+CF_adj = 1.4747  [R&D除外・CapExのみ投資強度]
 WACC = 10.0%
 SBC_Adjusted: true
 Definition:
@@ -247,14 +252,14 @@ for unconfigured segments.
 
 
 [6. EPS ANALYZER]
-Latest_Adjusted_EPS: $-0.1527 (直近四半期値)
+Latest_Adjusted_EPS: $-0.1754 (直近四半期値)
 Latest_GAAP_EPS: $-0.1755
-Adjustment_Delta: $0.0229 (loan_fair_value)
-YoY_Growth: -113.9%
+Adjustment_Delta: $0.0001 (loan_fair_value/warrant_fv_change)
+YoY_Growth: -145.9%
 Recent Surprises (Adjusted EPS):
-  2026 Q2: Actual=$-0.1527 vs Est=N/A -> N/A%
+  2026 Q2: Actual=$-0.1754 vs Est=N/A -> N/A%
   2026 Q1: Actual=$0.1192 vs Est=N/A -> N/A%
-  2025 Q4: Actual=$-0.1574 vs Est=N/A -> N/A%
+  2025 Q4: Actual=$-0.1521 vs Est=N/A -> N/A%
   2025 Q3: Actual=$-0.0497 vs Est=N/A -> N/A%
 Definition:
 

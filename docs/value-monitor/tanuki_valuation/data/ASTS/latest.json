@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -89.9,
-  "calculation_date": "2026-11-03T09:08:13+09:00",
+  "calculation_date": "2026-11-03T22:46:32+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -177,6 +177,7 @@
     "detected": true,
     "rule": "latest_negative",
     "fiscal_year": 2025,
+    "period_label": "TTM 2026-06-30",
     "fcf_value": -1638039000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
@@ -188,19 +189,20 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "FY2025 FCF($-1638.0M)がマイナス。一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
+    "note": "TTM 2026-06-30 FCF($-1638.0M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
   },
   "fcf_estimation": {
+    "period_label": "TTM 2026-06-30",
     "applied": false,
     "fallback_reason": "",
     "method": "bottom_up",
     "estimated_fcf": 5673440.0,
     "raw_fcf": 5673440.0,
-    "capex": 1064741000,
-    "sbc": 47490000,
-    "ocf": -71517000,
-    "da": 51111000,
-    "note": "OCF$-0.07B - CapEx$1.06B（直近年。5yr/2yr平均・外れ値除外後の採用値は$0.01B）"
+    "capex": 1493334000.0,
+    "sbc": 147959000.0,
+    "ocf": -144705000.0,
+    "da": 66712000,
+    "note": "OCF$-0.14B - CapEx$1.49B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.01B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -399,9 +401,11 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-3",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-3"
   ],
   "fcf_history": [
     {
