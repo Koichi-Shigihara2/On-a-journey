@@ -450,7 +450,7 @@ def write_daily_rows(symbol: str, rows: List[Dict[str, Any]], base_dir: str, now
         if old is None:
             by_date[d] = new
             out["added"].append(d)
-        elif _is_replaceable(old):
+        elif _is_replaceable(old) and reason not in CORRECTION_REASONS:
             if new != old:
                 by_date[d] = new
                 out["replaced"].append(d)
@@ -459,6 +459,7 @@ def write_daily_rows(symbol: str, rows: List[Dict[str, Any]], base_dir: str, now
         elif _row_values(old) == _row_values(new):
             out["unchanged"].append(d)          # 確定の行は値が同じなら印も含めてそのまま
         elif reason in CORRECTION_REASONS:
+            # 理由つきの直しは、暫定の行でも前の値・理由を行に残す（GC=Fの平らな足の取り直し、2026-11-03）
             prev = {k: v["old"] for k, v in _diff_fields(old, new).items()}
             new["_corrections"] = list(old.get("_corrections") or []) + [
                 {"at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "reason": reason, "reason_label": CORRECTION_REASONS[reason],

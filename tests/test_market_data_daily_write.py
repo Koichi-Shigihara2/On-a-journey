@@ -82,6 +82,17 @@ def test_split_adjustment_with_reason_corrects_and_keeps_previous_values(tmp_pat
     assert _log(base) == []
 
 
+def test_correction_with_reason_on_provisional_row_keeps_previous_values(tmp_path):
+    base = str(tmp_path)
+    _seed(base, "GC=F", [{**_flat("2021-09-10", 1789.6), "_provisional": True}])
+    res = fetcher.correct_daily_rows("GC=F", [_bar("2021-09-10", 1792.1, vol=136246)], reason="provisional_final",
+                                     note="平らな足の取り直し（2026-11-03）", base_dir=base, now=LATE)
+    row = _read(base, "GC=F")["2021-09-10"]
+    assert res["corrected"] == ["2021-09-10"] and row["close"] == 1792.1 and "_provisional" not in row
+    c = row["_corrections"][-1]
+    assert c["prev"]["close"] == 1789.6 and c["prev"]["volume"] == 0 and c["note"] == "平らな足の取り直し（2026-11-03）"
+
+
 def test_unknown_reason_is_refused(tmp_path):
     with pytest.raises(ValueError):
         fetcher.write_daily_rows("AAPL", [_bar("2026-10-01", 1.0)], str(tmp_path), reason="because")
