@@ -16,9 +16,8 @@ attributes/のtrailing_peとdaily/の別日の株価を組み合わせて実質P
 再計算する、等）。get_ma_deviation()のみ例外的にdaily/内部（同一レイヤー）
 で完結する計算を行う。
 
-現時点でこのモジュールを参照する本番消費者は存在しない（グリーンフィールド
-実装）。既存の8本番消費者・2診断ツール・2周辺ツールの切替は別タスク
-（BACKLOG着手順序3・4）で行う。データが一切存在しない銘柄（fetcher.py
+このモジュールを使う本番のコードは出力の一覧 docs/architecture/output_inventory/market_data_layer.md の
+読み手を正とする（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03にグリーンフィールド実装のころの古い記述を直した）。データが一切存在しない銘柄（fetcher.py
 未実行）に対する呼び出しは、例外ではなくNone/空リスト/空dictを返す
 （エラー耐性）。
 """

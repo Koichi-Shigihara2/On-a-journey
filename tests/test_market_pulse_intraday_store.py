@@ -246,10 +246,15 @@ class TestSystemHealthO:
         r = sh._check_o(data_dir=str(tmp_path), now=datetime(2026, 11, 3, 20, 0, tzinfo=UTC))
         assert r["ok"] is True and "2026-11-02: 10本" in r["detail"]
 
-    def test_present_with_missing_is_ok_with_detail(self, tmp_path):
+    def test_present_with_missing_is_warning_then_critical_when_continued(self, tmp_path):
+        """欠け（取得の失敗）は取得の失敗の表（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03。以前は✅で詳細に出すだけ）:
+        1日目は⚠️、同じ銘柄が前の取引日も欠けていれば🔴"""
         ist.update(NOW, start=date(2026, 11, 3), fetch=_fetch_all(["2026-11-03"], fail=("HYG",)), data_dir=str(tmp_path))
         r = sh._check_o(data_dir=str(tmp_path), now=NOW)
-        assert r["ok"] is True and "9本・欠け HYG(fetch_error)" in r["detail"]
+        assert r["ok"] is False and r["label"].startswith("⚠️") and "9本・欠け HYG(fetch_error)" in r["detail"]
+        ist.update(NOW, start=date(2026, 11, 2), fetch=_fetch_all(["2026-11-02"], fail=("HYG",)), data_dir=str(tmp_path))
+        r = sh._check_o(data_dir=str(tmp_path), now=NOW)
+        assert r["label"].startswith("🔴") and "HYG(2日)" in r["detail"]
 
     def test_no_dir_is_skip(self, tmp_path):
         r = sh._check_o(data_dir=str(tmp_path / "none"), now=NOW)

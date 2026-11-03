@@ -8,6 +8,13 @@
         "common/sec_data/normalized/",
         "common/sec_data/ttm/",
         "docs/common/sec_data/normalized/"
+      ],
+      "name": "SEC Data Update",
+      "scripts": [
+        "common/sec_data/report_consistency_check.py",
+        "common/sec_data/rollback_failed.py",
+        "common/sec_data/update.py",
+        "common/sec_data/update_notify.py"
       ]
     },
     "Market_Data_Daily_Update": {
@@ -17,6 +24,12 @@
         "common/market_data/_sp500_constituents_cache.json",
         "common/market_data/daily/",
         "docs/common/sec_data/rotce/"
+      ],
+      "name": "Market Data Daily Update",
+      "scripts": [
+        "common/market_data/daily_guard.py",
+        "common/market_data/fetcher.py",
+        "common/sec_data/rotce.py"
       ]
     },
     "HypeCore_Update": {
@@ -26,6 +39,10 @@
       ],
       "outputs": [
         "docs/value-monitor/hypecore/data/"
+      ],
+      "name": "HypeCore Update",
+      "scripts": [
+        "src/value/hypecore/hypecore.py"
       ]
     },
     "Adjusted_EPS_Update": {
@@ -35,6 +52,11 @@
       ],
       "outputs": [
         "docs/value-monitor/adjusted_eps_analyzer/data/"
+      ],
+      "name": "Adjusted_EPS_Data_Update",
+      "scripts": [
+        "common/sec_data/report_consistency_check.py",
+        "src/value/adjusted_eps_analyzer/pipeline.py"
       ]
     },
     "Stonks_Silo_Update": {
@@ -45,6 +67,11 @@
       ],
       "outputs": [
         "docs/value-monitor/stonks-silo/data/"
+      ],
+      "name": "Stonks Silo Update",
+      "scripts": [
+        "common/sec_data/report_consistency_check.py",
+        "src/value/stonks_silo/pipeline.py"
       ]
     },
     "TANUKI_VALUATION_Update": {
@@ -56,17 +83,27 @@
       ],
       "outputs": [
         "docs/value-monitor/tanuki_valuation/data/"
+      ],
+      "name": "TANUKI VALUATION Daily Update",
+      "scripts": [
+        "common/sec_data/report_consistency_check.py",
+        "src/value/tanuki_valuation/pipeline.py",
+        "src/value/tanuki_valuation/score_watcher.py"
       ]
     },
-    "TANUKI_Score_Update": {
+    "Portfolio_Snapshot_Update": {
       "yml": "TANUKI_Score_Update.yml",
       "depends_on": [
         "TANUKI_VALUATION_Update"
       ],
       "outputs": [
         "docs/portfolio/data/history.json"
+      ],
+      "name": "Portfolio Snapshot Update",
+      "scripts": [
+        "src/portfolio/snapshot.py"
       ]
     }
   },
-  "_generated": "workflows.*のdepends_on・outputsはscripts/gen_update_schedule.pyが.github/workflows/*.ymlから生成する。キーとymlは手作業の定義（ワークフローを新設したら足す）。起動時刻・連鎖の説明はdocs/architecture/UPDATE_SCHEDULE.md"
+  "_generated": "workflows.*のdepends_on・outputsはscripts/gen_update_schedule.pyが.github/workflows/*.ymlから生成する。キーとymlは手作業の定義（ワークフローを新設したら足す）。name（表示名）・scripts（動かすスクリプト）も手作業の定義で、rcc CHECK-68（common/reference_check.py）が.ymlの name: と run の python … と照合する（名前と中身の対応はここの1か所）。起動時刻・連鎖の説明はdocs/architecture/UPDATE_SCHEDULE.md"
 }

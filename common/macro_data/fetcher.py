@@ -13,13 +13,8 @@ workflow_dispatch）を新設し、本ファイル末尾の`__main__`ブロッ�
 （`common/market_data/fetcher.py`と同じCLIパターン）から
 `fetch_all_series()`を呼び出す構成にした。
 
-以下は引き続き次段階に分離し、今回は一切変更していない:
-- `05_main.py`（MACRO PULSE）・`collect_and_send.py`（Market Pulse）側の
-  本番消費者切替（重複3系列 BAMLH0A0HYM2/T10Y2Y/VIXCLS の解消を含む）
-- 過去データの一括投入（フェーズ2、過去データ移管）
-
-現時点でこのモジュールを参照する本番消費者は存在しない
-（グリーンフィールド実装、定期実行のみ稼働）。
+書いたファイルの読み手（`05_main.py`〈MACRO PULSE〉・`collect_and_send.py`〈Market Pulse〉が reader.py 経由、
+violations_log は System Health の [L]）は出力の一覧 docs/architecture/output_inventory/macro_data_layer.md を正とする（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03にグリーンフィールド実装のころの古い記述を直した）。
 
 保存構造:
     common/macro_data/
@@ -226,16 +221,27 @@ def _write_violations_section(series_id: str, warnings: List[str], base_dir: str
     warnings）は維持。failure_reasonはfetch_status=="failed"のときのみ
     書き込む（成功時にキー自体を増やさず、既存の正常系エントリの形を
     変えない）。
+
+    [[CHECK-REFERENCE-DEFINITION-1]]（2026-11-03）: fetch_status=="failed"のときだけfailed_since（この系列の
+    失敗が続いている最初の実行の時刻）を書く。前回も失敗なら前回の値を引き継ぐ（common/fetch_failure.py::
+    carry_failed_since）。System Health [L]が「同じ系列の失敗が2日以上続く」を🔴にするための記録。
     """
+    from common.fetch_failure import carry_failed_since
     path = _violations_log_path(base_dir)
     payload = _load_json(path, default={})
+    now_iso = _now_jst_iso()
     entry: Dict[str, Any] = {
-        "checked_at": _now_jst_iso(),
+        "checked_at": now_iso,
         "warnings": warnings,
         "fetch_status": fetch_status,
     }
     if fetch_status == "failed" and failure_reason:
         entry["failure_reason"] = failure_reason
+    prev = payload.get(series_id) if isinstance(payload.get(series_id), dict) else None
+    since = carry_failed_since(prev, bool(prev) and prev.get("fetch_status") == "failed",
+                               fetch_status == "failed", now_iso)
+    if since:
+        entry["failed_since"] = since
     payload[series_id] = entry
     _atomic_write_json(path, payload)
 

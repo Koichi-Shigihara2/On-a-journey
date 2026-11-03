@@ -16,6 +16,19 @@ def md_escape(s: str) -> str:
     return s.replace("|", "\\|")
 
 
+def _stale_section(L, rows):
+    """今の書き手のコードに無いのに、データ（古いファイル・古いエントリ）に残るキー（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）"""
+    L.append("### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）")
+    L.append("")
+    L.append("データのキーのうち、書き手のコード（書き手の .py・それを import する呼び出し元・それらが import する .py）に文字列として出てこないもの。"
+             "書くのをやめて履歴のスナップショット・古いエントリに残るキーや、取得元のデータをそのまま写したキー（SEC の単位・次元の名前等）")
+    L.append("")
+    if not rows:
+        L.append("なし")
+    for u in rows:
+        L.append(f"- `{u['key']}`（{'、'.join('`' + s + '`' for s in u['sources'][:2])}）")
+    L.append("")
+
 def render_md(inv: dict) -> str:
     L = []
     outs = inv["outputs"]
@@ -44,10 +57,12 @@ def render_md(inv: dict) -> str:
             by[it["status"]] += 1
         L.append("")
         L.append(f"**画面の項目**: 画面が読むキー {len(sc['items'])}（この段階の書き手あり {by['この段階の書き手あり']}・ほかの書き手あり {by['ほかの書き手あり']}・"
-                 f"画面の中で作る値 {by['画面の中で作る値']}・**書き手なし {by['書き手なし']}**）／書き手があるのに誰も読まないキー **{len(sc['unread_keys'])}**")
+                 f"画面の中で作る値 {by['画面の中で作る値']}・**書き手なし {by['書き手なし']}**）／書き手があるのに誰も読まないキー **{len(sc['unread_keys'])}**"
+                 f"（今の書き手のコードに無いキー {len(sc.get('stale_keys', []))} は数えない）")
     if inv.get("data_keys"):
         L.append("")
-        L.append(f"**誰も読まないキー**: **{len(inv['data_keys']['unread_keys'])}**（この段階のJSONのキー {inv['data_keys']['written_key_count']} のうち。下の「誰も読まないキー」）")
+        L.append(f"**誰も読まないキー**: **{len(inv['data_keys']['unread_keys'])}**（この段階のJSONのキーで今の書き手のコードにある {inv['data_keys']['written_key_count']} のうち。下の「誰も読まないキー」。"
+                 f"今の書き手のコードに無いキー {len(inv['data_keys'].get('stale_keys', []))} は数えない）")
     L.append("")
     L.append(f"**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない {len(st['outputs_with_writer_outside_layer'])}＋{len(st['unresolved_write_sites'])}件（{st['ratio_writer']:.1%}）、"
              f"読み方を決めきれない読み込み {len(st['python_read_sites_unresolved_in_files_mentioning_sec_data'])}件＋ファイル名で当たった行 {len(st.get('name_hit_sites_undetermined', []))}件"
@@ -139,17 +154,19 @@ def render_md(inv: dict) -> str:
         for u in inv["data_keys"]["unread_keys"]:
             L.append(f"- `{u['key']}`（{'、'.join('`' + s + '`' for s in u['sources'][:3])}）{(': ' + md_escape(u['note'])) if u.get('note') else ''}")
         L.append("")
+        _stale_section(L, inv["data_keys"].get("stale_keys", []))
     if inv.get("screen"):
         sc = inv["screen"]
         L.append("## 画面の項目")
         L.append("")
         scope = "全ファイル"
         L.append("画面（" + "・".join(f"`{p}`" for p in sc["pages"]) + "）のJSが読むキー（`.key`・`?.key`・`['key']`。"
-                 "この段階のJSONか、ページが読むJSONにあるキー、またはsnake_caseのもの）。書き手は、この段階の出力のJSON（"
-                 f"{scope}、入れ子8段まで）と、ページが読む.jsonの文字列で照合したdocs/のJSONのキーで判定する。"
+                 "この段階のJSONか、ページが読むJSONにあるキー、またはsnake_caseのもの）。書き手は、この段階の書き手のコードが書くキー"
+                 f"（データに今無くても）と、この段階の出力のJSON（{scope}、入れ子8段まで）のキーのうち今の書き手のコードにあるもの、"
+                 "ページが読む.jsonの文字列で照合したdocs/のJSONのキーで判定する（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）。"
                  "画面の言葉は、その行と前の3行の日本語の文字列（推定）。")
         L.append("")
-        L.append("### 書き手なし（画面が読むのに、どのJSONにも無いキー）")
+        L.append("### 書き手なし（画面が読むのに、今の書き手のコードにもどのJSONにも無いキー）")
         L.append("")
         for it in [i for i in sc["items"] if i["status"] == "書き手なし"]:
             L.append(f"- `{it['key']}`（`{it['page']}` 行 {'・'.join(str(x) for x in it['lines'][:6])}）{(': ' + md_escape(it['label'])) if it['label'] else ''}")
@@ -161,6 +178,7 @@ def render_md(inv: dict) -> str:
         for u in sc["unread_keys"]:
             L.append(f"- `{u['key']}`（{'、'.join('`' + s + '`' for s in u['sources'][:2])}）{(': ' + md_escape(u['note'])) if u.get('note') else ''}")
         L.append("")
+        _stale_section(L, sc.get("stale_keys", []))
         for pg in sc["pages"]:
             rows = [i for i in sc["items"] if i["page"] == pg]
             L.append(f"### `{pg}`（{len(rows)}項目）")

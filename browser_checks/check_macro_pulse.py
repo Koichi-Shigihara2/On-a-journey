@@ -30,6 +30,13 @@ docs/ より狭い範囲を配信すると ../../common/ のアセットが404�
   python browser_checks\\check_macro_pulse.py --json out.json
 
 終了コード: 0=不一致なし、1=不一致あり（判定不能は不一致に数えない）。
+
+照合の相手（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）: 画面の値は、その画面が読むファイル（同じcommitのCSV）の値と比べる。
+導出（D）の「系列ストアと比べる」確認は、ストアの今の最新ではなく、そのCSVを書いた実行が読めたストアの版（CSVを書いた時刻
+〈events.csv・05_fed_context.csvは行のupdated_at〈UTC〉の最大、05_liquidity.csvはそのファイルを最後に変えたcommitの時刻〉の
+時点でリポジトリにあった版。git の履歴から読む）と比べる。以前はストアの今の最新と比べ、ストア（Macro Data）が先に新しい観測日を
+持ち、MACRO PULSEのCSVがまだ追いつかない間（多くの日で約10時間）に確認を動かすと不一致が出ていた（2026-10-23 07:56 JSTの5件、FINDINGS）。
+--now で時計を固定できる（過去のcommitの状態の再現用）。
 """
 from __future__ import annotations
 
@@ -239,6 +246,70 @@ def load_series(sid: str) -> list[dict]:
     with open(os.path.join(SERIES_DIR, f"{sid}.json"), encoding="utf-8") as f:
         d = json.load(f)
     return d if isinstance(d, list) else d.get("records", [])
+
+
+def _git_out(*args: str) -> Optional[str]:
+    try:
+        r = subprocess.run(["git", "-C", REPO_ROOT, *args], capture_output=True, check=True)
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return r.stdout.decode("utf-8")
+
+
+_SERIES_AT: dict = {}
+
+
+def load_series_at(sid: str, at_utc: Optional[datetime]) -> tuple[list[dict], str]:
+    """at_utc の時点でリポジトリにあった系列ストアの版（その時刻より前の最後の commit の版）と、その説明。
+    時刻が無い・git の履歴が無いときは作業ツリーの版（説明に書く）。"""
+    if at_utc is None:
+        return load_series(sid), "作業ツリーの版（CSVを書いた時刻が分からない）"
+    key = (sid, at_utc)
+    if key not in _SERIES_AT:
+        rel = f"common/macro_data/series/{sid}.json"
+        h = (_git_out("log", "-1", "--format=%H %cI", f"--before={at_utc.strftime('%Y-%m-%d %H:%M:%S')} +0000", "HEAD", "--", rel) or "").split()
+        if not h:
+            _SERIES_AT[key] = (load_series(sid), "作業ツリーの版（gitの履歴に無い）")
+        else:
+            d = json.loads(_git_out("show", f"{h[0]}:{rel}") or "[]")
+            _SERIES_AT[key] = (d if isinstance(d, list) else d.get("records", []), f"{h[0][:10]}（{h[1]}）の版")
+    return _SERIES_AT[key]
+
+
+def parse_utc(s: str) -> Optional[datetime]:
+    """CSVの updated_at（'YYYY-MM-DD HH:MM:SS'。本番の実行〈GitHub Actions〉はUTCで書く）。"""
+    try:
+        return datetime.strptime((s or "").strip()[:19], "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def csv_written_at(rows: list[dict]) -> Optional[datetime]:
+    """CSVを最後に書いた実行の時刻: 行の updated_at の最大"""
+    ts = [t for t in (parse_utc(r.get("updated_at", "")) for r in rows) if t]
+    return max(ts) if ts else None
+
+
+def file_commit_time(rel: str) -> Optional[datetime]:
+    """そのファイルを最後に変えた commit の時刻（作業ツリーで変えていれば None＝作業ツリーの版と比べる）"""
+    if (_git_out("status", "--porcelain", "--", rel) or "").strip():
+        return None
+    s = (_git_out("log", "-1", "--format=%cI", "HEAD", "--", rel) or "").strip()
+    try:
+        return datetime.fromisoformat(s).astimezone(timezone.utc) if s else None
+    except ValueError:
+        return None
+
+
+def sp500_closes_from_events(events: list[dict], now_ms: int) -> list[tuple[str, float]]:
+    """画面（index.htmlのrenderTicker）と同じ規則: sp500_t0_asof（観測日）が今日〈UTC〉以前の行の終値。同じ観測日は後の行が勝つ。観測日の順"""
+    today = datetime.fromtimestamp(now_ms / 1000, timezone.utc).strftime("%Y-%m-%d")
+    closes: dict[str, float] = {}
+    for r in events:
+        a, v = (r.get("sp500_t0_asof") or "").strip(), parse_float(r.get("sp500_t0"))
+        if a and v is not None and a <= today:
+            closes[a] = v
+    return sorted(closes.items())
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -625,19 +696,27 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
         [dom["rb"]["concern"], dom["rb"]["reason"], dom["rb"]["concernTip"]])
 
     # MAC-09〜13 ティッカー
-    # 期待値は「取得済みの最新の終値とその前営業日の終値」（FRED SP500 の系列ストア）。
-    # 2026-10-03までの画面は release_date 最大の行を使い、未来日付の行で食い違っていた（B-02、M-2 STEP 3で修正）。
-    sp = [r for r in load_series("SP500") if r.get("value") is not None and ms_date_only(r["as_of"]) <= now]
-    cur, prev = sp[-1]["value"], sp[-2]["value"]
-    chg = cur - prev
-    pct = chg / prev * 100
-    sign = "+" if chg >= 0 else ""
+    # 期待値は画面が読むファイル（同じcommitの05_events.csv）の sp500_t0_asof（観測日）ごとの終値の最新とその前（[[CHECK-REFERENCE-DEFINITION-1]]、
+    # 2026-11-03。以前はFRED SP500の系列ストアの今の最新と比べ、ストアが先に新しい観測日を持つ間は不一致になっていた）。
+    # 2026-10-03までの画面は release_date 最大の行を使い、未来日付の行で食い違っていた（B-02、M-2 STEP 3で修正）。未来の観測日の行は使わない。
+    sp = sp500_closes_from_events(m.events, now)
     future_rows = sorted({r["release_date"][:10] for r in m.events
                           if parse_float(r.get("sp500_t0")) and (ms_date_only(r.get("release_date", "")) or 0) > now})
-    add("MAC-09", "S&P500 #tk-sp", js_locale(cur, 2, 2), dom["tk"]["sp"],
-        note=f"期待=FRED SP500 {sp[-1]['as_of']}。events.csvの未来日付の行={future_rows}（画面は使わない）")
-    add("MAC-10", "S&P500 前営業日比 #tk-sp-c", f"{sign}{js_fixed(chg, 2)} ({sign}{js_fixed(pct, 2)}%)", dom["tk"]["spc"],
-        note=f"期待={sp[-2]['as_of']}→{sp[-1]['as_of']}（画面はsp500_t0_asofの観測日順。観測日のある行が無ければupdated_at順で値が違う直前の行）")
+    if len(sp) >= 2:
+        (prev_d, prev), (cur_d, cur) = sp[-2], sp[-1]
+        chg = cur - prev
+        pct = chg / prev * 100
+        sign = "+" if chg >= 0 else ""
+        skipped = sum(1 for k in range(1, (date.fromisoformat(cur_d) - date.fromisoformat(prev_d)).days)
+                      if (date.fromisoformat(prev_d) + timedelta(days=k)).weekday() < 5)
+        add("MAC-09", "S&P500 #tk-sp", js_locale(cur, 2, 2), dom["tk"]["sp"],
+            note=f"期待=05_events.csv の sp500_t0_asof {cur_d} の終値。events.csvの未来日付の行={future_rows}（画面は使わない）")
+        add("MAC-10", "S&P500 前営業日比 #tk-sp-c",
+            f"{sign}{js_fixed(chg, 2)} ({sign}{js_fixed(pct, 2)}%)" + (f" vs {prev_d[5:]}" if skipped else ""), dom["tk"]["spc"],
+            note=f"期待={prev_d}→{cur_d}（05_events.csv の sp500_t0_asof の観測日順。間の平日があれば「vs 月-日」）")
+    else:
+        add("MAC-09", "S&P500 #tk-sp", None, dom["tk"]["sp"], passed=None, note="05_events.csv に sp500_t0_asof のある行が2つ未満（判定不能）")
+        add("MAC-10", "S&P500 前営業日比 #tk-sp-c", None, dom["tk"]["spc"], passed=None, note="同上")
     yc = m.latest_val("Yield Curve 10Y-2Y", now)
     add("MAC-11", "10Y-2Y #tk-yc/#tk-yc-i",
         [("+" if yc >= 0 else "") + js_fixed(yc, 2) + "%", "INVERTED" if yc < -0.2 else "FLAT" if yc < 0.5 else "NORMAL"] if yc is not None else ["—", "—"],
@@ -1084,16 +1163,21 @@ def compare(m: Model, dom: dict, extra: dict) -> list[Result]:
 # ═══════════════════════════════════════════════════════════════
 def derived_checks(m: Model) -> list[Result]:
     R: list[Result] = []
-    store = {sid: load_series(sid) for _, _, sid, _ in SCORE_INDS}
+    # 系列ストアは、そのCSVを書いた実行が読めた版と比べる（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）
+    ev_at = csv_written_at(m.events)
+    store_ver = {sid: load_series_at(sid, ev_at) for _, _, sid, _ in SCORE_INDS}
+    store = {sid: v[0] for sid, v in store_ver.items()}
     now = m.now
-    # D-01 8指標: 画面の計算に使われている値（events.csv）と、FRED系列ストアの最新観測値
+    # D-01 8指標: 画面の計算に使われている値（events.csv）と、events.csv を書いた実行が読めた FRED 系列ストアの最新観測値
     exp, act, notes = [], [], []
     for k, ind, sid, _ in SCORE_INDS:
         last = store[sid][-1]
         e = m.latest_entry(ind, now)
         exp.append([ind, last["as_of"], last["value"]])
         act.append([ind, iso_date(e["d"]) if e else None, m.val_at(e, now) if e else None])
-    R.append(Result("D-01", "8指標: 計算に使われる最新行 vs FRED系列ストアの最新観測", exp, act, exp == act, "導出",
+    vers = sorted({v[1] for v in store_ver.values()})
+    R.append(Result("D-01", "8指標: 計算に使われる最新行 vs events.csv を書いた実行が読めた FRED 系列ストアの最新観測", exp, act, exp == act, "導出",
+                    f"events.csv を書いた時刻（updated_at の最大）={ev_at.isoformat() if ev_at else '不明'}、ストアは {'・'.join(vers)}。"
                     "日付は events.csv の release_date（M-3b以降は全て観測日）。値は計算日の時点の値（改定値はrevised_atの後）。不一致は取り込み漏れ・改定未反映・日付の割り当て違い"))
     # D-02 週次スナップショット（05_weekly_analysis.csv 最新行）の再計算
     if m.weekly_sorted:
@@ -1112,23 +1196,26 @@ def derived_checks(m: Model) -> list[Result]:
         # 注: 現在の events.csv（後から追加・上書きされた行を含む）で再計算するため、当時の入力とは異なりうる
         R.append(Result("D-02", "週次スナップショットのスコア（05_weekly_analysis.csv 最新行）", r0.get("score"), None, None, "導出",
                         f"{ad}時点の入力は再現できない（events.csvは後から行が追加・上書きされ、当時の版の特定が必要）。判定不能"))
-    # D-03 流動性の最新行 vs FRED系列ストアの最新値
+    # D-03 流動性の最新行 vs 05_liquidity.csv を書いた実行が読めた FRED 系列ストアの最新値
     latest = m.liq[-1]
-    st = {s: load_series(s)[-1] for s in ("M2SL", "WALCL", "WTREGEN", "RRPONTSYD", "WRBWFRBL", "BAMLH0A0HYM2", "SP500")}
+    liq_at = file_commit_time("docs/market-monitor/macro-pulse/data/05_liquidity.csv")
+    st_ver = {s: load_series_at(s, liq_at) for s in ("M2SL", "WALCL", "WTREGEN", "RRPONTSYD", "WRBWFRBL", "BAMLH0A0HYM2", "SP500")}
+    st = {s: v[0][-1] for s, v in st_ver.items()}
     exp = {"m2": st["M2SL"]["value"], "fed_balance": st["WALCL"]["value"], "tga": st["WTREGEN"]["value"],
            "rrp": round(st["RRPONTSYD"]["value"] * 1000, 4), "reserve_balance": st["WRBWFRBL"]["value"],
            "hy_spread": st["BAMLH0A0HYM2"]["value"], "sp500": st["SP500"]["value"]}
     act = {k: parse_float(latest.get(k)) for k in exp}
-    R.append(Result("D-03", f"05_liquidity.csv 最新行（{latest['date']}）vs FRED系列ストア", exp, act,
+    R.append(Result("D-03", f"05_liquidity.csv 最新行（{latest['date']}）vs それを書いた実行が読めたFRED系列ストア", exp, act,
                     all(abs((exp[k] or 0) - (act[k] or 0)) < 1e-6 for k in exp), "導出",
-                    "観測日: " + ", ".join(f"{k}={v['as_of']}" for k, v in st.items())))
+                    f"05_liquidity.csv を最後に変えたcommitの時刻={liq_at.isoformat() if liq_at else '不明（作業ツリー）'}、"
+                    f"ストアは {'・'.join(sorted({v[1] for v in st_ver.values()}))}。観測日: " + ", ".join(f"{k}={v['as_of']}" for k, v in st.items())))
     nl = round((exp["fed_balance"] - exp["tga"] - exp["rrp"]) / 1_000_000, 4)
     R.append(Result("D-04", "NET LIQUIDITY = (WALCL − WTREGEN − RRP×1000)/10^6", nl, parse_float(latest.get("net_liquidity")),
                     abs(nl - (parse_float(latest.get("net_liquidity")) or 0)) < 1e-6, "導出"))
     # D-05 「NET流動性N週連続減少」: M-2 STEP 4以降の行（h41_dateあり）は、H.4.1の水曜の値の連続減少を独立に数えて比べる
     lq = m.liq[-1]
     if lq.get("h41_date"):
-        w = {s: {r["as_of"]: r["value"] for r in load_series(s)} for s in ("WALCL", "WTREGEN", "RRPONTSYD")}
+        w = {s: {r["as_of"]: r["value"] for r in load_series_at(s, liq_at)[0]} for s in ("WALCL", "WTREGEN", "RRPONTSYD")}
         weds = sorted(d for d in w["WALCL"] if d <= lq["h41_date"])[-9:]
         rrp_dates = sorted(w["RRPONTSYD"])
         nlv = []
@@ -1152,11 +1239,15 @@ def derived_checks(m: Model) -> list[Result]:
     R.append(Result("D-06", "IMPLIED CUTS = (FF − DGS1)/0.25", round((ff - zq) / 0.25, 2) if ff is not None and zq is not None else None, cu,
                     ff is not None and zq is not None and abs(round((ff - zq) / 0.25, 2) - cu) < 1e-9, "導出",
                     f"record_date={f.get('record_date')} updated_at={f.get('updated_at')} fomc_date={f.get('fomc_date')}"))
-    # D-07 FF RATE と現在の DFEDTARU/L の中心値・DGS1 の最新値
-    u, l, d1 = load_series("DFEDTARU")[-1], load_series("DFEDTARL")[-1], load_series("DGS1")[-1]
-    R.append(Result("D-07", "FF RATE・1Y EXPECTED FF vs FRED系列ストアの最新値", [round((u["value"] + l["value"]) / 2, 4), d1["value"]],
+    # D-07 FF RATE・1Y EXPECTED FF vs 05_fed_context.csv の最新行を書いた実行（週1回〈土曜〉）が読めた DFEDTARU/L の中心値・DGS1 の最新値
+    # （以前はストアの今の最新の DGS1 と比べ、土曜の後に DGS1 が動くと毎週不一致になっていた。FINDINGS 2026-10-23）
+    fed_at = parse_utc(f.get("updated_at", ""))
+    vu, vl, vd = load_series_at("DFEDTARU", fed_at), load_series_at("DFEDTARL", fed_at), load_series_at("DGS1", fed_at)
+    u, l, d1 = vu[0][-1], vl[0][-1], vd[0][-1]
+    R.append(Result("D-07", "FF RATE・1Y EXPECTED FF vs 05_fed_context.csv の最新行を書いた実行が読めたFRED系列ストアの最新値",
+                    [round((u["value"] + l["value"]) / 2, 4), d1["value"]],
                     [ff, zq], abs(round((u["value"] + l["value"]) / 2, 4) - (ff or 0)) < 1e-9 and abs(d1["value"] - (zq or 0)) < 1e-9, "導出",
-                    f"DGS1観測日={d1['as_of']}（REGIMEバーは週1回〈土曜〉更新）"))
+                    f"行の updated_at={f.get('updated_at')}（UTC）、ストアは {vd[1]}。DGS1観測日={d1['as_of']}（REGIMEバーは週1回〈土曜〉更新）"))
     # D-09 AIカードの「週±」= 前週の週次スナップショットとの差。M-2 STEP 5の修正後の行（分析日2026-10-03以降）だけを判定する
     #（2026-10-04 M-2c: 対象日を米国の日付にしたため、修正後の最初の行は2026-10-03〈10-04 00:30 UTC起動〉）
     #（それより前の行は書き換えない方針。記録値は先読みで0になっていた: MACRO-PULSE-AI-DELTA-LOOKAHEAD-1）
@@ -1239,9 +1330,10 @@ def note_checks(m: Model, dom: dict) -> list[Result]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", default=None)
+    ap.add_argument("--now", default=None, help="時計を固定する時刻（ISO 8601、例 2026-10-23T07:56:00+09:00）。過去のcommitの状態の再現用")
     args = ap.parse_args()
     STEPS.update(_load_signal_steps())  # M-5 STEP 5
-    now_ms = int(time.time() * 1000)
+    now_ms = int(datetime.fromisoformat(args.now).timestamp() * 1000) if args.now else int(time.time() * 1000)
     m = Model(now_ms)
     dom, logs, extra = collect(now_ms)
     results = compare(m, dom, extra) + derived_checks(m) + note_checks(m, dom)

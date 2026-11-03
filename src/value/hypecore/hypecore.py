@@ -1,5 +1,5 @@
 """
-HypeCore PoC v2 - src/value/hypecore/poc.py
+HypeCore PoC v2 - src/value/hypecore/poc.py（`242da82064`〈2026-05-17〉で削除）
 
 ステージ定義（Koichi定義準拠）:
   S0 失望/蓄積期: 機関未参入・規模小・赤字頻発・スマートマネー仕込み段階

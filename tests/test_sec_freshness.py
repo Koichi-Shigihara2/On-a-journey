@@ -434,14 +434,33 @@ def test_m_partial_only_without_generated_at_is_critical(tmp_path):
     assert sh._check_m(path=path, now=NOW)["critical"] is True
 
 
-def test_m_fetch_failed_ratio(tmp_path):
+def test_m_fetch_failed_by_severity_table(tmp_path):
+    """FETCH_FAILEDは取得の失敗の表（common/fetch_failure.py、[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）:
+    一部の失敗で1日目は⚠️（以前は10%以上で🔴）・同じ銘柄が2日以上続けば🔴・全銘柄なら🔴"""
     tickers = _ok_entries(20)
     tickers["T000"] = fr.entry(fr.FETCH_FAILED, "b", "2026-08-01", "2026-09-01", [], "x")
-    r = sh._check_m(path=_freshness_doc(tmp_path, tickers, "2026-10-09T00:00:00Z"), now=NOW)
-    assert r["ok"] is False and r["critical"] is False  # 1/20 = 5% → ⚠️
     tickers["T001"] = fr.entry(fr.FETCH_FAILED, "b", "2026-08-01", "2026-09-01", [], "x")
     r = sh._check_m(path=_freshness_doc(tmp_path, tickers, "2026-10-09T00:00:00Z"), now=NOW)
-    assert r["critical"] is True  # 2/20 = 10% → 🔴
+    assert r["ok"] is False and r["critical"] is False  # 2/20、記録なし（1日目） → ⚠️
+    tickers["T001"]["failed_since"] = "2026-10-04T00:00:00Z"     # 前の週の定時から続く
+    r = sh._check_m(path=_freshness_doc(tmp_path, tickers, "2026-10-09T00:00:00Z"), now=NOW)
+    assert r["critical"] is True and "T001(" in r["detail"]
+    all_failed = {t: fr.entry(fr.FETCH_FAILED, "b", "2026-08-01", "2026-09-01", [], "x") for t in ("A", "B")}
+    assert sh._check_m(path=_freshness_doc(tmp_path, all_failed, "2026-10-09T00:00:00Z"), now=NOW)["critical"] is True
+
+
+def test_freshness_write_carries_failed_since(tmp_path, monkeypatch):
+    path = str(tmp_path / "_freshness.json")
+    ff_e = fr.entry(fr.FETCH_FAILED, "b", "2026-08-01", "2026-09-01", [], "x")
+    ok_e = fr.entry(fr.OK_NO_NEW, "c", "2026-08-01", "2026-08-01", [])
+    times = iter(["2026-10-04T00:00:00Z", "2026-10-11T00:00:00Z", "2026-10-18T00:00:00Z"])
+    monkeypatch.setattr(fr, "utc_now_iso", lambda: next(times))
+    fr.write({"AAA": ff_e, "BBB": ok_e}, full_run=True, path=path)
+    doc = fr.write({"AAA": ff_e, "BBB": ok_e}, full_run=True, path=path)
+    assert doc["tickers"]["AAA"]["failed_since"] == "2026-10-04T00:00:00Z" and "failed_since" not in doc["tickers"]["BBB"]
+    assert "failed_since" not in ff_e                                   # 渡した行は書き換えない
+    doc = fr.write({"AAA": ok_e}, full_run=False, path=path)
+    assert "failed_since" not in doc["tickers"]["AAA"]
 
 
 def test_m_sec_lag_thresholds(tmp_path):

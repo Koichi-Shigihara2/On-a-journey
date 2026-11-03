@@ -35,6 +35,8 @@ from common.sec_data.audit import (
     run_audit,
 )
 from common.sec_data import tickers as _tickers_mod
+# 取得の失敗の重大度の表（[L]・[M]のFETCH_FAILED・[O]の欠け。[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）
+from common import fetch_failure as _ff
 # [[QUALITY-GATES-EPIC-1]]ゲート4（旧TICKER-AUDIT-1想定機能⑤）: P4-CIKOrphan
 # チェック・monitor_tickers.yaml読み込みロジックを再利用する（2026-09-05）。
 # 独立に再実装せず、既存の唯一の実装を再利用することでロジックの重複・
@@ -51,6 +53,7 @@ _SS_RESULTS  = os.path.join(_DOCS_ROOT, "value-monitor", "stonks-silo", "data", 
 _WORKFLOWS_DIR = os.path.join(_REPO_ROOT, ".github", "workflows")
 _PORTFOLIO_JSON = os.path.join(_DOCS_ROOT, "portfolio", "data", "portfolio.json")
 _MACRO_DATA_VIOLATIONS_LOG = os.path.join(_REPO_ROOT, "common", "macro_data", "macro_data_violations_log.json")
+_MACRO_DATA_SERIES_META = os.path.join(_REPO_ROOT, "common", "macro_data", "series_meta.json")
 
 _STALE_DAYS  = 7   # この日数以上古いデータを「stale」と判定
 _GH_API_BASE = "https://api.github.com"
@@ -830,27 +833,41 @@ def check_k_ticker_audit() -> tuple[str, bool, str]:
 # 検知できない。common/macro_data/fetcher.py側で追加したfetch_status
 # （"ok"/"failed"）をmacro_data_violations_log.jsonから読むだけの軽量
 # チェック（新規ロジックなし）。FTSDのような「常に失敗し続ける系列」を
-# 放置しないための可視化が目的。WARNレベル（icon "⚠️"）に留め、
-# check_j_workflow_runsの判定（CRITICAL対象）には含めない。
-def check_l_macro_data() -> tuple[str, bool, str]:
-    if not os.path.exists(_MACRO_DATA_VIOLATIONS_LOG):
-        return "⚠️  macro_data_violations_log.json未作成（スキップ）", True, "log not found (skip)"
+# 放置しないための可視化が目的。
+# 重大度は取得の失敗の表（common/fetch_failure.py::judge、[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）: 取得する全系列
+# （書き手 fetcher.fetch_all_series が回す series_meta.json の系列。ログに残る昔の系列〈CFNAI・FTSD〉は数えない）が失敗、
+# または同じ系列の失敗が2日以上続けば🔴、一部の失敗で1日目なら⚠️。続いた日数はログの failed_since（書き手が残す）から。
+# 以前は数に関係なく⚠️で、FREDの全25系列の失敗が10-25〜10-30の6日続いても🔴にならなかった
+def _check_l(path: Optional[str] = None, meta_path: Optional[str] = None, now: Optional[datetime] = None) -> dict:
+    path = path or _MACRO_DATA_VIOLATIONS_LOG
+    meta_path = meta_path or _MACRO_DATA_SERIES_META
+    now = now or _utcnow()
 
+    def result(label, ok, detail, critical=False):
+        return {"label": label, "ok": ok, "detail": detail, "critical": critical}
+
+    if not os.path.exists(path):
+        return result("⚠️  macro_data_violations_log.json未作成（スキップ）", True, "log not found (skip)")
     try:
-        log = json.load(open(_MACRO_DATA_VIOLATIONS_LOG, encoding="utf-8"))
+        with open(path, encoding="utf-8") as f:
+            log = json.load(f)
     except Exception as e:
-        return f"🔴 読み込みエラー: {e}", False, str(e)
+        return result(f"🔴 読み込みエラー: {e}", False, str(e), True)
+    try:
+        with open(meta_path, encoding="utf-8") as f:
+            targets = list(json.load(f))
+    except (OSError, ValueError):
+        targets = list(log)
+    entries = {s: log[s] for s in targets if isinstance(log.get(s), dict)}
+    failed = _ff.days_by_item(entries, now, lambda e: e.get("fetch_status") == "failed")
+    sev, _row = _ff.judge(len(targets), failed)
+    detail = _ff.describe(len(targets), failed, "系列")
+    return result(f"{_ff.ICON[sev]} {detail}", sev == 0, detail, sev == 2)
 
-    failed = sorted(
-        series_id for series_id, entry in log.items()
-        if isinstance(entry, dict) and entry.get("fetch_status") == "failed"
-    )
 
-    ok   = not failed
-    icon = "✅" if ok else "⚠️ "
-    detail = ("全系列取得成功" if ok else
-              f"取得失敗({len(failed)}件): {', '.join(failed[:3])}{'…' if len(failed) > 3 else ''}")
-    return f"{icon} {detail}", ok, detail
+def check_l_macro_data() -> tuple[str, bool, str]:
+    r = _check_l()
+    return r["label"], r["ok"], r["detail"]
 
 
 # ── M. SECの一次データの鮮度（[[SEC-FETCH-CACHE-MTIME-CI-1]]、2026-10-10） ──
@@ -899,13 +916,16 @@ def _check_m(path: Optional[str] = None, now: Optional[datetime] = None,
         if age > fr.FRESHNESS_MAX_AGE_DAYS:
             critical_parts.append(f"全銘柄の実行が{age:.1f}日前（{gen}）")
 
-    failed = sorted(t for t, e in tickers.items() if e.get("status") == fr.FETCH_FAILED)
-    if failed:
-        msg = f"FETCH_FAILED {len(failed)}/{n}件: {', '.join(failed)}"
-        if n and len(failed) / n >= fr.FETCH_FAILED_CRITICAL_RATIO:
-            critical_parts.append(msg)
-        else:
-            warn_parts.append(msg)
+    # FETCH_FAILED（取得の失敗）は取得の失敗の表（common/fetch_failure.py::judge）で決める: 全銘柄が失敗、または同じ銘柄の
+    # 失敗が2日（2回の定時）以上続けば🔴、一部の失敗で1日目なら⚠️。続いた日数は_freshness.jsonのfailed_since（freshness.write が残す）から。
+    # 以前は全銘柄の10%以上で🔴（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）
+    ff_days = _ff.days_by_item(tickers, now, lambda e: e.get("status") == fr.FETCH_FAILED)
+    if ff_days:
+        sev_ff, row_ff = _ff.judge(n, ff_days)
+        cont = [t for t, d in sorted(ff_days.items()) if d >= _ff.CONTINUED_DAYS]
+        msg = f"FETCH_FAILED {len(ff_days)}/{n}件: {', '.join(sorted(ff_days))}" + (
+            f"（{_ff.CONTINUED_DAYS}日以上: {', '.join(f'{t}({ff_days[t]}日)' for t in cont)}）" if cont else "")
+        (critical_parts if sev_ff == 2 else warn_parts).append(msg)
 
     failed_t = sorted(t for t, e in tickers.items() if e.get("status") == fr.FAILED)
     if failed_t:
@@ -1011,7 +1031,9 @@ def check_n_headlines() -> tuple[str, bool, str]:
 # ── O. 5分足の日ごとの保存（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②、2026-11-01） ──
 # docs/market-monitor/market-pulse/data/intraday/YYYY-MM-DD.json は夜のMarket Pulseの回が書く。
 # 引けを過ぎた直近のNYSEの取引日のファイルが無ければ⚠️（Yahooの5分足は60日で消えるので、気づけば次の回で取り直せる）。
-# 欠けた銘柄（missing）は詳細に出すだけ。フォルダが無ければ未作成（スキップ）
+# 欠けた銘柄（missing、取得の失敗）の重大度は取得の失敗の表（common/fetch_failure.py::judge、[[CHECK-REFERENCE-DEFINITION-1]]、
+# 2026-11-03）: 全銘柄が欠け、または同じ銘柄が2取引日以上続けて欠ければ🔴、一部で1日目なら⚠️（以前は詳細に出すだけで✅）。
+# 続いた日数は前の取引日のファイルの missing から数える。フォルダが無ければ未作成（スキップ）
 _INTRADAY_DIR = os.path.join(_REPO_ROOT, "docs", "market-monitor", "market-pulse", "data", "intraday")
 
 
@@ -1038,7 +1060,34 @@ def _check_o(data_dir: Optional[str] = None, now: Optional[datetime] = None) -> 
     n = len(doc.get("tickers") or {})
     missing = doc.get("missing") or {}
     detail = f"{date_et}: {n}本" + (f"・欠け {', '.join(f'{k}({v})' for k, v in missing.items())}" if missing else "")
-    return result(f"✅ {detail}", True, detail)
+    if not missing:
+        return result(f"✅ {detail}", True, detail)
+    days = {k: _intraday_missing_days(data_dir, date_et, k) for k in missing}
+    sev, _row = _ff.judge(n + len(missing), days)
+    cont = [k for k in sorted(days) if days[k] >= _ff.CONTINUED_DAYS]
+    if cont:
+        detail += f"（{_ff.CONTINUED_DAYS}取引日以上: {', '.join(f'{k}({days[k]}日)' for k in cont)}）"
+    r = result(f"{_ff.ICON[sev]} {detail}", False, detail)
+    r["critical"] = sev == 2
+    return r
+
+
+def _intraday_missing_days(data_dir: str, date_et, ticker: str, max_back: int = 30) -> int:
+    """date_et を含めて、ticker が missing に続けて入っている取引日の数（前の取引日のファイルが無ければそこで止める）。"""
+    from common.market_data.calendar_universe import nyse_trading_days
+    d0 = date.fromisoformat(str(date_et))
+    days = [date.fromisoformat(str(x)[:10]) for x in nyse_trading_days(d0 - timedelta(days=max_back * 2), d0)]
+    n = 0
+    for d in sorted((x for x in days if x <= d0), reverse=True)[:max_back]:
+        try:
+            with open(os.path.join(data_dir, f"{d.isoformat()}.json"), encoding="utf-8") as f:
+                miss = json.load(f).get("missing") or {}
+        except (OSError, ValueError):
+            break
+        if ticker not in miss:
+            break
+        n += 1
+    return max(1, n)
 
 
 def check_o_intraday() -> tuple[str, bool, str]:
@@ -1157,7 +1206,8 @@ def main() -> int:
         # J・Kは切らない（どのワークフロー・銘柄かが通知から読めるように。[[SYSHEALTH-CRONRUNS-GUARD-CANCELLED-1]]）
         "J": {"ok": ok_j, "short": det_j},
         "K": {"ok": ok_k, "short": det_k},
-        "L": {"ok": ok_l, "short": det_l[:20]},
+        # Lも切らない（件数と先頭の系列名を全部の形で。以前は20文字で切って「BAMLH0A0H」になっていた）
+        "L": {"ok": ok_l, "short": det_l},
         # Mも切らない（どの銘柄・何日かが通知から読めるように）
         "M": {"ok": ok_m, "short": det_m},
         # N（見出しの積み足しの鮮度、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①）も切らない（最新の取得の時刻が読めるように）

@@ -108,11 +108,11 @@ def test_federal_business_day_functions_not_used_for_market_dates():
 
 
 def test_no_open_without_encoding_ruff_plw1514():
-    """文字コードを指定しない open（ruff PLW1514、preview の規則）。ruff は venv に入れる（pip install ruff）"""
+    """文字コードを指定しない open（ruff PLW1514、preview の規則）。ruff は venv に入れる（pyproject.toml の開発用の依存 dev: ruff==0.17.3）"""
     r = subprocess.run([sys.executable, "-m", "ruff", "check", "--select", "PLW1514", "--preview", "--no-cache",
                         "--output-format", "concise", "."], cwd=REPO, capture_output=True, text=True, encoding="utf-8")
     if "No module named ruff" in (r.stderr or ""):
-        pytest.fail("ruff が無い（venv/Scripts/python.exe -m pip install ruff）。このテストがゲートの PLW1514 の検査")
+        pytest.fail("ruff が無い（venv/Scripts/python.exe -m pip install ruff==0.17.3。pyproject.toml の開発用の依存）。このテストがゲートの PLW1514 の検査")
     assert r.returncode == 0, "文字コードを指定しない open がある（encoding=\"utf-8\" を付ける）:\n" + r.stdout[-3000:]
 
 

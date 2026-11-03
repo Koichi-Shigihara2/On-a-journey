@@ -1149,7 +1149,7 @@ def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
     if _PREPARED and not force:
         return _PREPARED["files"], _PREPARED["py_files"], _PREPARED["texts"]
     for g in (ALL_PY, MODULES, CALLERS, DEF_INDEX, CALL_FUNC, TOP_DIRS, _MENTIONS, _JS_CONSTS, WORKFLOW_COPIES, _CODE_LINES, _CODE_TEXT,
-              _BLOBS, _SUMMARY, _LS_FILES, _RULE_SITES):   # 作り直すときに積み増さない
+              _BLOBS, _SUMMARY, _LS_FILES, _RULE_SITES, _CODE_KEYS_CACHE, _IMPORTERS):   # 作り直すときに積み増さない
         g.clear()
     files = code_files()
     TOP_DIRS.update(f.split("/")[0] for f in git_ls_files() if "/" in f)
@@ -2226,25 +2226,156 @@ def code_read_names(texts: Dict[str, str]) -> Set[str]:
     return read_names
 
 
+# ---------------------------------------------------------------- 書き手のコードが書くキー（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）
+# 一覧のキーは「書き手のコードが書くキー」を正にする。データ（抜き取った JSON）だけで決めると、
+#  - データに今無いだけのキー（TAIL の prediction_history.json の predicted・actual・accuracy。照合できる予測が0件の間）が一覧から消え、
+#  - 書くのをやめたキーが履歴のスナップショット・古いエントリに残る間、「誰も読まないキー」に数え続ける（TANUKI の 9キー、FINDINGS 2026-10-21）。
+# 書き手のコード: 出力の書き手の .py と、それを import する呼び出し元（1段）と、それらが import するリポジトリの .py（たどれる限り）。
+#  - 書くキー（code_keys）: dict の文字列のキー・x["k"] = …・dict(k=…)・.setdefault("k", …)・dataclass の欄（asdict で書く）・
+#    文字列の中の JSON の型の "k":（AI への指示。docstring は除く）
+#  - コードに出てくる名前（code_names）: 文字列の定数の全部（列の名前のリスト等も含む）
+# データのキーのうち code_names に無いものは「今の書き手のコードに無いキー」（stale_keys）として別の欄に出し、誰も読まないキーに数えない。
+# 画面のキーの書き手の有無は、データのキーと code_keys の和で決める（データに今無くても、書き手のコードが書けば「書き手あり」）。
+_CODE_KEYS_CACHE: Dict[str, Tuple[Set[str], Set[str]]] = {}
+KEY_NAME_RE = re.compile(r"[a-z_]\w*$")
+JSON_TEMPLATE_KEY_RE = re.compile(r"[\"']([A-Za-z_]\w*)[\"']\s*:")
+
+
+def _file_code_keys(rel: str) -> Tuple[Set[str], Set[str]]:
+    if rel in _CODE_KEYS_CACHE:
+        return _CODE_KEYS_CACHE[rel]
+    keys: Set[str] = set()
+    names: Set[str] = set()
+    mod = load_module(rel) if rel.endswith(".py") else None
+    if mod is not None:
+        docstrings = {id(b[0].value) for b in [getattr(x, "body", None) for x in ast.walk(mod.tree)
+                                                if isinstance(x, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))]
+                      if b and isinstance(b[0], ast.Expr) and isinstance(b[0].value, ast.Constant)}
+        for n in ast.walk(mod.tree):
+            if isinstance(n, ast.Constant) and isinstance(n.value, str):
+                names.add(n.value)
+                if id(n) not in docstrings and ":" in n.value:
+                    # 文字列の中の JSON の型（AI への指示の "business_model": "..." 等。AI の出力をそのまま書くキー）
+                    keys |= set(JSON_TEMPLATE_KEY_RE.findall(n.value))
+            if isinstance(n, ast.ClassDef) and any("dataclass" in ast.unparse(d) for d in n.decorator_list):
+                # dataclass の欄（asdict で書くキー）
+                keys |= {b.target.id for b in n.body if isinstance(b, ast.AnnAssign) and isinstance(b.target, ast.Name)}
+            if isinstance(n, ast.Dict):
+                keys |= {k.value for k in n.keys if isinstance(k, ast.Constant) and isinstance(k.value, str)}
+            elif isinstance(n, ast.Subscript) and isinstance(n.ctx, ast.Store):
+                s = n.slice
+                if isinstance(s, ast.Constant) and isinstance(s.value, str):
+                    keys.add(s.value)
+            elif isinstance(n, ast.Call):
+                f = n.func
+                if isinstance(f, ast.Name) and f.id == "dict":
+                    keys |= {kw.arg for kw in n.keywords if kw.arg}
+                elif isinstance(f, ast.Attribute) and f.attr == "setdefault" and n.args and \
+                        isinstance(n.args[0], ast.Constant) and isinstance(n.args[0].value, str):
+                    keys.add(n.args[0].value)
+        names |= keys
+    _CODE_KEYS_CACHE[rel] = (keys, names)
+    return keys, names
+
+
+_IMPORTERS: Dict[str, Set[str]] = {}
+
+
+def _module_deps(mod: "Module") -> List[str]:
+    out = []
+    for dep in list(mod.mod_imports.values()) + [m for m, _ in mod.from_imports.values()]:
+        if not dep:
+            continue
+        for cand in ((dep,) if dep.endswith(".py") else (f"{dep}.py", f"{dep}/__init__.py")):
+            if cand in ALL_PY:
+                out.append(cand)
+    return out
+
+
+def importers_of_file(rel: str) -> Set[str]:
+    """rel を import するリポジトリの .py（テストを除く）。"""
+    if not _IMPORTERS:
+        for f in sorted(ALL_PY):
+            if is_test(f):
+                continue
+            mod = load_module(f)
+            if mod is None:
+                continue
+            for d in _module_deps(mod):
+                _IMPORTERS.setdefault(d, set()).add(f)
+        _IMPORTERS.setdefault("", set())
+    return _IMPORTERS.get(rel, set())
+
+
+def writer_code_keys(files: Iterable[str]) -> Tuple[Set[str], Set[str]]:
+    """(書き手のコードが書くキー, 書き手のコードに出てくる名前)。files と、それを import するファイル（書き手の関数に渡す dict を
+    組み立てる呼び出し元。update.py が normalized["basis_mix"] を足してから normalizer の関数で書く等、1段）と、それらが import する
+    リポジトリの .py（たどれる限り）。"""
+    prepare()   # import の解決にリポジトリの .py の一覧が要る（同じプロセスでは1回だけ）
+    keys: Set[str] = set()
+    names: Set[str] = set()
+    seen: Set[str] = set()
+    todo = [f for f in files if f.endswith(".py")]
+    todo += sorted({imp for f in todo for imp in importers_of_file(f)})
+    while todo:
+        rel = todo.pop()
+        if rel in seen:
+            continue
+        seen.add(rel)
+        k, nm = _file_code_keys(rel)
+        keys |= k
+        names |= nm
+        mod = load_module(rel)
+        if mod is None:
+            continue
+        todo += [d for d in _module_deps(mod) if d not in seen]
+    return keys, names
+
+
+def output_writer_files(o: dict) -> List[str]:
+    return sorted({w["file"] for w in o.get("writers", []) + o.get("writers_outside_layer", []) if isinstance(w, dict) and w.get("file")})
+
+
+def split_by_writer_code(o: dict, data_keys: Iterable[str]) -> Tuple[Set[str], Set[str], Set[str]]:
+    """出力 o のデータのキーを (今の書き手のコードにあるキー, 無いキー) に分け、書き手のコードが書くキーを足して返す。
+    書き手の .py が無い出力（ワークフローの cp だけ等）は、コードで決められないのでデータのキーを全部「ある」とする。"""
+    files = [f for f in output_writer_files(o) if f.endswith(".py")]
+    data_keys = set(data_keys)
+    if not files:
+        return data_keys, set(), set()
+    ck, names = writer_code_keys(files)
+    return {k for k in data_keys if k in names}, {k for k in data_keys if k not in names}, {k for k in ck if KEY_NAME_RE.match(k)}
+
+
 def data_unread_keys(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[str]) -> dict:
     """画面の無い層の、書き手があるのに誰も読まないキー（data_keys）。この段階の JSON の出力の全ファイルのキー（入れ子8段まで）のうち、
     テストを除くコードに読みの形で出てこないもの。画面の段階の screen_items と同じ読みの形で判定する（Python の for k in d・d.items() で回して読むものは拾えない）。"""
     written: Dict[str, Set[str]] = defaultdict(set)
+    stale: Dict[str, Set[str]] = defaultdict(set)
     for k, o in outputs.items():
         if o["kind"] != "ファイル" or not k.endswith(data_output_ext()) or k.startswith(("${", "/")):
             continue
         rx = template_regex(k)
+        dkeys: Set[str] = set()
         for f in sorted(f for f in tracked if rx.match(f)):
             d = data_summary(f)
-            if d is None:
-                continue
-            for key in d["keys"]:
-                written[key].add(k)
+            if d is not None:
+                dkeys |= set(d["keys"])
+        now_keys, old_keys, _code_only = split_by_writer_code(o, dkeys)
+        for key in now_keys:
+            written[key].add(k)
+        for key in old_keys:
+            stale[key].add(k)
     read_names = code_read_names(texts)
     unread = [{"key": key, "sources": sorted(written[key]), "note": UNREAD_KEY_NOTES.get(key, "")} for key in sorted(written)
               # 銘柄名・日付などの値のキー（小文字を含まないもの）は除く
               if len(key) >= 3 and re.match(r"[a-z_]\w*$", key) and key not in read_names]
-    return {"unread_keys": unread, "written_key_count": len(written)}
+    return {"unread_keys": unread, "written_key_count": len(written), "stale_keys": _stale_rows(stale)}
+
+
+def _stale_rows(stale: Dict[str, Set[str]]) -> List[dict]:
+    """今の書き手のコードに無いのに、データ（古いファイル・古いエントリ）に残るキー（値のキー〈小文字を含まないもの〉は除く）。"""
+    return [{"key": key, "sources": sorted(stale[key])} for key in sorted(stale) if len(key) >= 3 and KEY_NAME_RE.match(key)]
 
 
 def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[str], writer_files: Set[str]) -> dict:
@@ -2252,21 +2383,30 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
     pages = sorted(f for f in tracked if (f.startswith(tuple(d + "/" for d in SCREEN_PAGES)) or f in SCREEN_PAGES)
                    and f.endswith((".html", ".js")) and "/data/" not in f)
     # 書き手のある JSON のキー（この段階の docs/ の出力。各型から3ファイルまで）
-    written: Dict[str, Set[str]] = defaultdict(set)
+    written: Dict[str, Set[str]] = defaultdict(set)          # 今の書き手のコードにある、データのキー（誰も読まないキーはこれで数える）
+    code_written: Dict[str, Set[str]] = defaultdict(set)     # 書き手のコードが書くキー（データに今無くても。画面のキーの書き手の有無に使う）
+    stale: Dict[str, Set[str]] = defaultdict(set)
     written_parents: Dict[str, Set[str]] = defaultdict(set)
     for k, o in outputs.items():
         if o["kind"] != "ファイル" or not k.endswith(data_output_ext()) or not k.startswith("docs/"):
             continue
         rx = template_regex(k)
         matched = sorted(f for f in tracked if rx.match(f))
+        dkeys: Set[str] = set()
         for f in matched:
             d = data_summary(f)
             if d is None:
                 continue
-            for key in d["keys"]:
-                written[key].add(k)
+            dkeys |= set(d["keys"])
             for key, ps in d["parents"].items():
                 written_parents[key].update(ps)
+        now_keys, old_keys, code_only = split_by_writer_code(o, dkeys)
+        for key in now_keys:
+            written[key].add(k)
+        for key in old_keys:
+            stale[key].add(k)
+        for key in code_only:
+            code_written[key].add(k)
     docs_json = [f for f in tracked if f.startswith("docs/") and f.endswith(".json")]
     items = []
     for pg in pages:
@@ -2299,9 +2439,9 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
         for i, line in page_code_lines(pg, text):
             names = [m.group(1) for m in PROP_RE.finditer(line)] + [m.group(1) for m in SUBS_RE.finditer(line)]
             for nm in names:
-                if nm not in written and nm not in fetched and not SNAKE_RE.match(nm):
+                if nm not in written and nm not in code_written and nm not in fetched and not SNAKE_RE.match(nm):
                     continue
-                if nm in written:
+                if nm in written or nm in code_written:
                     status = "この段階の書き手あり"
                 elif nm in fetched:
                     status = "ほかの書き手あり"
@@ -2309,8 +2449,10 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
                     status = "画面の中で作る値"
                 else:
                     status = "書き手なし"
-                it = seen.setdefault(nm, {"page": pg, "key": nm, "has_writer": nm in written or nm in fetched, "status": status,
-                                          "sources": sorted(written.get(nm, [])) or sorted(fetched.get(nm, []))[:3],
+                it = seen.setdefault(nm, {"page": pg, "key": nm, "has_writer": nm in written or nm in code_written or nm in fetched,
+                                          "status": status,
+                                          "sources": sorted(written.get(nm, set()) | code_written.get(nm, set()))
+                                          or sorted(fetched.get(nm, []))[:3],
                                           "label": "", "lines": []})
                 it["lines"].append(i)
                 if not it["label"]:
@@ -2347,7 +2489,7 @@ def screen_items(outputs: Dict[str, dict], texts: Dict[str, str], tracked: List[
             continue
         unread.append({"key": key, "sources": sorted(written[key]), "parents": sorted(p for p in parents.get(key, set()) if p),
                        "note": UNREAD_KEY_NOTES.get(key, "")})
-    return {"pages": pages, "items": items, "unread_keys": unread, "written_key_count": len(written)}
+    return {"pages": pages, "items": items, "unread_keys": unread, "written_key_count": len(written), "stale_keys": _stale_rows(stale)}
 
 
 # ---------------------------------------------------------------- CHECK（report_consistency_check.py の CHECK-INV-1〜4 が使う）
@@ -2417,6 +2559,24 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
     return ng, warn
 
 
+def compare_saved_inventory(now: dict, now_json: Optional[str] = None, now_md: Optional[str] = None
+                            ) -> Tuple[List[str], List[str], bool]:
+    """今の段階の保存した一覧と、今の一覧 now を比べる（--check と CHECK-INV の唯一の比べ方）。(NG, WARN, 細部の違いがあるか)。
+    保存した一覧が無い・読めなければ NG。細部の違い（json・md の全文が違う）は now_json・now_md を渡したときだけ見る。"""
+    tag = NAME_SHORT
+    try:
+        with open(os.path.join(REPO, OUT_JSON), encoding="utf-8") as f:
+            saved_text = f.read()
+        saved = json.loads(saved_text)
+    except (OSError, ValueError) as e:
+        return [f"  [NG-INV-1 {tag} 一覧が読めない] {OUT_JSON}: {e}"], [], True
+    ng, warn = check_inventory(saved, now, tag=tag)
+    differs = False
+    if now_json is not None:
+        differs = saved_text != now_json or (now_md is not None and read_text(OUT_MD) != now_md)
+    return ng, warn, differs
+
+
 _RUN_CHECK_CACHE: Dict[str, Tuple[List[str], List[str]]] = {}
 
 
@@ -2436,13 +2596,8 @@ def run_check(layers: Tuple[str, ...] = CHECK_LAYERS) -> Tuple[List[str], List[s
 
 def _run_check(layer: str) -> Tuple[List[str], List[str]]:
     set_layer(layer)
-    tag = NAME_SHORT
-    try:
-        with open(os.path.join(REPO, OUT_JSON), encoding="utf-8") as f:
-            saved = json.load(f)
-    except (OSError, ValueError) as e:
-        return [f"  [NG-INV-1 {tag} 一覧が読めない] {OUT_JSON}: {e}"], []
-    return check_inventory(saved, build(), tag=tag)
+    ng, warn, _ = compare_saved_inventory(build())
+    return ng, warn
 
 
 # ---------------------------------------------------------------- Markdown（Koichi さんが読む表）

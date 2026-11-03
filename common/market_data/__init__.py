@@ -12,8 +12,9 @@ common/sec_data/ と同型構成（fetcher.py がネットワーク取得・保�
         analyst_history/{SYMBOL}.json  イベント履歴層（upgrades_downgrades由来）
         （{SYMBOL}/market_data_violations_log.json は読み手0件のため2026-10-22に削除）
 
-現時点の消費者はまだ存在しないグリーンフィールドモジュールであり、
-既存システムへの依存・影響はない。
+読み手（本番のコード・画面）は出力の一覧 docs/architecture/output_inventory/market_data_layer.md を正とする。
+daily/・attributes/ は TANUKI VALUATION・HypeCore・STONKS SILO・EPS・Market Pulse・Score Verifier・System Health 等が読み、
+投資判断に効く（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03にグリーンフィールド実装のころの古い記述を直した）。
 
 使用例:
     from common.market_data import reader

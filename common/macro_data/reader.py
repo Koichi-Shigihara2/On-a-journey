@@ -5,8 +5,8 @@ FRED統合層の読み取りAPI（新DB構築プロジェクト フェーズ1、
 [[MACRODATA-LAYER-CONSTRUCTION-1]]）。fetcher.pyが書き込む
 series/{SERIES_ID}.jsonを読み取る唯一のモジュールとして新設する。
 
-現時点でこのモジュールを参照する本番消費者は存在しない（グリーンフィールド
-実装。`05_main.py`・`collect_and_send.py`側の切替は次段階で行う）。データが
+このモジュールを使う本番のコード（`05_main.py`・`collect_and_send.py`）は出力の一覧
+docs/architecture/output_inventory/macro_data_layer.md の読み手を正とする（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03にグリーンフィールド実装のころの古い記述を直した）。データが
 一切存在しない系列に対する呼び出しは、例外ではなくNone/空リストを返す
 （common/market_data/reader.pyと同じエラー耐性方針）。
 

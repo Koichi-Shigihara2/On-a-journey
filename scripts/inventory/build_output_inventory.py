@@ -26,7 +26,11 @@
   python scripts/inventory/build_output_inventory.py --layer market_data  # 市場データ層: market_data_layer.json と market_data_layer.md を書く
   python scripts/inventory/build_output_inventory.py --layer tail  # TANUKI TAIL: tail_layer.json と tail_layer.md を書く
   python scripts/inventory/build_output_inventory.py --layer portfolio  # Portfolio: portfolio_layer.json と portfolio_layer.md を書く
-  python scripts/inventory/build_output_inventory.py --check   # 書かずに、今のファイルと同じかだけを見る（違えば終了コード1）
+  python scripts/inventory/build_output_inventory.py --check   # 書かずに、保存した一覧と比べる（NG があれば終了コード1）
+
+--check と report_consistency_check.py の CHECK-INV は同じ比べ方（inventory_analysis.check_inventory）を呼ぶ
+（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03。以前の --check は json・md の全文を比べ、行番号・件数の違いでも「古い」と言うのに、
+CHECK-INV は NG 0 で通っていた）。全文の違い（行番号等の細部）は --check の出力に「細部の違い」として出すだけで、終了コードに使わない
 
 ファイルの分け方（R-A の終わりの見直し3、2026-10-23）: 段階の設定は inventory_layers.py、解析（AST・grep・パスの解決）と
 一覧の組み立て・CHECK-INV は inventory_analysis.py、md の書き出しは inventory_render.py。このファイルは入口（コマンドと、
@@ -46,7 +50,7 @@ from inventory_render import md_escape, render_md  # noqa: F401
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--check", action="store_true", help="書かずに、今のファイルと同じかだけを見る")
+    ap.add_argument("--check", action="store_true", help="書かずに、保存した一覧と比べる（CHECK-INV と同じ比べ方）")
     ap.add_argument("--layer", choices=sorted(A.LAYERS), default="sec", help="段階（sec: SECデータ層、tanuki: TANUKI VALUATION・TANUKI Score、hypecore: HypeCore、eps: adjusted_eps_analyzer、stonks: STONKS SILO、market_data: 市場データ層、tail: TANUKI TAIL、portfolio: Portfolio、macro_data: マクロデータ層、macro_pulse: MACRO PULSE、market_pulse: Market Pulse）")
     args = ap.parse_args()
     A.set_layer(args.layer)
@@ -55,9 +59,11 @@ def main() -> int:
     js = json.dumps(inv, ensure_ascii=False, indent=1) + "\n"
     md = render_md(inv)
     if args.check:
-        same = A.read_text(A.OUT_JSON) == js and A.read_text(A.OUT_MD) == md
-        print("一覧は最新" if same else "一覧が古い（スクリプトを実行して作り直す）")
-        return 0 if same else 1
+        ng, warn, detail_differs = A.compare_saved_inventory(inv, js, md)
+        for line in ng + warn:
+            print(line)
+        print(f"NG {len(ng)}・WARN {len(warn)}" + ("（細部の違いあり: 行番号・件数等。作り直すと変わる。判定には使わない）" if detail_differs else ""))
+        return 1 if ng else 0
     os.makedirs(os.path.join(A.REPO, A.OUT_DIR), exist_ok=True)
     with open(os.path.join(A.REPO, A.OUT_JSON), "w", encoding="utf-8", newline="\n") as f:
         f.write(js)

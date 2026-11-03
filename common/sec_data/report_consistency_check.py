@@ -3680,6 +3680,19 @@ def run_checks(args=None) -> tuple[int, int]:
         flagged.append(("[GLOBAL]", [], mc_msgs))
         total_warn += len(mc_msgs)
 
+    # CHECK-68: 文書・説明文・ワークフローの名前が、リポジトリの今の状態・書き手のコードと食い違っていないか（NG化しない、
+    # [[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）。文書・説明文のパスの存在・説明文の「消費者なし」と出力の一覧の読み手・
+    # ワークフローの表示名と動かすスクリプト（config/workflow_dependencies.jsonの1か所）。判定は common/reference_check.py の1か所。
+    # gitにあるファイルだけを見る（データの中身・時刻に依らない）
+    from common import reference_check as _ref_check
+    try:
+        ref_msgs = _ref_check.check()
+    except Exception as e:  # 確かめられないこと自体をWARNにする（黙って通さない）
+        ref_msgs = [f"  [WARN-68 確かめられない] {type(e).__name__}: {e}"]
+    if ref_msgs:
+        flagged.append(("[GLOBAL]", [], ref_msgs))
+        total_warn += len(ref_msgs)
+
     # CHECK-60: SECの一次データの鮮度（_freshness.json、NG化しない）。全銘柄の取得の結果を
     # 見るため--tickerフィルタに関わらず常時実行する。銘柄単位の台帳照合を行う。
     fresh_msgs = []

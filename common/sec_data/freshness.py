@@ -31,7 +31,7 @@ STATUSES = (OK_NO_NEW, REFRESHED, SEC_LAG, FETCH_FAILED, FAILED)
 SEC_LAG_WARN_DAYS = 14                 # CHECK-60: SEC_LAGが提出日からこの日数を超えたらWARN
 SEC_LAG_CRITICAL_DAYS = 30             # [M]: SEC_LAGが提出日からこの日数を超えた銘柄があればCRITICAL
 FRESHNESS_MAX_AGE_DAYS = 8             # [M]: generated_at（全銘柄の実行の時刻）がこの日数より古ければCRITICAL
-FETCH_FAILED_CRITICAL_RATIO = 0.10     # [M]: FETCH_FAILEDが全銘柄のこの割合以上ならCRITICAL
+# [M]のFETCH_FAILEDの重大度は取得の失敗の表（common/fetch_failure.py::judge）で決める（2026-11-03、以前は全銘柄の10%以上でCRITICAL）
 FAILED_EXIT_RATIO = 0.10               # update.py: FAILEDが対象のこの割合を超えたら終了コード1（commitしない）。
                                        # [M]: FAILEDがこの割合を超えたらCRITICAL、以下でも1件あれば⚠️
 
@@ -126,6 +126,17 @@ def write(entries: dict[str, dict], full_run: bool, path: Optional[str] = None) 
     """
     p = path or default_path()
     now = utc_now_iso()
+    # FETCH_FAILEDの行にだけfailed_since（この銘柄の取得の失敗が続いている最初の実行の時刻）を書く。前回もFETCH_FAILEDなら
+    # 前回の値を引き継ぐ（common/fetch_failure.py::carry_failed_since、[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）
+    from common.fetch_failure import carry_failed_since
+    prev_rows = (load(p) or {}).get("tickers") or {}
+    entries = {t: dict(e) for t, e in entries.items()}
+    for t, e in entries.items():
+        e.pop("failed_since", None)
+        pe = prev_rows.get(t)
+        since = carry_failed_since(pe, bool(pe) and pe.get("status") == FETCH_FAILED, e.get("status") == FETCH_FAILED, now)
+        if since:
+            e["failed_since"] = since
     if full_run:
         doc = {"generated_at": now, "tickers": dict(sorted(entries.items()))}
     else:

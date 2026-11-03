@@ -620,3 +620,59 @@ def test_key_cache_file_roundtrip_drops_stale_blobs(tmp_path, monkeypatch):
     _fresh_key_cache(monkeypatch, tmp_path)
     monkeypatch.setattr(inv, "_summarize", lambda rel: (_ for _ in ()).throw(AssertionError("読み直した")))
     assert inv.data_summary("d.json")["keys"] == ["a"]
+
+
+# ── [[CHECK-REFERENCE-DEFINITION-1]]（2026-11-03）: 一覧のキーは書き手のコードが書くキーを正にする・--check と CHECK-INV は1つの比べ方 ──
+def test_writer_code_keys_include_keys_absent_from_data():
+    """TAIL の prediction_history.json の predicted・actual・accuracy は、照合できる予測が0件の間データに無いが、書き手のコードが書く"""
+    inv.set_layer("tail")
+    keys, names = inv.writer_code_keys(["src/tail/prediction_tracker.py"])
+    assert {"predicted", "actual", "accuracy"} <= keys
+
+
+def test_split_by_writer_code_separates_keys_left_in_old_files():
+    """データにあっても書き手のコードに無いキー（書くのをやめて履歴のスナップショットに残るだけ）は「今の書き手のコードに無いキー」に分け、
+    誰も読まないキーに数えない（TANUKI の upside_pct・validated_at 等、FINDINGS 2026-10-21）"""
+    inv.set_layer("tanuki")
+    o = {"writers": [{"file": "src/value/tanuki_valuation/pipeline.py", "func": "main", "line": 1}], "writers_outside_layer": []}
+    now_keys, old_keys, code_only = inv.split_by_writer_code(o, {"moat_score", "upside_pct", "validated_at"})
+    assert now_keys == {"moat_score"} and old_keys == {"upside_pct", "validated_at"}
+    assert "moat_score" in code_only
+
+
+def test_split_by_writer_code_without_python_writer_keeps_data_keys():
+    o = {"writers": [{"file": ".github/workflows/x.yml", "func": "cp", "line": 1}], "writers_outside_layer": []}
+    assert inv.split_by_writer_code(o, {"a_key"}) == ({"a_key"}, set(), set())
+
+
+def test_dataclass_fields_and_json_template_keys_are_writer_keys():
+    inv.set_layer("stonks")
+    keys, _ = inv.writer_code_keys(["src/value/stonks_silo/analyzer.py"])
+    assert "gross_margin" in keys                       # dataclass の欄（asdict で書く）
+    inv.set_layer("tail")
+    keys, _ = inv.writer_code_keys(["src/tail/quarterly_review_generator.py"])
+    assert "business_model" in keys                     # AI への指示の JSON の型
+
+
+def test_check_and_check_inv_use_one_comparison():
+    """build_output_inventory.py --check も CHECK-INV（run_check）も compare_saved_inventory を呼ぶ。--check の終了コードは NG だけで決める"""
+    import inspect
+    import build_output_inventory as boi
+    src = inspect.getsource(boi.main)
+    assert "compare_saved_inventory(" in src and "return 1 if ng else 0" in src
+    assert "compare_saved_inventory(" in inspect.getsource(inv._run_check)
+
+
+def test_compare_saved_inventory_detail_difference_is_not_ng(tmp_path, monkeypatch):
+    import json as _json
+    inv.set_layer("sec")
+    saved = _inventory()
+    p = tmp_path / "sec_layer.json"
+    p.write_text(_json.dumps(saved, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    monkeypatch.setattr(inv, "REPO", str(tmp_path))
+    monkeypatch.setattr(inv, "OUT_JSON", "sec_layer.json")
+    monkeypatch.setattr(inv, "OUT_MD", "sec_layer.md")
+    now = copy.deepcopy(saved)
+    now["outputs"][0]["readers"][0]["line"] = 99            # 行番号だけ違う
+    ng, warn, differs = inv.compare_saved_inventory(now, _json.dumps(now, ensure_ascii=False, indent=1) + "\n")
+    assert ng == [] and differs is True

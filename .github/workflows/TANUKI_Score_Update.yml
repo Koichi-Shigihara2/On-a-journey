@@ -1,7 +1,9 @@
-name: TANUKI_Score_Update
+name: Portfolio Snapshot Update
 
 # TANUKI VALUATION Daily Updateの完了で起動する。土日は13:30 UTCに独立に動く。
-# 今の中身はPortfolioのスナップショット（src/portfolio/snapshot.py）だけ（今日の特選銘柄は2026-10-20に削除）。
+# 中身はPortfolioのスナップショット（src/portfolio/snapshot.py）だけ（今日の特選銘柄は2026-10-20に削除）。
+# 表示名は中身に合わせて2026-11-03に「TANUKI_Score_Update」から変えた（[[CHECK-REFERENCE-DEFINITION-1]]。名前と中身の対応は
+# config/workflow_dependencies.json の Portfolio_Snapshot_Update）。ファイル名は System Health [J] の監視と実行の履歴を保つため変えない
 # 起動時刻・連鎖・経緯: docs/architecture/UPDATE_SCHEDULE.md
 on:
   workflow_run:

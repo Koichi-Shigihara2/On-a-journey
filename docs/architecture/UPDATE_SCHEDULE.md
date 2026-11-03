@@ -9,7 +9,7 @@
   CHECK-58（WARN）が出る
 - `config/workflow_dependencies.json` のうち、YAMLから決まる項目（depends_on＝workflow_runの起動元、outputs＝commitするパス）も
   同じスクリプトが生成する。キーとymlは手作業の定義（ymlが.github/workflows/にあるかをCHECK-58で確認する）。
-  管理のページ（docs/value-monitor/admin.html）の一括更新が使っていた表示名（label）・accepts_tickers・input_param・
+  管理のページ（docs/value-monitor/admin.html（`0f84464da8`〈2026-10-21〉で削除））の一括更新が使っていた表示名（label）・accepts_tickers・input_param・
   一括更新の順序（bulk_update_*・new_ticker_order）は、ページの削除（2026-10-21）で読み手が無くなり消した。
   手動の起動はClaude Codeが`gh workflow run`でする（CLAUDE_CODE_START.md「管理の操作の手順」）
 - 時刻はUTCとJST（UTC+9）で書く。米国の日付はニューヨーク時間（夏時間 EDT＝UTC−4、冬時間 EST＝UTC−5）
@@ -38,7 +38,7 @@
 | `Score_Verifier.yml`<br>Score Verifier | 毎日 00:00 | 毎日 09:00 | — | あり（入力なし） | — | — | `docs/value-monitor/tanuki_valuation/data/*/score_history.json` | — |
 | `Stonks_Silo_Update.yml`<br>Stonks Silo Update | — | — | SEC_Data_Update.yml<br>Market_Data_Daily_Update.yml | tickers | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/value-monitor/stonks-silo/data/` | TANUKI_VALUATION_Update.yml |
 | `System_Health.yml`<br>System Health Check | 毎日 23:30 | 毎日（翌日） 08:30 | — | あり（入力なし） | — | — | （commitしない） | — |
-| `TANUKI_Score_Update.yml`<br>TANUKI_Score_Update | 日・土 13:30 | 日・土 22:30 | TANUKI_VALUATION_Update.yml | あり（入力なし） | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/portfolio/data/history.json` | — |
+| `TANUKI_Score_Update.yml`<br>Portfolio Snapshot Update | 日・土 13:30 | 日・土 22:30 | TANUKI_VALUATION_Update.yml | あり（入力なし） | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/portfolio/data/history.json` | — |
 | `TANUKI_TAIL_KPI_Update.yml`<br>TANUKI TAIL KPI Update | 日 23:00 | 月 08:00 | — | ticker・quarters | — | — | `docs/portfolio/tail/data/kpi/` | — |
 | `TANUKI_TAIL_Position_Write.yml`<br>TANUKI TAIL Position Write | — | — | — | action・payload | — | — | `docs/portfolio/tail/data/positions/` | — |
 | `TANUKI_TAIL_RSS_Monitor.yml`<br>TANUKI TAIL RSS Monitor | 月〜金 08:00 | 月〜金 17:00 | — | ticker | — | — | `docs/portfolio/tail/data/rss_state.json` | — |
@@ -186,7 +186,7 @@ daily/の行のうち、日足の確定前に保存したものには`_provision
 | MACRO PULSE | FREDのマクロ指標・流動性・週次の分析 | Macro Data（10:00 UTC）で取得したFREDの観測日。22:15 UTCの実行で再計算 | Macro Data Update・MACRO_PULSE_Update |
 | TANUKI VALUATION | 本質価値・分類（TANUKI SCORE） | 株価はdaily/の最新の終値（Stonks Siloの後に計算）。財務はSEC（週次）。Stonks Siloのrunway等は同じ夜の結果 | TANUKI VALUATION Daily Update |
 | ~~TANUKI SCORE（daily pick）~~ | ~~特選銘柄~~（2026-10-20に機能ごと削除〈`ad6af70b5c`〉。TANUKI_Score_Updateはポートフォリオのスナップショットだけを作る） | — | — |
-| ポートフォリオ | 評価額・資産推移 | TANUKI_Score_Updateの中で作るスナップショット。ドル円はMarket Pulseの最新エントリの値 | TANUKI_Score_Update |
+| ポートフォリオ | 評価額・資産推移 | Portfolio Snapshot Update（`TANUKI_Score_Update.yml`。表示名は2026-11-03に中身に合わせて変えた）の中で作るスナップショット。ドル円はMarket Pulseの最新エントリの値 | TANUKI_Score_Update |
 | Stonks Silo | 赤字成長株の評価 | 株価はdaily/の最新の終値（Market Data Dailyの後） | Stonks Silo Update |
 | HypeCore | 期待のフェーズ（月次） | SEC Data Updateの完了後（週次）。月曜04:00 UTCの安全網 | HypeCore Update |
 | EPS Analyzer | 調整後EPS | SEC Data Updateの完了後（週次） | Adjusted_EPS_Data_Update |

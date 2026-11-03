@@ -22,5 +22,11 @@ dependencies = [
     "plotly>=5.17.0",          # ← 追加
 ]
 
+[project.optional-dependencies]
+# 開発用（ゲートのテストが使う。tests/test_common_path_guard.py の PLW1514 の検査は ruff を venv で動かす）
+dev = [
+    "ruff==0.17.3",
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]

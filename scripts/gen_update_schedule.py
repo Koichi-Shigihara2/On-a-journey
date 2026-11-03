@@ -4,7 +4,7 @@
   1. docs/architecture/UPDATE_SCHEDULE.md の「ワークフロー一覧」節（<!-- BEGIN GENERATED --> 〜 <!-- END GENERATED --> の間）
   2. config/workflow_dependencies.json のうちYAMLから決まる項目（各ワークフローの depends_on〈workflow_runの起動元〉・
      outputs〈commitするパス〉）。キーと yml は手作業の定義（yml が .github/workflows/ にあるかだけを確認する）。
-     管理のページ（docs/value-monitor/admin.html）の一括更新が使っていた label・accepts_tickers・input_param・
+     管理のページ（docs/value-monitor/admin.html、`0f84464da8`〈2026-10-21〉で削除）の一括更新が使っていた label・accepts_tickers・input_param・
      bulk_update_order・bulk_update_phases・new_ticker_order は、ページの削除（2026-10-21）で読み手が無くなり消した
 
 使い方:
@@ -193,7 +193,8 @@ def generated_deps(wfs: List[Dict[str, Any]], deps: Dict[str, Any]) -> Dict[str,
     out = json.loads(json.dumps(deps))
     out.pop("known_issues", None)   # 古い時刻の記述（UPDATE_SCHEDULE.mdの変更履歴へ移した、2026-09-30）
     out["_generated"] = ("workflows.*のdepends_on・outputsはscripts/gen_update_schedule.pyが.github/workflows/*.ymlから生成する。"
-                         "キーとymlは手作業の定義（ワークフローを新設したら足す）。"
+                         "キーとymlは手作業の定義（ワークフローを新設したら足す）。name（表示名）・scripts（動かすスクリプト）も手作業の定義で、"
+                         "rcc CHECK-68（common/reference_check.py）が.ymlの name: と run の python … と照合する（名前と中身の対応はここの1か所）。"
                          "起動時刻・連鎖の説明はdocs/architecture/UPDATE_SCHEDULE.md")
     for k, v in (out.get("workflows") or {}).items():
         w = by_file.get(v.get("yml"))
