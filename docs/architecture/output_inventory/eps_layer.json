@@ -1068,7 +1068,7 @@
    "readers": [
     {
      "file": "src/value/tanuki_valuation/calculator/adjustments.py",
-     "line": 990,
+     "line": 992,
      "func": "_load_eps_annual",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1076,7 +1076,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/calculator/adjustments.py",
-     "line": 994,
+     "line": 996,
      "func": "_load_eps_annual",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1084,7 +1084,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/calculator/adjustments.py",
-     "line": 1091,
+     "line": 1140,
      "func": "analyze_fcf_outlier",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual",
@@ -1092,7 +1092,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 249,
+     "line": 254,
      "func": "KoichiValuationCalculator.calculate_pt",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual",
@@ -1100,7 +1100,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1030,
+     "line": 1039,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual",
@@ -1316,7 +1316,7 @@
     },
     {
      "key": "quarters",
-     "reader_files": 7
+     "reader_files": 8
     },
     {
      "key": "ticker",
@@ -1477,8 +1477,40 @@
      "type": "JS・HTML"
     },
     {
+     "file": "src/value/tanuki_valuation/calculator/adjustments.py",
+     "line": 1036,
+     "func": "_load_eps_quarterly",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/adjustments.py",
+     "line": 1040,
+     "func": "_load_eps_quarterly",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/adjustments.py",
+     "line": 1132,
+     "func": "analyze_fcf_outlier",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly",
+     "type": "Python"
+    },
+    {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 937,
+     "line": 254,
+     "func": "KoichiValuationCalculator.calculate_pt",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/core_calculator.py",
+     "line": 946,
      "func": "KoichiValuationCalculator.calculate_pt",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per",
@@ -1486,7 +1518,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 991,
+     "line": 1000,
      "func": "_calc_adjusted_per",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1494,7 +1526,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 995,
+     "line": 1004,
      "func": "_calc_adjusted_per",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1502,7 +1534,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1030,
+     "line": 1039,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per",
@@ -2381,7 +2413,7 @@
     "理論株価・判定（TANUKI VALUATION）",
     "EPSの画面"
    ],
-   "reader_count": 7,
+   "reader_count": 8,
    "reader_count_test": 11,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -2596,7 +2628,7 @@
     },
     {
      "file": "common/sec_data/q4_implied.py",
-     "line": 137,
+     "line": 135,
      "text": "def build_q4_implied_entries("
     },
     {
@@ -2645,22 +2677,22 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 878,
+     "line": 871,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1101,
+     "line": 1094,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
      "file": "common/sec_data/normalizer.py",
-     "line": 171,
+     "line": 166,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/normalizer.py",
-     "line": 434,
+     "line": 429,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -2773,7 +2805,7 @@
    "sites": [
     {
      "file": "common/sec_data/ttm_calculator.py",
-     "line": 234,
+     "line": 235,
      "text": "def calc_ttm_series("
     },
     {
@@ -3067,7 +3099,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1119,
+     "line": 1153,
      "text": "def _determine_beta("
     }
    ],
@@ -3103,7 +3135,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1103,
+     "line": 1137,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -3237,14 +3269,15 @@
    "dir": "src/value/adjusted_eps_analyzer",
    "file": "src/value/adjusted_eps_analyzer/fair_value_detector.py",
    "decision": "残す（2026-10-21）",
-   "lines": 403,
+   "lines": 440,
    "workflows": [],
    "code": [],
    "same_dir": [
     "src/value/adjusted_eps_analyzer/pipeline.py"
    ],
    "tests": [
-    "tests/test_eps_discrepancy_flag_overload.py"
+    "tests/test_eps_discrepancy_flag_overload.py",
+    "tests/test_fcf_notes_and_fv_year.py"
    ]
   },
   {
@@ -3384,9 +3417,9 @@
   "outputs": 5,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 12,
+  "python_read_sites_into_layer_resolved": 13,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 19,
+  "name_hit_sites_resolved": 20,
   "name_hit_sites_undetermined": [],
   "ratio_writer": 0.0,
   "ratio_reader": 0.0,
@@ -5356,16 +5389,6 @@
    }
   ],
   "unread_keys": [
-   {
-    "key": "fair_value_auto_detect",
-    "sources": [
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json"
-    ],
-    "parents": [
-     "special_notes"
-    ],
-    "note": "残す: テストが参照する"
-   },
    {
     "key": "finished_at",
     "sources": [

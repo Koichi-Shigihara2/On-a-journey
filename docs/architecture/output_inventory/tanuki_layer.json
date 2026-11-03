@@ -567,8 +567,8 @@
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 30617,
-   "top_keys_sampled_files": 30617,
+   "files_tracked": 30809,
+   "top_keys_sampled_files": 30809,
    "top_keys": [
     {
      "key": "alpha",
@@ -1191,7 +1191,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 293,
+     "line": 300,
      "func": "KoichiValuationCalculator.calculate_pt",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1199,7 +1199,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1030,
+     "line": 1039,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1207,7 +1207,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 483,
+     "line": 501,
      "func": "resolve_beta_config_path",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1215,7 +1215,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 489,
+     "line": 507,
      "func": "resolve_beta_config_path",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1223,7 +1223,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 503,
+     "line": 521,
      "func": "_load_beta_config",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1231,7 +1231,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 558,
+     "line": 576,
      "func": "TanukiDataFetcher.__init__",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -4503,7 +4503,7 @@
     },
     {
      "file": "common/sec_data/q4_implied.py",
-     "line": 137,
+     "line": 135,
      "text": "def build_q4_implied_entries("
     },
     {
@@ -4552,22 +4552,22 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 878,
+     "line": 871,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1101,
+     "line": 1094,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
      "file": "common/sec_data/normalizer.py",
-     "line": 171,
+     "line": 166,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/normalizer.py",
-     "line": 434,
+     "line": 429,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -4680,7 +4680,7 @@
    "sites": [
     {
      "file": "common/sec_data/ttm_calculator.py",
-     "line": 234,
+     "line": 235,
      "text": "def calc_ttm_series("
     },
     {
@@ -4974,7 +4974,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1119,
+     "line": 1153,
      "text": "def _determine_beta("
     }
    ],
@@ -5010,7 +5010,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1103,
+     "line": 1137,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -5137,7 +5137,7 @@
    "dir": "src/value/tanuki_valuation/calculator",
    "file": "src/value/tanuki_valuation/calculator/adjustments.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1552,
+   "lines": 1617,
    "workflows": [],
    "code": [
     "src/value/tanuki_valuation/core_calculator.py"
@@ -5292,7 +5292,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/core_calculator.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1039,
+   "lines": 1048,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -5310,7 +5310,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/data_fetcher.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1213,
+   "lines": 1247,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -5318,8 +5318,10 @@
     "src/value/tanuki_valuation/pipeline.py"
    ],
    "tests": [
+    "tests/test_capex_sign.py",
     "tests/test_data_fetcher_market_data_switch.py",
     "tests/test_fcf_component_lists.py",
+    "tests/test_fcf_notes_and_fv_year.py",
     "tests/test_no_direct_ticker_access.py",
     "tests/test_pipeline_logic.py",
     "tests/test_retention_and_fcf_points.py",
@@ -5559,13 +5561,13 @@
    },
    {
     "file": "src/value/tanuki_valuation/data_fetcher.py",
-    "line": 255,
+    "line": 264,
     "func": "TTMReader._load",
     "path": "<?>"
    },
    {
     "file": "src/value/tanuki_valuation/data_fetcher.py",
-    "line": 506,
+    "line": 524,
     "func": "_load_beta_config",
     "path": "<?>"
    }
@@ -11273,6 +11275,25 @@
    },
    {
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "period_label",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "label": "",
+    "lines": [
+     1754
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "phase",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -13408,7 +13429,7 @@
     "note": "残す: テストが参照する"
    }
   ],
-  "written_key_count": 431,
+  "written_key_count": 432,
   "stale_keys": [
    {
     "key": "adj_net_income",
@@ -17085,6 +17106,13 @@
       "status": "この段階の書き手あり",
       "lines": [
        1993
+      ]
+     },
+     {
+      "key": "period_label",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1754
       ]
      },
      {
