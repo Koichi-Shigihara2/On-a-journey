@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -15.1,
-  "calculation_date": "2026-11-03T06:39:17+09:00",
+  "calculation_date": "2026-11-03T08:53:35+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -214,7 +214,7 @@
       "total_transient_amount": 13300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の構造的問題ではなく外部要因による一過性の貸倒引当金繰入である。"
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の計上で、事業運営上の構造的悪化ではなく一過性の財務調整と判断される。"
       }
     },
     "action": "flagged",
@@ -355,7 +355,7 @@
     "high_growth_rate_used": 0.4033503850664405,
     "high_growth_years": 5,
     "terminal_growth_used": 0.035,
-    "moat_score": 0.3457,
+    "moat_score": 0.3449,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 5,
@@ -447,29 +447,31 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-2",
   "method_change_applied": [
-    "FCF-DEFINITION-SINGLE-SOURCE-1"
+    "FCF-DEFINITION-SINGLE-SOURCE-1",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
   ],
   "fcf_history": [
     {
       "year": 2022,
-      "fcf": -190289000,
-      "fcf_margin": -44.4
+      "fcf": -190834000,
+      "fcf_margin": -44.6
     },
     {
       "year": 2023,
-      "fcf": -134958000,
-      "fcf_margin": -20.7
+      "fcf": -136261000,
+      "fcf_margin": -20.9
     },
     {
       "year": 2024,
-      "fcf": -20563000,
-      "fcf_margin": -2.2
+      "fcf": -22768000,
+      "fcf_margin": -2.4
     },
     {
       "year": 2025,
-      "fcf": 113173000,
-      "fcf_margin": 9.1
+      "fcf": 111482000,
+      "fcf_margin": 8.9
     },
     {
       "year": 2026,

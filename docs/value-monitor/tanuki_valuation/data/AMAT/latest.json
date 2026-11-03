@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -54.6,
-  "calculation_date": "2026-11-03T06:35:32+09:00",
+  "calculation_date": "2026-11-03T08:50:53+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -105,7 +105,7 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.041,
-      "intrinsic_value_per_share": 138.77
+      "intrinsic_value_per_share": 138.95
     },
     "base": {
       "growth_rate": 0.074,
@@ -347,7 +347,7 @@
     "high_growth_rate_used": 0.07360000000000001,
     "high_growth_years": 8,
     "terminal_growth_used": 0.035,
-    "moat_score": 0.6701,
+    "moat_score": 0.6692,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 8,
@@ -438,8 +438,10 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-2",
   "method_change_applied": [
-    "FCF-DEFINITION-SINGLE-SOURCE-1"
+    "FCF-DEFINITION-SINGLE-SOURCE-1",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
   ],
   "fcf_history": [
     {
@@ -454,13 +456,13 @@
     },
     {
       "year": 2023,
-      "fcf": 7601000000,
-      "fcf_margin": 28.7
+      "fcf": 7594000000,
+      "fcf_margin": 28.6
     },
     {
       "year": 2024,
-      "fcf": 7589000000,
-      "fcf_margin": 27.9
+      "fcf": 7487000000,
+      "fcf_margin": 27.6
     },
     {
       "year": 2025,
@@ -540,7 +542,7 @@
   "phase1_growth_auto_adjusted": false,
   "recommended_g": 0.09250342135942013,
   "fcf_margin_bear_mult_applied": true,
-  "fcf_margin_note": "FCFマージン悪化(25.6%→20.1%) BEAR補正係数=0.786",
+  "fcf_margin_note": "FCFマージン悪化(25.4%→20.1%) BEAR補正係数=0.790",
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
@@ -561,8 +563,8 @@
       "RR×ROIC上限(9.3%)以内 ✅"
     ],
     "warnings": [],
-    "fcf_margin_bear_multiplier": 0.7862,
-    "fcf_margin_note": "FCFマージン悪化(25.6%→20.1%) BEAR補正係数=0.786"
+    "fcf_margin_bear_multiplier": 0.7903,
+    "fcf_margin_note": "FCFマージン悪化(25.4%→20.1%) BEAR補正係数=0.790"
   },
   "erp": 0.0006,
   "dilution_severity": "positive",

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 11.5,
-  "calculation_date": "2026-11-03T06:40:11+09:00",
+  "calculation_date": "2026-11-03T08:54:01+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -104,8 +104,8 @@
   },
   "scenario_valuations": {
     "bear": {
-      "growth_rate": 0.083,
-      "intrinsic_value_per_share": 449.49
+      "growth_rate": 0.082,
+      "intrinsic_value_per_share": 445.26
     },
     "base": {
       "growth_rate": 0.15,
@@ -350,7 +350,7 @@
     "high_growth_rate_used": 0.15,
     "high_growth_years": 8,
     "terminal_growth_used": 0.03,
-    "moat_score": 0.7578,
+    "moat_score": 0.754,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 8,
@@ -441,34 +441,36 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-2",
   "method_change_applied": [
-    "FCF-DEFINITION-SINGLE-SOURCE-1"
+    "FCF-DEFINITION-SINGLE-SOURCE-1",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-2"
   ],
   "fcf_history": [
     {
       "year": 2021,
-      "fcf": 39793000000,
-      "fcf_margin": 33.7
+      "fcf": 39116000000,
+      "fcf_margin": 33.2
     },
     {
       "year": 2022,
-      "fcf": 19894000000,
-      "fcf_margin": 17.1
+      "fcf": 19044000000,
+      "fcf_margin": 16.3
     },
     {
       "year": 2023,
-      "fcf": 44905000000,
-      "fcf_margin": 33.3
+      "fcf": 43847000000,
+      "fcf_margin": 32.5
     },
     {
       "year": 2024,
-      "fcf": 56041000000,
-      "fcf_margin": 34.1
+      "fcf": 54072000000,
+      "fcf_margin": 32.9
     },
     {
       "year": 2025,
-      "fcf": 48633000000,
-      "fcf_margin": 24.2
+      "fcf": 46109000000,
+      "fcf_margin": 22.9
     }
   ],
   "financial_health": {
@@ -534,7 +536,7 @@
   "phase1_growth_auto_adjusted": false,
   "recommended_g": 0.2058248882424581,
   "fcf_margin_bear_mult_applied": true,
-  "fcf_margin_note": "FCFマージン悪化(30.5%→24.2%) BEAR補正係数=0.793",
+  "fcf_margin_note": "FCFマージン悪化(29.4%→22.9%) BEAR補正係数=0.778",
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
@@ -556,8 +558,8 @@
       "RR×ROIC上限(21.3%)以内 ✅"
     ],
     "warnings": [],
-    "fcf_margin_bear_multiplier": 0.7926,
-    "fcf_margin_note": "FCFマージン悪化(30.5%→24.2%) BEAR補正係数=0.793"
+    "fcf_margin_bear_multiplier": 0.778,
+    "fcf_margin_note": "FCFマージン悪化(29.4%→22.9%) BEAR補正係数=0.778"
   },
   "erp": 0.0097,
   "dilution_severity": "positive",
