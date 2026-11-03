@@ -1,4 +1,19 @@
 {
   "note": "確定の行への違う値の上書きを拒んだ記録（common/market_data/fetcher.py::write_daily_rows、[[MARKETDATA-DAILY-ROW-WRITE-1]]）。直すなら理由を指定して write_daily_rows(reason=...) を呼ぶ",
-  "entries": []
+  "entries": [
+    {
+      "symbol": "KVUE",
+      "date": "2026-10-30",
+      "source": "fetch_daily_prices",
+      "fields": {
+        "volume": {
+          "old": 66595400,
+          "new": 66377525
+        }
+      },
+      "first_at": "2026-11-03T21:28:09Z",
+      "last_at": "2026-11-03T21:28:09Z",
+      "count": 1
+    }
+  ]
 }
