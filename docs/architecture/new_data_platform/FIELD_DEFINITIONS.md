@@ -239,8 +239,8 @@ AS-IS-320/321/322/325（Market Pulse ETF/指数の束ね行）は、`value`（�
 | AS-IS ID(元) | サブシステム | 表示名 | プログラム名称 | 定義 | データ取得元 | データ性質分類 |
 |---|---|---|---|---|---|---|
 | AS-IS-242 | MACRO PULSE | コンセンサス予想値 | `CONSENSUS`（`05_indicator_schedule.csv`） | 経済指標発表の市場予想値 | `05_indicator_schedule.csv`（Discordリマインダー経由で運用者が手動入力、`update_schedule()`は空文字で初期化のみ） | 手動入力データ |
-| AS-IS-249 | Discover | 銘柄区分・メモ | `tickers{}.category/memo` | 保有中/監視中/様子見の区分とメモ書き | `docs/discover/admin.html`（`saveDiscoverConfig()`） | 手動入力データ |
-| AS-IS-263 | Discover | テーママスタ（ID/ラベル/カラー） | `theme_config`（`config/theme_config.json`） | テーマ分類の定義 | `docs/discover/admin.html`（`saveThemeConfig()`） | 手動入力データ |
+| AS-IS-249 | Discover | 銘柄区分・メモ | `tickers{}.category/memo` | 保有中/監視中/様子見の区分とメモ書き | `docs/discover/admin.html`（`ec4590fd6e`〈2026-09-01〉で削除）（`saveDiscoverConfig()`） | 手動入力データ |
+| AS-IS-263 | Discover | テーママスタ（ID/ラベル/カラー） | `theme_config`（`config/theme_config.json`（`6506f5e94f`〈2026-10-23〉で削除）） | テーマ分類の定義 | `docs/discover/admin.html`（`saveThemeConfig()`） | 手動入力データ |
 | AS-IS-264 | Discover | 銘柄別テーマ割当・区分・メモ | `discover_config`（`config/discover_config.json`） | 銘柄ごとのテーマ・区分設定。**2026-10-23に削除**（保有の正はportfolio.json、休眠は`cik_lookup.csv`の`status`の`dormant`。[[HOLDINGS-SINGLE-SOURCE-1]]） | `docs/discover/admin.html`（`saveDiscoverConfig()`） | 手動入力データ |
 | AS-IS-412〜416 | TANUKI TAIL | **2026-09-23削除済み**（`satellite_monitor.py`自体を削除、以下は削除前の記録） ウォッチリストアラート記録一式 | `journal.json`（timestamp/ticker/type/reason/tags） | サテライト監視アラートの記録 | `satellite_monitor.py`が自動記録（人手介在は限定的、アラート発報の自動記録） | 手動入力データ（自動記録寄り、下記備考参照） |
 | AS-IS-425〜436 | TANUKI TAIL | KPI提案（名称/説明/出典/閾値/XBRLタグ等11フィールド） | `proposed_kpis[].*` | AI提案KPIの最終確定内容 | `docs/portfolio/tail/index.html`「KPI設定モーダル」（Grok提案を人間が確認・編集して確定） | 手動入力データ（**AI下書き＋人手承認のハイブリッド**、下記備考参照） |
@@ -264,7 +264,7 @@ AS-IS-320/321/322/325（Market Pulse ETF/指数の束ね行）は、`value`（�
 | TANUKI TAIL: ジャーナル記録（AS-IS-470〜477） | **あり** | `workflow_write.py:101-109` ticker/date/reason必須チェック |
 | TANUKI TAIL: KPI提案確定（AS-IS-425〜436） | **一部あり** | `workflow_write.py:149-152` kpisが空リストでないことのみチェック。個別フィールド（warning_threshold等の数値妥当性、xbrl_tagの形式等）の検証は確認できず |
 | TANUKI TAIL: ウォッチリストアラート（AS-IS-412〜416） | 該当なし（自動記録のため） | **2026-09-23削除済み**。`satellite_monitor.py`が条件成立時に自動生成、人手入力ではないため妥当性検証の対象外（削除前の記録） |
-| Discover: `theme_config`/`discover_config`（AS-IS-249, 263, 264） | **なし（将来リスク）** | `docs/discover/admin.html`の`saveThemeConfig()`/`saveDiscoverConfig()`は内容検証を一切行わず、そのままJSON化してGitHub API経由でコミットする（`valid`/`required`等の検証キーワードがadmin.html全体で0件）。テーマID重複・空ラベル・不正な色コード等が入力されてもエラーなく保存されてしまう |
+| Discover: `theme_config`/`discover_config`（AS-IS-249, 263, 264） | **なし（将来リスク）** | `docs/discover/admin.html`（`ec4590fd6e`〈2026-09-01〉で削除）の`saveThemeConfig()`/`saveDiscoverConfig()`は内容検証を一切行わず、そのままJSON化してGitHub API経由でコミットする（`valid`/`required`等の検証キーワードがadmin.html全体で0件）。テーマID重複・空ラベル・不正な色コード等が入力されてもエラーなく保存されてしまう |
 | MACRO PULSE: CONSENSUS（AS-IS-242） | **なし** | `05_indicator_schedule.csv`への直接編集運用のため、値の型・妥当性チェックは存在しない |
 
 **将来的なリスクとして記録**: Discoverのconfig系2ファイル（theme_config.json,
@@ -1034,18 +1034,18 @@ TAIL stage2で確立した記載方法を踏襲）。
   UTC 14:30で日付を跨がないため実害が生じにくいが、同様に
   タイムゾーン非対応である点は同一の設計リスクとして残る。
 - **影響予測（AS-IS-248）はDiscoverのメイン画面index.htmlに一切表示
-  されない**: `docs/discover/catalyst.html`・`docs/discover/
+  されない**: `docs/discover/catalyst.html`（`ec4590fd6e`〈2026-09-01〉で削除）・`docs/discover/
   news_history.html`は`impact_predictions_{ym}.json`をfetchして
-  表示するが、`docs/discover/index.html`は同ファイルを一切参照しない
+  表示するが、`docs/discover/index.html`（`ec4590fd6e`〈2026-09-01〉で削除）は同ファイルを一切参照しない
   （grep確認済み、0件）。影響予測は計算・保存されているにもかかわらず、
   Discoverの一覧画面を見るだけのユーザーには存在自体が伝わらない。
 - **config二重管理（discover_config.json/theme_config.json）**:
-  管理画面`docs/discover/admin.html`は`config/discover_config.json`・
-  `config/theme_config.json`にGitHub API経由で直接コミットする。
-  日次バッチ`collect.py`も`config/discover_config.json`を正しく参照する。
-  しかし**表示画面`docs/discover/index.html`は別パス
-  `docs/portfolio/data/discover_config.json`・
-  `docs/portfolio/data/theme_config.json`（コピー）を参照する**。
+  管理画面`docs/discover/admin.html`（`ec4590fd6e`〈2026-09-01〉で削除）は`config/discover_config.json`・
+  `config/theme_config.json`（`6506f5e94f`〈2026-10-23〉で削除）にGitHub API経由で直接コミットする。
+  日次バッチ`collect.py`も`config/discover_config.json`（`4e5fd23a0b`〈2026-10-23〉で削除）を正しく参照する。
+  しかし**表示画面`docs/discover/index.html`（`ec4590fd6e`〈2026-09-01〉で削除）は別パス
+  `docs/portfolio/data/discover_config.json`（`4e5fd23a0b`〈2026-10-23〉で削除）・
+  `docs/portfolio/data/theme_config.json`（`6506f5e94f`〈2026-10-23〉で削除）（コピー）を参照する**。
   この2ファイルの同期は新規銘柄登録手順（Step 6）の
   `shutil.copy()`一回限りの処理に依存しており、admin.html経由で
   テーマ・カテゴリを直接編集した場合はこのコピー処理を経由しないため、
@@ -1053,7 +1053,7 @@ TAIL stage2で確立した記載方法を踏襲）。
   というズレが発生しうる。
 - **テーマ連続登場判定（index.html）が文字列部分一致に依存し精度が
   低い**: `themeStreakMap`の算出ロジック
-  （`docs/discover/index.html:452-457`）は、今週のテーマ名と過去4週分の
+  （`docs/discover/index.html（`ec4590fd6e`〈2026-09-01〉で削除）:452-457`）は、今週のテーマ名と過去4週分の
   テーマ名を`hn.includes(name) || name.includes(hn)`という**単純な
   部分文字列一致**で比較する。テーマ名自体は`explore_macro_themes()`
   （AS-IS-258）が毎週Grokに自由生成させた20字以内の文字列であり、
@@ -1587,7 +1587,7 @@ Market Pulse（79件）はサブエージェント（Explore、バックグラ�
 | AS-IS-384 | Market Pulse | ad_line | `breadth_calculator.py:301-339` | `net_advances=advances-declines`の全履歴に対する累積和。**保存の都度、全履歴を最初から再計算する設計**（差分追記ではない） | AS-IS-373（本表） | 導出データ |
 | AS-IS-385 | Market Pulse | mcclellan_oscillator | `breadth_calculator.py:290-298,330-333` | `EMA19(net_advances) - EMA39(net_advances)`（`α=2/(span+1)`の自前EMA実装）。**本来のMcClellan OscillatorはNYSE全銘柄基準だが、本実装はS&P500構成銘柄のみで近似している旨がコード内コメントで明記されている** | AS-IS-373（本表） | 導出データ |
 | AS-IS-386 | Market Pulse | market_data.csv 各列 | `CSV_COLUMNS`定数＋`save_data_to_json_and_csv()` | JSON構造を`{key}_{subkey}`列にフラット化（`csv.DictWriter(extrasaction='ignore')`）。**列リストに存在しないフィールドは無条件で欠落**: NASDAQ（主要9銘柄の1つ）自体・全銘柄のvolume_ratio・tech_pulse/asset_flow/credit/take_profit_checklist/buy_checklist/fear_greed/comments_historyは一切CSV化されない。JSONとCSVで内容が完全に一致しない（下記備考） | AS-IS-302他（本表） | 導出データ |
-| AS-IS-387 | Market Pulse | extreme-fear参照: date | `docs/value-monitor/extreme-fear/index.html` | 別画面（extreme-fear）がAS-IS-372（date）とAS-IS-344（fear_greed.score、既定義）を直接fetchして参照するだけの移送的パススルー。クライアント側で`score<=20`のイベントを3日以内の連続として1件にグルーピングする表示ロジックを持つ（このグルーピング閾値はこの画面固有のハードコード値） | AS-IS-372（本表）＋AS-IS-344（既定義） | 導出データ |
+| AS-IS-387 | Market Pulse | extreme-fear参照: date | `docs/value-monitor/extreme-fear/index.html`（`72a09b52fa`〈2026-10-21〉で削除） | 別画面（extreme-fear）がAS-IS-372（date）とAS-IS-344（fear_greed.score、既定義）を直接fetchして参照するだけの移送的パススルー。クライアント側で`score<=20`のイベントを3日以内の連続として1件にグルーピングする表示ロジックを持つ（このグルーピング閾値はこの画面固有のハードコード値） | AS-IS-372（本表）＋AS-IS-344（既定義） | 導出データ |
 
 ### 分解の過程で新たに気づいた問題
 

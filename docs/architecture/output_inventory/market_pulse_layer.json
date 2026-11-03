@@ -10,12 +10,12 @@
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "save_data_to_json_and_csv",
-     "line": 1736
+     "line": 1733
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "save_data_to_json_and_csv",
-     "line": 1743
+     "line": 1740
     }
    ],
    "writers_outside_layer": [],
@@ -28,7 +28,7 @@
    "readers": [
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 27,
+     "line": 26,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -73,7 +73,7 @@
    "readers": [
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 19,
+     "line": 18,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -81,7 +81,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1055,
+     "line": 1051,
      "func": "get_market_news",
      "how": "保存済みファイル",
      "via": "AST",
@@ -260,7 +260,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 28,
+     "line": 27,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -268,7 +268,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 221,
+     "line": 220,
      "func": "compute_sentiment",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_latest_breadth",
@@ -276,7 +276,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 368,
+     "line": 367,
      "func": "_load_latest_breadth",
      "how": "保存済みファイル",
      "via": "AST",
@@ -284,7 +284,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1824,
+     "line": 1821,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_latest_breadth",
@@ -292,7 +292,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1883,
+     "line": 1880,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_latest_breadth",
@@ -339,13 +339,26 @@
     ".github/workflows/Market_Pulse_Headlines.yml",
     ".github/workflows/Market_Pulse_Update.yml"
    ],
-   "files_tracked": 0,
-   "top_keys_sampled_files": 0,
-   "top_keys": [],
+   "files_tracked": 6,
+   "top_keys_sampled_files": 6,
+   "top_keys": [
+    {
+     "key": "date_et",
+     "reader_files": 2
+    },
+    {
+     "key": "fetches",
+     "reader_files": 4
+    },
+    {
+     "key": "items",
+     "reader_files": 5
+    }
+   ],
    "readers": [
     {
      "file": "common/system_health.py",
-     "line": 984,
+     "line": 1004,
      "func": "_check_n",
      "how": "保存済みファイル",
      "via": "AST",
@@ -353,7 +366,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1007,
+     "line": 1027,
      "func": "check_n_headlines",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -361,7 +374,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1142,
+     "line": 1191,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -369,7 +382,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -449,7 +462,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_n",
@@ -516,8 +529,8 @@
    "launched_by": [
     ".github/workflows/Market_Pulse_Update.yml"
    ],
-   "files_tracked": 49,
-   "top_keys_sampled_files": 49,
+   "files_tracked": 51,
+   "top_keys_sampled_files": 51,
    "top_keys": [
     {
      "key": "date_et",
@@ -543,7 +556,7 @@
    "readers": [
     {
      "file": "common/system_health.py",
-     "line": 1031,
+     "line": 1053,
      "func": "_check_o",
      "how": "保存済みファイル",
      "via": "grep",
@@ -551,7 +564,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1034,
+     "line": 1056,
      "func": "_check_o",
      "how": "保存済みファイル",
      "via": "AST",
@@ -559,7 +572,23 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1045,
+     "line": 1065,
+     "func": "_check_o",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_intraday_missing_days",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1083,
+     "func": "_intraday_missing_days",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1094,
      "func": "check_o_intraday",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_o",
@@ -567,7 +596,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1144,
+     "line": 1193,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_o",
@@ -575,7 +604,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_o",
@@ -615,15 +644,23 @@
     },
     {
      "file": "tests/test_market_pulse_intraday_store.py",
-     "line": 251,
-     "func": "TestSystemHealthO.test_present_with_missing_is_ok_with_detail",
+     "line": 253,
+     "func": "TestSystemHealthO.test_present_with_missing_is_warning_then_critical_when_continued",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_o",
      "type": "テスト"
     },
     {
      "file": "tests/test_market_pulse_intraday_store.py",
-     "line": 255,
+     "line": 256,
+     "func": "TestSystemHealthO.test_present_with_missing_is_warning_then_critical_when_continued",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_o",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_pulse_intraday_store.py",
+     "line": 260,
      "func": "TestSystemHealthO.test_no_dir_is_skip",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_o",
@@ -631,7 +668,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::_check_o",
@@ -691,7 +728,7 @@
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "save_data_to_json_and_csv",
-     "line": 1710
+     "line": 1707
     }
    ],
    "writers_outside_layer": [],
@@ -840,7 +877,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 158,
+     "line": 161,
      "func": "check_d_actions",
      "how": "保存済みファイル",
      "via": "grep",
@@ -848,7 +885,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1130,
+     "line": 1179,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -856,7 +893,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -880,7 +917,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 26,
+     "line": 25,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -888,7 +925,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 552,
+     "line": 548,
      "func": "_load_tech_pulse_history",
      "how": "保存済みファイル",
      "via": "AST",
@@ -896,7 +933,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 581,
+     "line": 577,
      "func": "_load_prev_tech_pulse_score",
      "how": "保存済みファイル",
      "via": "AST",
@@ -904,7 +941,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 600,
+     "line": 596,
      "func": "_load_recent_entries",
      "how": "保存済みファイル",
      "via": "AST",
@@ -912,7 +949,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 668,
+     "line": 664,
      "func": "_load_div_history",
      "how": "保存済みファイル",
      "via": "AST",
@@ -920,7 +957,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1830,
+     "line": 1827,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_recent_entries",
@@ -928,7 +965,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1840,
+     "line": 1837,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_tech_pulse_history",
@@ -936,7 +973,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1843,
+     "line": 1840,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score",
@@ -944,7 +981,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1852,
+     "line": 1849,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_div_history",
@@ -952,7 +989,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1905,
+     "line": 1902,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/collect_and_send.py::_load_recent_entries",
@@ -1016,7 +1053,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1203,
+     "line": 1206,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1088,7 +1125,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1579,
+     "line": 1580,
      "func": "TestDcfReliabilityLowRounding.test_low_reliability_rounds_hold_to_watch",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1096,7 +1133,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1607,
+     "line": 1609,
      "func": "TestDcfReliabilityLowRounding.test_low_reliability_keeps_sell",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1104,7 +1141,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1677,
+     "line": 1679,
      "func": "TestDcfReliabilityPolicyB.test_compute_tanuki_score_rounds_to_watch_when_policy_b_low",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1112,7 +1149,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1696,
+     "line": 1698,
      "func": "TestDcfReliabilityPolicyB.test_compute_tanuki_score_not_rounded_when_policy_b_normal",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1120,7 +1157,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1723,
+     "line": 1725,
      "func": "TestDcfReliabilityPolicyB.test_compute_tanuki_score_keeps_sell_when_policy_b_low",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1128,7 +1165,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1742,
+     "line": 1744,
      "func": "TestDcfReliabilityPolicyB.test_policy_b_fires_when_applied_false_and_floor_not_applied",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1136,7 +1173,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1762,
+     "line": 1764,
      "func": "TestDcfReliabilityPolicyB.test_policy_a_message_not_overwritten_when_floor_already_applied",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1144,7 +1181,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 1790,
+     "line": 1792,
      "func": "TestDcfReliabilityPolicyB.test_policy_a_fires_when_fallback_applied_and_floor_also_applied",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1152,7 +1189,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 2025,
+     "line": 2028,
      "func": "TestNewTickerIntegration.test_watch_score_auto_applied_for_negative_fcf_new_ticker",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1160,7 +1197,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 4018,
+     "line": 4021,
      "func": "TestPriceMissingIsUndetermined.test_none_price_gives_undetermined_and_no_timing",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1168,7 +1205,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 4029,
+     "line": 4032,
      "func": "TestPriceMissingIsUndetermined.test_zero_price_is_also_undetermined",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1176,7 +1213,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 4036,
+     "line": 4040,
      "func": "TestPriceMissingIsUndetermined.test_undetermined_is_not_rounded_to_watch_by_policy_a",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1184,7 +1221,7 @@
     },
     {
      "file": "tests/test_pipeline_logic.py",
-     "line": 4041,
+     "line": 4045,
      "func": "TestPriceMissingIsUndetermined.test_price_present_keeps_normal_classification",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_live_fg",
@@ -1192,7 +1229,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -1303,7 +1340,7 @@
     {
      "file": "src/market/market_pulse/collect_and_send.py",
      "func": "send_email",
-     "line": 1762
+     "line": 1759
     }
    ],
    "writers_outside_layer": [],
@@ -1344,7 +1381,7 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 2312,
+     "line": 2314,
      "text": "implied_q4 = annual_val - total_q"
     },
     {
@@ -1403,12 +1440,12 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 873,
+     "line": 878,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1111,
+     "line": 1101,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -1423,7 +1460,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 345,
+     "line": 347,
      "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
     },
     {
@@ -1474,7 +1511,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3035,
+     "line": 3037,
      "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
     },
     {
@@ -1484,12 +1521,12 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1780,
+     "line": 1784,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
      "file": "common/system_health.py",
-     "line": 955,
+     "line": 975,
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
@@ -1531,7 +1568,7 @@
    "sites": [
     {
      "file": "common/sec_data/ttm_calculator.py",
-     "line": 254,
+     "line": 234,
      "text": "def calc_ttm_series("
     },
     {
@@ -1594,32 +1631,32 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 451,
+     "line": 453,
      "text": "def _detect_fiscal_end_month(self, us_gaap: dict) -> int:"
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 460,
+     "line": 462,
      "text": "def _detect_fiscal_anchor_date(self, us_gaap: dict) -> Optional[tuple]:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 93,
+     "line": 112,
      "text": "def detect_fiscal_end_month(us_gaap: dict, candidate_keys: Sequence[str]) -> int:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 274,
+     "line": 293,
      "text": "def detect_fiscal_anchor_date(us_gaap: dict, candidate_keys: Sequence[str]) -> Optional[Tuple[int, int]]:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 309,
+     "line": 328,
      "text": "def detect_fiscal_anchor_clusters("
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 349,
+     "line": 368,
      "text": "def determine_fiscal_year(end_date, fiscal_end_month: int,"
     },
     {
@@ -1716,52 +1753,52 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1026,
+     "line": 1029,
      "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1027,
+     "line": 1030,
      "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1028,
+     "line": 1031,
      "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1029,
+     "line": 1032,
      "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1432,
+     "line": 1442,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1459,
+     "line": 1469,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1464,
+     "line": 1474,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1510,
+     "line": 1520,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1815,
+     "line": 1825,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1993,
+     "line": 2003,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -1825,7 +1862,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1127,
+     "line": 1119,
      "text": "def _determine_beta("
     }
    ],
@@ -1861,7 +1898,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1111,
+     "line": 1103,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -1903,17 +1940,17 @@
    "sites": [
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 27,
+     "line": 28,
      "text": "import pandas_market_calendars as mcal"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 276,
+     "line": 286,
      "text": "def us_federal_business_days_add(start: date, n: int) -> date:"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 289,
+     "line": 299,
      "text": "def previous_us_federal_business_day(d: date) -> date:"
     }
    ],
@@ -1933,32 +1970,32 @@
    "sites": [
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 161,
+     "line": 171,
      "text": "def bar_final_at(symbol: str, day: str) -> Optional[datetime]:"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 183,
+     "line": 193,
      "text": "def is_flat_futures_bar(symbol: str, bar: Dict[str, Any]) -> bool:"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 193,
+     "line": 203,
      "text": "def is_provisional_bar(symbol: str, bar: Dict[str, Any], now: Optional[datetime] = None) -> bool:"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 204,
+     "line": 214,
      "text": "def expected_provisional_kind(symbol: str, day: str) -> Optional[str]:"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 227,
+     "line": 237,
      "text": "def record_provisional_kind(symbol: str, record: Dict[str, Any]):"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 239,
+     "line": 249,
      "text": "def provisional_kind_at(symbol: str, bar_time: datetime) -> Optional[str]:"
     }
    ],
@@ -1978,13 +2015,13 @@
    "sites": [
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 321,
-     "text": "resp = requests.get(\"https://en.wikipedia.org/wiki/List_of_S%26P_500_companies\", headers=headers, timeout=30)"
+     "line": 332,
+     "text": "resp = web_get(\"https://en.wikipedia.org/wiki/List_of_S%26P_500_companies\", \"S&P500構成銘柄 Wikipedia\", headers=headers)"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 330,
-     "text": "resp = requests.get(\"https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv\","
+     "line": 341,
+     "text": "resp = web_get(\"https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv\","
     }
    ],
    "files": [
@@ -2013,12 +2050,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1578,
+     "line": 1579,
      "text": "def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1698,
+     "line": 1699,
      "text": "def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:"
     }
    ],
@@ -2044,12 +2081,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1561,
+     "line": 1562,
      "text": "def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1574,
+     "line": 1575,
      "text": "def _step_score(key: str, val: float, trend_dir: int = 0) -> int:"
     }
    ],
@@ -2070,12 +2107,12 @@
    "sites": [
     {
      "file": "common/external_api.py",
-     "line": 31,
+     "line": 42,
      "text": "FRED_URL = \"https://api.stlouisfed.org/fred/\""
     },
     {
      "file": "common/external_api.py",
-     "line": 148,
+     "line": 178,
      "text": "_FRED_CLIENT[0] = Fred(api_key=_fred_key())"
     }
    ],
@@ -2094,7 +2131,7 @@
    "sites": [
     {
      "file": "common/external_api.py",
-     "line": 29,
+     "line": 40,
      "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
     }
    ],
@@ -2113,7 +2150,7 @@
    "sites": [
     {
      "file": "common/macro_data/fetcher.py",
-     "line": 76,
+     "line": 71,
      "text": "def _atomic_write_json(path: str, payload: Any) -> None:"
     },
     {
@@ -2138,17 +2175,17 @@
    "sites": [
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 103,
+     "line": 113,
      "text": "def nyse_holidays(start: Any, end: Any) -> List[str]:"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 109,
+     "line": 119,
      "text": "def write_nyse_holidays(path: str, now_utc: Optional[datetime] = None) -> Optional[List[str]]:"
     },
     {
      "file": "common/market_data/calendar_universe.py",
-     "line": 263,
+     "line": 273,
      "text": "def us_federal_holidays(year: int) -> set:"
     }
    ],
@@ -2182,7 +2219,7 @@
    "dir": "src/market/market_pulse",
    "file": "src/market/market_pulse/collect_and_send.py",
    "decision": "残す（2026-10-23）",
-   "lines": 1944,
+   "lines": 1941,
    "workflows": [
     ".github/workflows/Market_Pulse_Update.yml"
    ],
@@ -2382,7 +2419,7 @@
    "sites": [
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 22
+     "line": 21
     }
    ]
   },
@@ -2403,9 +2440,9 @@
   "outputs": 8,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 25,
+  "python_read_sites_into_layer_resolved": 26,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 22,
+  "name_hit_sites_resolved": 23,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
@@ -2421,7 +2458,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.041,
+  "ratio_reader": 0.039,
   "threshold": 0.1,
   "hit": false
  },
@@ -2436,6 +2473,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "データ取得不可",
@@ -2453,6 +2493,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "データ取得不可",
@@ -2470,6 +2513,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -2485,6 +2531,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -2503,6 +2552,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX短期vs中期",
@@ -2520,6 +2572,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "シグナル",
@@ -2537,6 +2592,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "今日",
@@ -2554,6 +2612,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "最新値",
@@ -2568,6 +2629,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -2583,6 +2647,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -2602,6 +2669,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -2616,6 +2686,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -2631,6 +2704,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -2645,6 +2722,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "米10年債",
@@ -2660,6 +2740,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "米10年債",
@@ -2674,6 +2757,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "セクター",
@@ -2704,6 +2790,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "米10年債",
@@ -2720,6 +2809,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "期待する終値日（実行時点で取引が終わった直近のNYSE取引日）:",
@@ -2735,6 +2827,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "S&P500の出来高÷前営業日の出来高と、前日比",
@@ -2751,6 +2846,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -2765,6 +2863,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -2779,6 +2880,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -2796,6 +2900,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -2810,6 +2917,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "最新値",
@@ -2824,6 +2935,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "米10年債",
@@ -2838,6 +2952,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "株",
@@ -2858,6 +2975,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "データ取得不可",
@@ -2874,6 +2994,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "）`:\"最新\"}",
@@ -2888,6 +3011,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -2906,6 +3032,8 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
      "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
@@ -2948,7 +3076,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
      "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "該当なし",
@@ -2963,6 +3093,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "該当なし",
@@ -2978,6 +3111,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX短期vs中期",
@@ -2993,6 +3129,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "スコア構成指標",
@@ -3008,6 +3147,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "スコア構成指標",
@@ -3023,6 +3165,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "指標",
@@ -3038,6 +3183,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -3052,6 +3200,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "日付",
@@ -3062,10 +3213,31 @@
    },
    {
     "page": "docs/market-monitor/market-pulse/index.html",
+    "key": "error",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ],
+    "label": "",
+    "lines": [
+     1159
+    ],
+    "decision": "残す（2026-10-23）"
+   },
+   {
+    "page": "docs/market-monitor/market-pulse/index.html",
     "key": "events",
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "記録なし",
@@ -3080,6 +3252,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "セクター",
@@ -3095,6 +3270,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "今日の結論",
@@ -3112,6 +3290,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "すべて最新",
@@ -3126,6 +3307,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "f+(v.failed_reasons?.[f]==='stale'?'（更新停",
@@ -3141,6 +3325,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "f+(v.failed_reasons?.[f]==='stale'?'（更新停",
@@ -3155,6 +3342,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -3175,6 +3365,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "x.title_ja)?'日本語の見出しはAI（Grok）による訳で、下の小さな",
@@ -3192,6 +3386,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -3207,6 +3404,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "記録なし",
@@ -3221,6 +3421,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -3235,6 +3438,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -3251,6 +3457,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -3265,6 +3474,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "AIの見解",
@@ -3282,6 +3494,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "段階1の区分×VIX水準",
@@ -3297,6 +3512,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -3311,6 +3529,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -3325,6 +3546,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "シグナル",
@@ -3337,9 +3561,13 @@
     "page": "docs/market-monitor/market-pulse/index.html",
     "key": "holidays",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/market-monitor/market-pulse/data/nyse_holidays.json"
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
+     "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
     "lines": [
@@ -3353,6 +3581,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -3368,6 +3599,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -3383,6 +3617,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -3407,6 +3644,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "現在: % | 90日最高値: ${c.max_90d??",
@@ -3421,6 +3661,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "同限月",
@@ -3437,6 +3680,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "取得できず",
@@ -3454,6 +3700,8 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
      "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
@@ -3471,6 +3719,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "米10年債",
@@ -3518,6 +3769,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "該当なし",
@@ -3532,6 +3786,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "不明",
@@ -3566,6 +3823,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "一部前営業日",
@@ -3583,6 +3843,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "f+(v.failed_reasons?.[f]==='stale'?'（更新停",
@@ -3597,6 +3860,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "記録なし",
@@ -3611,9 +3877,14 @@
    {
     "page": "docs/market-monitor/market-pulse/index.html",
     "key": "m7_missing",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ],
     "label": "判定: SOXはS&amp;P500との差±1.0pt、M7は±0.5ptで「け",
     "lines": [
      1043,
@@ -3627,6 +3898,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "均等加重",
@@ -3644,6 +3918,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "前日比",
@@ -3658,6 +3935,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -3673,6 +3953,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "データ取得不可",
@@ -3690,6 +3973,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -3706,6 +3992,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -3720,6 +4009,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "限月乗り換え日",
@@ -3735,6 +4027,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "記録なし",
@@ -3752,6 +4047,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -3766,6 +4064,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "セクター",
@@ -3785,6 +4086,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "市場の広がり",
@@ -3800,6 +4104,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "市場の広がり",
@@ -3815,6 +4122,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -3834,6 +4144,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "取得できず: ${escHtml(dq.unavailable.join(",
@@ -3850,6 +4163,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -3864,6 +4180,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -3878,6 +4197,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -3893,6 +4215,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "市場の広がり",
@@ -3909,6 +4234,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "市場の広がり",
@@ -3926,6 +4254,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "❌ 警戒",
@@ -3942,6 +4273,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "}時点の値）",
@@ -3957,6 +4291,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "取得できず: ${escHtml(dq.unavailable.join(",
@@ -3972,6 +4309,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "暫定（）",
@@ -3989,6 +4329,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "取得できず（取得時刻から時間以内の見出しが無い）",
@@ -4004,6 +4347,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "取得できず（取得時刻から時間以内の見出しが無い）",
@@ -4019,6 +4365,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4033,6 +4382,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "セクター",
@@ -4054,6 +4406,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4068,6 +4423,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "セクター",
@@ -4083,6 +4441,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "スコア構成指標",
@@ -4097,6 +4458,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "以降の直近20営業日）`:\"\"}",
@@ -4112,6 +4477,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "最新値",
@@ -4128,6 +4496,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4142,6 +4513,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4171,6 +4545,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -4186,6 +4563,9 @@
     "status": "この段階の書き手あり",
     "sources": [
      "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "市場の広がり",
@@ -4205,6 +4585,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "今日の結論",
@@ -4219,6 +4602,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -4250,6 +4636,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -4265,6 +4654,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -4279,6 +4671,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4293,6 +4688,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "記録なし",
@@ -4307,6 +4705,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4322,6 +4723,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -4351,6 +4755,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -4369,6 +4776,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "記録なし",
@@ -4384,6 +4794,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "傾き: 上向き",
@@ -4399,6 +4812,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "取得できず（取得時刻から時間以内の見出しが無い）",
@@ -4413,6 +4830,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "前日比",
@@ -4429,6 +4849,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4444,6 +4867,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "前日比",
@@ -4458,6 +4884,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "前日比",
@@ -4472,6 +4901,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4489,6 +4921,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "日付",
@@ -4503,6 +4938,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "最新値",
@@ -4523,6 +4962,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4537,6 +4979,8 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
      "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
@@ -4555,6 +4999,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "値",
@@ -4569,6 +5017,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4583,6 +5034,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -4597,6 +5051,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4611,6 +5068,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -4626,6 +5086,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -4644,6 +5107,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "銘柄",
@@ -4661,6 +5127,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "該当なし",
@@ -4676,6 +5145,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "該当なし",
@@ -4691,6 +5163,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "f+(v.failed_reasons?.[f]==='stale'?'（更新停",
@@ -4707,6 +5182,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "f+(v.failed_reasons?.[f]==='stale'?'（更新停",
@@ -4723,6 +5201,10 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/breadth_data.json",
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "同限月",
@@ -4737,6 +5219,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "セクター",
@@ -4753,6 +5238,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "取得できず: ${escHtml(dq.unavailable.join(",
@@ -4768,6 +5256,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -4782,6 +5273,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "VIX指数",
@@ -4810,6 +5304,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "S&P500の出来高÷前営業日の出来高と、前日比",
@@ -4824,6 +5321,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "",
@@ -4838,6 +5338,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "（計算日: —）",
@@ -4852,6 +5355,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "不明",
@@ -4869,6 +5375,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "スコア構成指標",
@@ -4884,6 +5393,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "以降の直近20営業日）`:\"\"}",
@@ -4899,6 +5411,9 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/intraday/{date_et}.json",
+     "docs/market-monitor/market-pulse/data/market_data.csv",
      "docs/market-monitor/market-pulse/data/market_data.json"
     ],
     "label": "件数不足",
@@ -4926,16 +5441,6 @@
     ],
     "parents": [],
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
-   },
-   {
-    "key": "backfilled_at",
-    "sources": [
-     "docs/market-monitor/market-pulse/data/market_data.json"
-    ],
-    "parents": [
-     "headlines"
-    ],
-    "note": "残す: 過去の行の記録（2026-10-09 に最新のエントリの見出しを取り直した印。書き手の backfill_implc.py は2026-10-23に削除し、新しい行には付かない）"
    },
    {
     "key": "base_n",
@@ -4998,26 +5503,6 @@
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
-    "key": "etf",
-    "sources": [
-     "docs/market-monitor/market-pulse/data/market_data.json"
-    ],
-    "parents": [
-     "roll_suspect"
-    ],
-    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
-   },
-   {
-    "key": "etf_change_percent",
-    "sources": [
-     "docs/market-monitor/market-pulse/data/market_data.json"
-    ],
-    "parents": [
-     "roll_suspect"
-    ],
-    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
-   },
-   {
     "key": "false",
     "sources": [
      "docs/market-monitor/market-pulse/data/market_data.json"
@@ -5026,6 +5511,16 @@
      "relevance"
     ],
     "note": "残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ"
+   },
+   {
+    "key": "first_seen",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json"
+    ],
+    "parents": [
+     "items"
+    ],
+    "note": ""
    },
    {
     "key": "hy_bond",
@@ -5096,6 +5591,16 @@
      "sector_rotation"
     ],
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
+   },
+   {
+    "key": "new_by_date",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json"
+    ],
+    "parents": [
+     "fetches"
+    ],
+    "note": ""
    },
    {
     "key": "new_highs",
@@ -5200,16 +5705,6 @@
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
-    "key": "raw_change",
-    "sources": [
-     "docs/market-monitor/market-pulse/data/market_data.json"
-    ],
-    "parents": [
-     "contract_roll"
-    ],
-    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
-   },
-   {
     "key": "raw_change_percent",
     "sources": [
      "docs/market-monitor/market-pulse/data/market_data.json"
@@ -5248,6 +5743,16 @@
      "inputs"
     ],
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
+   },
+   {
+    "key": "seen_at",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/headlines/{date_et}.json"
+    ],
+    "parents": [
+     "title_updates"
+    ],
+    "note": ""
    },
    {
     "key": "sentiment_label",
@@ -5345,16 +5850,6 @@
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    },
    {
-    "key": "threshold_pt",
-    "sources": [
-     "docs/market-monitor/market-pulse/data/market_data.json"
-    ],
-    "parents": [
-     "roll_suspect"
-    ],
-    "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
-   },
-   {
     "key": "true",
     "sources": [
      "docs/market-monitor/market-pulse/data/market_data.json"
@@ -5416,7 +5911,39 @@
     "note": "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
    }
   ],
-  "written_key_count": 399,
+  "written_key_count": 392,
+  "stale_keys": [
+   {
+    "key": "backfilled_at",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ]
+   },
+   {
+    "key": "etf",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ]
+   },
+   {
+    "key": "etf_change_percent",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ]
+   },
+   {
+    "key": "raw_change",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ]
+   },
+   {
+    "key": "threshold_pt",
+    "sources": [
+     "docs/market-monitor/market-pulse/data/market_data.json"
+    ]
+   }
+  ],
   "sections": [
    {
     "page": "docs/market-monitor/market-pulse/index.html",
@@ -5519,6 +6046,13 @@
       ]
      },
      {
+      "key": "error",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1159
+      ]
+     },
+     {
       "key": "expected_close_date",
       "status": "この段階の書き手あり",
       "lines": [
@@ -5581,7 +6115,7 @@
      },
      {
       "key": "holidays",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        1392
       ]
@@ -6634,7 +7168,7 @@
      },
      {
       "key": "m7_missing",
-      "status": "書き手なし",
+      "status": "この段階の書き手あり",
       "lines": [
        1043,
        1043

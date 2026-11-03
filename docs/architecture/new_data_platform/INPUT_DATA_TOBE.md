@@ -198,7 +198,7 @@ Market Pulseの`collect_and_send.py`/`backfill_tech_pulse.py`）を直接確認�
 |---|---|---|---|
 | INPUT-B-001 | `config/monitor_tickers.yaml` | 監視銘柄マスタリスト（全サブシステムが対象とする銘柄の起点） | 手動編集。全ての一次データ取得（SEC EDGAR/yfinance/FRED）に先立って参照される最上流の設定 |
 | INPUT-B-002 | `config/cik_lookup.csv` | Ticker→CIKマッピング（分類A-1のSEC EDGAR取得の前提データ） | 半自動（`TANUKI_CIK_Lookup.yml`手動実行） |
-| INPUT-B-003 | `config/cik_lookup_result.json` | CIKルックアップ結果キャッシュ | `TANUKI_CIK_Lookup.yml`実行結果の永続化 |
+| INPUT-B-003 | `config/cik_lookup_result.json`（`64925445ab`〈2026-10-21〉で削除） | CIKルックアップ結果キャッシュ | `TANUKI_CIK_Lookup.yml`実行結果の永続化 |
 
 ---
 
@@ -214,11 +214,11 @@ Market Pulseの`collect_and_send.py`/`backfill_tech_pulse.py`）を直接確認�
 | INPUT-C-003 | `config/maturity_config.json` | DCF成熟プロファイル（2段階/3段階、フェーズ年数・成長率）の銘柄別設定 | maturity_profile（AS-IS-017）、terminal_growth（AS-IS-059）。**【2026-08-15調査完了・現状維持】INPUT-C-001と同一理由（`_meta`統一済み・admin.html編集UIあり・実害なし）** |
 | INPUT-C-004 | `config/rpo_config.json` | RPO（残存履行義務）調整設定 | rpo_adjustment（AS-IS-024）。**【2026-08-15調査完了・現状維持】`_meta`相当のメタ情報を持たず、admin.html編集UIも存在しない（手動JSON編集のみ）が、この欠如は既存`[[RPO-ADMIN-1]]`（2026-06-26登録）で既に捕捉済みのため重複登録しない。同項目に本調査での再確認・`_meta`欠如の追記のみ実施** |
 | INPUT-C-005 | `config/beta_config.json` | β値のセクター別デフォルト・手動オーバーライド（生のβ自体は`INPUT-A-020`） | wacc.value/beta（AS-IS-013）。**【2026-08-15調査完了・現状維持】`value-monitor/admin.html`に編集UIあり（commitFile経由）。`_comment`はあるが更新日時等の`_meta`相当は持たない。実害報告なし、対応不要と判断** |
-| INPUT-C-006 | `config/discover_config.json` | 銘柄別テーマ・区分・メモ | Discoverのカタリスト・テーマ関連導出データ |
-| INPUT-C-007 | `config/theme_config.json` | テーママスタ（ID/ラベル/カラー） | Discoverのテーマ分類関連導出データ |
+| INPUT-C-006 | `config/discover_config.json`（`4e5fd23a0b`〈2026-10-23〉で削除） | 銘柄別テーマ・区分・メモ | Discoverのカタリスト・テーマ関連導出データ |
+| INPUT-C-007 | `config/theme_config.json`（`6506f5e94f`〈2026-10-23〉で削除） | テーママスタ（ID/ラベル/カラー） | Discoverのテーマ分類関連導出データ |
 | INPUT-C-008 | `docs/portfolio/data/portfolio.json` | 保有株数・平均取得単価（ブローカー別） | Portfolio総資産評価額（AS-IS-391/392等）。**【2026-08-15修正】唯一の保持場所を`docs/portfolio/data/portfolio.json`とする（`config/portfolio.json`側は廃止）。理由: GitHub Pagesの公開ソースは`docs/`配下のみであり、`config/`はHTTP経由でfetch不可能なことを実測で確認済み（`https://.../config/portfolio.json`→404、`https://.../portfolio/data/portfolio.json`→200、`SYSTEM_MAP.md`「`config/`と`docs/`の配置原則」参照）。当初案「`config/`を唯一の保持場所に」はこの制約と技術的に矛盾するため撤回。また`config/portfolio.json`を読むPythonコードは現状ゼロ件であり、実際の読み取りは既に全て`docs/`側経由という実態にも整合する。根拠は`[[PORTFOLIO-CONFIG-DUP-1]]`2026-08-15付フェーズ3合同設計調査** |
 | INPUT-C-009 | `config/tail_kpi_map.json` | TANUKI TAILのKPI設定（AI提案＋人手確定のハイブリッド） | TANUKI TAILのセグメントKPI関連導出データ。現状`config/`ではなく`docs/portfolio/tail/data/`配下（生成データと同居）に置かれているため、TO-BEでは他の手動設定ファイルと同様`config/`配下への集約を設計方針とする。**【2026-08-15確認】消費者は全てPythonバックエンド（GitHub Actionsワークフロー2件・`kpi_proposer.py`・`xbrl_segment_fetcher.py`）でフロントエンドからの直接fetchは無く、GitHub Pages制約の対象外と確認済み。本方針は変更不要、そのまま実装可能（`[[TAILKPI-CONFIG-LOCATION-1]]`参照）** |
-| INPUT-C-010 | `config/fcf_conversion_config.json` | Damodaran業種別FCF変換率等の銘柄別上書き（`ticker_overrides`含む） | FCF変換率関連の導出データ。現状は`src/value/tanuki_valuation/`直下（`config/`外）に配置されており、TO-BEでは`config/`への集約を設計方針とする。**【2026-08-15確認】消費者は`adjustments.py`（Pythonバックエンド）と`admin.html`のGitHub Contents API経由アクセス（パスを問わず機能）のみで、フロントエンドからの直接fetchは無く、GitHub Pages制約の対象外と確認済み。本方針は変更不要、そのまま実装可能（`[[FCFCONFIG-LOCATION-1]]`参照）** |
+| INPUT-C-010 | `config/fcf_conversion_config.json`（`192a45116b`〈2026-09-18〉で削除） | Damodaran業種別FCF変換率等の銘柄別上書き（`ticker_overrides`含む） | FCF変換率関連の導出データ。現状は`src/value/tanuki_valuation/`直下（`config/`外）に配置されており、TO-BEでは`config/`への集約を設計方針とする。**【2026-08-15確認】消費者は`adjustments.py`（Pythonバックエンド）と`admin.html`のGitHub Contents API経由アクセス（パスを問わず機能）のみで、フロントエンドからの直接fetchは無く、GitHub Pages制約の対象外と確認済み。本方針は変更不要、そのまま実装可能（`[[FCFCONFIG-LOCATION-1]]`参照）** |
 | INPUT-C-011 | `config/prompts.yaml` | Grok/AI分析プロンプトテンプレート集約（EPS調整分析・カタリスト予測・TANUKI TAIL Stage2シナリオ等） | 392件の導出データのうちAI生成コンテンツ全般。その生成品質・再現性を左右するプロンプト自体を一次データ層に準じる管理対象として扱う（プロンプトの変更履歴・バージョン管理も将来的な設計対象）。**【2026-08-15調査完了・現状維持】編集UIなし（手動編集のみ）。低頻度・専門知識を要する編集であり、GitHub上での直接編集＋PRレビューの方が管理方法として適切と判断、編集UIを作る動機がない** |
 | INPUT-C-012 | `config/split_history.yaml` | 株式分割の遡及補正用手動記録（比率・効力発生日） | `apply_split_adjustments()`が`quarterly_results`（EPS Analyzer導出データ、AS-IS-267）へ事後適用する遡及補正。**実コード確認: SEC EDGAR取得後のderived計算に対する入力であり、取得前提条件（分類B）ではない**。**【2026-08-15調査完了・現状維持】INPUT-C-011と同一理由（低頻度・専門知識を要する編集、編集UI不要と判断）** |
 | INPUT-C-013 | `config/sectors.yaml` | セクター/業種のキーワードマッピング | `sector_classifier_v2.py`経由でEPS Analyzerの調整項目除外リスト（`adjusted_eps`計算、AS-IS-267）に投入。**実コード確認: `classifier.classify()`→`get_exclusions_for_sector()`という経路で導出データ側の計算に使われており、取得前提条件ではない**。**【2026-08-15調査完了・現状維持】`docs/value-monitor/adjusted_eps_analyzer/admin/`の編集UIは実在しないパス（`../config/sectors.yaml`）をfetchする死蔵ページと判明（`[[EPSANALYZER-ADMIN-ORPHAN-PAGE-1]]`）。**【2026-08-15追記・削除完了】参照ゼロを確認の上`git rm -r`で削除済み。編集経路は手動ファイル編集のみで確定（正当な編集UIは元々存在しなかった）** |
@@ -295,7 +295,7 @@ common/sec_data/data/{TICKER}/
                            # 数学的に無効な加重平均フィールド
                            # （shares_diluted等）はSA候補なし時に欠損を
                            # 許容する。この修正はdata/系統単独の正確性
-                           # 向上であり、Layer3（store_v2/）統合の一部
+                           # 向上であり、Layer3（store_v2/、2026-10-20に削除）統合の一部
                            # ではない（下記「本節の位置づけ」注記参照）。
                            # 詳細はBACKLOG_DONE.md参照。
   filing_meta.json        # 提出日・CIK・最終確認日等のメタ情報（INPUT-A-018）
@@ -312,8 +312,8 @@ common/sec_data/data/{TICKER}/
 **本節の位置づけ（2026-08-06追記）**: 本節の保持構造案は2026-07-23
 策定時点のものであり、翌日策定の`SEC_EDGAR_LAYER_DESIGN.md`（統合
 スキーマ・Layer1〜3アーキテクチャ）により、実際の統合先は
-`common/sec_data/store_v2/`（Layer3、`layer3_builder.py`生成）に
-確定している。本節の`data/{TICKER}/...`構造は、Layer3移行後も
+`common/sec_data/store_v2/`（Layer3、`layer3_builder.py`生成。2026-10-20に削除し、Layer3は
+`company_facts`からその場で作る）に確定していた。本節の`data/{TICKER}/...`構造は、Layer3移行後も
 `annual_*.json`（年次データ、フェーズDリストに切替計画なし）・
 診断/補助スクリプト7件の参照先としては存続するが、5本番消費者
 （TANUKI VALUATION本体・STONKS SILO・TANUKI TAIL・HypeCore・
@@ -353,7 +353,7 @@ S&P500構成銘柄の一括ダウンロード（`INPUT-A-023`、market breadth�
 ### 2-C. FRED層（分類A-3・INPUT-A-024〜047）: 系列単位の時系列ストア
 
 **設計方針**: FRED系列は「系列コード」を主キーとする単一の時系列ストア
-に保持する。`common/macro_data/series/{SERIES_ID}.csv`（または同等の
+に保持する。`common/macro_data/series/{SERIES_ID}.json`（実装はJSON。または同等の
 時系列形式）に、観測日・値・（該当する場合は）公表日・改定履歴を保持する。
 
 **保存形式・スキーマの確定事項（2026-08-12、実装設計投資調査を受けた
@@ -406,7 +406,7 @@ MACRO PULSEが使う`T10Y2Y`（`INPUT-A-024`）等と全く同じストア・同
 分類B（`INPUT-B-001〜003`）・分類C（`INPUT-C-001〜014`）の手動設定
 ファイルにも、更新者・更新日時を`_meta`フィールド等で明示することを
 推奨する（現状は`docs/portfolio/data/portfolio.json`の`last_updated`
-〈2026-08-15、`config/portfolio.json`から統一済み〉のように一部
+〈2026-08-15、`config/portfolio.json`（`e97741f542`〈2026-08-15〉で削除）から統一済み〉のように一部
 ファイルのみ独自に持つ慣行であり、統一されていない）。
 
 ---
@@ -454,7 +454,7 @@ common/
   素朴なtry/exceptという不統一を解消する）。保存前に系列ごとの定義域
   チェック（比率系の範囲外検知、前回値からの桁違い変化検知）を行い、
   `common/macro_data/macro_data_violations_log.json`（0件でも毎回
-  書き込む、`common/market_data/market_data_violations_log.json`と
+  書き込む、`common/market_data/{SYM}/market_data_violations_log.json`〈`4ed11677f8`〈2026-10-22〉で削除〉と
   同型）へ記録する（`EXTRACTION_DESIGN_PRINCIPLES.md`原則3対応）。
 - `reader.py`: `get_latest(series_id)`・`get_series(series_id,
   start=None, end=None)`・`get_value_as_of(series_id, date)`を提供する。
@@ -552,10 +552,10 @@ DGS10を直接参照していないため、機械的網羅性証明の対象外
 - risk_free_rate（TANUKI VALUATION、現状0.043ハードコード）をFRED
   `DGS10`（分類Aへの新規追加候補、未採番）経由に切り替えるかどうかは設計上の
   指摘に留め、実装可否の判断は次ステップに委ねる
-- Discoverのconfig二重管理（`admin.html`保存先と`docs/discover/index.html`
+- Discoverのconfig二重管理（`admin.html`保存先と`docs/discover/index.html`（`ec4590fd6e`〈2026-09-01〉で削除）
   参照先の不一致）は一次データ層の設計とは別軸の問題（手動入力データの
   同期バグ）であり、本ドキュメントでは設計対象に含めていない。ただし
-  Portfolio（`INPUT-C-008`、`config/portfolio.json`と`docs/portfolio/
+  Portfolio（`INPUT-C-008`、`config/portfolio.json`（`e97741f542`〈2026-08-15〉で削除）と`docs/portfolio/
   data/portfolio.json`の重複〈2026-08-15実装完了、`docs/portfolio/
   data/portfolio.json`に統一済み〉）については、同型の同期リスクとして
   分類Cの「唯一の保持場所」設計に含めた

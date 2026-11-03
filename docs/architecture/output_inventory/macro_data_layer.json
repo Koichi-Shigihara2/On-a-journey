@@ -4,250 +4,13 @@
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
-   "path": "common/macro_data/series_meta.json",
-   "kind": "ファイル",
-   "writers": [],
-   "writers_outside_layer": [],
-   "extra": true,
-   "launched_by": [],
-   "files_tracked": 1,
-   "top_keys_sampled_files": 1,
-   "top_keys": [
-    {
-     "key": "BAMLH0A0HYM2",
-     "reader_files": 3
-    },
-    {
-     "key": "CFNAIMA3",
-     "reader_files": 1
-    },
-    {
-     "key": "DFEDTARL",
-     "reader_files": 0
-    },
-    {
-     "key": "DFEDTARU",
-     "reader_files": 0
-    },
-    {
-     "key": "DGS1",
-     "reader_files": 0
-    },
-    {
-     "key": "DGS3MO",
-     "reader_files": 0
-    },
-    {
-     "key": "FEDFUNDS",
-     "reader_files": 0
-    },
-    {
-     "key": "GACDFSA066MSFRBPHI",
-     "reader_files": 0
-    },
-    {
-     "key": "IC4WSA",
-     "reader_files": 1
-    },
-    {
-     "key": "M2SL",
-     "reader_files": 1
-    },
-    {
-     "key": "MICH",
-     "reader_files": 0
-    },
-    {
-     "key": "PAYEMS",
-     "reader_files": 1
-    },
-    {
-     "key": "PERMIT",
-     "reader_files": 1
-    },
-    {
-     "key": "RRPONTSYD",
-     "reader_files": 1
-    },
-    {
-     "key": "SAHMCURRENT",
-     "reader_files": 0
-    },
-    {
-     "key": "SP500",
-     "reader_files": 1
-    },
-    {
-     "key": "T10Y2Y",
-     "reader_files": 1
-    },
-    {
-     "key": "T5YIE",
-     "reader_files": 0
-    },
-    {
-     "key": "UMCSENT",
-     "reader_files": 1
-    },
-    {
-     "key": "VIXCLS",
-     "reader_files": 0
-    },
-    {
-     "key": "VXNCLS",
-     "reader_files": 0
-    },
-    {
-     "key": "WALCL",
-     "reader_files": 1
-    },
-    {
-     "key": "WDTGAL",
-     "reader_files": 0
-    },
-    {
-     "key": "WRBWFRBL",
-     "reader_files": 1
-    },
-    {
-     "key": "WTREGEN",
-     "reader_files": 1
-    }
-   ],
-   "readers": [
-    {
-     "file": "common/macro_data/fetcher.py",
-     "line": 105,
-     "func": "_series_meta_path",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "Python"
-    },
-    {
-     "file": "common/macro_data/fetcher.py",
-     "line": 357,
-     "func": "fetch_all_series",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::_load_json",
-     "type": "Python"
-    },
-    {
-     "file": "common/macro_data/fetcher.py",
-     "line": 403,
-     "func": "<module>",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "Python"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 254,
-     "func": "TestFetchAllSeriesFailureIsolation.test_one_series_raising_unexpected_exception_does_not_abort_others",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 286,
-     "func": "TestFetchAllSeriesFailureIsolation.test_series_where_fred_call_fails_is_isolated_from_others",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 406,
-     "func": "TestStartParamPropagation.test_fetch_all_series_start_reaches_every_series",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 421,
-     "func": "TestStartParamPropagation.test_fetch_all_series_no_start_omits_observation_start_for_every_series",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 437,
-     "func": "TestStartParamPropagation.test_fetch_all_series_start_does_not_affect_existing_records_overlap",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 440,
-     "func": "TestStartParamPropagation.test_fetch_all_series_start_does_not_affect_existing_records_overlap",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 459,
-     "func": "TestFetchAllSeries.test_defaults_to_series_meta_keys",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 472,
-     "func": "TestFetchAllSeries.test_explicit_series_ids_overrides_meta",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_data_fetcher.py",
-     "line": 479,
-     "func": "TestFetchAllSeries.test_missing_series_meta_yields_no_targets",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/fetcher.py::fetch_all_series",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_pulse_accuracy.py",
-     "line": 279,
-     "func": "TestCfnaiMa3Series.test_series_meta_lists_ma3",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_macro_pulse_accuracy.py",
-     "line": 280,
-     "func": "TestCfnaiMa3Series.test_series_meta_lists_ma3",
-     "how": "保存済みファイル",
-     "via": "AST",
-     "type": "テスト"
-    }
-   ],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 1,
-   "reader_count_test": 2,
-   "reader_count_compute": 0,
-   "group": "1件",
-   "note": "系列ごとのメタ情報（fred_release_id・obs_to_release_lag・category・note）。**コードの書き手は無い（人の手で書く静的なファイル）**。fetcher.py が取得する系列の一覧として読む",
-   "decision": "残す（2026-10-23）"
-  },
-  {
    "path": "common/macro_data/macro_data_violations_log.json",
    "kind": "ファイル",
    "writers": [
     {
      "file": "common/macro_data/fetcher.py",
      "func": "_write_violations_section",
-     "line": 235
+     "line": 246
     }
    ],
    "writers_outside_layer": [],
@@ -259,7 +22,7 @@
    "top_keys": [
     {
      "key": "BAMLH0A0HYM2",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "CFNAI",
@@ -267,27 +30,27 @@
     },
     {
      "key": "CFNAIMA3",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "DFEDTARL",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "DFEDTARU",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "DGS1",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "DGS3MO",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "FEDFUNDS",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "FTSD",
@@ -295,19 +58,19 @@
     },
     {
      "key": "GACDFSA066MSFRBPHI",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "IC4WSA",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "M2SL",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "MICH",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "PAYEMS",
@@ -315,55 +78,55 @@
     },
     {
      "key": "PERMIT",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "RRPONTSYD",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "SAHMCURRENT",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "SP500",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "T10Y2Y",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "T5YIE",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "UMCSENT",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "VIXCLS",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "VXNCLS",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "WALCL",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "WDTGAL",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "WRBWFRBL",
-     "reader_files": 0
+     "reader_files": 1
     },
     {
      "key": "WTREGEN",
-     "reader_files": 0
+     "reader_files": 1
     }
    ],
    "readers": [
@@ -377,7 +140,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 53,
+     "line": 55,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -385,106 +148,82 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 840,
-     "func": "check_l_macro_data",
+     "line": 852,
+     "func": "_check_l",
      "how": "保存済みファイル",
      "via": "AST",
      "type": "Python"
     },
     {
      "file": "common/system_health.py",
-     "line": 1050,
-     "func": "main",
+     "line": 869,
+     "func": "check_l_macro_data",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "Python"
     },
     {
      "file": "common/system_health.py",
-     "line": 1110,
+     "line": 1188,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "Python"
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 472,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "テスト"
     },
     {
      "file": "tests/test_system_health_macro_data.py",
-     "line": 44,
-     "func": "test_all_ok_series_is_healthy",
+     "line": 59,
+     "func": "setup_l.run",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_system_health_macro_data.py",
-     "line": 62,
-     "func": "test_failed_series_is_detected",
-     "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_system_health_macro_data.py",
-     "line": 78,
-     "func": "test_multiple_failed_series_are_all_counted",
-     "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_system_health_macro_data.py",
-     "line": 95,
-     "func": "test_legacy_entries_without_fetch_status_are_not_flagged",
-     "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_system_health_macro_data.py",
-     "line": 103,
-     "func": "test_missing_log_file_is_skipped_not_flagged",
-     "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "テスト"
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 289,
+     "line": 292,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "テスト"
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 297,
+     "line": 300,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "テスト"
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 429,
+     "line": 432,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "テスト"
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 442,
+     "line": 445,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
-     "via": "common/system_health.py::check_l_macro_data",
+     "via": "common/system_health.py::_check_l",
      "type": "テスト"
     }
    ],
@@ -509,7 +248,7 @@
     {
      "file": "common/macro_data/fetcher.py",
      "func": "update_series",
-     "line": 319
+     "line": 330
     }
    ],
    "writers_outside_layer": [],
@@ -547,7 +286,7 @@
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 239,
+     "line": 246,
      "func": "load_series",
      "how": "保存済みファイル",
      "via": "AST",
@@ -555,58 +294,74 @@
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 630,
-     "func": "compare",
+     "line": 266,
+     "func": "load_series_at",
      "how": "保存済みファイル",
      "via": "browser_checks/check_macro_pulse.py::load_series",
      "type": "Python"
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 1087,
+     "line": 269,
+     "func": "load_series_at",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 272,
+     "func": "load_series_at",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::load_series",
+     "type": "Python"
+    },
+    {
+     "file": "browser_checks/check_macro_pulse.py",
+     "line": 1168,
      "func": "derived_checks",
      "how": "保存済みファイル",
-     "via": "browser_checks/check_macro_pulse.py::load_series",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
      "type": "Python"
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 1117,
+     "line": 1202,
      "func": "derived_checks",
      "how": "保存済みファイル",
-     "via": "browser_checks/check_macro_pulse.py::load_series",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
      "type": "Python"
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 1131,
+     "line": 1218,
      "func": "derived_checks",
      "how": "保存済みファイル",
-     "via": "browser_checks/check_macro_pulse.py::load_series",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
      "type": "Python"
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 1156,
+     "line": 1245,
      "func": "derived_checks",
      "how": "保存済みファイル",
-     "via": "browser_checks/check_macro_pulse.py::load_series",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
      "type": "Python"
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 1247,
+     "line": 1339,
      "func": "main",
      "how": "保存済みファイル",
-     "via": "browser_checks/check_macro_pulse.py::load_series",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
      "type": "Python"
     },
     {
      "file": "browser_checks/check_macro_pulse.py",
-     "line": 1273,
+     "line": 1365,
      "func": "<module>",
      "how": "保存済みファイル",
-     "via": "browser_checks/check_macro_pulse.py::load_series",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
      "type": "Python"
     },
     {
@@ -675,7 +430,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 687,
+     "line": 688,
      "func": "fred_latest",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -683,16 +438,8 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 710,
+     "line": 711,
      "func": "fred_latest_with_prev",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 728,
-     "func": "get_ff_current",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
      "type": "Python"
@@ -707,7 +454,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 732,
+     "line": 730,
      "func": "get_ff_current",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -715,16 +462,16 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 748,
-     "func": "get_implied_cuts",
+     "line": 733,
+     "func": "get_ff_current",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
      "type": "Python"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 786,
-     "func": "get_financial_context",
+     "line": 749,
+     "func": "get_implied_cuts",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
      "type": "Python"
@@ -747,7 +494,15 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 832,
+     "line": 789,
+     "func": "get_financial_context",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/reader.py::_load_series_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 833,
      "func": "get_sp500_with_asof",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -755,7 +510,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 946,
+     "line": 947,
      "func": "fetch_event_row",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -763,7 +518,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 953,
+     "line": 954,
      "func": "fetch_event_row",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -771,7 +526,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1015,
+     "line": 1016,
      "func": "_load_sp500_cache",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -779,7 +534,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1089,
+     "line": 1090,
      "func": "fill_returns",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -787,7 +542,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1997,
+     "line": 2022,
      "func": "refresh_monthly_indicators",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -795,7 +550,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2032,
+     "line": 2057,
      "func": "_store_values",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -803,7 +558,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2056,
+     "line": 2081,
      "func": "apply_revisions",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -811,7 +566,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2224,
+     "line": 2249,
      "func": "_load_weekly_liquidity_series",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -819,55 +574,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2363,
-     "func": "update_liquidity_csv",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 2368,
-     "func": "update_liquidity_csv",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 2374,
-     "func": "update_liquidity_csv",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 2376,
-     "func": "update_liquidity_csv",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 2386,
-     "func": "update_liquidity_csv",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
      "line": 2388,
-     "func": "update_liquidity_csv",
-     "how": "保存済みファイル",
-     "via": "common/macro_data/reader.py::_load_series_payload",
-     "type": "Python"
-    },
-    {
-     "file": "src/market/macro_pulse/05_main.py",
-     "line": 2390,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -883,7 +590,7 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2458,
+     "line": 2399,
      "func": "update_liquidity_csv",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -891,7 +598,55 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 2649,
+     "line": 2401,
+     "func": "update_liquidity_csv",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/reader.py::_load_series_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2411,
+     "func": "update_liquidity_csv",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/reader.py::_load_series_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2413,
+     "func": "update_liquidity_csv",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/reader.py::_load_series_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2415,
+     "func": "update_liquidity_csv",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/reader.py::_load_series_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2418,
+     "func": "update_liquidity_csv",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/reader.py::_load_series_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2483,
+     "func": "update_liquidity_csv",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/reader.py::_load_series_payload",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 2674,
      "func": "run",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -899,7 +654,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 478,
+     "line": 477,
      "func": "fetch_vxn_from_fred",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -907,7 +662,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 505,
+     "line": 504,
      "func": "fetch_hy_spread_from_fred",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -915,7 +670,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1162,
+     "line": 1159,
      "func": "fetch_fred_short_bond",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -923,7 +678,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1212,
+     "line": 1209,
      "func": "collect_asset_flow",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -931,7 +686,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1828,
+     "line": 1835,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
@@ -939,11 +694,27 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1871,
+     "line": 1878,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/macro_data/reader.py::_load_series_payload",
      "type": "Python"
+    },
+    {
+     "file": "tests/test_check_macro_pulse_reference.py",
+     "line": 62,
+     "func": "test_store_is_read_at_csv_write_time_not_latest",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_check_macro_pulse_reference.py",
+     "line": 69,
+     "func": "test_store_without_write_time_falls_back_to_worktree_and_says_so",
+     "how": "保存済みファイル",
+     "via": "browser_checks/check_macro_pulse.py::load_series_at",
+     "type": "テスト"
     },
     {
      "file": "tests/test_macro_data_reader.py",
@@ -1218,10 +989,335 @@
     "MACRO PULSE（景気後退リスクの点数・局面）"
    ],
    "reader_count": 8,
-   "reader_count_test": 3,
+   "reader_count_test": 4,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py）が reader.py 経由で読む",
+   "decision": "残す（2026-10-23）"
+  },
+  {
+   "path": "common/macro_data/series_meta.json",
+   "kind": "ファイル",
+   "writers": [],
+   "writers_outside_layer": [],
+   "extra": true,
+   "launched_by": [],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "BAMLH0A0HYM2",
+     "reader_files": 4
+    },
+    {
+     "key": "CFNAIMA3",
+     "reader_files": 2
+    },
+    {
+     "key": "DFEDTARL",
+     "reader_files": 1
+    },
+    {
+     "key": "DFEDTARU",
+     "reader_files": 1
+    },
+    {
+     "key": "DGS1",
+     "reader_files": 1
+    },
+    {
+     "key": "DGS3MO",
+     "reader_files": 1
+    },
+    {
+     "key": "FEDFUNDS",
+     "reader_files": 1
+    },
+    {
+     "key": "GACDFSA066MSFRBPHI",
+     "reader_files": 1
+    },
+    {
+     "key": "IC4WSA",
+     "reader_files": 2
+    },
+    {
+     "key": "M2SL",
+     "reader_files": 2
+    },
+    {
+     "key": "MICH",
+     "reader_files": 1
+    },
+    {
+     "key": "PAYEMS",
+     "reader_files": 2
+    },
+    {
+     "key": "PERMIT",
+     "reader_files": 2
+    },
+    {
+     "key": "RRPONTSYD",
+     "reader_files": 2
+    },
+    {
+     "key": "SAHMCURRENT",
+     "reader_files": 1
+    },
+    {
+     "key": "SP500",
+     "reader_files": 2
+    },
+    {
+     "key": "T10Y2Y",
+     "reader_files": 2
+    },
+    {
+     "key": "T5YIE",
+     "reader_files": 1
+    },
+    {
+     "key": "UMCSENT",
+     "reader_files": 2
+    },
+    {
+     "key": "VIXCLS",
+     "reader_files": 1
+    },
+    {
+     "key": "VXNCLS",
+     "reader_files": 1
+    },
+    {
+     "key": "WALCL",
+     "reader_files": 2
+    },
+    {
+     "key": "WDTGAL",
+     "reader_files": 1
+    },
+    {
+     "key": "WRBWFRBL",
+     "reader_files": 2
+    },
+    {
+     "key": "WTREGEN",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/macro_data/fetcher.py",
+     "line": 105,
+     "func": "_series_meta_path",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/fetcher.py",
+     "line": 368,
+     "func": "fetch_all_series",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/fetcher.py",
+     "line": 414,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 56,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 857,
+     "func": "_check_l",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 869,
+     "func": "check_l_macro_data",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1188,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1260,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 254,
+     "func": "TestFetchAllSeriesFailureIsolation.test_one_series_raising_unexpected_exception_does_not_abort_others",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 286,
+     "func": "TestFetchAllSeriesFailureIsolation.test_series_where_fred_call_fails_is_isolated_from_others",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 406,
+     "func": "TestStartParamPropagation.test_fetch_all_series_start_reaches_every_series",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 421,
+     "func": "TestStartParamPropagation.test_fetch_all_series_no_start_omits_observation_start_for_every_series",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 437,
+     "func": "TestStartParamPropagation.test_fetch_all_series_start_does_not_affect_existing_records_overlap",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 440,
+     "func": "TestStartParamPropagation.test_fetch_all_series_start_does_not_affect_existing_records_overlap",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 459,
+     "func": "TestFetchAllSeries.test_defaults_to_series_meta_keys",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 472,
+     "func": "TestFetchAllSeries.test_explicit_series_ids_overrides_meta",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_data_fetcher.py",
+     "line": 479,
+     "func": "TestFetchAllSeries.test_missing_series_meta_yields_no_targets",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fetcher.py::fetch_all_series",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 279,
+     "func": "TestCfnaiMa3Series.test_series_meta_lists_ma3",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_macro_pulse_accuracy.py",
+     "line": 280,
+     "func": "TestCfnaiMa3Series.test_series_meta_lists_ma3",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sec_freshness.py",
+     "line": 494,
+     "func": "test_main_exits_two_when_m_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_macro_data.py",
+     "line": 59,
+     "func": "setup_l.run",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 292,
+     "func": "test_main_one_line_shows_j_and_k_in_full",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 300,
+     "func": "test_main_warning_only_j_exits_one",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 432,
+     "func": "test_main_overall_severity_matches_discord_and_exit_code",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 445,
+     "func": "test_main_red_label_of_other_check_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_l",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 2,
+   "reader_count_test": 5,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "系列ごとのメタ情報（fred_release_id・obs_to_release_lag・category・note）。**コードの書き手は無い（人の手で書く静的なファイル）**。fetcher.py が取得する系列の一覧として読む",
    "decision": "残す（2026-10-23）"
   },
   {
@@ -1231,7 +1327,7 @@
     {
      "file": "common/macro_data/fetcher.py",
      "func": "<module>",
-     "line": 424
+     "line": 435
     }
    ],
    "writers_outside_layer": [],
@@ -1272,7 +1368,7 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 2312,
+     "line": 2314,
      "text": "implied_q4 = annual_val - total_q"
     },
     {
@@ -1331,12 +1427,12 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 873,
+     "line": 878,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1111,
+     "line": 1101,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -1351,7 +1447,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 345,
+     "line": 347,
      "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
     },
     {
@@ -1402,7 +1498,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3035,
+     "line": 3037,
      "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
     },
     {
@@ -1412,17 +1508,17 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1780,
+     "line": 1784,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
      "file": "common/system_health.py",
-     "line": 955,
+     "line": 975,
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
      "file": "docs/portfolio/tail/index.html",
-     "line": 942,
+     "line": 943,
      "text": "function _updateReviewStaleness() {"
     },
     {
@@ -1459,7 +1555,7 @@
    "sites": [
     {
      "file": "common/sec_data/ttm_calculator.py",
-     "line": 254,
+     "line": 234,
      "text": "def calc_ttm_series("
     },
     {
@@ -1522,32 +1618,32 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 451,
+     "line": 453,
      "text": "def _detect_fiscal_end_month(self, us_gaap: dict) -> int:"
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 460,
+     "line": 462,
      "text": "def _detect_fiscal_anchor_date(self, us_gaap: dict) -> Optional[tuple]:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 93,
+     "line": 112,
      "text": "def detect_fiscal_end_month(us_gaap: dict, candidate_keys: Sequence[str]) -> int:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 274,
+     "line": 293,
      "text": "def detect_fiscal_anchor_date(us_gaap: dict, candidate_keys: Sequence[str]) -> Optional[Tuple[int, int]]:"
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 309,
+     "line": 328,
      "text": "def detect_fiscal_anchor_clusters("
     },
     {
      "file": "common/sec_data/utils.py",
-     "line": 349,
+     "line": 368,
      "text": "def determine_fiscal_year(end_date, fiscal_end_month: int,"
     },
     {
@@ -1579,17 +1675,17 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 571,
+     "line": 581,
      "text": "if (key === 'WATCH' && s.upside != null && s.upside > 0) {"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1094,
+     "line": 1104,
      "text": "const nt_high_prem  = s.upside != null && s.upside < -20;"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1323,
+     "line": 1333,
      "text": "xClamped: s.upside > X_MAX_CLIP,"
     },
     {
@@ -1609,87 +1705,87 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 622,
+     "line": 647,
      "text": "if upside > 30:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 624,
+     "line": 649,
      "text": "elif upside >= 10:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 626,
+     "line": 651,
      "text": "elif upside >= 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 897,
+     "line": 922,
      "text": "and upside is not None and upside < -20"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 910,
+     "line": 935,
      "text": "if upside is not None and upside < -30 and stage is not None and stage >= 3:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 930,
+     "line": 955,
      "text": "elif upside is not None and upside > 20 and timing >= 50:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 932,
+     "line": 957,
      "text": "elif upside is not None and upside > 0:"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1001,
+     "line": 1029,
      "text": "if   upside >  30: parts.append(f\"割安圏({upside:.0f}%)で買い余地大\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1002,
+     "line": 1030,
      "text": "elif upside >  10: parts.append(f\"割安({upside:.0f}%)傾向\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1003,
+     "line": 1031,
      "text": "elif upside >   0: parts.append(f\"若干割安({upside:.0f}%)\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1004,
+     "line": 1032,
      "text": "elif upside > -20: parts.append(\"フェアバリュー近辺\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1389,
+     "line": 1442,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1416,
+     "line": 1469,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1421,
+     "line": 1474,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1467,
+     "line": 1520,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1772,
+     "line": 1825,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1950,
+     "line": 2003,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -1753,7 +1849,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1127,
+     "line": 1119,
      "text": "def _determine_beta("
     }
    ],
@@ -1789,7 +1885,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1111,
+     "line": 1103,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -1800,6 +1896,25 @@
    ],
    "in_layer": false,
    "duplicated": true
+  },
+  {
+   "id": "eps_shares_basis",
+   "name": "EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）",
+   "patterns": [
+    "def\\s+_?\\w*(?:max_eps_shares|eps_shares_basis)\\w*\\s*\\("
+   ],
+   "sites": [
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 175,
+     "text": "def select_max_eps_shares(eps_ttm: dict | None, ttm_end: str | None, diluted_shares) -> tuple:"
+    }
+   ],
+   "files": [
+    "src/value/tanuki_valuation/pipeline.py"
+   ],
+   "in_layer": false,
+   "duplicated": false
   },
   {
    "id": "recession_score",
@@ -1821,12 +1936,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1554,
+     "line": 1579,
      "text": "def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1674,
+     "line": 1699,
      "text": "def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:"
     }
    ],
@@ -1852,12 +1967,12 @@
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1537,
+     "line": 1562,
      "text": "def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:"
     },
     {
      "file": "src/market/macro_pulse/05_main.py",
-     "line": 1550,
+     "line": 1575,
      "text": "def _step_score(key: str, val: float, trend_dir: int = 0) -> int:"
     }
    ],
@@ -1878,12 +1993,12 @@
    "sites": [
     {
      "file": "common/external_api.py",
-     "line": 31,
+     "line": 42,
      "text": "FRED_URL = \"https://api.stlouisfed.org/fred/\""
     },
     {
      "file": "common/external_api.py",
-     "line": 148,
+     "line": 178,
      "text": "_FRED_CLIENT[0] = Fred(api_key=_fred_key())"
     }
    ],
@@ -1902,7 +2017,7 @@
    "sites": [
     {
      "file": "common/external_api.py",
-     "line": 29,
+     "line": 40,
      "text": "GROK_URL = \"https://api.x.ai/v1/chat/completions\""
     }
    ],
@@ -1944,17 +2059,19 @@
    "dir": "common/macro_data",
    "file": "common/macro_data/__init__.py",
    "decision": "残す（2026-10-23）",
-   "lines": 34,
+   "lines": 30,
    "workflows": [],
    "code": [],
    "same_dir": [],
-   "tests": []
+   "tests": [
+    "tests/test_workflow_script_imports.py"
+   ]
   },
   {
    "dir": "common/macro_data",
    "file": "common/macro_data/fetcher.py",
    "decision": "残す（2026-10-23）",
-   "lines": 431,
+   "lines": 442,
    "workflows": [
     ".github/workflows/Macro_Data_Update.yml"
    ],
@@ -1965,7 +2082,9 @@
    ],
    "tests": [
     "tests/test_macro_data_fetcher.py",
-    "tests/test_macro_data_reader.py"
+    "tests/test_macro_data_reader.py",
+    "tests/test_system_health_macro_data.py",
+    "tests/test_workflow_script_imports.py"
    ]
   },
   {
@@ -1983,7 +2102,8 @@
     "common/macro_data/__init__.py"
    ],
    "tests": [
-    "tests/test_macro_data_reader.py"
+    "tests/test_macro_data_reader.py",
+    "tests/test_reference_check.py"
    ]
   }
  ],
@@ -2028,7 +2148,7 @@
    "sites": [
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 22
+     "line": 21
     }
    ]
   },
@@ -2053,9 +2173,9 @@
   "outputs": 4,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 6,
+  "python_read_sites_into_layer_resolved": 7,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 7,
+  "name_hit_sites_resolved": 9,
   "name_hit_sites_undetermined": [],
   "ratio_writer": 0.0,
   "ratio_reader": 0.0,
@@ -2083,6 +2203,7 @@
     "note": "残す: 値の出所の記録（取得した系列。BAMLH0A0HYM2 の古い6,947件は 05_events.csv から移した印 migrated_from）。読んでいたのは2026-10-23に消した移行のスクリプト（二重に動かさない判定）だけ"
    }
   ],
-  "written_key_count": 42
+  "written_key_count": 39,
+  "stale_keys": []
  }
 }

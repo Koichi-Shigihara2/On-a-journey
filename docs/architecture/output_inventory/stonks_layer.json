@@ -92,7 +92,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 50,
+     "line": 52,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -100,7 +100,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 160,
+     "line": 163,
      "func": "check_d_actions",
      "how": "保存済みファイル",
      "via": "grep",
@@ -108,7 +108,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 183,
+     "line": 186,
      "func": "check_e_silo",
      "how": "保存済みファイル",
      "via": "AST",
@@ -116,7 +116,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1130,
+     "line": 1179,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_d_actions",
@@ -124,7 +124,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1131,
+     "line": 1180,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_e_silo",
@@ -132,7 +132,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_e_silo",
@@ -908,7 +908,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_e_silo",
@@ -1095,7 +1095,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 345,
+     "line": 347,
      "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
     },
     {
@@ -1161,7 +1161,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 955,
+     "line": 975,
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
@@ -1646,6 +1646,7 @@
     "tests/test_method_change.py",
     "tests/test_output_inventory_check.py",
     "tests/test_pipeline_logic.py",
+    "tests/test_reference_check.py",
     "tests/test_stonks_silo_financial_as_of.py",
     "tests/test_stonks_silo_pipeline.py"
    ]
@@ -1706,7 +1707,7 @@
    "sites": [
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 22
+     "line": 21
     }
    ]
   },
@@ -1981,6 +1982,21 @@
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "entries",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "",
+    "lines": [
+     421,
+     513
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
     "key": "ev_sales",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -2043,6 +2059,20 @@
      730,
      1163,
      1358
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "from",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "",
+    "lines": [
+     1256
     ],
     "decision": "残す（2026-10-21）"
    },
@@ -2223,13 +2253,35 @@
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "key",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "",
+    "lines": [
+     762,
+     763,
+     814,
+     815,
+     819,
+     851,
+     1192,
+     1218,
+     1219,
+     1233,
+     1358
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
     "key": "label",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+     "docs/value-monitor/stonks-silo/data/results.json"
     ],
     "label": "",
     "lines": [
@@ -2830,6 +2882,20 @@
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "series",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "",
+    "lines": [
+     797
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
     "key": "series_q",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -2887,6 +2953,20 @@
     "label": "古い",
     "lines": [
      1515
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "status",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "",
+    "lines": [
+     410
     ],
     "decision": "残す（2026-10-21）"
    },
@@ -3099,12 +3179,20 @@
     "note": ""
    }
   ],
-  "written_key_count": 134,
+  "written_key_count": 108,
+  "stale_keys": [],
   "sections": [
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
     "section": "（ページの先頭）",
     "keys": [
+     {
+      "key": "entries",
+      "status": "この段階の書き手あり",
+      "lines": [
+       421
+      ]
+     },
      {
       "key": "financial_as_of",
       "status": "この段階の書き手あり",
@@ -3140,6 +3228,13 @@
       "status": "この段階の書き手あり",
       "lines": [
        421
+      ]
+     },
+     {
+      "key": "status",
+      "status": "この段階の書き手あり",
+      "lines": [
+       410
       ]
      },
      {
@@ -3255,6 +3350,13 @@
       ]
      },
      {
+      "key": "entries",
+      "status": "この段階の書き手あり",
+      "lines": [
+       513
+      ]
+     },
+     {
       "key": "fields",
       "status": "この段階の書き手あり",
       "lines": [
@@ -3366,6 +3468,13 @@
       "status": "この段階の書き手あり",
       "lines": [
        1019
+      ]
+     },
+     {
+      "key": "key",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1358
       ]
      },
      {
@@ -3781,8 +3890,31 @@
       ]
      },
      {
+      "key": "from",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1256
+      ]
+     },
+     {
+      "key": "key",
+      "status": "この段階の書き手あり",
+      "lines": [
+       762,
+       763,
+       814,
+       815,
+       819,
+       851,
+       1192,
+       1218,
+       1219,
+       1233
+      ]
+     },
+     {
       "key": "label",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        839,
        1200,
@@ -3868,6 +4000,13 @@
       "status": "この段階の書き手あり",
       "lines": [
        1522
+      ]
+     },
+     {
+      "key": "series",
+      "status": "この段階の書き手あり",
+      "lines": [
+       797
       ]
      },
      {

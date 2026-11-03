@@ -10,7 +10,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher._save_cik_cache",
-     "line": 107
+     "line": 108
     }
    ],
    "writers_outside_layer": [],
@@ -39,7 +39,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 99,
+     "line": 100,
      "func": "SECFetcher._load_cik_cache",
      "how": "保存済みファイル",
      "via": "AST",
@@ -119,7 +119,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log",
@@ -185,7 +185,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher._fetch_legacy_company_facts",
-     "line": 225
+     "line": 226
     }
    ],
    "writers_outside_layer": [],
@@ -211,7 +211,7 @@
    "readers": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 240,
+     "line": 241,
      "func": "SECFetcher._read_json_or_none",
      "how": "保存済みファイル",
      "via": "AST",
@@ -219,7 +219,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 429,
+     "line": 430,
      "func": "SECFetcher._fetch_legacy_submissions._local",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -299,7 +299,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_collision_log",
@@ -419,7 +419,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log",
@@ -539,7 +539,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log",
@@ -599,75 +599,6 @@
    "decision": "残す（2026-10-20）"
   },
   {
-   "path": "docs/common/sec_data/rotce/_summary.json",
-   "kind": "ファイル",
-   "writers": [
-    {
-     "file": "common/sec_data/rotce.py",
-     "func": "build_all",
-     "line": 701
-    }
-   ],
-   "writers_outside_layer": [],
-   "launched_by": [
-    ".github/workflows/Market_Data_Daily_Update.yml"
-   ],
-   "files_tracked": 1,
-   "top_keys_sampled_files": 1,
-   "top_keys": [
-    {
-     "key": "generated_at",
-     "reader_files": 1
-    },
-    {
-     "key": "method_change",
-     "reader_files": 0
-    },
-    {
-     "key": "method_change_applied",
-     "reader_files": 0
-    },
-    {
-     "key": "reference_only",
-     "reader_files": 0
-    },
-    {
-     "key": "thresholds",
-     "reader_files": 0
-    },
-    {
-     "key": "tickers",
-     "reader_files": 1
-    }
-   ],
-   "readers": [
-    {
-     "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 241,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "JS・HTML"
-    }
-   ],
-   "readers_compute": [],
-   "producers": [],
-   "screens": [
-    {
-     "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "直接"
-    }
-   ],
-   "definitions": [],
-   "decision_effect": [],
-   "reader_count": 1,
-   "reader_count_test": 0,
-   "reader_count_compute": 0,
-   "group": "1件",
-   "note": "ROTCEの全銘柄のまとめ",
-   "decision": "残す（2026-10-20）"
-  },
-  {
    "path": "${RUNNER_TEMP}/sec_update_result.json",
    "kind": "一時ファイル",
    "writers": [
@@ -720,7 +651,7 @@
    "readers_compute": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 595,
+     "line": 596,
      "func": "<module>",
      "how": "その場で計算",
      "via": "common/sec_data/fetcher.py::SECFetcher",
@@ -773,7 +704,7 @@
     {
      "file": "common/sec_data/freshness.py",
      "func": "write",
-     "line": 138
+     "line": 149
     }
    ],
    "writers_outside_layer": [],
@@ -823,7 +754,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3686,
+     "line": 3699,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -831,7 +762,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -839,7 +770,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 876,
+     "line": 893,
      "func": "_check_m",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -847,7 +778,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 956,
+     "line": 976,
      "func": "check_m_sec_freshness",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -855,7 +786,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1140,
+     "line": 1189,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -863,7 +794,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -959,23 +890,31 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 440,
-     "func": "test_m_fetch_failed_ratio",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/freshness.py::load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sec_freshness.py",
      "line": 443,
-     "func": "test_m_fetch_failed_ratio",
+     "func": "test_m_fetch_failed_by_severity_table",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
      "type": "テスト"
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 450,
+     "line": 446,
+     "func": "test_m_fetch_failed_by_severity_table",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/freshness.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sec_freshness.py",
+     "line": 449,
+     "func": "test_m_fetch_failed_by_severity_table",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/freshness.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sec_freshness.py",
+     "line": 469,
      "func": "test_m_sec_lag_thresholds",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -983,7 +922,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 453,
+     "line": 472,
      "func": "test_m_sec_lag_thresholds",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -991,7 +930,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -999,7 +938,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 490,
+     "line": 509,
      "func": "test_m_acknowledged_accn_is_not_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1007,7 +946,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 501,
+     "line": 520,
      "func": "test_m_other_accn_of_same_ticker_is_still_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1015,7 +954,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 508,
+     "line": 527,
      "func": "test_check60_one_line_per_accn_and_ledger_match",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1827,7 +1766,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3720,
+     "line": 3733,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_local_data_start",
@@ -1835,7 +1774,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_operating_income_reconstruction_scope",
@@ -3082,6 +3021,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_reference_check.py",
+     "line": 23,
+     "func": "test_path_existence_rules",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_registration_consistency_gate.py",
      "line": 64,
      "func": "test_include_provisioning_targets_provisioning_ticker",
@@ -3517,7 +3464,7 @@
     "理論株価・判定（TANUKI VALUATION）"
    ],
    "reader_count": 17,
-   "reader_count_test": 23,
+   "reader_count_test": 24,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "生データから1年分ずつ取り出した年次の財務（損益・貸借・CF）",
@@ -3530,7 +3477,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher.fetch_company_facts",
-     "line": 186
+     "line": 187
     }
    ],
    "writers_outside_layer": [],
@@ -3604,7 +3551,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 501,
+     "line": 502,
      "func": "load_company_facts",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3612,7 +3559,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 505,
+     "line": 506,
      "func": "load_company_facts",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3900,7 +3847,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::check_ticker",
@@ -3932,7 +3879,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 415,
+     "line": 417,
      "func": "compute_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -3940,7 +3887,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 421,
+     "line": 423,
      "func": "compute_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -3948,7 +3895,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 674,
+     "line": 687,
      "func": "build_all",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -3956,7 +3903,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 709,
+     "line": 727,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -4044,7 +3991,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 86,
+     "line": 89,
      "func": "check_a_sec",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
@@ -4052,7 +3999,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 788,
+     "line": 791,
      "func": "check_k_ticker_audit",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -4060,7 +4007,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1127,
+     "line": 1176,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
@@ -4068,7 +4015,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1138,
+     "line": 1187,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -4076,7 +4023,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -4438,6 +4385,38 @@
      "file": "tests/test_close_missing_price.py",
      "line": 195,
      "func": "TestGetTtmRevenue.test_no_series_returns_none",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_common_path_guard.py",
+     "line": 137,
+     "func": "test_rotce_partial_run_keeps_other_rows",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_common_path_guard.py",
+     "line": 140,
+     "func": "test_rotce_partial_run_keeps_other_rows",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_common_path_guard.py",
+     "line": 152,
+     "func": "test_rotce_full_run_rewrites_summary",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_common_path_guard.py",
+     "line": 153,
+     "func": "test_rotce_full_run_rewrites_summary",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
      "type": "テスト"
@@ -5148,7 +5127,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -5510,7 +5489,7 @@
     "保有銘柄の監視（TANUKI TAIL）"
    ],
    "reader_count": 24,
-   "reader_count_test": 19,
+   "reader_count_test": 20,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "SECから取った、その銘柄の全XBRLの申告の生データ",
@@ -5797,7 +5776,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::check_ticker",
@@ -6343,7 +6322,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher.fetch_submissions",
-     "line": 334
+     "line": 335
     }
    ],
    "writers_outside_layer": [],
@@ -6381,7 +6360,7 @@
    "readers": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 521,
+     "line": 522,
      "func": "load_submissions",
      "how": "保存済みファイル",
      "via": "grep",
@@ -6389,7 +6368,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 525,
+     "line": 526,
      "func": "load_submissions",
      "how": "保存済みファイル",
      "via": "AST",
@@ -6397,7 +6376,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 543,
+     "line": 544,
      "func": "load_former_names",
      "how": "保存済みファイル",
      "via": "grep",
@@ -6405,7 +6384,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 547,
+     "line": 548,
      "func": "load_former_names",
      "how": "保存済みファイル",
      "via": "AST",
@@ -6501,7 +6480,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -6700,7 +6679,7 @@
     {
      "file": "common/sec_data/fetcher.py",
      "func": "SECFetcher._fetch_legacy_submissions",
-     "line": 450
+     "line": 451
     }
    ],
    "writers_outside_layer": [],
@@ -6730,7 +6709,7 @@
    "readers": [
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 181,
+     "line": 182,
      "func": "SECFetcher.fetch_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6738,7 +6717,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 233,
+     "line": 234,
      "func": "SECFetcher._fetch_legacy_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6746,7 +6725,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 240,
+     "line": 241,
      "func": "SECFetcher._read_json_or_none",
      "how": "保存済みファイル",
      "via": "AST",
@@ -6754,7 +6733,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 480,
+     "line": 481,
      "func": "SECFetcher.fetch_all",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6762,7 +6741,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 598,
+     "line": 599,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -7279,7 +7258,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_basis_mix",
@@ -8357,7 +8336,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/basis_mix.py::load",
@@ -8421,7 +8400,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 86,
+     "line": 89,
      "func": "check_a_sec",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
@@ -8429,7 +8408,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1127,
+     "line": 1176,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
@@ -9522,7 +9501,7 @@
     },
     {
      "file": "common/sec_data/fetcher.py",
-     "line": 466,
+     "line": 467,
      "func": "SECFetcher.fetch_all",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9650,7 +9629,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3714,
+     "line": 3727,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9658,7 +9637,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9674,7 +9653,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 708,
+     "line": 726,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9786,7 +9765,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 293,
+     "line": 296,
      "func": "check_h_config",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9794,7 +9773,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 294,
+     "line": 297,
      "func": "check_h_config",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9802,7 +9781,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 370,
+     "line": 373,
      "func": "_check_i",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9810,7 +9789,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 756,
+     "line": 759,
      "func": "check_k_ticker_audit",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9818,7 +9797,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 788,
+     "line": 791,
      "func": "check_k_ticker_audit",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -9826,7 +9805,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1134,
+     "line": 1183,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -9834,7 +9813,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1138,
+     "line": 1187,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -9842,7 +9821,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -10538,7 +10517,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -10785,13 +10764,94 @@
    "decision": "残す（2026-10-20）"
   },
   {
+   "path": "docs/common/sec_data/rotce/_summary.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/sec_data/rotce.py",
+     "func": "build_all",
+     "line": 719
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "generated_at",
+     "reader_files": 2
+    },
+    {
+     "key": "method_change",
+     "reader_files": 0
+    },
+    {
+     "key": "method_change_applied",
+     "reader_files": 0
+    },
+    {
+     "key": "reference_only",
+     "reader_files": 1
+    },
+    {
+     "key": "thresholds",
+     "reader_files": 1
+    },
+    {
+     "key": "tickers",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 669,
+     "func": "_previous_summary",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "docs/value-monitor/tanuki_score/index.html",
+     "line": 241,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "JS・HTML"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/{T}.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "直接"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 2,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "ROTCEの全銘柄のまとめ",
+   "decision": "残す（2026-10-20）"
+  },
+  {
    "path": "docs/common/sec_data/rotce/{T}.json",
    "kind": "ファイル",
    "writers": [
     {
      "file": "common/sec_data/rotce.py",
      "func": "build_all",
-     "line": 685
+     "line": 698
     }
    ],
    "writers_outside_layer": [],
@@ -10857,7 +10917,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3698,
+     "line": 3711,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::unregistered_latest_quarters",
@@ -10865,7 +10925,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3764,
+     "line": 3777,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::unregistered_latest_quarters",
@@ -10873,7 +10933,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 635,
+     "line": 637,
      "func": "unregistered_latest_quarters",
      "how": "保存済みファイル",
      "via": "grep",
@@ -10881,7 +10941,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 639,
+     "line": 641,
      "func": "unregistered_latest_quarters",
      "how": "保存済みファイル",
      "via": "AST",
@@ -11157,7 +11217,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 345,
+     "line": 347,
      "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
     },
     {
@@ -11223,7 +11283,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 955,
+     "line": 975,
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
@@ -11398,11 +11458,13 @@
    "dir": "browser_checks",
    "file": "browser_checks/check_macro_pulse.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1273,
+   "lines": 1365,
    "workflows": [],
    "code": [],
    "same_dir": [],
-   "tests": [],
+   "tests": [
+    "tests/test_check_macro_pulse_reference.py"
+   ],
    "found_by": "どこからも呼ばれない"
   },
   {
@@ -11498,11 +11560,13 @@
    "dir": "browser_checks",
    "file": "browser_checks/check_macro_pulse.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1273,
+   "lines": 1365,
    "workflows": [],
    "code": [],
    "same_dir": [],
-   "tests": []
+   "tests": [
+    "tests/test_check_macro_pulse_reference.py"
+   ]
   },
   {
    "dir": "browser_checks",
@@ -11628,6 +11692,7 @@
     "common/sec_data/update.py"
    ],
    "tests": [
+    "tests/test_common_path_guard.py",
     "tests/test_no_direct_ticker_access.py",
     "tests/test_sec_data_config.py"
    ]
@@ -11709,7 +11774,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/fetcher.py",
    "decision": "残す（2026-10-20）",
-   "lines": 600,
+   "lines": 601,
    "workflows": [],
    "code": [
     "src/tail/kpi_proposer.py",
@@ -11729,6 +11794,7 @@
    ],
    "tests": [
     "tests/test_eps_cik_history_merge.py",
+    "tests/test_reference_check.py",
     "tests/test_sec_freshness.py"
    ]
   },
@@ -11750,7 +11816,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/freshness.py",
    "decision": "残す（2026-10-20）",
-   "lines": 202,
+   "lines": 213,
    "workflows": [],
    "code": [
     "common/system_health.py"
@@ -11984,7 +12050,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/report_consistency_check.py",
    "decision": "残す（2026-10-20）",
-   "lines": 3774,
+   "lines": 3787,
    "workflows": [
     ".github/workflows/Adjusted_Eps_Analyzer_update.yml",
     ".github/workflows/SEC_Data_Update.yml",
@@ -12004,6 +12070,7 @@
     "tests/test_first_filed.py",
     "tests/test_latest_period_guard.py",
     "tests/test_market_data_stale_provisional.py",
+    "tests/test_reference_check.py",
     "tests/test_registration_consistency_gate.py",
     "tests/test_report_consistency_check.py",
     "tests/test_rotce.py",
@@ -12063,7 +12130,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/rotce.py",
    "decision": "残す（2026-10-20）",
-   "lines": 717,
+   "lines": 736,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml"
    ],
@@ -12072,6 +12139,7 @@
     "common/sec_data/report_consistency_check.py"
    ],
    "tests": [
+    "tests/test_common_path_guard.py",
     "tests/test_conditional_tags_and_stale_latest.py",
     "tests/test_market_data_stale_provisional.py",
     "tests/test_method_change.py",
@@ -12321,7 +12389,7 @@
    "sites": [
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 22
+     "line": 21
     }
    ]
   },
@@ -12371,7 +12439,7 @@
     "path": "docs/common/sec_data/rotce/<?>"
    }
   ],
-  "name_hit_sites_resolved": 77,
+  "name_hit_sites_resolved": 78,
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",
@@ -12480,20 +12548,6 @@
     "note": ""
    },
    {
-    "key": "acquisition",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "acre",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "aligned_to_sibling_accn",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
@@ -12508,101 +12562,10 @@
     "note": ""
    },
    {
-    "key": "appeal",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "bs_tag_sources",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json",
      "common/sec_data/data/{T}/quarterly_{Q}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "business",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "business_combination",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "business_unit",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "businesscombinations",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "case_filed",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "charge",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "claim",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "claimant",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "classAction",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "class_action_lawsuit",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "companies",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "complaints",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
     ],
     "note": ""
    },
@@ -12617,41 +12580,6 @@
     "key": "cross_check",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "current_employees",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "current_litigation_m",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "defendant",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "derivative",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "derivativeInstrument",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
     ],
     "note": ""
    },
@@ -12684,29 +12612,6 @@
     "note": ""
    },
    {
-    "key": "ecd",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "employee",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "entity",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "eps_basic",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json",
@@ -12719,21 +12624,6 @@
     "key": "extra_components",
     "sources": [
      "common/sec_data/data/{T}/bs_identity_violations_log.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "facility",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "ffd",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
     ],
     "note": ""
    },
@@ -12755,21 +12645,6 @@
     "key": "first_quarter",
     "sources": [
      "docs/common/sec_data/rotce/{T}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "former_employee",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "frame",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
     ],
     "note": ""
    },
@@ -12820,34 +12695,6 @@
     "note": ""
    },
    {
-    "key": "individuals",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "instrument",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "insuranceCompany",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "insurance_company",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "insurance_reserves",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json",
@@ -12870,31 +12717,9 @@
     "note": ""
    },
    {
-    "key": "invest",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "investing_cash_flow",
     "sources": [
      "common/sec_data/ttm/{T}_ttm_series.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "investment",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "judicialCase",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
     ],
     "note": ""
    },
@@ -12913,13 +12738,6 @@
     "note": ""
    },
    {
-    "key": "lender",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "method_change_applied",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json",
@@ -12931,13 +12749,6 @@
     "key": "min_quarters",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "mmbtu",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
     ],
     "note": ""
    },
@@ -12963,42 +12774,7 @@
     "note": ""
    },
    {
-    "key": "numberOfCompany",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "numberOfSegment",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "operating_segment",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "operating_segments",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "other_nonop_income",
-    "sources": [
-     "common/sec_data/data/{T}/annual_{YYYY}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "other_provenance",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
@@ -13034,53 +12810,9 @@
     "note": ""
    },
    {
-    "key": "patent",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "percentage",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "plaintiff",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "plantiff",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "position",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "pretax_raw",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "project",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
     ],
     "note": ""
    },
@@ -13099,82 +12831,10 @@
     "note": ""
    },
    {
-    "key": "pure",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "reference_only",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json",
      "docs/common/sec_data/rotce/{T}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "registration_note",
-    "sources": [
-     "config/cik_lookup.csv"
-    ],
-    "note": ""
-   },
-   {
-    "key": "reportableSegment",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "reportable_segment",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "reportable_segments",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "reportable_unit",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "reportingUnit",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "reporting_Unit",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "reporting_unit",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json",
-     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "restaurant",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
     ],
     "note": ""
    },
@@ -13190,13 +12850,6 @@
     "key": "restructuring_charges_deducted",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "retiree",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
     ],
     "note": ""
    },
@@ -13243,41 +12896,6 @@
     "note": ""
    },
    {
-    "key": "rotce_ttm_tce_avg",
-    "sources": [
-     "docs/common/sec_data/rotce/{T}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "rxp",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "securities",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "security",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "segement",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "sga_captured",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json",
@@ -13294,93 +12912,9 @@
     "note": ""
    },
    {
-    "key": "shares_provenance",
-    "sources": [
-     "common/sec_data/data/{T}/annual_{YYYY}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "shares_source",
-    "sources": [
-     "docs/common/sec_data/rotce/{T}.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "source_is_own_data",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "sqft",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "sqm",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "srt",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "store",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "stores",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "subsidiaries",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "survivor",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "tradingDay",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "trading_day",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "upscale",
-    "sources": [
-     "common/sec_data/data/{T}/company_facts.json"
     ],
     "note": ""
    },
@@ -13390,22 +12924,543 @@
      "common/sec_data/dimension_aggregate_registry.json"
     ],
     "note": ""
+   }
+  ],
+  "written_key_count": 448,
+  "stale_keys": [
+   {
+    "key": "acquisition",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "acre",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "appeal",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "business",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "business_combination",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "business_unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "businesscombinations",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "case_filed",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "charge",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "claim",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "claimant",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "claims",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "classAction",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "class_action_lawsuit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "companies",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "complaints",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "current_employees",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "current_litigation_m",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "day",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "defendant",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "derivative",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "derivativeInstrument",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "ecd",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "employee",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "entity",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "eps_sector",
+    "sources": [
+     "config/cik_lookup.csv"
+    ]
+   },
+   {
+    "key": "exclusion_reason",
+    "sources": [
+     "config/cik_lookup.csv"
+    ]
+   },
+   {
+    "key": "facility",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "ffd",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "former_employee",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "frame",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "individuals",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "instrument",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "insuranceCompany",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "insurance_company",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "invest",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "investment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "judicialCase",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "lender",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "mmbtu",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "months",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "name",
+    "sources": [
+     "config/cik_lookup.csv"
+    ]
+   },
+   {
+    "key": "numberOfCompany",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "numberOfSegment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "operating_segment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "operating_segments",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "other_provenance",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ]
+   },
+   {
+    "key": "patent",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "percentage",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "plaintiff",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "plantiff",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "position",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "price",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ]
+   },
+   {
+    "key": "project",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "pure",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "registration_note",
+    "sources": [
+     "config/cik_lookup.csv"
+    ]
+   },
+   {
+    "key": "reportableSegment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "reportable_segment",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "reportable_segments",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "reportable_unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "reportingUnit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "reporting_Unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "reporting_unit",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "restaurant",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "retiree",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "rotce_ttm_tce_avg",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ]
+   },
+   {
+    "key": "rxp",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "securities",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "security",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "segement",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "segments",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
+   },
+   {
+    "key": "shares_provenance",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ]
+   },
+   {
+    "key": "shares_quarter_end",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ]
+   },
+   {
+    "key": "shares_source",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ]
+   },
+   {
+    "key": "sqft",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "sqm",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "srt",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "store",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "stores",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "subsidiaries",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "survivor",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "tradingDay",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "trading_day",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
+   },
+   {
+    "key": "upscale",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json"
+    ]
    },
    {
     "key": "vote",
     "sources": [
      "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
+    ]
    },
    {
     "key": "votePerShare",
     "sources": [
      "common/sec_data/data/{T}/company_facts.json"
-    ],
-    "note": ""
+    ]
+   },
+   {
+    "key": "years",
+    "sources": [
+     "common/sec_data/data/{T}/company_facts.json",
+     "common/sec_data/data/{T}/company_facts_legacy_{CIK}.json"
+    ]
    }
-  ],
-  "written_key_count": 12577
+  ]
  }
 }

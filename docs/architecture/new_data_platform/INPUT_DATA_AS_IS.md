@@ -49,7 +49,7 @@ FTSDケース対応。`FTSD`（`INPUT-A-049`）がFRED API上に実在しない�
 | C1 | `src/tail/sec_ctrl_fetcher.py` | `www.sec.gov/Archives/edgar/data/.../{primaryDocument}`（10-Q Item4本文） | TANUKI TAIL内部統制監視 |
 | C2 | `src/tail/edgar_rss_monitor.py` | `www.sec.gov/cgi-bin/browse-edgar?output=atom`＋`submissions/`＋`company_tickers.json` | TANUKI TAIL新規提出監視 |
 | C3 | `src/tail/xbrl_segment_fetcher.py` | `company_tickers.json`＋`submissions/`＋`.../{doc}_htm.xml` | TANUKI TAILセグメントKPI抽出 |
-| G | `common/sec_data/segment_fetcher.py` | SEC EDGAR（GitHub Actions未使用） | 手動実行専任（`TANUKI_Segment_AI.yml`はworkflow_dispatchのみ、スケジュールなし） |
+| G | `common/sec_data/segment_fetcher.py`（`0091fa09cb`〈2026-08-27〉で削除） | SEC EDGAR（GitHub Actions未使用） | 手動実行専任（`TANUKI_Segment_AI.yml`はworkflow_dispatchのみ、スケジュールなし） |
 | H | `config/cik_lookup.csv`／`cik_lookup_result.json`生成処理 | `company_tickers.json` | CIKルックアップ（`TANUKI_CIK_Lookup.yml`、workflow_dispatchのみ） |
 
 C1〜C3は3ファイルとも`common/sec_data`を一切importせず、独立にrequestsで
@@ -66,7 +66,7 @@ SEC EDGARへ直接アクセスしている（User-Agent文字列も3ファイル
 ### 1-B. yfinance（実測12ファイル、既存ドキュメントの「13〜14ファイル」を検証）
 
 `import yfinance`/`from yfinance`を直接grepしたところ、`src/`配下で
-ヒットする14ファイルのうち4ファイル（`src/subport/fg_level2/trader.py`・
+ヒットする14ファイルのうち4ファイル（`src/subport/fg_level2/trader.py`（`767b759c97`〈2026-09-16〉で削除）・
 `src/subport/day_trade/backtest.py`・`src/subport/fg_level2_extended.py`・
 `src/subport/fg_level2_backtest.py`）は**F&G Level2 TQQQトレーダー
 （別プロジェクト、`FIELD_DEFINITIONS.md`499項目のいずれのサブシステムにも
@@ -93,10 +93,10 @@ SEC EDGARへ直接アクセスしている（User-Agent文字列も3ファイル
 | TANUKI VALUATION | `src/value/tanuki_valuation/score_verifier.py` | 検証用の株価再取得 |
 | HypeCore | `src/value/hypecore/hypecore.py` | 株価履歴・出来高・PSR・アナリスト格上げ格下げ履歴・空売り比率 |
 | STONKS SILO | `discover/stonks-silo/src/valuation_fetcher.py` | 時価総額・株価 |
-| Discover | `src/discover/collect.py` | 株価（カタリスト判定用の参考） |
+| Discover | `src/discover/collect.py`（`ec4590fd6e`〈2026-09-01〉で削除） | 株価（カタリスト判定用の参考） |
 | Market Pulse | `src/market/market_pulse/collect_and_send.py` | 主要9銘柄・NYSE Composite・VIX9D・HYG/LQD・グロース/バリューETF等 |
 | Market Pulse | `src/market/market_pulse/breadth_calculator.py` | S&P500構成銘柄一括ダウンロード |
-| Market Pulse | `src/market/market_pulse/backfill_tech_pulse.py` | Tech Pulse履歴バックフィル用 |
+| Market Pulse | `src/market/market_pulse/backfill_tech_pulse.py`（`10edc21198`〈2026-10-23〉で削除） | Tech Pulse履歴バックフィル用 |
 | EPS Analyzer | `src/value/adjusted_eps_analyzer/extract_key_facts.py` | フォールバックのみ（通常はSEC優先） |
 | SEC Data品質監査 | `common/sec_data/audit.py`（`audit_beta_drift()`） | β（`beta_config.json`との乖離監査、`--check-beta`時） |
 
@@ -143,7 +143,7 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 | `INPUT-C-004` | `config/rpo_config.json` | RPO調整設定 | 記載済み |
 | `INPUT-C-005` | `config/beta_config.json` | β値オーバーライド | 記載済み |
 | `INPUT-C-006` | `config/discover_config.json` | 銘柄別テーマ・区分（2026-10-23に削除、[[HOLDINGS-SINGLE-SOURCE-1]]） | 記載済み |
-| `INPUT-C-007` | `config/theme_config.json` | テーママスタ | 記載済み |
+| `INPUT-C-007` | `config/theme_config.json`（`6506f5e94f`〈2026-10-23〉で削除） | テーママスタ | 記載済み |
 | `INPUT-C-008` | `config/portfolio.json` | 保有株数・取得単価 | 記載済み（ただし保持場所が`docs/portfolio/data/portfolio.json`と重複、2-Dで詳述）。**【2026-08-15追記】`[[PORTFOLIO-CONFIG-DUP-1]]`実装完了、`config/portfolio.json`は削除・`docs/portfolio/data/portfolio.json`に統一済み** |
 | `INPUT-C-014` | `config/adjustment_items.json` | EPS Analyzerの調整項目カテゴリ・XBRLタグ定義（`version: "2026-04"`） | 記載済み（当初考慮漏れ→追加済み） |
 | `INPUT-C-011` | `config/prompts.yaml` | Grok/AI分析プロンプトテンプレート（`adjustment_analysis`等） | 記載済み（当初考慮漏れ→追加済み、重要） |
@@ -151,11 +151,11 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 | `INPUT-C-012` | `config/split_history.yaml` | 株式分割の遡及補正用手動記録（比率・効力発生日） | 記載済み（当初考慮漏れ→追加済み。実コード確認の結果、`apply_split_adjustments()`が事後適用する分類C項目と判明） |
 | `INPUT-B-001` | `config/monitor_tickers.yaml` | 監視銘柄マスタリスト | 記載済み（当初考慮漏れ→追加済み、重要） |
 | `INPUT-B-002` | `config/cik_lookup.csv` | Ticker→CIKマッピング | 記載済み（当初考慮漏れ→追加済み） |
-| `INPUT-B-003` | `config/cik_lookup_result.json` | CIKルックアップ結果キャッシュ | 記載済み（当初考慮漏れ→追加済み） |
+| `INPUT-B-003` | `config/cik_lookup_result.json`（`64925445ab`〈2026-10-21〉で削除） | CIKルックアップ結果キャッシュ | 記載済み（当初考慮漏れ→追加済み） |
 | — | `config/warn_acknowledged.json` | `report_consistency_check.py`のWARN確認済み台帳 | 対象外と判定（下記参照、IDなし） |
 | — | `config/workflow_dependencies.json` | ワークフロー依存関係定義（System Health用） | 対象外と判定（下記参照、IDなし） |
-| `INPUT-C-010` | `src/value/tanuki_valuation/fcf_conversion_config.json` | Damodaran業種別FCF変換率・ticker override | 記載済み（当初考慮漏れ→追加済み、`config/`外に配置されている点も特記）。**【2026-08-15追記】`[[FCFCONFIG-LOCATION-1]]`実装完了、`config/fcf_conversion_config.json`へ移動済み** |
-| `INPUT-C-009` | `docs/portfolio/tail/data/tail_kpi_map.json` | TANUKI TAIL KPI設定（AI提案＋人手確定） | 記載済み（ただし`config/`ではなく`docs/`配下、下記2-D参照）。**【2026-08-15追記】`[[TAILKPI-CONFIG-LOCATION-1]]`実装完了、`config/tail_kpi_map.json`へ移動済み** |
+| `INPUT-C-010` | `src/value/tanuki_valuation/fcf_conversion_config.json`（`80890c7113`〈2026-08-15〉で削除） | Damodaran業種別FCF変換率・ticker override | 記載済み（当初考慮漏れ→追加済み、`config/`外に配置されている点も特記）。**【2026-08-15追記】`[[FCFCONFIG-LOCATION-1]]`実装完了、`config/fcf_conversion_config.json`へ移動済み** |
+| `INPUT-C-009` | `docs/portfolio/tail/data/tail_kpi_map.json`（`80890c7113`〈2026-08-15〉で削除） | TANUKI TAIL KPI設定（AI提案＋人手確定） | 記載済み（ただし`config/`ではなく`docs/`配下、下記2-D参照）。**【2026-08-15追記】`[[TAILKPI-CONFIG-LOCATION-1]]`実装完了、`config/tail_kpi_map.json`へ移動済み** |
 
 ### 1-E. ID対応表（`INPUT_DATA_TOBE.md`分類A/B/C全67件との対応）
 
@@ -232,16 +232,16 @@ risk_free_rate」は**「FRED非参照（ハードコード0.043）を再確認�
 |---|---|---|
 | `INPUT-B-001` | `config/monitor_tickers.yaml` | 存在確認済み（手動編集） |
 | `INPUT-B-002` | `config/cik_lookup.csv` | 存在確認済み（`TANUKI_CIK_Lookup.yml`で半自動生成） |
-| `INPUT-B-003` | `config/cik_lookup_result.json` | 存在確認済み（同上の実行結果キャッシュ） |
+| `INPUT-B-003` | `config/cik_lookup_result.json`（`64925445ab`〈2026-10-21〉で削除） | 存在確認済み（同上の実行結果キャッシュ） |
 
 #### 分類C: 導出データの入力（14件）
 
 | ID | ファイル | 現状の存在確認 |
 |---|---|---|
 | `INPUT-C-001`（`segment_config.json`）、`INPUT-C-002`（`growth_options_config.json`）、`INPUT-C-003`（`maturity_config.json`）、`INPUT-C-004`（`rpo_config.json`）、`INPUT-C-005`（`beta_config.json`）、`INPUT-C-006`（`discover_config.json`）、`INPUT-C-007`（`theme_config.json`） | いずれも`config/`配下（1-D表参照） | 存在確認済み |
-| `INPUT-C-008` | `config/portfolio.json` | 存在確認済み。ただし`docs/portfolio/data/portfolio.json`と重複（2-D参照）。**【2026-08-15追記】実装完了、`docs/portfolio/data/portfolio.json`に統一済み** |
-| `INPUT-C-009` | `docs/portfolio/tail/data/tail_kpi_map.json` | 存在確認済み。`config/`外に配置（2-D参照）。**【2026-08-15追記】実装完了、`config/tail_kpi_map.json`へ移動済み** |
-| `INPUT-C-010` | `src/value/tanuki_valuation/fcf_conversion_config.json` | 存在確認済み。`config/`外に配置（2-D参照）。**【2026-08-15追記】実装完了、`config/fcf_conversion_config.json`へ移動済み** |
+| `INPUT-C-008` | `config/portfolio.json`（`e97741f542`〈2026-08-15〉で削除） | 存在確認済み。ただし`docs/portfolio/data/portfolio.json`と重複（2-D参照）。**【2026-08-15追記】実装完了、`docs/portfolio/data/portfolio.json`に統一済み** |
+| `INPUT-C-009` | `docs/portfolio/tail/data/tail_kpi_map.json`（`80890c7113`〈2026-08-15〉で削除） | 存在確認済み。`config/`外に配置（2-D参照）。**【2026-08-15追記】実装完了、`config/tail_kpi_map.json`へ移動済み** |
+| `INPUT-C-010` | `src/value/tanuki_valuation/fcf_conversion_config.json`（`80890c7113`〈2026-08-15〉で削除） | 存在確認済み。`config/`外に配置（2-D参照）。**【2026-08-15追記】実装完了、`config/fcf_conversion_config.json`へ移動済み** |
 | `INPUT-C-011` | `config/prompts.yaml` | 存在確認済み |
 | `INPUT-C-012` | `config/split_history.yaml` | 存在確認済み |
 | `INPUT-C-013` | `config/sectors.yaml` | 存在確認済み |
@@ -277,7 +277,7 @@ filing_meta/segments/filing_text」という単一スキーマより実際には
 common/sec_data/data/{TICKER}/annual_{YEAR}.json       # 正規化済み通期
 common/sec_data/data/{TICKER}/quarterly_{FYQ}.json     # 正規化済み四半期
 common/sec_data/data/{TICKER}/submissions.json         # 提出メタ情報
-common/sec_data/raw/{TICKER}_quarterly_raw.json        # 正規化前の生XBRL
+common/sec_data/raw/{TICKER}_quarterly_raw.json（`3a2d0f407a`〈2026-08-05〉で削除）        # 正規化前の生XBRL
 common/sec_data/normalized/{TICKER}_quarterly_normalized.json  # 別スキーマの正規化四半期
 common/sec_data/ttm/{TICKER}_ttm_series.json           # TTM系列
 ```
@@ -357,7 +357,7 @@ MACRO PULSE側はFRED専用のCSV群を持つのに対し、Market Pulse側はFR
 2. **`tail_kpi_map.json`**は`config/`ではなく`docs/portfolio/tail/data/`
    配下（TANUKI TAILの生成データと同じディレクトリ）に配置されている。
 
-また、`config/portfolio.json`と`docs/portfolio/data/portfolio.json`は
+また、`config/portfolio.json`（`e97741f542`〈2026-08-15〉で削除）と`docs/portfolio/data/portfolio.json`は
 **バイト完全一致の重複ファイル**であることを確認した（`diff`コマンドで
 確認済み）。両ファイルを同期する自動処理は見当たらず（`config/`側を
 参照するPythonコードも見つからない）、Discoverの`discover_config.json`/
@@ -428,8 +428,8 @@ MACRO PULSE側はFRED専用のCSV群を持つのに対し、Market Pulse側はFR
 | `config/sectors.yaml` | セクター/業種キーワードマッピング | β・成長率のセクターデフォルト判定に使われる基礎データが未記載 |
 | `config/adjustment_items.json` | EPS Analyzerの調整項目カテゴリ定義 | EPS調整ロジックの根幹となる手動定義が未記載 |
 | `config/cik_lookup.csv`／`cik_lookup_result.json` | Ticker→CIKマッピング | SEC EDGAR取得の前提となる基礎データが未記載 |
-| `common/sec_data/raw/`・`normalized/`・`ttm/`という3系統の並存 | SEC EDGARが単一の正規化ストアではなく既に4〜5系統に分岐している実態 | TO-BEの2-Aは「単一ストアに一本化する」設計を示したが、統合対象が`data/annual・quarterly`だけでなく`raw/normalized/ttm`も含めた最低5系統に及ぶことの明示が甘かった |
-| Portfolio `config/portfolio.json`と`docs/portfolio/data/portfolio.json`の二重保持 | バイト完全一致の重複ファイル、同期処理不在 | TO-BEは手動入力データの保持先を単一パスとして扱っていたが、Portfolioについては実際には2箇所に重複保持されており、Discoverと同型の同期リスクがある |
+| `common/sec_data/raw/`（`3a2d0f407a`〈2026-08-05〉で削除）・`normalized/`・`ttm/`という3系統の並存 | SEC EDGARが単一の正規化ストアではなく既に4〜5系統に分岐している実態 | TO-BEの2-Aは「単一ストアに一本化する」設計を示したが、統合対象が`data/annual・quarterly`だけでなく`raw/normalized/ttm`も含めた最低5系統に及ぶことの明示が甘かった |
+| Portfolio `config/portfolio.json`（`e97741f542`〈2026-08-15〉で削除）と`docs/portfolio/data/portfolio.json`の二重保持 | バイト完全一致の重複ファイル、同期処理不在 | TO-BEは手動入力データの保持先を単一パスとして扱っていたが、Portfolioについては実際には2箇所に重複保持されており、Discoverと同型の同期リスクがある |
 
 ### C. 両方にあるが粒度・扱いが異なるもの
 
@@ -458,7 +458,7 @@ MACRO PULSE側はFRED専用のCSV群を持つのに対し、Market Pulse側はFR
 | `config/adjustment_items.json` | **TO-BEに追加すべき考慮漏れ** | EPS Analyzerの調整ロジックが依存する手動定義データ |
 | `config/cik_lookup.csv`／`cik_lookup_result.json` | **TO-BEに追加すべき考慮漏れ** | SEC EDGAR取得（1-A）の前提データであり、1-Aの一部として扱うべき |
 | `common/sec_data`内`raw/`・`normalized/`・`ttm/`の並存 | **TO-BEの記述を是正（統合スコープの明確化）** | 「単一ストアへの一本化」という設計方針自体は維持しつつ、統合対象に`raw/`・`normalized/`・`ttm/`を含めることを明示する |
-| Portfolio `config/portfolio.json`との二重保持 | **TO-BEに追加すべき考慮漏れ** | Discoverの既知の二重管理バグと同型のリスクがあり、一次データ層の設計として「唯一の保持場所」を明示すべき |
+| Portfolio `config/portfolio.json`（`e97741f542`〈2026-08-15〉で削除）との二重保持 | **TO-BEに追加すべき考慮漏れ** | Discoverの既知の二重管理バグと同型のリスクがあり、一次データ層の設計として「唯一の保持場所」を明示すべき |
 | `config/warn_acknowledged.json` | **意図的に対象外** | 品質ゲート（`report_consistency_check.py`）の確認済み状態を記録する運用状態データであり、499項目のいずれの計算にも入力されない。5分類上は「システム設定データ」に相当し、一次データ層の対象外 |
 | `config/workflow_dependencies.json` | **意図的に対象外** | `System_Health.yml`が参照するワークフロー依存関係の定義であり、499項目の計算には一切使われない。同じく「システム設定データ」に相当し対象外 |
 

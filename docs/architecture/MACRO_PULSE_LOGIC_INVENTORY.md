@@ -91,7 +91,7 @@ BACKLOG_DONE.mdの該当（見出し）:
   間隔は最短6.3時間あった（順序が逆転した回は無い）。
 - Market Data Daily・Market Pulseとの連鎖は無い（MACRO PULSEは`common/market_data/daily/`を読まない）。共有はFRED系列ストアのみ。
 - 他に`common/macro_data/`・MACRO PULSEの出力に書くものは手動スクリプトだけ（`05_import_history.py`・`05_backfill_nfp_mom.py`・
-  `migrate_bamlh0a0hym2_history.py`）だった。ほかに`scripts/analysis/macro_events_sp500_asof_repair.py`（下のM-3の修復）も`05_events.csv`を書いていた。
+  `migrate_bamlh0a0hym2_history.py`）だった。ほかに`scripts/analysis/macro_events_sp500_asof_repair.py`（`31aa31b875`〈2026-10-23〉で削除）（下のM-3の修復）も`05_events.csv`を書いていた。
   4つとも2026-10-23に削除した（R-A MACRO PULSEの段階2。1回だけの修復・移行で適用済み、`05_import_history.py`は履歴の作り直しの手順が無いため）。
   今の書き手は`05_main.py`（MACRO_PULSE_Update）と`common/macro_data/fetcher.py`（Macro_Data_Update）だけ。
 - 日次の起動が毎回UTCの0時をまたいでいるため、`--date $(date -u +%Y-%m-%d)`は**予定日の翌日**になる（直近20回すべて）。
@@ -632,7 +632,7 @@ tooltip・レーダーの3系列と実数ラベル・類似度・スライダー
 
 ## M-2 STEP 4: 流動性の週単位化の before/after（2026-10-03）
 
-`scripts/analysis/macro_liquidity_weekly_before_after.py`の出力。before=05_liquidity.csvの行で判定（日次）、after=`05_main.py::weekly_liquidity_state()`を各日の時点で公表済みの値だけで計算（週次、H.4.1の水曜）。
+`scripts/analysis/macro_liquidity_weekly_before_after.py`（`b6294a559b`〈2026-10-20〉で削除）の出力。before=05_liquidity.csvの行で判定（日次）、after=`05_main.py::weekly_liquidity_state()`を各日の時点で公表済みの値だけで計算（週次、H.4.1の水曜）。
 
 対象: 05_liquidity.csv 1345行（2023-01-01〜2026-10-03）
 Hollow Rally: before 24日 → after 164日
@@ -895,7 +895,7 @@ H.4.1の週（水曜〜翌火曜）ごとに「その週に1日でも発火し�
 データは M-3 の修復後の kaihatsu（547e7fca31）。M-3b（予定の枠の行の修復）は当てていない（Permits・Michigan・NFP の2026年の19行は
 予定の枠の日付のまま）。修正案は書かない。
 
-### STEP 1: スコアと実際の景気後退（`scripts/analysis/macro_m4_score_vs_recession.py`）
+### STEP 1: スコアと実際の景気後退（`scripts/analysis/macro_m4_score_vs_recession.py`（`b6294a559b`〈2026-10-20〉で削除））
 スコアは画面のスコア推移と同じ `computeScoreAsOf()`（過去の日付は補間、先読み除外あり）を実ブラウザ（東京）で1949年以降の毎日について
 計算した。今のゲージ・週次スナップショットは 05_main.py の段階関数（補間なし）で、計算が違う。後退期は FRED USREC（月次）。
 
@@ -1012,7 +1012,7 @@ H.4.1の週（水曜〜翌火曜）ごとに「その週に1日でも発火し�
 3. 8指標の時期に、後退期でない日に ≥52 だったのは（後退の開始前12か月・終了直後を除いて）18回・1,013日で、2010〜2013年と2022〜2024年に集中。
    ≥70 は2020年6月の7日だけ
 
-### STEP 2: 指標ごとの閾値の出どころ（`scripts/analysis/macro_m4_thresholds.py`）
+### STEP 2: 指標ごとの閾値の出どころ（`scripts/analysis/macro_m4_thresholds.py`（`b6294a559b`〈2026-10-20〉で削除））
 
 #### 閾値の一覧と、入った時期（git log -S）
 | 指標 | スコアの段（段階関数。Python=JS） | 補間の折れ点（スコア推移の過去の点） | ヘルスバー bull / mid / bear | カードの thresh 表示 | 入った commit |
@@ -1070,7 +1070,7 @@ H.4.1の週（水曜〜翌火曜）ごとに「その週に1日でも発火し�
 3. Michigan は段階関数の最良の段が30点（中立）で、30点未満の段が無い。1978年以降、90以上（30点の段）は43.5%の月、後退シグナルの段（75未満）は
    29.3%の月。補間（スコア推移）では34.1%の月が30点未満になる。2020年代は90以上の月が2%だけ（今は51.7で後退シグナルの段）
 
-### STEP 3: Hollow Rally とステルスの発火（`scripts/analysis/macro_m4_hollow_rally.py`）
+### STEP 3: Hollow Rally とステルスの発火（`scripts/analysis/macro_m4_hollow_rally.py`（`b6294a559b`〈2026-10-20〉で削除））
 判定は M-2 STEP 4 の after と同じ（各日にその日に公表済みだった値で `weekly_liquidity_state()`）。**期間は2023年以降の197週で、比べる週の数が
 少なく、結論の強さには限界がある**。
 
@@ -1119,7 +1119,7 @@ H.4.1の週（水曜〜翌火曜）ごとに「その週に1日でも発火し�
 3. 「EASING認識の見直しを推奨」は509／1,345日（75／197週）。67%（341日）は WALCL が減った・横ばいの週で、供給額を0として扱うため RRP か TGA が
    少しでも増えれば出る。WALCL が減った・横ばいの週を使う日（906日）の38%で出ている
 
-### STEP 4: M2 のパーセンタイル（`scripts/analysis/macro_m4_m2_percentile.py`）
+### STEP 4: M2 のパーセンタイル（`scripts/analysis/macro_m4_m2_percentile.py`（`b6294a559b`〈2026-10-20〉で削除））
 
 #### M2 の今の位置（最新の観測 2026-08-01、M2SL 1959-01〜、CPIAUCSL の最新 2026-08-01）
 | 尺度 | 今の値 | 全期間のパーセンタイル | 過去5年（直近60か月）の範囲 | 過去5年の中のパーセンタイル | 過去10年の中のパーセンタイル |
@@ -1199,7 +1199,7 @@ H.4.1の週（水曜〜翌火曜）ごとに「その週に1日でも発火し�
 - STEP 4 の既存の行の修復は、書いた時点の M2 の値が今の版と一致する最新の10行だけを埋める（画面が使うのは最新行だけ）
 - Michigan は段の定義のまま「拡張」の段が無い（ヘルスバーの最良も NEUTRAL）
 
-### STEP 7: 閾値の試算（実装しない、`scripts/analysis/macro_m5_threshold_simulation.py`）
+### STEP 7: 閾値の試算（実装しない、`scripts/analysis/macro_m5_threshold_simulation.py`（`b6294a559b`〈2026-10-20〉で削除））
 HY・Claims・Permits・Michigan の段の境目を、各日に分かっていた過去10年の観測の分布のパーセンタイルにする（パーセンタイルは今の閾値の1990年以降の
 割合）。CFNAI・Sahm・Philly・YC はそのまま。スコアは段階関数（ゲージ・週次スナップショットと同じ）で、スコア推移の画面（補間）ではない。
 HY は分布が1996-12以降しか無く、2006年までは10年の窓に足りない。

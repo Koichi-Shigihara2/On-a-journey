@@ -36,7 +36,7 @@
 | `sec_fetch_failed` | `_freshness.json` の FETCH_FAILED | 0 | — |
 | `sec_update_failed` | `_freshness.json` の FAILED（出力を前回の状態に戻した） | 0 | — |
 | `fact_override` | 人が書く台帳 `common/sec_data/fact_overrides.json`（値の差し替え） | 5 | GOOGL・COHR・CIX・ONDS・LOAR |
-| 手書き | `config/ticker_exceptions_manual.json`（4 章）の level A の行 | — | 移す BACKLOG 7 件のうち値に効くもの（8 章） |
+| 手書き | `config/ticker_exceptions_manual.json`（予定）（4 章）の level A の行 | — | 移す BACKLOG 7 件のうち値に効くもの（8 章） |
 
 ### B: 注記（10-15 時点）
 
@@ -55,7 +55,7 @@
 | `eps_special_flags` | EPS quarterly.json `special_flags`（いずれかの四半期） | 38 | （省略） |
 | `cik_history` | 人が書く台帳 `common/sec_data/cik_history.json`（旧 CIK の結合） | 4 | MRVL・GOOGL・DELL・XOM |
 | `warn_acknowledged` | 人が書く台帳 `config/warn_acknowledged.json`（確認済みの WARN） | 68 行 | 銘柄ごとにまとめて 1 行 |
-| 手書き | `config/ticker_exceptions_manual.json` の level B の行 | — | 8 章 |
+| 手書き | `config/ticker_exceptions_manual.json`（予定） の level B の行 | — | 8 章 |
 
 ### C: 内部の検知（件数だけ。10-15 時点）
 
@@ -65,8 +65,8 @@
 | `fy_tag_mismatch` | `.../fy_tag_mismatch_log.json` | 12（336） |
 | `fye_boundary_collision` | `.../fye_boundary_collision_log.json` | 1（2） |
 | `bs_identity_violation` | `.../bs_identity_violations_log.json` | 48（153） |
-| `spac_shell_detection` | `.../spac_shell_detection_log.json` | 17（18） |
-| `share_unit_fix` | `.../share_unit_fix_log.json`（parser が単位を補正済み） | 15（170） |
+| `spac_shell_detection` | `.../spac_shell_detection_log.json`（`b6294a559b`〈2026-10-20〉で削除。読み手0件） | 17（18） |
+| `share_unit_fix` | `.../share_unit_fix_log.json`（parser が単位を補正済み。`b6294a559b`〈2026-10-20〉で削除。読み手0件） | 15（170） |
 | `fixed_registry` | `common/sec_data/fixed_registry.json`（凍結） | 42 |
 | `rpo_not_applied` | TANUKI latest.json `rpo_adjustment.exclusion_reason`（RPO/売上 < 0.3 の規則で不適用） | 12 |
 | `eps_maturity_alert` | EPS quarterly.json `maturity_monitor.alert` | 39 |
@@ -80,11 +80,11 @@ C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を
 ### 3.1 方針
 
 - **既存の書き手は変えない。** parser・update.py・TANUKI・Stonks・EPS・HypeCore の出力の形・書き方はそのまま。
-- **集約の処理を 1 本新設する**（`common/ticker_exceptions/build_ledger.py` を想定）。読むのは保存済みの出力ファイルだけで、元データからその場で計算しない（CHAT_RULES.md 事例 39。その場で計算すると、反映の時期が書き手とずれる）。
-- 出力: `docs/value-monitor/tanuki_valuation/data/ticker_exceptions.json`。TANUKI VALUATION の既存の commit の `git add docs/value-monitor/tanuki_valuation/data/` に含まれる。同じフォルダを一覧する処理は、どれもフォルダだけに絞っているので影響しない（6 章）。
+- **集約の処理を 1 本新設する**（`common/ticker_exceptions/build_ledger.py`（予定） を想定）。読むのは保存済みの出力ファイルだけで、元データからその場で計算しない（CHAT_RULES.md 事例 39。その場で計算すると、反映の時期が書き手とずれる）。
+- 出力: `docs/value-monitor/tanuki_valuation/data/ticker_exceptions.json`（予定）。TANUKI VALUATION の既存の commit の `git add docs/value-monitor/tanuki_valuation/data/` に含まれる。同じフォルダを一覧する処理は、どれもフォルダだけに絞っているので影響しない（6 章）。
 - **first_seen は前回の台帳から引き継ぐ。** 同じ (ticker, kind) が前回の台帳にあれば first_seen をそのまま使い、last_seen を今回にする。
 - **検知されなくなったら解消（status = resolved）**とし、resolved_at を記録する。resolved_at から **30 日後に行を削除**する。再び検知されたら open に戻し、first_seen は新しく付ける（解消前の履歴は残さない）。
-- **自動で検知できない銘柄別の問題は、手書きの入力ファイル `config/ticker_exceptions_manual.json` に書く**（BACKLOG から移す 7 件など）。手書きの行は集約処理が台帳に写すだけで、解消は手書きのファイルから消す（または `status: resolved` を書く）ことで行う。
+- **自動で検知できない銘柄別の問題は、手書きの入力ファイル `config/ticker_exceptions_manual.json`（予定） に書く**（BACKLOG から移す 7 件など）。手書きの行は集約処理が台帳に写すだけで、解消は手書きのファイルから消す（または `status: resolved` を書く）ことで行う。
 
 ### 3.2 集約処理が読むもの
 
@@ -95,9 +95,9 @@ C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を
 | `common/sec_data/data/{T}/*_log.json`（parser の 6 種） | C | 保存済みのファイル |
 | `docs/value-monitor/stonks-silo/data/results.json` | B | 保存済みのファイル |
 | `docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json` | B・C | 保存済みのファイル |
-| `common/market_data/{SYM}/market_data_violations_log.json` | C | 保存済みのファイル |
+| `common/market_data/{SYM}/market_data_violations_log.json`（`4ed11677f8`〈2026-10-22〉で削除） | C | 保存済みのファイル |
 | `common/sec_data/fact_overrides.json`・`cik_history.json`・`fixed_registry.json`・`config/warn_acknowledged.json` | A・B・C | 保存済みのファイル（人が書く台帳） |
-| `config/ticker_exceptions_manual.json` | A・B | 保存済みのファイル（手書き） |
+| `config/ticker_exceptions_manual.json`（予定） | A・B | 保存済みのファイル（手書き） |
 | 前回の `ticker_exceptions.json` | — | first_seen の引き継ぎ・解消の判定 |
 
 対象の銘柄は `get_registrable_tickers()` に絞る（retired の銘柄の行は作らない）。
@@ -121,7 +121,7 @@ C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を
 
 台帳の全体: `generated_at`・`rows`（上の行の一覧）・`counts_c`（C の kind ごとの銘柄数・件数）・`sources`（読んだ各ファイルの更新日時、読めなかったファイル）。
 
-手書きの入力 `config/ticker_exceptions_manual.json` の 1 行: `ticker`・`kind`・`level`・`note`・`backlog_ref`・`since`（日付）・任意の `status`。
+手書きの入力 `config/ticker_exceptions_manual.json`（予定） の 1 行: `ticker`・`kind`・`level`・`note`・`backlog_ref`・`since`（日付）・任意の `status`。
 
 ## 5. 表示と通知
 
@@ -163,7 +163,7 @@ C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を
 |---|---|---|---|---|
 | `_freshness.json` | CHECK-60、System Health [M]、update.py | ファイル | 出ない | A として stock.html に出る |
 | parser のログ 4 種（fy_collision 等） | report_consistency_check.py:2282-2342 | ファイル | 出ない | C の件数 |
-| `spac_shell_detection_log`・`share_unit_fix_log` | 0 件 | — | 出ない | C の件数 |
+| `spac_shell_detection_log`・`share_unit_fix_log`（`b6294a559b`〈2026-10-20〉でファイルごと削除） | — | — | — | —（集約の対象外） |
 | `latest_period_missing` | TANUKI pipeline（その場）、CHECK-63（ファイル） | 両方 | stock.html・tanuki_score | A |
 | `fcf_outlier` | TANUKI（その場） | その場 | stock.html・tanuki_score・admin.html | A（除外）・B（注記） |
 | `bs_adjustment.cash_missing`・`sti_quarterly_missing` | pipeline・CHECK | その場・ファイル | 出ない | B（値への影響を確かめて A に上げる候補） |
@@ -176,7 +176,7 @@ C に入れたものも、`share_unit_fix`・`fixed_registry` のように値を
 
 ## 8. BACKLOG から移す候補（7 件）
 
-実装の後に、銘柄の事情を `config/ticker_exceptions_manual.json` に移す。仕組みの問題が残るものは、BACKLOG の項目を仕組みの問題だけに書き直す。
+実装の後に、銘柄の事情を `config/ticker_exceptions_manual.json`（予定） に移す。仕組みの問題が残るものは、BACKLOG の項目を仕組みの問題だけに書き直す。
 
 | BACKLOG | 銘柄 | 想定の level | 備考 |
 |---|---|---|---|

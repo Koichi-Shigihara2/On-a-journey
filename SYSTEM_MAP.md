@@ -378,7 +378,7 @@ runway計算ロジックを変更する場合、TANUKI VALUATION側のMatrix③�
 ## TANUKI SCORE daily pick（docs/integrated-dashboard/）（2026-07-10追記、**2026-10-20削除**）
 
 **削除済み（2026-10-20、Koichiさんの判断、[[OUTPUT-INVENTORY-CHECK-1]]のTANUKIの段階）**: 今日の特選銘柄（`src/value/tanuki_score/daily_pick.py`・Grokでの選出とレポート、
-`docs/integrated-dashboard/daily_pick.json`・`history.json`、`docs/value-monitor/tanuki_score/index.html`の「📌 今日の特選銘柄」の区画、
+`docs/integrated-dashboard/daily_pick.json`（`ad6af70b5c`〈2026-10-20〉で削除）・`history.json`、`docs/value-monitor/tanuki_score/index.html`の「📌 今日の特選銘柄」の区画、
 TANUKI_Score_Update.ymlの段）。`src/value/tanuki_score/`と`docs/integrated-dashboard/`はフォルダごと無くなった。
 TANUKI SCOREの判定の実績表は`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`を読む（daily pickとは関係しない）。
 以下は削除前の記載: `daily_pick.py`の出力先は`docs/integrated-dashboard/`（`daily_pick.json`・`history.json`）で、`docs/value-monitor/tanuki_score/index.html`がfetchして表示していた。
@@ -394,10 +394,10 @@ TANUKI SCOREの判定の実績表は`docs/value-monitor/tanuki_valuation/data/{T
 **銘柄別の例外の台帳（設計のみ、2026-10-15）**: `docs/architecture/TICKER_EXCEPTION_LEDGER.md`（`[[TICKER-EXCEPTION-LEDGER-1]]`）。TANUKI_VALUATION_Update.ymlに「Gate → 台帳の集約 → score_watcher → commit」の段を足す予定（未実装）。
 
 `config/workflow_dependencies.json`の`depends_on`・`outputs`は同スクリプトがYAMLから生成する。キーと`yml`は手作業の定義
-（ワークフローを新設したらここに追記する）。読み手はCHECK-58（YAMLとのずれ）だけ。管理のページ（`docs/value-monitor/admin.html`）の
+（ワークフローを新設したらここに追記する）。読み手はCHECK-58（YAMLとのずれ）だけ。管理のページ（`docs/value-monitor/admin.html`（`0f84464da8`〈2026-10-21〉で削除））の
 一括更新が読んでいた`label`・`accepts_tickers`・`input_param`・`bulk_update_*`・`new_ticker_order`は、ページの削除（2026-10-21）で消した。
 一括の更新はClaude Codeが`gh workflow run`で起動する（CLAUDE_CODE_START.md「管理の操作の手順」）。
-管理のページだけが起動していた`TANUKI_CIK_Lookup.yml`（`config/cik_lookup.csv`の書き手の二重、出力の`config/cik_lookup_result.json`は読み手0件）と
+管理のページだけが起動していた`TANUKI_CIK_Lookup.yml`（`config/cik_lookup.csv`の書き手の二重、出力の`config/cik_lookup_result.json`（`64925445ab`〈2026-10-21〉で削除）は読み手0件）と
 `TANUKI_Segment_AI.yml`（Grokでセグメントを作る。10-Kから決める手順と合わない）は2026-10-21に削除した（23本→21本）。
 `config/cik_lookup.csv`の書き手は登録の手順（`register_ticker.py`が呼ぶ`registration_validator.py`のstatusの昇格）とClaude Codeの直接編集だけ。
 
@@ -491,7 +491,7 @@ Pythonバックエンド専用ディレクトリとして扱う。
 
 管理のページ（`admin.html`、2026-10-21に削除）が使っていたGitHub Contents API（`https://api.github.com/
 repos/.../contents/{path}`）はパスが`config/`でも`src/`でも`docs/`でも
-区別なくアクセス可能（Pages非公開の`config/fcf_conversion_config.json`
+区別なくアクセス可能（Pages非公開の`config/fcf_conversion_config.json`（`192a45116b`〈2026-09-18〉で削除）
 を読み書きしていた実績あり）。ただし
 `Authorization: token`ヘッダーにPAT（個人アクセストークン）が必須で、
 未認証アクセスは60req/hour/IPと極めて低いレート制限のため、**不特定
@@ -568,7 +568,7 @@ CHECK-34では、この原則を**複数ファイルへ横展開する際の設�
   tanuki_valuation`配下は`__init__.py`が`.wacc`importで失敗しフル
   パッケージimportができないため、`sys.path`にモジュールのディレクト
   リを追加してモジュール名だけでimportする`"flat"`方式を使う（既存
-  テスト`tests/test_divergence_sign_guard.py`等と同じパターン）。
+  テスト`tests/test_divergence_sign_guard.py`（`192a45116b`〈2026-09-18〉で削除）等と同じパターン）。
   `src.value.adjusted_eps_analyzer`配下は相対import（`from .module
   import ...`）を使っているため`"package"`方式（`REPO_ROOT`起点の
   フルドット区切りパスでimport）が必要
@@ -1170,7 +1170,7 @@ SEC EDGAR
 │    （1,441ファイル横断比較で差分0件）。RCAT 2016Q3の1ファイルのみ
 │    四半期キー自体が新抽出結果から消滅し旧ファイルが未上書きのまま
 │    残存（[[RCAT-2016Q3-ORPHANED-QUARTERLY-FILE-1]]）。併せて
-│    `common/sec_data/raw/`（`quarterly.py`書き込み専用・実消費者ゼロの
+│    `common/sec_data/raw/`（`3a2d0f407a`〈2026-08-05〉で削除）（`quarterly.py`書き込み専用・実消費者ゼロの
 │    デッドコード）を削除済み（Step1で全消費者洗い出し済み）。
 ├─ conditional_tags.py # 条件付きの候補タグ（2026-10-14、[[LAYER3-LATEST-FILING-TAG-DROP-1]]）。設備投資の
 │    SegmentExpenditureAdditionToLongLivedAssetsを、既存の候補と過去の期間で一致する銘柄だけ使う判定
@@ -1334,7 +1334,7 @@ SEC EDGAR
 │    （減算的設計、既存の正しい値を上書きする経路を持たない）。105銘柄・87件の
 │    複数accn混在ケースへのシミュレーションで矛盾のない56件（41銘柄）・
 │    KULR(2019)に無影響を確認済み。段階2で発火した年度の詳細を記録していた
-│    common/sec_data/data/{ticker}/spac_shell_detection_log.json
+│    common/sec_data/data/{ticker}/spac_shell_detection_log.json（`b6294a559b`〈2026-10-20〉で削除）
 │    （_save_spac_shell_detection_log()）は、読み手が無いため2026-10-20に
 │    削除（[[OUTPUT-INVENTORY-CHECK-1]]。是正の処理そのものは残す）。詳細はBACKLOG_DONE.md
 │    [[SPAC-SHELL-BS-ENTITY-MIXING-1]]参照。
@@ -1646,7 +1646,7 @@ Market Pulse  ← yfinance / CNN F&G / FREDデータ
 MACRO PULSE   ← FREDデータ / FRBステートメント
 　　整合性チェック: src/market/macro_pulse/05_audit.py（05_events.csvの重複行検出・
 　　NFP水準残存兆候の検出、report_consistency_check.py相当の軽量版。MACRO-NFP-1 2026-07-07新設）
-　　過去データ補正: src/market/macro_pulse/05_backfill_nfp_mom.py（05_events.csv内の
+　　過去データ補正: src/market/macro_pulse/05_backfill_nfp_mom.py（`31aa31b875`〈2026-10-23〉で削除）（05_events.csv内の
 　　既存NFP行を水準→前月比に一括変換する一回限りのバックフィルスクリプト。
 　　MACRO-NFP-HIST-1 2026-07-08新設、実行済み。2026-10-23に削除〈R-A MACRO PULSEの段階2〉）
 　　RECESSION RISK SCORE（景気後退リスク複合スコア）: index.htmlの`computeCurrentScore()`
@@ -1977,7 +1977,7 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
 
 　　**`satellite_monitor.py`との役割分担（2026-08-19③調査・記録）**:
 　　**2026-09-23削除済み**——`satellite_monitor.py`・
-　　`.github/workflows/TANUKI_TAIL_Satellite_Monitor.yml`は
+　　`.github/workflows/TANUKI_TAIL_Satellite_Monitor.yml`（`ed2739d9bb`〈2026-09-23〉で削除）は
 　　Koichiさんの承認済み判断（機能自体が「認識されていない・不要」と
 　　判明）により完全削除した（`ed2739d9bb`、`[[TAIL-SATELLITE-MONITOR-CORE-
 　　APPLICABILITY-1]]`参照、BACKLOG_DONE.md）。以下は削除前の設計・
@@ -1994,7 +1994,7 @@ TANUKI TAIL（docs/portfolio/tail/）← EDGAR RSS / Grok（KPI提案・四半�
 　　到達（`exit_condition`から正規表現で数値抽出）、③Grok Web検索に
 　　よるテーゼ否定ニュース検知（直近2週間）、④決算接近（`rss_state.
 　　json`の`last_filed`＋90日サイクルから推定した次回決算日の2週間前
-　　に警告）。`.github/workflows/TANUKI_TAIL_Satellite_Monitor.yml`で
+　　に警告）。`.github/workflows/TANUKI_TAIL_Satellite_Monitor.yml`（`ed2739d9bb`〈2026-09-23〉で削除）で
 　　平日2回（JST 08:00・17:00）実行——`TANUKI_TAIL_RSS_Monitor.yml`
 　　（平日1回、JST 17:00）より高頻度。
 
@@ -2376,7 +2376,7 @@ Grok・SEC・FREDへの通信はこの1ファイルを通す。そろえるの�
 | extract_key_facts.py | EPS quarterly.json 再生成 → report_consistency_check.py（CHECK-17/19確認）|
 | core_calculator.py / calculator/dcf.py | 影響銘柄のpipeline.py再実行 |
 | calculator/adjustments.py | 影響銘柄のpipeline.py再実行（FCF外れ値・estimate_fcf等）。`check_software_system_reclassification()`（FCF-CONVRATE-DESIGN-LIMIT-1、2026-07-14追加）はconfig書き換えを行わない純関数で、`determine_fcf_base()`と同じ「pipeline.py実行のたびに実績データから再判定」パターンを踏襲している。今後この種の自己補正ロジックを追加する際も同パターンを踏襲すること |
-| config/fcf_conversion_config.json（`estimate_fcf_from_eps()`が参照。ticker_overrides / sector_conversion_rates。2026-08-15、`src/value/tanuki_valuation/`から移動） | 影響銘柄のpipeline.py再実行（EPS推定FCFのconversion_rate変更時）。sector_conversion_ratesのキーはDamodaran業種カテゴリの省略形（下記beta_config.json/SECTOR_TO_DAMODARANと同一タクソノミー）だが、114分類中10分類（`Software_System_Mature`/`_SaaS`分割後）しかカバーしておらず、該当なしの銘柄は一律default(0.70)になる点に注意（[[FCF-CONVRATE-DESIGN-LIMIT-1]]参照。SECTOR-FCF-RATE-BROKEN-1で2026-07-14完了、Software_Systemグループ分割も2026-07-14完了）。`Software_System`（未分割・0.80）はIOT/QBTS/RBRK/S/SOUN等の判定保留銘柄向けに残置している |
+| config/fcf_conversion_config.json（`192a45116b`〈2026-09-18〉で削除）（`estimate_fcf_from_eps()`が参照。ticker_overrides / sector_conversion_rates。2026-08-15、`src/value/tanuki_valuation/`から移動） | 影響銘柄のpipeline.py再実行（EPS推定FCFのconversion_rate変更時）。sector_conversion_ratesのキーはDamodaran業種カテゴリの省略形（下記beta_config.json/SECTOR_TO_DAMODARANと同一タクソノミー）だが、114分類中10分類（`Software_System_Mature`/`_SaaS`分割後）しかカバーしておらず、該当なしの銘柄は一律default(0.70)になる点に注意（[[FCF-CONVRATE-DESIGN-LIMIT-1]]参照。SECTOR-FCF-RATE-BROKEN-1で2026-07-14完了、Software_Systemグループ分割も2026-07-14完了）。`Software_System`（未分割・0.80）はIOT/QBTS/RBRK/S/SOUN等の判定保留銘柄向けに残置している |
 | `FCF_CYCLICAL_VOLATILITY_TICKERS`（FCF-CONVRATE②、TRUST-SUMMARY-EPIC-1、2026-07-18新設。業界サイクルにより固定転換率が実態を表現できないと個別原因分析で確定した銘柄の手動リスト。閾値〈cv・divergence_ratio〉による自動判定はLLYがDOCNを両軸で上回るなど数学的に分離不可能と判明済みのため不採用） | `stock.html`（バナー表示）と`pipeline.py`（report.txtのdivergence_ratio表示）の**2箇所に同一のSetが独立定義**されており、共通configファイル経由ではない。3件目以降を追加する場合は個別原因分析（業界サイクル起因かどうかの確認）を経た上で**両ファイルに同期して追記**すること（片方のみの追記だとバナー・report.txtの表示が食い違う）。Classification判定ロジックには一切参照されない表示専用の定数（`FCF_LOW_RELIABILITY_SECTORS`と並ぶ第2の個別ティッカーベース信頼性フラグ機構。既存のFCF_LOW_RELIABILITY_SECTORSは業種ベース・stock.html単独定義で、pipeline.py側の対応はない） |
 | `GROWTH_STRUCTURAL_MISMATCH_TICKERS`（GROWTH-STRUCTURAL-MISMATCH-CANDIDATES-1、TRUST-SUMMARY-EPIC-1段階1可視化、2026-07-20新設。ハイパーグロース事業と成熟業種平均〈Damodaran業種分類〉との構造的ミスマッチが原因分析で確定した14銘柄〈AMD/NVDA/ONDS/ASTS/BKNG/BROS/ELF/KULR/LLY/TER/XOM/ALAB/IONQ/RCAT〉の手動リスト。`FCF_CYCLICAL_VOLATILITY_TICKERS`と同型の設計） | `stock.html`（`#growth-sanity-container`内のsanityHTMLバナー）と`pipeline.py`（report.txtの[4. 成長率根拠]セクション、signals/warnings表示直後）の**2箇所に同一のSetが独立定義**されており、共通configファイル経由ではない。TERのみ業界平均比ではなく自社実績比での警告のため注記文言を専用に分岐させている。追加・削除時は両ファイルへの同期を忘れないこと。Classification判定ロジックには一切参照されない表示専用の定数 |
 | config/beta_config.json（`overrides[ticker].sector`。`data_fetcher.py::_load_beta_config()`が正しいパスで読み込む共通ローダーで、`core_calculator.py::estimate_fcf_from_eps()`〈FCF転換率〉と`pipeline.py::_load_beta_sector()`〈growth_sanity向け〉の両方から参照される） | 影響銘柄のpipeline.py再実行。`sector`値は`growth_sanity.py::SECTOR_TO_DAMODARAN`の「beta_config.json形式」ブロック（例: `Semiconductor`/`Software_Internet`/`Aerospace_Defense`/`Software_System_Mature`/`Software_System_SaaS`）のキー形式で統一すること |

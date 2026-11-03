@@ -510,9 +510,9 @@ UNMAPPED-1]]・[[LAYER3-TTM-REGRESSION-NEWFIELD-BLINDSPOT-1]]）の
 |---|---|
 | `common/screening/dcf_validity_checker.py` | `data/annual_*.json`直読み（独自glob） |
 | `src/value/tanuki_valuation/beta_fetcher.py` | `data/annual_*.json`直読み |
-| `src/value/tanuki_valuation/kpi_fetcher.py` | `data/annual_*.json`直読み（segments） |
-| `common/sec_data/segment_fetcher.py` | `data/annual_*.json`へ書き込み（`[[SEGMENT-FETCHER-DUPLICATE-ORPHAN-1]]`の重複ファイルの一つ） |
-| `src/value/tanuki_valuation/segment_fetcher.py` | 同上（重複ファイルのもう一つ） |
+| `src/value/tanuki_valuation/kpi_fetcher.py`（`0091fa09cb`〈2026-08-27〉で削除） | `data/annual_*.json`直読み（segments） |
+| `common/sec_data/segment_fetcher.py`（`0091fa09cb`〈2026-08-27〉で削除） | `data/annual_*.json`へ書き込み（`[[SEGMENT-FETCHER-DUPLICATE-ORPHAN-1]]`の重複ファイルの一つ） |
+| `src/value/tanuki_valuation/segment_fetcher.py`（`0e60ee2555`〈2026-07-30〉で削除） | 同上（重複ファイルのもう一つ） |
 | `common/sec_data/registration_validator.py` | `data/annual_*.json`存在チェック・年次/TTM revenue比較 |
 
 （`common/sec_data/quality_checker.py`は表から削除。全リポジトリ

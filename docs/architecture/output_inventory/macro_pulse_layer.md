@@ -7,11 +7,11 @@
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`・`src/market/macro_pulse/`・`docs/market-monitor/macro-pulse/index.html`があれば「効く」
 - 残す／消す: 段階2の判断（2026-10-23、Koichiさんの判断）。手で動かすスクリプト3つと修復のスクリプト1つ、05_events.csv の誰も読まない6列を消した。zq_price・zq_ticker（cuts_implied を作った時点の入力の記録）と 05_audit.py は残す（下の注記）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 7（ファイル 6・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 0／2件以上 6／規則の二重 12（検出式 16種のうち。MACRO PULSEのファイルを含むもの 2）
+**件数**: 出力 7（ファイル 6・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 0／2件以上 6／規則の二重 12（検出式 17種のうち。MACRO PULSEのファイルを含むもの 2）
 
-**画面の項目**: 画面が読むキー 48（この段階の書き手あり 48・ほかの書き手あり 0・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **2**
+**画面の項目**: 画面が読むキー 63（この段階の書き手あり 63・ほかの書き手あり 0・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **2**（今の書き手のコードに無いキー 0 は数えない）
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 0件／解決できた読み込み 25件＋ファイル名で当たった行 22件（0.0%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 0件／解決できた読み込み 25件＋ファイル名で当たった行 23件（0.0%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
@@ -42,31 +42,31 @@
 
 ### `docs/market-monitor/macro-pulse/data/05_events.csv`（2件以上）
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
-- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 234・250・252・254・255・256（経由 `browser_checks/check_macro_pulse.py::read_csv`）
-- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 50・522・844・1061・1847・2531・2538・2547・2561・2681・2690（経由 `src/market/macro_pulse/05_main.py::load_events`）
+- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 241・321・323・325・326・327（経由 `browser_checks/check_macro_pulse.py::read_csv`）
+- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 50・523・845・1062・1872・2556・2563・2572・2586・2706・2715（経由 `src/market/macro_pulse/05_main.py::load_events`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 743
 - テスト・保存済みファイル: `tests/test_macro_pulse_accuracy.py` 行 263・399（経由 `src/market/macro_pulse/05_main.py::load_events`）
 
 ### `docs/market-monitor/macro-pulse/data/05_fed_context.csv`（2件以上）
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
-- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 234・250・252・254・255・256（経由 `browser_checks/check_macro_pulse.py::read_csv`）
-- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 52・777・1417・1892・2538・2566・2570・2681・2690（経由 `src/market/macro_pulse/05_main.py::get_financial_context`、`src/market/macro_pulse/05_main.py::refresh_fed_context_on_new_statement`、`src/market/macro_pulse/05_main.py::run_weekly_analysis`）
+- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 241・321・323・325・326・327（経由 `browser_checks/check_macro_pulse.py::read_csv`）
+- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 52・778・1442・1917・2563・2591・2595・2706・2715（経由 `src/market/macro_pulse/05_main.py::get_financial_context`、`src/market/macro_pulse/05_main.py::refresh_fed_context_on_new_statement`、`src/market/macro_pulse/05_main.py::run_weekly_analysis`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 744・3131
 - テスト・保存済みファイル: `tests/test_macro_pulse_accuracy.py` 行 263・399（経由 `src/market/macro_pulse/05_main.py::run_weekly_analysis`）
 - テスト・保存済みファイル: `tests/test_macro_pulse_logic.py` 行 526・537・556（経由 `src/market/macro_pulse/05_main.py::refresh_fed_context_on_new_statement`）
 
 ### `docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv`（2件以上）
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
-- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 234・250・252・254・255・256（経由 `browser_checks/check_macro_pulse.py::read_csv`）
-- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 51・508・623・646・2530・2534・2549・2681・2690（経由 `src/market/macro_pulse/05_main.py::load_schedule`）
+- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 241・321・323・325・326・327（経由 `browser_checks/check_macro_pulse.py::read_csv`）
+- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 51・509・624・647・2555・2559・2574・2706・2715（経由 `src/market/macro_pulse/05_main.py::load_schedule`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 745
 
 ### `docs/market-monitor/macro-pulse/data/05_liquidity.csv`（2件以上）
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 62・123・308・409・458（経由 `browser_checks/check_dependency_map.py::expected_hollow_rally_trigger`）
-- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 234・250・252・254・255・256（経由 `browser_checks/check_macro_pulse.py::read_csv`）
+- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 241・321・323・325・326・327・1201・1339・1365（経由 `browser_checks/check_macro_pulse.py::derived_checks`、`browser_checks/check_macro_pulse.py::read_csv`）
 - Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 54
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 237・256・1541・1744・1780（経由 `src/tail/quarterly_review_generator.py::load_macro_context`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 341・360・1635・1844・1880（経由 `src/tail/quarterly_review_generator.py::load_macro_context`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 2768
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58（経由 `src/tail/quarterly_review_generator.py::load_macro_context`）
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
@@ -75,15 +75,15 @@
 ### `docs/market-monitor/macro-pulse/data/05_meta.json`（2件以上）
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated_at`(2)
-- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 257
+- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 328
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 2769
 
 ### `docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv`（2件以上）
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 65・102・246・409・458（経由 `browser_checks/check_dependency_map.py::expected_weekly_score`）
-- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 234・250・252・254・255・256（経由 `browser_checks/check_macro_pulse.py::read_csv`）
-- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 53・1437・1862・1905・2538・2681（経由 `src/market/macro_pulse/05_main.py::load_weekly_analysis`）
-- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 236・242・1541・1744・1780（経由 `src/tail/quarterly_review_generator.py::load_macro_context`）
+- Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 241・321・323・325・326・327（経由 `browser_checks/check_macro_pulse.py::read_csv`）
+- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 53・1462・1887・1930・2563・2706（経由 `src/market/macro_pulse/05_main.py::load_weekly_analysis`）
+- Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 340・346・1635・1844・1880（経由 `src/tail/quarterly_review_generator.py::load_macro_context`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 746
 - テスト・保存済みファイル: `tests/test_macro_pulse_accuracy.py` 行 263・399（経由 `src/market/macro_pulse/05_main.py::load_weekly_analysis`）
 - テスト・保存済みファイル: `tests/test_tail_review_latest.py` 行 58（経由 `src/tail/quarterly_review_generator.py::load_macro_context`）
@@ -92,9 +92,9 @@
 
 ## 画面の項目
 
-画面（`docs/market-monitor/macro-pulse/index.html`）のJSが読むキー（`.key`・`?.key`・`['key']`。この段階のJSONか、ページが読むJSONにあるキー、またはsnake_caseのもの）。書き手は、この段階の出力のJSON（全ファイル、入れ子8段まで）と、ページが読む.jsonの文字列で照合したdocs/のJSONのキーで判定する。画面の言葉は、その行と前の3行の日本語の文字列（推定）。
+画面（`docs/market-monitor/macro-pulse/index.html`）のJSが読むキー（`.key`・`?.key`・`['key']`。この段階のJSONか、ページが読むJSONにあるキー、またはsnake_caseのもの）。書き手は、この段階の書き手のコードが書くキー（データに今無くても）と、この段階の出力のJSON（全ファイル、入れ子8段まで）のキーのうち今の書き手のコードにあるもの、ページが読む.jsonの文字列で照合したdocs/のJSONのキーで判定する（[[CHECK-REFERENCE-DEFINITION-1]]、2026-11-03）。画面の言葉は、その行と前の3行の日本語の文字列（推定）。
 
-### 書き手なし（画面が読むのに、どのJSONにも無いキー）
+### 書き手なし（画面が読むのに、今の書き手のコードにもどのJSONにも無いキー）
 
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
@@ -102,58 +102,79 @@
 - `zq_price`（`docs/market-monitor/macro-pulse/data/05_fed_context.csv`）: 残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）
 - `zq_ticker`（`docs/market-monitor/macro-pulse/data/05_fed_context.csv`）: 残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）
 
-### `docs/market-monitor/macro-pulse/index.html`（48項目）
+### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
+
+データのキーのうち、書き手のコード（書き手の .py・それを import する呼び出し元・それらが import する .py）に文字列として出てこないもの。書くのをやめて履歴のスナップショット・古いエントリに残るキーや、取得元のデータをそのまま写したキー（SEC の単位・次元の名前等）
+
+なし
+
+### `docs/market-monitor/macro-pulse/index.html`（63項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
-| — | `actual` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv` | 864・884・916・2213 | 残す（2026-10-23） |
-| — | `ai_reason` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1078 | 残す（2026-10-23） |
-| — | `analysis_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2591・2591・2604・2642 | 残す（2026-10-23） |
-| — | `consensus` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv` | 865・866・2337・2337 | 残す（2026-10-23） |
+| — | `actual` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 864・884・916・2213 | 残す（2026-10-23） |
+| — | `add` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1415・1775・1781・1785 | 残す（2026-10-23） |
+| — | `ai_reason` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1078 | 残す（2026-10-23） |
+| — | `analysis_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2591・2591・2604・2642 | 残す（2026-10-23） |
+| — | `cmp` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1413・1413・1429 | 残す（2026-10-23） |
+| — | `consensus` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 865・866・2337・2337 | 残す（2026-10-23） |
 | — | `cuts_implied` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1076 | 残す（2026-10-23） |
-| 現在 | `date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 887・958・1109・1163 | 残す（2026-10-23） |
-| — | `dominant_concern` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1077 | 残す（2026-10-23） |
-| — | `dominant_label` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1077 | 残す（2026-10-23） |
-| — | `easing_check` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 3081 | 残す（2026-10-23） |
-| — | `factor_analysis` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2646 | 残す（2026-10-23） |
-| — | `fed_balance` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2828・2828 | 残す（2026-10-23） |
-| — | `ff_current` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1074 | 残す（2026-10-23） |
-| — | `fomc_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1080 | 残す（2026-10-23） |
-| — | `generated_at` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_meta.json` | 3168・3168 | 残す（2026-10-23） |
-| 前週比 | `h41_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2948・2948・2966・2966 | 残す（2026-10-23） |
-| — | `hy_spread` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2829・2829・2844・2845 | 残す（2026-10-23） |
-| 指標名 | `indicator` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv` | 832・886・1163・1774 | 残す（2026-10-23） |
-| — | `indicator_comments` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2648 | 残す（2026-10-23） |
-| 指標名:値:週差:月差;... | `indicator_deltas` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2665 | 残す（2026-10-23） |
-| — | `known_at` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv` | 891・891 | 残す（2026-10-23） |
-| — | `m2_yoy_pct` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2840・2840・2840 | 残す（2026-10-23） |
-| — | `m2_yoy_pctile` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2841・2841・2841 | 残す（2026-10-23） |
-| — | `model` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2753 | 残す（2026-10-23） |
-| — | `net_liq_decline_weeks` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 3029・3029 | 残す（2026-10-23） |
-| — | `net_liq_wow_pct` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2964・2964・2964 | 残す（2026-10-23） |
-| — | `net_liquidity` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2827・2827 | 残す（2026-10-23） |
-| — | `phase` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2604・2644 | 残す（2026-10-23） |
-| — | `record_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1016・1016 | 残す（2026-10-23） |
+| 現在 | `date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 887・958・1109・1163 | 残す（2026-10-23） |
+| — | `dir` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1415・1643・1653・1654 | 残す（2026-10-23） |
+| — | `dominant_concern` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1077 | 残す（2026-10-23） |
+| — | `dominant_label` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1077 | 残す（2026-10-23） |
+| — | `easing_check` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3081 | 残す（2026-10-23） |
+| — | `else` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1419・1419 | 残す（2026-10-23） |
+| — | `factor_analysis` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2646 | 残す（2026-10-23） |
+| — | `fed_balance` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2828・2828 | 残す（2026-10-23） |
+| — | `ff_current` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1074 | 残す（2026-10-23） |
+| — | `fomc_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1080 | 残す（2026-10-23） |
+| — | `from` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3252 | 残す（2026-10-23） |
+| — | `generated_at` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3168・3168 | 残す（2026-10-23） |
+| 前週比 | `h41_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2948・2948・2966・2966 | 残す（2026-10-23） |
+| — | `hy_spread` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2829・2829・2844・2845 | 残す（2026-10-23） |
+| 指標名 | `indicator` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 832・886・1163・1774 | 残す（2026-10-23） |
+| — | `indicator_comments` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2648 | 残す（2026-10-23） |
+| 指標名:値:週差:月差;... | `indicator_deltas` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2665 | 残す（2026-10-23） |
+| データなし | `key` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1637・1641・1795・1863 | 残す（2026-10-23） |
+| — | `known_at` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 891・891 | 残す（2026-10-23） |
+| — | `m2_yoy_pct` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2840・2840・2840 | 残す（2026-10-23） |
+| — | `m2_yoy_pctile` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2841・2841・2841 | 残す（2026-10-23） |
+| — | `model` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2753 | 残す（2026-10-23） |
+| 閾値の根拠: | `name` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1586・1594・1600・2129 | 残す（2026-10-23） |
+| — | `net_liq_decline_weeks` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3029・3029 | 残す（2026-10-23） |
+| — | `net_liq_wow_pct` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2964・2964・2964 | 残す（2026-10-23） |
+| — | `net_liquidity` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2827・2827 | 残す（2026-10-23） |
+| — | `phase` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2604・2644 | 残す（2026-10-23） |
+| — | `record_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1016・1016 | 残す（2026-10-23） |
 | LAYER 1 — FRB政策意図 | `regime` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1073・3095・3137 | 残す（2026-10-23） |
-| — | `regime_source` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1079 | 残す（2026-10-23） |
-| 発表予定日 | `release_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv` | 2310・2314 | 残す（2026-10-23） |
+| — | `regime_source` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1079 | 残す（2026-10-23） |
+| 発表予定日 | `release_date` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2310・2314 | 残す（2026-10-23） |
 | — | `revised_actual` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv` | 898 | 残す（2026-10-23） |
 | — | `revised_at` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv` | 899・899 | 残す（2026-10-23） |
-| 先行1ヶ月 | `score` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 1415・1416・1419・1518 | 残す（2026-10-23） |
-| — | `score_change_1m` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2650 | 残す（2026-10-23） |
-| — | `score_change_1w` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2649 | 残す（2026-10-23） |
-| — | `sp500_5d_pct` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 2963・2963・2963 | 残す（2026-10-23） |
-| — | `sp500_t0_asof` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv` | 1118 | 残す（2026-10-23） |
-| データなし | `status` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_indicator_schedule.csv` | 3161・3166 | 残す（2026-10-23） |
-| — | `stealth_absorb_weeks` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 3028・3028 | 残す（2026-10-23） |
-| — | `stealth_alert` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 3030 | 残す（2026-10-23） |
-| — | `stealth_signal` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_liquidity.csv` | 3011 | 残す（2026-10-23） |
-| — | `summary` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2645 | 残す（2026-10-23） |
-| — | `surprise` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv` | 867 | 残す（2026-10-23） |
-| — | `surprise_alerts` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2608 | 残す（2026-10-23） |
+| 先行1ヶ月 | `score` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1415・1416・1419・1518 | 残す（2026-10-23） |
+| — | `score_change_1m` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2650 | 残す（2026-10-23） |
+| — | `score_change_1w` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2649 | 残す（2026-10-23） |
+| 後退 | `signal` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1415・1416・1419・1426 | 残す（2026-10-23） |
+| — | `sp500_5d_pct` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2963・2963・2963 | 残す（2026-10-23） |
+| — | `sp500_t0_asof` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1118 | 残す（2026-10-23） |
+| データなし | `status` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3161・3166 | 残す（2026-10-23） |
+| — | `stealth_absorb_weeks` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3028・3028 | 残す（2026-10-23） |
+| — | `stealth_alert` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3030 | 残す（2026-10-23） |
+| — | `stealth_signal` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 3011 | 残す（2026-10-23） |
+| — | `summary` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2645 | 残す（2026-10-23） |
+| — | `surprise` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 867 | 残す（2026-10-23） |
+| — | `surprise_alerts` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2608 | 残す（2026-10-23） |
+| — | `tiers` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1412・1425 | 残す（2026-10-23） |
+| — | `trend` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1415・1415・1415・1415 | 残す（2026-10-23） |
+| — | `unit` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2995・3117 | 残す（2026-10-23） |
 | — | `updated_at` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 893・1109・2753 | 残す（2026-10-23） |
-| — | `watchpoints` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_weekly_analysis.csv` | 2647 | 残す（2026-10-23） |
-| — | `zq_rate` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1075 | 残す（2026-10-23） |
+| 過去日は急変緩和のため補間表示（実際の変化より滑らかに見える場合あり） | `value` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 929・1803・1829・1845 | 残す（2026-10-23） |
+| — | `w` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2474・2476・2708 | 残す（2026-10-23） |
+| — | `watchpoints` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 2647 | 残す（2026-10-23） |
+| 先行1ヶ月 | `weight` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1516・1518・1598 | 残す（2026-10-23） |
+| — | `x` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1413・1413・1413・1427 | 残す（2026-10-23） |
+| — | `zq_rate` | この段階の書き手あり<br>`docs/market-monitor/macro-pulse/data/05_events.csv`<br>`docs/market-monitor/macro-pulse/data/05_fed_context.csv` | 1075 | 残す（2026-10-23） |
 
 ## 画面の区画
 
@@ -163,21 +184,22 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
-| （ページの先頭） | `date`（この段階の書き手あり）<br>`status`（この段階の書き手あり） |  |
-| Notices | `actual`（この段階の書き手あり）<br>`consensus`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`known_at`（この段階の書き手あり）<br>`revised_actual`（この段階の書き手あり）<br>`revised_at`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`surprise`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり） |  |
+| （ページの先頭） | `date`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
+| Notices | `actual`（この段階の書き手あり）<br>`add`（この段階の書き手あり）<br>`cmp`（この段階の書き手あり）<br>`consensus`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`dir`（この段階の書き手あり）<br>`else`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`known_at`（この段階の書き手あり）<br>`revised_actual`（この段階の書き手あり）<br>`revised_at`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`surprise`（この段階の書き手あり）<br>`tiers`（この段階の書き手あり）<br>`trend`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり）<br>`w`（この段階の書き手あり）<br>`weight`（この段階の書き手あり）<br>`x`（この段階の書き手あり） |  |
 | FED Regime Bar | `ai_reason`（この段階の書き手あり）<br>`cuts_implied`（この段階の書き手あり）<br>`dominant_concern`（この段階の書き手あり）<br>`dominant_label`（この段階の書き手あり）<br>`ff_current`（この段階の書き手あり）<br>`fomc_date`（この段階の書き手あり）<br>`regime`（この段階の書き手あり）<br>`regime_source`（この段階の書き手あり）<br>`zq_rate`（この段階の書き手あり） |  |
-| Ticker | `actual`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`sp500_t0_asof`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり） |  |
-| 💧 流動性モニター | `actual`（この段階の書き手あり）<br>`consensus`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`easing_check`（この段階の書き手あり）<br>`fed_balance`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`h41_date`（この段階の書き手あり）<br>`hy_spread`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`known_at`（この段階の書き手あり）<br>`m2_yoy_pct`（この段階の書き手あり）<br>`m2_yoy_pctile`（この段階の書き手あり）<br>`net_liq_decline_weeks`（この段階の書き手あり）<br>`net_liq_wow_pct`（この段階の書き手あり）<br>`net_liquidity`（この段階の書き手あり）<br>`record_date`（この段階の書き手あり）<br>`regime`（この段階の書き手あり）<br>`revised_actual`（この段階の書き手あり）<br>`revised_at`（この段階の書き手あり）<br>`sp500_5d_pct`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`stealth_absorb_weeks`（この段階の書き手あり）<br>`stealth_alert`（この段階の書き手あり）<br>`stealth_signal`（この段階の書き手あり）<br>`surprise`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり） |  |
-| ① 景気フェーズ判定 | `actual`（この段階の書き手あり）<br>`score`（この段階の書き手あり） |  |
-| スコア比較バー | `score`（この段階の書き手あり） |  |
-| DESIGN-13: マクロサプライズバナー（週次更新） | `actual`（この段階の書き手あり）<br>`analysis_date`（この段階の書き手あり）<br>`consensus`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`factor_analysis`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`indicator_comments`（この段階の書き手あり）<br>`indicator_deltas`（この段階の書き手あり）<br>`known_at`（この段階の書き手あり）<br>`model`（この段階の書き手あり）<br>`phase`（この段階の書き手あり）<br>`revised_actual`（この段階の書き手あり）<br>`revised_at`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`score_change_1m`（この段階の書き手あり）<br>`score_change_1w`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`surprise`（この段階の書き手あり）<br>`surprise_alerts`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり）<br>`watchpoints`（この段階の書き手あり） |  |
+| Ticker | `actual`（この段階の書き手あり）<br>`add`（この段階の書き手あり）<br>`cmp`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`dir`（この段階の書き手あり）<br>`else`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`sp500_t0_asof`（この段階の書き手あり）<br>`tiers`（この段階の書き手あり）<br>`trend`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり）<br>`w`（この段階の書き手あり）<br>`weight`（この段階の書き手あり）<br>`x`（この段階の書き手あり） |  |
+| 💧 流動性モニター | `actual`（この段階の書き手あり）<br>`consensus`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`easing_check`（この段階の書き手あり）<br>`fed_balance`（この段階の書き手あり）<br>`from`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`h41_date`（この段階の書き手あり）<br>`hy_spread`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`known_at`（この段階の書き手あり）<br>`m2_yoy_pct`（この段階の書き手あり）<br>`m2_yoy_pctile`（この段階の書き手あり）<br>`net_liq_decline_weeks`（この段階の書き手あり）<br>`net_liq_wow_pct`（この段階の書き手あり）<br>`net_liquidity`（この段階の書き手あり）<br>`record_date`（この段階の書き手あり）<br>`regime`（この段階の書き手あり）<br>`revised_actual`（この段階の書き手あり）<br>`revised_at`（この段階の書き手あり）<br>`sp500_5d_pct`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`stealth_absorb_weeks`（この段階の書き手あり）<br>`stealth_alert`（この段階の書き手あり）<br>`stealth_signal`（この段階の書き手あり）<br>`surprise`（この段階の書き手あり）<br>`unit`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
+| ① 景気フェーズ判定 | `actual`（この段階の書き手あり）<br>`add`（この段階の書き手あり）<br>`cmp`（この段階の書き手あり）<br>`dir`（この段階の書き手あり）<br>`else`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`tiers`（この段階の書き手あり）<br>`trend`（この段階の書き手あり）<br>`w`（この段階の書き手あり）<br>`weight`（この段階の書き手あり）<br>`x`（この段階の書き手あり） |  |
+| スコア比較バー | `score`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`w`（この段階の書き手あり）<br>`weight`（この段階の書き手あり） |  |
+| DESIGN-13: マクロサプライズバナー（週次更新） | `actual`（この段階の書き手あり）<br>`analysis_date`（この段階の書き手あり）<br>`consensus`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`factor_analysis`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`indicator_comments`（この段階の書き手あり）<br>`indicator_deltas`（この段階の書き手あり）<br>`known_at`（この段階の書き手あり）<br>`model`（この段階の書き手あり）<br>`phase`（この段階の書き手あり）<br>`revised_actual`（この段階の書き手あり）<br>`revised_at`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`score_change_1m`（この段階の書き手あり）<br>`score_change_1w`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`surprise`（この段階の書き手あり）<br>`surprise_alerts`（この段階の書き手あり）<br>`updated_at`（この段階の書き手あり）<br>`w`（この段階の書き手あり）<br>`watchpoints`（この段階の書き手あり） |  |
 | AI週次解説（①の直後） | `analysis_date`（この段階の書き手あり） |  |
-| ② 指標ヘルスバー | `actual`（この段階の書き手あり）<br>`score`（この段階の書き手あり） |  |
-| score-history chart | `date`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`score`（この段階の書き手あり） |  |
-| ③→④ 過去の後退局面との類似度 | `date`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`score`（この段階の書き手あり） |  |
+| ② 指標ヘルスバー | `actual`（この段階の書き手あり）<br>`add`（この段階の書き手あり）<br>`cmp`（この段階の書き手あり）<br>`dir`（この段階の書き手あり）<br>`else`（この段階の書き手あり）<br>`key`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`tiers`（この段階の書き手あり）<br>`trend`（この段階の書き手あり）<br>`x`（この段階の書き手あり） |  |
+| score-history chart | `add`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`w`（この段階の書き手あり） |  |
+| ③→④ 過去の後退局面との類似度 | `add`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`key`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`w`（この段階の書き手あり）<br>`weight`（この段階の書き手あり） |  |
 | ⑤ 直近の動き | `actual`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり） |  |
-| ⑥ 今後のスケジュール | `consensus`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`release_date`（この段階の書き手あり）<br>`score`（この段階の書き手あり） |  |
+| ⑥ 今後のスケジュール | `add`（この段階の書き手あり）<br>`cmp`（この段階の書き手あり）<br>`consensus`（この段階の書き手あり）<br>`dir`（この段階の書き手あり）<br>`else`（この段階の書き手あり）<br>`indicator`（この段階の書き手あり）<br>`release_date`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`tiers`（この段階の書き手あり）<br>`trend`（この段階の書き手あり）<br>`w`（この段階の書き手あり）<br>`weight`（この段階の書き手あり）<br>`x`（この段階の書き手あり） |  |
 | （JSで作る要素 #stealthLayer1） | `regime`（この段階の書き手あり） |  |
+| （区画を決められない） | `dir`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
 
 ## FINDINGS 2026-10-15 の読み手0件の6種（F3）
 
@@ -187,7 +209,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | `share_unit_fix_log` | いいえ（後の段階） | — | — |
 | `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1066`<br>`src/value/hypecore/hypecore.py:1111` |
 | `fields_missing` | いいえ（後の段階） | — | — |
-| `maturity_monitor` | いいえ（後の段階） | — | `src/value/adjusted_eps_analyzer/pipeline.py:22` |
+| `maturity_monitor` | いいえ（後の段階） | — | `src/value/adjusted_eps_analyzer/pipeline.py:21` |
 | `market_data_violations_log` | いいえ（後の段階） | — | — |
 
 ## 規則が2か所以上にあるもの
@@ -196,20 +218,20 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 規則 | ファイル数 | 場所 | MACRO PULSEを含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2312`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:873`<br>`common/sec_data/layer3_builder.py:1111`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:345`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | いいえ |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3035`<br>`common/sec_data/report_consistency_check.py:1587`<br>`common/sec_data/report_consistency_check.py:1780`<br>`common/system_health.py:955`<br>`docs/portfolio/tail/index.html:942`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:254`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | いいえ |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2314`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:878`<br>`common/sec_data/layer3_builder.py:1101`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:347`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | いいえ |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3037`<br>`common/sec_data/report_consistency_check.py:1587`<br>`common/sec_data/report_consistency_check.py:1784`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:234`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
-| 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:451`<br>`common/sec_data/parser.py:460`<br>`common/sec_data/utils.py:93`<br>`common/sec_data/utils.py:274`<br>`common/sec_data/utils.py:309`<br>`common/sec_data/utils.py:349`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
-| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:571`<br>`docs/value-monitor/tanuki_score/index.html:1094`<br>`docs/value-monitor/tanuki_score/index.html:1323`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1140`<br>`docs/value-monitor/tanuki_valuation/stock.html:1141`<br>`src/value/tanuki_valuation/pipeline.py:622`<br>`src/value/tanuki_valuation/pipeline.py:624`<br>`src/value/tanuki_valuation/pipeline.py:626`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:910`<br>`src/value/tanuki_valuation/pipeline.py:930`<br>`src/value/tanuki_valuation/pipeline.py:932`<br>`src/value/tanuki_valuation/pipeline.py:1001`<br>`src/value/tanuki_valuation/pipeline.py:1002`<br>`src/value/tanuki_valuation/pipeline.py:1003`<br>`src/value/tanuki_valuation/pipeline.py:1004`<br>`src/value/tanuki_valuation/pipeline.py:1389`<br>`src/value/tanuki_valuation/pipeline.py:1416`<br>`src/value/tanuki_valuation/pipeline.py:1421`<br>`src/value/tanuki_valuation/pipeline.py:1467`<br>`src/value/tanuki_valuation/pipeline.py:1772`<br>`src/value/tanuki_valuation/pipeline.py:1950` | いいえ |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1127` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1111` | いいえ |
-| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1443`<br>`docs/market-monitor/macro-pulse/index.html:2389`<br>`src/market/macro_pulse/05_main.py:1554`<br>`src/market/macro_pulse/05_main.py:1674` | はい |
-| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1410`<br>`src/market/macro_pulse/05_main.py:1537`<br>`src/market/macro_pulse/05_main.py:1550` | はい |
+| 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:453`<br>`common/sec_data/parser.py:462`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
+| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:581`<br>`docs/value-monitor/tanuki_score/index.html:1104`<br>`docs/value-monitor/tanuki_score/index.html:1333`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1140`<br>`docs/value-monitor/tanuki_valuation/stock.html:1141`<br>`src/value/tanuki_valuation/pipeline.py:647`<br>`src/value/tanuki_valuation/pipeline.py:649`<br>`src/value/tanuki_valuation/pipeline.py:651`<br>`src/value/tanuki_valuation/pipeline.py:922`<br>`src/value/tanuki_valuation/pipeline.py:935`<br>`src/value/tanuki_valuation/pipeline.py:955`<br>`src/value/tanuki_valuation/pipeline.py:957`<br>`src/value/tanuki_valuation/pipeline.py:1029`<br>`src/value/tanuki_valuation/pipeline.py:1030`<br>`src/value/tanuki_valuation/pipeline.py:1031`<br>`src/value/tanuki_valuation/pipeline.py:1032`<br>`src/value/tanuki_valuation/pipeline.py:1442`<br>`src/value/tanuki_valuation/pipeline.py:1469`<br>`src/value/tanuki_valuation/pipeline.py:1474`<br>`src/value/tanuki_valuation/pipeline.py:1520`<br>`src/value/tanuki_valuation/pipeline.py:1825`<br>`src/value/tanuki_valuation/pipeline.py:2003` | いいえ |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1119` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1103` | いいえ |
+| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1443`<br>`docs/market-monitor/macro-pulse/index.html:2389`<br>`src/market/macro_pulse/05_main.py:1579`<br>`src/market/macro_pulse/05_main.py:1699` | はい |
+| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1410`<br>`src/market/macro_pulse/05_main.py:1562`<br>`src/market/macro_pulse/05_main.py:1575` | はい |
 | JSONの書き込み（一時ファイル→置き換え）の実装 | 2 | `common/macro_data/fetcher.py:71`<br>`common/market_data/fetcher.py:175` | いいえ |
 
-1か所だけのもの: 成長率の上限・下限（1）・取引日（市場の営業日）の決め方（取引所の暦を直接読む所・手で書いた営業日の計算）（1）・FREDのAPIを直接呼ぶ所（系列の値・公表日）（1）・AI（Grok）のAPIの宛先の直書き（1）
+1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）・取引日（市場の営業日）の決め方（取引所の暦を直接読む所・手で書いた営業日の計算）（1）・FREDのAPIを直接呼ぶ所（系列の値・公表日）（1）・AI（Grok）のAPIの宛先の直書き（1）
 
 ## 本番外のコード（src/market/macro_pulse）
 

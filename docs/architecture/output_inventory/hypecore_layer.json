@@ -469,7 +469,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 238,
+     "line": 241,
      "func": "check_g_hypecore",
      "how": "保存済みファイル",
      "via": "grep",
@@ -477,7 +477,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1133,
+     "line": 1182,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_g_hypecore",
@@ -485,7 +485,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1210,
+     "line": 1260,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_g_hypecore",
@@ -549,7 +549,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1520,
+     "line": 1517,
      "func": "compute_implb",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/sector_rotation.py::_hype_phase",
@@ -557,7 +557,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1914,
+     "line": 1911,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/market/market_pulse/sector_rotation.py::_hype_phase",
@@ -1573,7 +1573,7 @@
     },
     {
      "file": "tests/test_sec_freshness.py",
-     "line": 475,
+     "line": 494,
      "func": "test_main_exits_two_when_m_is_critical",
      "how": "保存済みファイル",
      "via": "common/system_health.py::check_g_hypecore",
@@ -1774,7 +1774,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 345,
+     "line": 347,
      "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
     },
     {
@@ -1840,7 +1840,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 955,
+     "line": 975,
      "text": "def check_m_sec_freshness() -> tuple[str, bool, str]:"
     },
     {
@@ -2311,7 +2311,7 @@
    "sites": [
     {
      "file": "src/value/adjusted_eps_analyzer/pipeline.py",
-     "line": 22
+     "line": 21
     }
    ]
   },
@@ -2368,6 +2368,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2380,11 +2381,10 @@
     "page": "docs/value-monitor/hypecore/detail.html",
     "key": "components",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
     "lines": [
@@ -2398,6 +2398,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2413,6 +2414,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2430,6 +2432,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2445,6 +2448,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2461,11 +2465,10 @@
     "page": "docs/value-monitor/hypecore/detail.html",
     "key": "label",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
     "lines": [
@@ -2481,6 +2484,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "MA200乖離%",
@@ -2500,6 +2504,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2514,6 +2519,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2532,6 +2538,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2548,6 +2555,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2578,6 +2586,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2625,6 +2634,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2642,6 +2652,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2673,6 +2684,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2688,6 +2700,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2702,6 +2715,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2721,6 +2735,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2736,6 +2751,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "MA200乖離%",
@@ -2754,6 +2770,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2766,11 +2783,10 @@
     "page": "docs/value-monitor/hypecore/detail.html",
     "key": "source",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/portfolio/tail/data/legal_proceedings/ADBE/latest.json",
-     "docs/portfolio/tail/data/legal_proceedings/APP/latest.json",
-     "docs/portfolio/tail/data/legal_proceedings/CELH/latest.json"
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "成長率${lcInfo.g!=null?(lcInfo.g>=0?",
     "lines": [
@@ -2784,6 +2800,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "[現在]",
@@ -2817,6 +2834,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2833,6 +2851,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2847,6 +2866,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2863,6 +2883,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2878,6 +2899,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2893,6 +2915,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2907,6 +2930,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2922,6 +2946,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2934,10 +2959,27 @@
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
+    "key": "ma200",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     300,
+     300
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/hypecore/index.html",
     "key": "ma200_dev_local",
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2953,6 +2995,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2967,6 +3010,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -2981,10 +3025,27 @@
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
+    "key": "phase",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
+    ],
+    "label": "成長率${r.lcGrowth!=null?(r.lcGrowth>=0?",
+    "lines": [
+     294,
+     294
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/hypecore/index.html",
     "key": "price",
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3001,6 +3062,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3015,6 +3077,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3029,6 +3092,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3044,6 +3108,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3059,6 +3124,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3069,10 +3135,26 @@
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
+    "key": "source",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     238
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/hypecore/index.html",
     "key": "stage",
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "成長率${r.lcGrowth!=null?(r.lcGrowth>=0?",
@@ -3089,10 +3171,26 @@
    },
    {
     "page": "docs/value-monitor/hypecore/index.html",
+    "key": "status",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     228
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/hypecore/index.html",
     "key": "substage_label",
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3107,6 +3205,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3121,6 +3220,7 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
      "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
@@ -3138,11 +3238,43 @@
     "has_writer": true,
     "status": "この段階の書き手あり",
     "sources": [
-     "docs/value-monitor/hypecore/data/tickers.json"
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
     ],
     "label": "",
     "lines": [
      217
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/hypecore/index.html",
+    "key": "val",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     309
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/hypecore/index.html",
+    "key": "value",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/hypecore/data/tickers.json",
+     "docs/value-monitor/hypecore/data/{T}_poc.json"
+    ],
+    "label": "",
+    "lines": [
+     228,
+     320
     ],
     "decision": "残す（2026-10-21）"
    }
@@ -3158,6 +3290,7 @@
    }
   ],
   "written_key_count": 48,
+  "stale_keys": [],
   "sections": [
    {
     "page": "docs/value-monitor/hypecore/detail.html",
@@ -3172,7 +3305,7 @@
      },
      {
       "key": "label",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        423
       ]
@@ -3231,7 +3364,7 @@
      },
      {
       "key": "source",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        425
       ]
@@ -3275,7 +3408,7 @@
     "keys": [
      {
       "key": "label",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        440
       ]
@@ -3552,7 +3685,7 @@
      },
      {
       "key": "label",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        488
       ]
@@ -3615,7 +3748,7 @@
     "keys": [
      {
       "key": "components",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        544
       ]
@@ -3733,6 +3866,14 @@
       ]
      },
      {
+      "key": "ma200",
+      "status": "この段階の書き手あり",
+      "lines": [
+       300,
+       300
+      ]
+     },
+     {
       "key": "ma200_dev_local",
       "status": "この段階の書き手あり",
       "lines": [
@@ -3756,6 +3897,14 @@
        229,
        229,
        230
+      ]
+     },
+     {
+      "key": "phase",
+      "status": "この段階の書き手あり",
+      "lines": [
+       294,
+       294
       ]
      },
      {
@@ -3805,6 +3954,13 @@
       ]
      },
      {
+      "key": "source",
+      "status": "この段階の書き手あり",
+      "lines": [
+       238
+      ]
+     },
+     {
       "key": "stage",
       "status": "この段階の書き手あり",
       "lines": [
@@ -3815,6 +3971,13 @@
        262,
        293,
        293
+      ]
+     },
+     {
+      "key": "status",
+      "status": "この段階の書き手あり",
+      "lines": [
+       228
       ]
      },
      {
@@ -3846,6 +4009,21 @@
       "status": "この段階の書き手あり",
       "lines": [
        217
+      ]
+     },
+     {
+      "key": "val",
+      "status": "この段階の書き手あり",
+      "lines": [
+       309
+      ]
+     },
+     {
+      "key": "value",
+      "status": "この段階の書き手あり",
+      "lines": [
+       228,
+       320
       ]
      }
     ]
