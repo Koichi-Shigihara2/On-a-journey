@@ -2,6 +2,133 @@
 
 ---
 
+## 2026-11-03（完了）
+
+### ✅ [METHOD-CHANGE-PUBLISH-TIMING-1] 計算方法の変更が公開に出る時点を1つにし、計算方法の変更の印を変更が効いた銘柄・項目に付ける（型C〈計算方法の変更の公開の時点〉の根治策）
+**完了（2026-11-03）:** 実装 `2b42795069`、前回の出力を公開の場所から読む直し `e196105b5e`、手順21の1回目（11-03未明、TANUKI・Discord合格）・2回目（11-03朝、HypeCore合格）。結果は下の「手順21の確認」
+**型・処置（2026-10-19 束ね）:** 型C・根治策（R-C2）
+**優先度:** 中
+**分類:** 根治策 / `common/method_change.py`・`config/method_change.json`・Layer3の読み手（TANUKI VALUATION・HypeCore・Stonks Silo）・`common/sec_data/ttm/`・`docs/architecture/UPDATE_SCHEDULE.md`
+**登録日:** 2026-10-19
+**発見:** 初回の束ね（`docs/architecture/BUNDLING_2026-10-19.md`）
+
+#### 内容
+- Layer3をその場で作る読み手（pushの後の最初の実行で反映）と、日曜に作り直すファイル（TTM・normalized）の読み手で、計算方法の変更の反映の時点が違う（CHAT_RULES.md 事例39）
+- 計算方法の変更の印が日付（JST）単位で、その日の相場の変化にも付く。HypeCoreとTANUKIが互いの前回の出力を読み合い、作り直しの反映が1回遅れる
+- 決めること: 公開に出る時点の決まり、印の付け方（変更が効いた銘柄・項目）、読み合いの順序
+
+#### 束ねた件
+- FINDINGS: 2026-10-15（計算方法の変更がpushの翌朝に印なしで公開）・2026-10-19（計算方法の変更の印が日付単位）
+- BACKLOG（統合してBACKLOG_DONE.mdへ）: [[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]・[[HYPECORE-TANUKI-CIRCULAR-DEP-1]]。[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]（[[LAYER3-FIRST-FILED-DATE-1]]に統合）のファイルの作り直しの時点の部分も重なる
+
+#### STEP 0（2026-10-30、読み取りのみ。実装は11-01の手順13〈[[QUARTERLY-BASIS-MIX-1]]の案4の公開〉と束ねの後）
+**1. 計算方法の変更が公開に出る経路**
+
+| 経路 | ワークフロー（いつ） | 読むもの | どこで |
+|---|---|---|---|
+| Layer3をその場で作る（pushの後の最初の実行で出る） | TANUKI VALUATION（毎日。Market Data Daily→Stonks→TANUKIの連鎖。日曜はHypeCoreの後） | `build_ticker_store()`（`company_facts.json`から作る） | `pipeline.py`の1237行（PS比率のTTM売上）・3053（希薄化率）・3295（DuPont）・3527（長期負債）・3667・3703（粗利率3年） |
+| 同上 | Stonks Silo（毎日） | 同上 | `stonks_silo/pipeline.py`の147行・`financial_trend_calculator.py`の388行 |
+| 同上 | HypeCore（日曜のSEC_Data_Updateの後と、月曜04:00 UTCの安全網だけ） | 同上 | `hypecore.py`の262行 |
+| 同上 | Market Data Daily（ROTCE） | 同上 | `common/sec_data/rotce.py`の415行 |
+| 同上 | TAIL（レビュー生成・KPI・DCF） | 同上 | `quarterly_review_generator.py`・`tail_dcf_bridge.py`・`xbrl_segment_fetcher.py`・`kpi_proposer.py` |
+| 日曜に作り直すファイル（日曜のSEC_Data_Updateで出る） | SEC_Data_Update（日曜12:00 UTC）が`ttm/{T}_ttm_series.json`・`normalized/{T}_quarterly_normalized.json`を書く（`update.py`の201・249・252行） | — | — |
+| TTMの読み手 | TANUKI VALUATION（毎日） | `ttm/{T}_ttm_series.json` | `data_fetcher.py`の`TTMReader`（FCFの基準）、`pipeline.py`の1365行（最大EPS）・3177（DuPont）・3454（セグメントの成長率）、`basis_mix.load()` |
+| TTMの読み手 | rcc・audit・登録の検証（ゲート） | 同上 | — |
+| normalizedの読み手 | TANUKI VALUATIONの`stock.html`の336行（fetchで直接読む） | `normalized/{T}_quarterly_normalized.json` | — |
+
+同じTANUKI VALUATIONの1回の実行の中で、Layer3から取る値（すぐ出る）とTTMファイルから取る値（日曜まで古い）が混ざる。
+
+**2. 印の付き方**
+- 印を書く所: TANUKIの`latest.json`・`history/`・`history.json`・`score_history.json`（`pipeline.py`の1257・1258・1292・1318行）、HypeCoreの`poc.json`（1149行）、Stonksの結果（232行）、ROTCEの`{T}.json`・`_summary.json`
+- Discord: `score_watcher.py`の179〜184行は、`latest.json`に印があるとその銘柄の変化をすべて「🛠 計算方法の変更による変化 — 相場の変化ではありません」の見出しの下に入れる（211〜224行）
+- 実際の印（`score_history.json`の判定の変化）: 10-26は`LAYER3-FIRST-FILED-DATE-1,QUARTERLY-BASIS-MIX-1`が96銘柄に付き、判定の変化6件（CAKE・CDNS・HON・SCCO・SNPS・TSLA）のうち計算方法の変更によるものはHONだけ（TSLAは新しい10-Q、残り4件は相場）だが6件とも🛠の下に入った。10-30は`EPS-SHARES-BASIS-MISMATCH-1`が96銘柄に付き、判定の変化7件（CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA）は株価・金利によるもの（最大EPSは判定に使われない）だが、乖離率の変化（NOW・RXRX）も含め全部が🛠の下に入った
+- 印の日付に実行が無い例: 10-18（`LAYER3-RETENTION-PERIOD-1`）・10-25（`LAYER3-FIRST-FILED-DATE-1`）は付いた行が0件（日曜の連鎖は翌日のJSTに動いた）
+
+**3. HypeCoreとTANUKI VALUATIONの読み合い**
+- HypeCore→TANUKI: `hypecore.py`の329行`fetch_tanuki_iv()`がTANUKIの`history/`・`latest.json`の理論株価を読む（348行。stageの「期待と実体」の入力、534行）
+- TANUKI→HypeCore: `pipeline.py`が`hypecore/data/{T}_poc.json`を読む（847行`_compute_tanuki_score`〈rule40・MA200乖離〉・1467行`_compute_matrix_position`・1641行`_generate_report`・3597行`_inject_ttm_for_general_segment`〈rev_yoy〉・3777行`_load_hype_info`〈フェーズ・timing〉・3829行`_save_hypecore_history`）
+- 順序はSEC→HypeCore→TANUKIで、HypeCoreが読むのはいつも前回のTANUKIの理論株価。HypeCoreは週1回（日曜と月曜の安全網）なので、平日に計算方法の変更でTANUKIの理論株価が変わると、HypeCoreのstageに届くのは次の日曜、TANUKIのtimingに返るのはその後（最大で約1週間遅れる）
+
+**4. 11-01の[[QUARTERLY-BASIS-MIX-1]]の公開が通る経路**
+- 案4（HONのTTMの作り直し）は「日曜に作り直すファイル」の経路: 11-01のSEC_Data_Updateが`ttm/HON_ttm_series.json`（`basis_mix`）と`normalized/HON_*`を書き、続くHypeCore→TANUKI VALUATIONが`TTMReader`・最大EPS・DuPont・`basis_mix.load()`で読んで公開する。`stock.html`はnormalizedを直接読む
+- 案1の印（Layer3の部分）は「その場で作る」経路で、10-26にもう出ている
+- HypeCoreのstage: 11-01のHypeCoreはTANUKIより先に動き10-31時点のHONの理論株価を読む。新しい理論株価（約22.42）がHypeCoreに入るのは月曜の安全網（11-02 13:00 JST）か次の日曜
+- 印: `config/method_change.json`に11-01と11-02があるため、11-02朝（05:48 JST）の毎日のTANUKI VALUATIONで起きる相場の判定の変化も全部🛠の下に入る見込み（10-30と同じ形）
+
+#### 決定（チャット側、2026-11-02）
+1. 公開の時点: 計算方法の変更のcommitで、影響する派生ファイル（ttm/・normalized/等）を同時に作り直してcommitする。2つの経路が次の定時実行で同時に出る
+2. 印: `config/method_change.json`の件を`{id, committed_at, scope:[{ticker, fields, before, after}]}`に。scopeは全銘柄のシミュレーション（株価・市場データを固定した前後）から機械的に作る。
+   各出力は前回の出力の`method_change_applied`と比べ、新しいIDを初めて読んだ実行でだけscopeの銘柄に印。score_watcherは「計算方法の分」と「残り（相場等）」に分ける
+3. 読み合い: 理論株価が動く変更を出すときは、workflow_dispatchで TANUKI VALUATION → HypeCore → TANUKI VALUATION を1回（連鎖の常設の変更はしない）
+
+#### 実装（2026-11-02 夜、`2b42795069`）
+- STEP 0の行番号の確かめ（11-02）: 印を書く所は`pipeline.py`の1255〜1258行（latest.json・valuation）・1292（history.json）・1318（score_history.json）・3883（hypecore_history）、
+  `hypecore.py`の1149、Stonksの`pipeline.py`の232、`rotce.py`の682・697、`score_watcher.py`の179〜184・211〜224で、10-30の記載と同じ（ずれなし）。
+  経路・読み合いの行（`pipeline.py`の847・1237・1365・1467・1641・3053・3177・3295・3454・3527・3597・3667・3703・3777・3829、`hypecore.py`の262・329・348・534、
+  Stonksの147・`financial_trend_calculator.py`の388、`rotce.py`の415、`update.py`の201・249・252、`stock.html`の336）も実装の前のcommit `c6c551232c`で同じ
+- `common/method_change.py`: 新しい形の件は、前回の出力の`method_change_applied`に無いIDを初めて読んだ実行でだけ、scopeの銘柄に`method_change`を付ける（`marks()`・`apply()`・`read_json()`・`scope_for()`）。
+  scopeの無い件は全銘柄。前回の出力が無い（新しい銘柄）は印を付けない。古い形`{id, date}`と環境変数`METHOD_CHANGE`は今までどおり。新しい形の件が無い間は`method_change_applied`を書かない（今の出力と同じ）
+- 書き手: TANUKI VALUATION（前回のlatest.jsonと比べて1回決め、同じ実行のlatest.json・history/・history.json・score_history.json・hypecore_history/に同じ印）、
+  HypeCoreの`{T}_poc.json`、ROTCEの`{T}.json`・`_summary.json`、Stonksの`results.json`（全銘柄のファイルは先頭に。銘柄を指定した実行は読んだことにしない）
+- `score_watcher.py`: 印のある銘柄の変化のうち、scopeの項目（判定`tanuki_score`・乖離率`upside_percent`／理論株価・`funda_score`・`hype.stage`）に当たるものだけ🛠に入れ、
+  「計算方法の分（株価を固定した試算）: before → after／残り（相場等）」を添える。当たらない変化と印の無い銘柄は📈相場の変化
+- `scripts/method_change_scope.py`: `snapshot`（手元の出力を写す）・`diff --id --before --after [--write]`（スカラーの項目を1段開いて比べ、時刻・印のキーは除く）
+- 文書: CLAUDE_CODE_START.md「計算方法の変更の手順」（シミュレーションとscope・派生ファイルの同時のcommit・読み合いの手動の実行）、CHAT_RULES.md「計算方法の変更の公開の手順」（事例39の後）
+
+#### 確認（2026-11-02 夜、手元）
+- テスト14本（`tests/test_method_change.py`）: 新しいIDを初めて読んだ実行だけ印・scope外の銘柄に印なし・実行の無い日をまたいでも印・scopeの無い件は全銘柄・古い形は日付どおり・前回の出力が無い銘柄は印なし・全銘柄のファイル・score_watcherの分け方・scopeの作り方
+- 過去のデータで再現（score_watcherの`detect_changes`を各実行の前後のcommitのデータで回した。公開・Discordへの送信はしない）。scopeは10-26の試算（案1の前後）・10-29の試算（最大EPSの前後）から`scripts/method_change_scope.py`で作った
+  （QUARTERLY-BASIS-MIX-1: HONだけ〈funda・basis_mix・score_comment〉。EPS-SHARES-BASIS-MISMATCH-1: 96銘柄の`components.max_eps*`だけで、判定・funda・乖離率・理論株価・stageの変わる銘柄0）。
+  各IDを初めて読む実行は、コードのcommitの後の最初の実行とした（QUARTERLY-BASIS-MIX-1はTANUKI `54444b67e2`〈10-26 18:24〉・HypeCore `98f09115af`、EPS-SHARES-BASIS-MISMATCH-1はTANUKI `1ca5367b4e`〈10-30 05:47〉）
+
+| 実行（TANUKIのcommit） | 判定の変化 | 古い規則で🛠 | 新しい規則で🛠 |
+|---|---|---|---|
+| `de0f629d71` 10-26 00:27 | CAKE・CDNS・HON・PM・SNPS・TSLA | 14銘柄（変化のあった全銘柄） | 0 |
+| `fefea12e10` 10-26 00:42 | なし | 5銘柄 | 0 |
+| `54444b67e2` 10-26 18:24 | なし | HON | HON（funda 40→25。計算方法の分 40→25、残り0） |
+| `3294974d65` 10-26 18:52 | PM・SCCO | 3銘柄 | 0 |
+| `832154c649`・`4ddf39fb78` 10-26 19:16・20:36 | なし | 0 | 0 |
+| `1ca5367b4e` 10-30 05:47 | CELH・CPRT・GEV・GOOGL・NOW・VRT・ZETA | 8銘柄（RXRXの乖離率を含む） | 0 |
+
+  10-26に🛠に入るのはHONだけ、10-30は0。00:27の判定の変化6件は、6f34e661a7（10-26 18:08）より前の実行で、10-25のSEC_Data_UpdateのTTM（HONの2026Q3の10-Qの組み替えを含む）と相場による
+  （古い規則では10-26の日付の印で全部🛠に入っていた）
+- 本番の値: 手元でTANUKI VALUATIONを前（10-30のコード）・後で全96銘柄回し、latest.json（時刻を除く）の差0（理論株価・判定とも0）。`config/method_change.json`に新しい形の件が無いため、出力は変わらない
+- 残り: 新しい計算方法の変更の件はまだ無い。次の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）が最初の本番の確認（CLAUDE_CODE_START.mdの次回の確認手順21）。それまでBACKLOGに残す
+
+#### 手順21の確認（2026-11-02 夜〜11-03、最初の本番＝[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1・段1bの公開）
+- 公開: 派生ファイルの作り直し `35a53e1246`（data 3,928件・ttm 25件、generated_atと丸めだけの171件は戻した）・scope `b7b2390e7d`（`scripts/method_change_scope.py diff --write`、36銘柄）を同じpushで。
+  読み合い: TANUKI VALUATION run `41460290935`（workflow_dispatch、success、data `42d91f9bed`）→ HypeCore run `41463310936`（workflow_dispatch、success、`0750db99de`）→ TANUKI VALUATION run `41463718847`（HypeCoreの完了でworkflow_runが起動、success、`87a4f9a75a`）。3つ目は連鎖で自動に動くので手で起動していない
+- 合格: 公開の理論株価・判定は手元の試算（after4）と全96銘柄で一致（差0）。1回目のlatest.jsonで`FCF-DEFINITION-SINGLE-SOURCE-1`の印はscopeの36銘柄だけ・`method_change_applied`は96/96、2回目は印0。
+  Discordの本文（1回目、実行の前の`.watcher_state.json`と実行後のlatest.json・poc.jsonからscore_watcherで組み立て）: 🛠に6銘柄8件（AMZN・BROS・LOAR・LYFT・S・VZ）、各行に「計算方法の分（株価を固定した試算）」と「残り（相場等）」（どれも残り0・なし）。
+  AMZNのreport.txtに「構造的赤字銘柄」の注記と`Finance_Lease: +$14.49B`、MSFTに`Finance_Lease: +$70.97B`
+- **不合格: HypeCoreの{T}_poc.jsonに印が付かない。** `hypecore.py`は前回の出力を`src/value/hypecore/data/{T}_poc.json`（.gitignore、CIに無い）から読むため、
+  前回の出力が無い扱いで印を付けず`method_change_applied`だけ書いた（今回はstageの変化0で通知への影響は無い）。直すなら前回の出力を`docs/value-monitor/hypecore/data/`の写しから読む。
+  今回の分はもう読んだことになっている（poc.jsonの`method_change_applied`にID）。あわせてrccにWARN-INV-6（HypeCore `method_change_applied` 誰も読まないキー）が出た
+- 気づいたこと: 古い形の`{"id": "QUARTERLY-BASIS-MIX-1", "date": "2026-11-02"}`が同じ日（JST）だったため、1回目・2回目とも全銘柄に`QUARTERLY-BASIS-MIX-1`の印も付き、
+  Discordの🛠の見出しにも並んだ（scope外の銘柄に変化が無かったので本文への影響なし。日付が変わると付かない）
+- 移設はしない（HypeCoreの印が残り）。直し方はチャット側の判断
+- 直し（2026-11-03、チャット側の指示）: `e196105b5e` 「前回の出力」を全経路で公開の場所（docs/配下）から読む（`common/method_change.py`の`PUBLISHED`・`previous_output()`。HypeCoreは`docs/value-monitor/hypecore/data/{T}_poc.json`、TANUKI・ROTCEは書き出し先〈本番は公開の場所〉、Stonksは公開の場所）。前回の出力が無い出力に`method_change_prev_missing`、ある種類の全件に付いていればrccのCHECK-67（WARN、判定は`check_previous_outputs()`の1か所）。出力の一覧の作り直し `528139fa25` でHypeCoreの`method_change_applied`のWARN-INV-6は消えた。
+  **手順21の判定: TANUKI・Discordは2026-11-03に合格、HypeCoreは次の計算方法の変更で確認**（今回のIDはpoc.jsonに読んだ記録がある）。移設は次の変更の確認の後
+
+#### 始める段（CHAT_RULES 4）
+定義（計算方法の変更が公開に出る時点の決まり）
+
+#### 投資判断への影響
+今あり（判定の変化の理由を「相場」と「計算方法」で取り違える。推定）。値そのものは変えない
+
+#### 規模の見込み
+中
+
+#### 手順21の確認（2回目、2026-11-03 朝＝[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1の残りの公開、ID `FCF-DEFINITION-SINGLE-SOURCE-1-2`）
+- 公開: `65a9fbe4a2`（コード・fixed_registry・派生ファイル〈年次361〉・scope・出力の一覧）。読み合い: TANUKI VALUATION run `41548293446`（workflow_dispatch、success、`d3bf983806`）→ HypeCore run `41550032089`（success、`93298e1e37`）→ TANUKI VALUATION run `41550309753`（workflow_run、success、`2c45fa1037`）
+- scope 7銘柄（AMAT・AMZN・CSGP・IOT・LOAR・META・VZ、`scripts/method_change_scope.py diff --write`）。手元の試算は理論株価の変化がVZだけ 22.51→23.23、判定・funda・timing・stageの変化0
+- 合格: 1回目のlatest.jsonで印はscopeの7銘柄だけ・全96銘柄の`method_change_applied`にID、2回目は印0。公開の理論株価は試算と全96銘柄で一致（VZ 23.23）、2回目の後の判定も全96銘柄で一致（1回目のHEI・PM・WMTの違いはCIのHypeCoreのフェーズ転換〈相場〉で、2回目のTANUKIで試算と同じに）
+- **HypeCore 合格**: {T}_poc.jsonの印はscopeの7銘柄のうちpoc.jsonのある7銘柄だけ（scope外0）、`method_change_prev_missing`は0件、`method_change_applied`にIDは96/96。rccのCHECK-67は出ない（`check_previous_outputs()`は空）
+- Discord（実行の前の`.watcher_state.json`と実行後のlatest.json・poc.jsonからscore_watcherで組み立て）: scopeの項目（判定・funda・乖離率・stage）に当たる変化が無いため🛠は無し（VZの乖離率 −50.0%→−48.4%は通知のしきい値の下）。通知はHypeCoreのフェーズ転換8銘柄・判定変化3銘柄（相場）
+- Stonks・ROTCEの最初の実行（Stonksは翌朝の定時、ROTCEは日曜のSEC_Data_Update）は未確認。scopeはTANUKIの項目なので印の有無は書き手の読みに従う
+
+---
+
 ## 2026-11-02（完了）
 
 ### ✅ [QUARTERLY-BASIS-MIX-1] 10-Qの比較期間の組み替え（事業の分離・売却等）で、TTMの4四半期が新旧のベースで混ざり、YTDの差し引きで作る四半期がベースをまたぐ

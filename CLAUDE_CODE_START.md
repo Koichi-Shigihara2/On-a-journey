@@ -90,7 +90,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 2026-11-02.jsonは、ETで11-02が終わる前に書いた分なので、次の回（11-03の夜）で夜の先物の足が足される（足が増える）
    - 満たしたらBACKLOGの②に確認を書き足す（②はEPICの中の段階なので、EPICが済むまでBACKLOGに残す）
 
-21. **計算方法の変更の印の最初の本番**（`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`、2026-11-02 実装 `2b42795069`）
+21. **計算方法の変更の印の最初の本番**（`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`、2026-11-02 実装 `2b42795069`）**済 2026-11-03 朝（移設済み）**
    - 日時: 次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）を出したとき。そのcommitの後の最初のTANUKI VALUATION（と、読み合いの手動の TANUKI → HypeCore → TANUKI）の後
    - 期限: その変更の公開の翌日
    - 確認の手順:
@@ -100,6 +100,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - Discordの「TANUKI SCORE 変化検知」: 🛠に入るのはscopeの項目（判定・乖離率・funda・stage）の変化だけで、各行に「計算方法の分」と「残り（相場等）」がある。scope外の銘柄・項目の変化は📈相場の変化
      - HypeCoreの{T}_poc.json・ROTCE・Stonksにも、最初の実行だけ印（全銘柄のファイルは先頭）
    - 満たしたら`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+   - **2026-11-03 朝: HypeCoreも合格（2回目、`FCF-DEFINITION-SINGLE-SOURCE-1-2`＝段1の残りの公開 `65a9fbe4a2`）**。poc.jsonの印はscopeの7銘柄だけ・`method_change_prev_missing` 0件・CHECK-67なし、TANUKIの印は1回目だけscopeの7銘柄・2回目0、理論株価・判定は試算と96銘柄一致。[[METHOD-CHANGE-PUBLISH-TIMING-1]]をBACKLOG_DONE.mdへ移した。Stonks・ROTCEの最初の実行は未確認
    - **2026-11-03: TANUKI・Discordは合格（FCF-DEFINITION-SINGLE-SOURCE-1 段1・段1bの公開）、HypeCoreは次の計算方法の変更で確認**（前回の出力を公開の場所から読むように直した `e196105b5e`。今回のIDはHypeCoreのpoc.jsonに読んだ記録があり、今回は確かめられない）。移設は次の変更の確認の後。以下は11-03の記録: TANUKIの印はscopeの36銘柄だけ・2回目は0、理論株価・判定は試算と一致、Discordの🛠は6銘柄8件で「計算方法の分」「残り」つき。HypeCoreは前回の出力を`src/value/hypecore/data/`（CIに無い）から読み、印を付けない。直し方はチャット側の判断（BACKLOGの「手順21の確認」）。移設していない
 
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
