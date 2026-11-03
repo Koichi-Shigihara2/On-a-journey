@@ -159,6 +159,15 @@ LATEST_PERIOD_GUARD_FIELDS = ("operating_cash_flow", "capital_expenditure")
 LATEST_PERIOD_GUARD_LABELS = {"operating_cash_flow": "営業CF", "capital_expenditure": "設備投資"}
 
 
+def fcf_period_label(d) -> str | None:
+    """fcf_list の各点の期のラベル（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段3、2026-11-03）: TTMの点（ttm_end の日付）は
+    "TTM 2026-09-30"、年次（会計年度）は "FY2025"。外れ値の注記・FCF内訳はこのラベルで書く（以前は年次の年を書いていた）"""
+    if d is None:
+        return None
+    s = str(d)
+    return f"TTM {s}" if "-" in s else f"FY{s}"
+
+
 def build_latest_period_missing(missing_fields: list[str], fcf_source: str) -> dict | None:
     """
     最新期欠けのガードの判定結果（latest.jsonの"latest_period_missing"）。欠けが無ければNone。
@@ -345,6 +354,13 @@ class TTMReader:
         _vals, dates = self._validated_fcf_series()
         return dates
 
+    def flow_at(self, ttm_end: str | None) -> dict:
+        """その ttm_end の点の flow（無ければ空）"""
+        for s in self._series or []:
+            if s.get("ttm_end") == ttm_end:
+                return s.get("flow", {}) or {}
+        return {}
+
     def get_ttm_end(self) -> str | None:
         if self._series:
             return self._series[0].get("ttm_end")
@@ -379,7 +395,9 @@ class TTMReader:
             return []
         latest = max(self._series, key=lambda s: s.get("ttm_end") or "")
         flow = latest.get("flow", {})
-        return [f for f in LATEST_PERIOD_GUARD_FIELDS if not _quarters_complete(flow, f)]
+        # 設備投資の4四半期の合計が負の点（欠けにした点、common/sec_data/fcf.py::CAPEX_TTM_NEGATIVE_MARK）も欠けと同じに扱う
+        return [f for f in LATEST_PERIOD_GUARD_FIELDS
+                if not _quarters_complete(flow, f) or (flow.get(f) or {}).get("capex_ttm_negative")]
 
 
 def build_rice_annual_shape(ttm_series: list[dict]) -> list[dict]:
@@ -584,6 +602,8 @@ class TanukiDataFetcher:
         # TTM FCF/RICE 状態（TTMReader ブロックで更新）
         fcf_source = "annual_fallback"
         fcf_ttm_end: str | None = None
+        # FCFの直近の点（fcf_list[0]）の期のラベルと内訳（TTMの点なら、その点の営業CF・設備投資・SBC・D&A）。段3
+        fcf_latest_components: dict | None = None
         fcf_ttm_periods = 0
         rice_annual_data = None
         rice_data_source = "annual_fallback"
@@ -652,6 +672,17 @@ class TanukiDataFetcher:
             fcf_ttm_end = ttm_reader.get_ttm_end()
             fcf_ttm_periods = ttm_reader.get_periods()
             print(f"   [{ticker}] TTM FCF series: {len(fcf_list)}点 end={fcf_ttm_end}")
+            if fcf_dates:
+                _flow0 = ttm_reader.flow_at(fcf_dates[0])
+
+                def _v(f, need4=False):
+                    x = _flow0.get(f) or {}
+                    return x.get("val") if (not need4 or (x.get("quarters_used") or 0) >= 4) else None
+                fcf_latest_components = {
+                    "label": fcf_period_label(fcf_dates[0]),
+                    "ocf": _v("operating_cash_flow"), "capex": _v("capital_expenditure"),
+                    "sbc": _v("stock_based_compensation", need4=True), "da": _v("depreciation_and_amortization", need4=True),
+                }
         elif fcf_series:
             logging.warning(
                 "[%s] TTM series has fewer complete points (%d) than annual FCF (%d); "
@@ -965,6 +996,9 @@ class TanukiDataFetcher:
             # growth.py側でFCF CAGR算出直前の順序再検証にのみ使う。JSONへは
             # 保存しない（fcf_list_rawと違い本番latest.json出力の対象外）。
             "fcf_dates_raw": fcf_dates,
+            # fcf_list_raw の各点の期のラベル（"TTM 2026-09-30"・"FY2025"）と、直近の点の内訳（段3、注記用）
+            "fcf_period_labels": [fcf_period_label(x) for x in (fcf_dates or [])],
+            "fcf_latest_components": fcf_latest_components,
             "net_cash_data": net_cash_data,
             "diluted_shares": final_shares,
             "roe_10yr_avg": roe_avg,

@@ -68,14 +68,15 @@ class TestTtmAnchorReach:
         assert "stock_based_compensation" not in series[0]["flow"]
 
     def test_field_that_reaches_anchor_is_kept(self):
+        # 設備投資は差し引きの前に abs 済みで正（段2、2026-11-03。4四半期の合計が負の点は欠け、test_capex_sign.py）
         capex = [
-            _q("2025-06-30", "2025-04-01", -4.0),
-            _q("2025-03-31", "2025-01-01", -3.0),
-            _q("2024-12-31", "2024-10-01", -2.0),
-            _q("2024-09-30", "2024-07-01", -1.0),
+            _q("2025-06-30", "2025-04-01", 4.0),
+            _q("2025-03-31", "2025-01-01", 3.0),
+            _q("2024-12-31", "2024-10-01", 2.0),
+            _q("2024-09-30", "2024-07-01", 1.0),
         ]
         series = calc_ttm_series("TEST", _store(capital_expenditure=capex), n_periods=1)
-        assert series[0]["flow"]["capital_expenditure"]["val"] == -10.0
+        assert series[0]["flow"]["capital_expenditure"]["val"] == 10.0
         assert series[0]["flow"]["capital_expenditure"]["quarters_used"] == 4
         assert series[0]["flow"]["FCF"]["val"] == 90.0
 

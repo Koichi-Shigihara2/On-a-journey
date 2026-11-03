@@ -17,7 +17,7 @@ from datetime import date, datetime
 from .contracts import validate_field_classification
 from .layer3_builder import load_concept_definitions, get_field_entries
 from .q4_implied import build_q4_implied_entries
-from .fcf import free_cash_flow
+from .fcf import CAPEX_TTM_NEGATIVE_MARK, free_cash_flow, ttm_capex
 
 logger = logging.getLogger(__name__)
 
@@ -106,8 +106,9 @@ validate_field_classification(_LAYER3_FIELD_DEFS, FLOW_FIELDS, STOCK_FIELDS, SHA
 
 # Q4 implied生成本体はcommon/sec_data/q4_implied.py::build_q4_implied_entries()
 # に集約済み（[[Q4-IMPLIED-CALC-TRIPLICATION-1]]対応、移行実装計画フェーズB）。
-# BUG-TTM-Q4DUP-1（既存end日付との重複防止）・RICE-TTM-CAPEX-SUM-SIGN-1
-# （field_name=="CapEx"時のabs()適用）は共有関数側に同等の実装として維持。
+# BUG-TTM-Q4DUP-1（既存end日付との重複防止）は共有関数側に同等の実装として維持。
+# CapExの符号は差し引きの前に abs（四半期・Q4は符号つき、[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2）。
+# 4四半期の合計が負の点は欠け（fcf.ttm_capex、印 capex_ttm_negative）
 
 
 # ---------------------------------------------------------------------------
@@ -353,6 +354,9 @@ def calc_ttm_series(
                 "quarters_used": len(last4),
                 "missing": max(0, 4 - len(last4)),
             }
+            if field_name == "capital_expenditure" and ttm_capex(total) is None:
+                # 4四半期の合計が負（符号つきの四半期、fcf.ttm_capex）: 欠けにして印。FCFも作らない
+                flow[field_name].update({"val": None, CAPEX_TTM_NEGATIVE_MARK: True})
 
         # FCF計算（派生値・quarters_used/missingなし）。式は common/sec_data/fcf.py の1か所
         # （[[FCF-DEFINITION-SINGLE-SOURCE-1]]）。CapExの欠けはNone（FCFも作らない）

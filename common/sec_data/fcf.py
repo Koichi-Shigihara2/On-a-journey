@@ -18,6 +18,19 @@ from __future__ import annotations
 from typing import Optional
 
 
+# TTMの設備投資（4四半期の合計）が負の点の印（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2、2026-11-03）。四半期は符号つき
+# （YTDが前の四半期より減った期は負）で保存するため、合計が負になる点がある（FLYW TTM 2022-06-30・ONDS TTM 2025-06-30）。
+# 負の設備投資は |CapEx| で引くと符号が逆になるため、その点の設備投資は欠け（None）にし、FCFも作らない（読み手は既存の代用）
+CAPEX_TTM_NEGATIVE_MARK = "capex_ttm_negative"
+
+
+def ttm_capex(total: Optional[float]) -> Optional[float]:
+    """TTMの設備投資（4四半期の合計）。負なら欠け（None）。判定はここの1か所"""
+    if total is None or total < 0:
+        return None
+    return total
+
+
 def free_cash_flow(ocf: Optional[float], capex: Optional[float]) -> Optional[float]:
     """FCF＝営業CF − |CapEx|。どちらかがNoneならNone（欠けを0とみなすかは呼び出し側）"""
     if ocf is None or capex is None:

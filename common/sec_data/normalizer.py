@@ -11,7 +11,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 
 from .contracts import validate_fields
-from .fact_selection import ZERO_TERM, abs_term, derive, set_derived, strip_asof
+from .fact_selection import ZERO_TERM, abs_entry, abs_term, derive, set_derived, strip_asof
 from .q4_implied import build_q4_implied_entries, implied_q4_value
 
 logger = logging.getLogger(__name__)
@@ -33,6 +33,10 @@ def normalize(ticker: str, raw: dict) -> dict:
     fields_raw = raw.get("fields", {})
     fields_norm: dict[str, list] = {}
 
+    # 設備投資の符号の正規化は差し引きの前の申告の値（YTD・年次）で（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2、2026-11-03。
+    # 以前は差し引きの後に abs で、YTDが減った期の負の四半期が正の値になっていた）。単独の四半期・Q4は符号つき
+    if fields_raw.get("CapEx"):
+        fields_raw = {**fields_raw, "CapEx": [abs_entry(e) for e in fields_raw["CapEx"]]}
     for field_name, entries in fields_raw.items():
         if field_name == "_COGS":
             # _COGSもYTD変換を適用してからQ4 implied計算に備える
@@ -100,15 +104,6 @@ def normalize(ticker: str, raw: dict) -> dict:
             dropped = len(field_entries) - len(cleaned)
             logger.debug("[%s] %s 未解決YTD %d件を除外", ticker, field_name, dropped)
             fields_norm[field_name] = cleaned
-
-    # CapEx符号正規化（CAPEX-SIGN-UNNORMALIZED-1）: SEC XBRLのCapExは発行体に
-    # よって正負どちらの符号でも報告されるため、最終出力直前の1箇所で
-    # abs()を適用する。Q4逆算（上記）より後に行うことで、直接取得エントリ・
-    # Q4逆算エントリの両方を区別なく正しくカバーする。
-    for entry in fields_norm.get("CapEx", []):
-        if entry.get("val") is not None:
-            entry["val"] = abs(entry["val"])
-        set_derived(entry, derive([(1, abs_term(entry))]))
 
     logger.info("[%s] normalization done", ticker)
     return {

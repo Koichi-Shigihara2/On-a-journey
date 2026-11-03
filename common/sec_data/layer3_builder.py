@@ -20,7 +20,8 @@ BUG-CON-YTD-1等）を経て確定した実装のため、重複再実装によ�
 
 本モジュールで新規実装する部分（フェーズAの本来の目的）:
 - Layer2 candidatesに基づくフィールド抽出（最初に見つかった非空候補を採用）
-- sign_normalize（符号正規化、CAPEX-SIGN-UNNORMALIZED-1対応）
+- sign_normalize（符号正規化、CAPEX-SIGN-UNNORMALIZED-1対応。2026-11-03から差し引きの前のYTDで abs、
+  [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2。単独の四半期は符号つき）
 - YTD→単四半期差分変換（start/period_daysの再計算込み。
   NORMALIZER-YTD-METADATA-STALE-1のメタデータ不整合を修正）
 - Q4逆算ロジックは[[Q4-IMPLIED-CALC-TRIPLICATION-1]]対応として
@@ -63,7 +64,7 @@ from datetime import date, datetime, timedelta
 
 from .quarterly import TICKER_RESTRICTIONS, _classify_period, _process_entries, earliest_filed_by_period
 from .fact_selection import select_latest_filed  # noqa: F401  (contract of _process_entries)
-from .fact_selection import ZERO_TERM, abs_term, derive, set_derived, strip_asof
+from .fact_selection import ZERO_TERM, abs_entry, abs_term, derive, set_derived, strip_asof
 from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
 from .tag_definitions import NET_INCOME_CANDIDATES, TAG_CANDIDATES, with_derived_net_income, with_derived_intangibles
 from .share_unit_fix import with_share_unit_fix
@@ -421,6 +422,8 @@ def extract_field_raw_entries(
     """
     unit = field_def.get("unit", "USD")
     candidates = field_def.get("candidates", [])
+    # 符号の正規化（sign_normalize: "abs"）は差し引きの前の申告の値（タグごとのYTD・年次）で行う（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2）
+    sign_abs = field_def.get("sign_normalize") == "abs"
 
     if field_name in NO_CANDIDATE_MERGE_FIELDS:
         # [[LAYER3-TAG-SELECTION-WINDOW-DEPENDENT-1]]: 候補は「保持期間の中に値がある
@@ -438,17 +441,19 @@ def extract_field_raw_entries(
             raw_entries = _get_concept_units(company_facts, concept, unit)
             if not raw_entries:
                 continue
+            if sign_abs:
+                raw_entries = [abs_entry(e) for e in raw_entries]
             processed = _process_entries(raw_entries, first_filed_floor=floor)
             processed = _reclassify_misannotated_fy_entries(processed, ticker)
             if processed:
                 return processed, concept
         return [], None
 
-    return _merge_candidate_entries(company_facts, candidates, unit, field_name, ticker)
+    return _merge_candidate_entries(company_facts, candidates, unit, field_name, ticker, sign_abs=sign_abs)
 
 
 def _merge_candidate_entries(
-    company_facts: dict, candidates: list, unit: str, field_name: str = "", ticker: str = "",
+    company_facts: dict, candidates: list, unit: str, field_name: str = "", ticker: str = "", sign_abs: bool = False,
 ) -> tuple[list, str | None]:
     """
     候補タグごとに独立して_process_entries()→_normalize_field_entries()を
@@ -514,6 +519,8 @@ def _merge_candidate_entries(
         raw_entries = _get_concept_units(company_facts, concept, unit)
         if not raw_entries:
             continue
+        if sign_abs:
+            raw_entries = [abs_entry(e) for e in raw_entries]
         processed = _process_entries(raw_entries, first_filed_floor=floor)
         processed = _reclassify_misannotated_fy_entries(processed, ticker)
         if not processed:
@@ -672,20 +679,6 @@ def _merge_normalized_by_priority(per_tag_normalized: list) -> list:
         merged.append(chosen)
 
     return sorted(merged, key=lambda x: x["end"])
-
-
-def _apply_sign_normalize(entries: list, mode: str | None) -> list:
-    """sign_normalizeが指定されていれば適用する（現状"abs"のみサポート）。"""
-    if mode != "abs":
-        return entries
-    out = []
-    for e in entries:
-        e = dict(e)
-        if e.get("val") is not None:
-            e["val"] = abs(e["val"])
-        set_derived(e, derive([(1, abs_term(e))]))
-        out.append(e)
-    return out
 
 
 # ---------------------------------------------------------------------------
@@ -1425,8 +1418,8 @@ def build_ticker_store(ticker: str) -> dict | None:
             if e.get("is_annual") or not e.get("is_ytd")
         ]
 
-        sign_normalize = field_def.get("sign_normalize")
-        normalized_entries = _apply_sign_normalize(normalized_entries, sign_normalize)
+        # 符号の正規化は抽出の中で、差し引きの前の申告の値に済ませた（extract_field_raw_entries、
+        # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2）。単独の四半期・Q4は符号つき（YTDが減った期は負）
 
         if conditional:
             for e in normalized_entries:

@@ -949,6 +949,7 @@ class FCFOutlierResult:
     action: str                  # "excluded" | "flagged" | "none"
     note: str
     deviation_pct: Optional[float] = None  # DCF-REL-SYNC-1: 5年平均からの乖離%（latest_negative型はNone）
+    period_label: Optional[str] = None     # fcf_value の期（"TTM 2026-09-30"・"FY2025"、段3）
 
     def to_dict(self, ai_assessment: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
@@ -965,6 +966,7 @@ class FCFOutlierResult:
             "detected": self.detected,
             "rule": self.rule,
             "fiscal_year": self.fiscal_year,
+            "period_label": self.period_label,
             "fcf_value": self.fcf_value,
             "threshold_pct": self.threshold_pct,
             "deviation_pct": self.deviation_pct,
@@ -1028,6 +1030,40 @@ def _find_transient_items(
     return items
 
 
+def _load_eps_quarterly(ticker: str, eps_data_dir: str) -> Optional[Dict[str, Any]]:
+    """EPSアナライザーのquarterly.json（段3: TTMの期の一過性費用を探す）"""
+    import os, json
+    path = os.path.join(eps_data_dir, ticker.upper(), "quarterly.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _find_transient_items_ttm(eps_quarterly: Dict[str, Any], ttm_end: str) -> List[Dict[str, Any]]:
+    """TTM（ttm_end までの4四半期、期末が ttm_end の350日前より後〜ttm_end）の調整項目から一過性費用を抽出する
+    （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段3、2026-11-03。FCFがTTMのとき、年次の年度ではなく同じ期で探す）"""
+    from datetime import date, timedelta
+    try:
+        end = date.fromisoformat(ttm_end)
+    except (TypeError, ValueError):
+        return []
+    lo = (end - timedelta(days=350)).isoformat()
+    items = []
+    for q in eps_quarterly.get("quarters", []) if isinstance(eps_quarterly, dict) else []:
+        pe = q.get("period_end") or ""
+        if not (lo < pe <= ttm_end):
+            continue
+        for adj in q.get("adjustments", []):
+            if adj.get("category") in TRANSIENT_CATEGORIES:
+                items.append({"category": adj["category"], "item_name": adj.get("item_name", ""),
+                              "amount": adj.get("amount", 0), "reason": adj.get("reason", "")})
+    return items
+
+
 def analyze_fcf_outlier(
     ticker: str,
     fcf_list: List[float],
@@ -1036,6 +1072,8 @@ def analyze_fcf_outlier(
     fiscal_year_of_latest: int,
     eps_data_dir: str = "",
     cv_threshold: float = DEFAULT_FCF_CV_THRESHOLD,
+    period_label: Optional[str] = None,
+    transient_ttm_end: Optional[str] = None,
 ) -> FCFOutlierResult:
     """
     FCF外れ値を分析し、EPSアナライザーと突合して一過性判定を行う
@@ -1048,17 +1086,20 @@ def analyze_fcf_outlier(
         fiscal_year_of_latest: fcf_list[0]の会計年度（例: 2025）
         eps_data_dir       : EPSアナライザーのdataディレクトリパス
         cv_threshold       : 成熟/成長の分岐CV閾値
+        period_label       : fcf_list[0]の期のラベル（"TTM 2026-09-30"・"FY2025"。段3、注記に書く。Noneなら"FY{年度}"）
+        transient_ttm_end  : fcf_list[0]がTTMの点ならその期末。一過性費用をEPSの同じ4四半期で探す（Noneなら年次の年度）
 
     Returns:
         FCFOutlierResult
     """
+    label = period_label or f"FY{fiscal_year_of_latest}"
     NO_OUTLIER = FCFOutlierResult(
         detected=False, rule="none",
         fiscal_year=fiscal_year_of_latest,
         fcf_value=fcf_list[0] if fcf_list else 0,
         threshold_pct=0.0,
         transient_found=False, transient_items=[], transient_total=0.0,
-        action="none", note=""
+        action="none", note="", period_label=label,
     )
 
     if not fcf_list or fcf_5yr_avg == 0:
@@ -1087,7 +1128,15 @@ def analyze_fcf_outlier(
     transient_total = 0.0
     transient_found = False
 
-    if eps_data_dir:
+    if eps_data_dir and transient_ttm_end:
+        eps_quarterly = _load_eps_quarterly(ticker, eps_data_dir)
+        if eps_quarterly:
+            transient_items = _find_transient_items_ttm(eps_quarterly, transient_ttm_end)
+            transient_total = max(0.0, sum(
+                item["amount"] for item in transient_items if item["amount"] > 0
+            ))
+            transient_found = len(transient_items) > 0 and transient_total > 0
+    elif eps_data_dir:
         eps_annual = _load_eps_annual(ticker, eps_data_dir)
         if eps_annual:
             transient_items = _find_transient_items(eps_annual, fiscal_year_of_latest)
@@ -1124,11 +1173,11 @@ def analyze_fcf_outlier(
         )
         if rule == "latest_negative":
             note = (
-                "FY{yr} FCF(${val:.1f}M)がマイナス。"
+                "{yr} FCF(${val:.1f}M)がマイナス。"
                 "一過性費用合計${total:.0f}M({summary})による影響と判断し除外。"
                 "5年平均(${avg:.0f}M)を採用。"
             ).format(
-                yr=fiscal_year_of_latest,
+                yr=label,
                 val=latest_fcf/1e6,
                 total=transient_total/1e6,
                 summary=summary,
@@ -1137,10 +1186,10 @@ def analyze_fcf_outlier(
         else:
             deviation_pct = abs(latest_fcf - fcf_5yr_avg) / abs(fcf_5yr_avg) * 100
             note = (
-                "FY{yr} FCF(${val:.0f}M)が5年平均(${avg:.0f}M)から{dev:.0f}%乖離。"
+                "{yr} FCF(${val:.0f}M)が5年平均(${avg:.0f}M)から{dev:.0f}%乖離。"
                 "一過性費用合計${total:.0f}M({summary})による影響と判断し除外。"
             ).format(
-                yr=fiscal_year_of_latest,
+                yr=label,
                 val=latest_fcf/1e6,
                 avg=fcf_5yr_avg/1e6,
                 dev=deviation_pct,
@@ -1149,22 +1198,24 @@ def analyze_fcf_outlier(
             )
     else:
         action = "flagged"
+        # 段3（2026-11-03）: 除外しない理由を3つの文言に分ける（以前は一過性費用が見つかっても
+        # 「一過性費用の証拠はEPSアナライザーで確認されず」と書いていた）
+        if not transient_found:
+            why = "一過性費用はEPSアナライザーの同じ期の調整に無い"
+        elif is_upward_deviation:
+            why = "一過性費用${:.0f}Mはあるが、上方乖離のため一過性費用では除外しない".format(transient_total/1e6)
+        elif rule == "latest_negative":
+            why = "一過性費用${:.0f}Mは5年平均の10%（${:.0f}M）に届かず除外しない".format(
+                transient_total/1e6, abs(fcf_5yr_avg) * 0.10 / 1e6)
+        else:
+            why = "一過性費用${:.0f}Mは乖離${:.0f}Mの20%（${:.0f}M）に届かず除外しない".format(
+                transient_total/1e6, fcf_deviation/1e6, fcf_deviation * 0.20 / 1e6)
         if rule == "latest_negative":
-            note = (
-                "FY{yr} FCF(${val:.1f}M)がマイナス。"
-                "一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
-            ).format(yr=fiscal_year_of_latest, val=latest_fcf/1e6)
+            note = "{yr} FCF(${val:.1f}M)がマイナス。{why}。要確認。".format(yr=label, val=latest_fcf/1e6, why=why)
         else:
             deviation_pct = abs(latest_fcf - fcf_5yr_avg) / abs(fcf_5yr_avg) * 100
-            note = (
-                "FY{yr} FCF(${val:.0f}M)が5年平均(${avg:.0f}M)から{dev:.0f}%乖離。"
-                "一過性費用の証拠はEPSアナライザーで確認されず。要確認。"
-            ).format(
-                yr=fiscal_year_of_latest,
-                val=latest_fcf/1e6,
-                avg=fcf_5yr_avg/1e6,
-                dev=deviation_pct,
-            )
+            note = "{yr} FCF(${val:.0f}M)が5年平均(${avg:.0f}M)から{dev:.0f}%乖離。{why}。要確認。".format(
+                yr=label, val=latest_fcf/1e6, avg=fcf_5yr_avg/1e6, dev=deviation_pct, why=why)
 
     return FCFOutlierResult(
         detected=True,
@@ -1178,6 +1229,7 @@ def analyze_fcf_outlier(
         action=action,
         note=note,
         deviation_pct=deviation_pct,
+        period_label=label,
     )
 
 
@@ -1456,9 +1508,11 @@ class FCFCompositionResult:
     ocf: Optional[float]     # 直近年OCF（開示専用）
     da: Optional[float]      # 直近年D&A（開示専用）
     note: str
+    period_label: Optional[str] = None  # capex・sbc・ocf・da の期（"TTM 2026-09-30"・"FY2025"、段3）
 
     def to_dict(self):
         return {
+            "period_label": self.period_label,
             "applied": self.applied,
             "fallback_reason": self.fallback_reason,
             "method": self.method,
@@ -1479,6 +1533,8 @@ def compose_fcf_bottom_up(
     sbc_list: List[Optional[float]],
     ocf_list: List[Optional[float]],
     da_list: List[Optional[float]],
+    latest_components: Optional[Dict[str, Any]] = None,
+    period_label: Optional[str] = None,
 ) -> FCFCompositionResult:
     """
     ボトムアップFCF（OCF-CapEx）の内訳を決定する（[[FCF-CONVRATE-LOWER-
@@ -1512,6 +1568,15 @@ def compose_fcf_bottom_up(
     latest_sbc = sbc_list[0] if sbc_list else None
     latest_ocf = ocf_list[0] if ocf_list else None
     latest_da = da_list[0] if da_list else None
+    label = period_label or "直近年"
+    # 段3（2026-11-03）: FCFがTTMの点なら、内訳もその点の値（latest_components、data_fetcher.fcf_latest_components）。
+    # 以前は年次の直近年の値を書き、FCFはTTMだった（TSLA: 年次 OCF 14.75B・CapEx 8.53B、使ったのはTTM）
+    if latest_components:
+        latest_capex = latest_components.get("capex")
+        latest_sbc = latest_components.get("sbc")
+        latest_ocf = latest_components.get("ocf")
+        latest_da = latest_components.get("da")
+        label = latest_components.get("label") or label
 
     capex_all_missing = bool(capex_list) and all(c is None for c in capex_list)
 
@@ -1529,13 +1594,13 @@ def compose_fcf_bottom_up(
             estimated_fcf=raw_fcf,
             raw_fcf=raw_fcf,
             capex=None, sbc=latest_sbc, ocf=latest_ocf, da=latest_da,
-            note=note,
+            note=note, period_label=label,
         )
 
     if latest_ocf is not None and latest_capex is not None:
         note = (
             f"OCF${latest_ocf/1e9:.2f}B - CapEx${latest_capex/1e9:.2f}B"
-            f"（直近年。5yr/2yr平均・外れ値除外後の採用値は"
+            f"（{label}。5yr/2yr平均・外れ値除外後の採用値は"
             f"${raw_fcf/1e9:.2f}B）"
         )
     else:
@@ -1548,5 +1613,5 @@ def compose_fcf_bottom_up(
         estimated_fcf=raw_fcf,
         raw_fcf=raw_fcf,
         capex=latest_capex, sbc=latest_sbc, ocf=latest_ocf, da=latest_da,
-        note=note,
+        note=note, period_label=label,
     )

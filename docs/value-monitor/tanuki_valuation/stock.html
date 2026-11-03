@@ -1751,7 +1751,7 @@ function render(d) {
             </div>
             <div style="display:flex;align-items:center;gap:16px">
               <span class="step-result" style="color:${fcfOutlierAction === 'excluded' ? 'var(--grn)' : 'var(--yellow)'}">
-                FY${fcfOutlierFY} ${fmtB(fcfOutlierValue)}
+                ${fcfOutlier.period_label || ('FY' + fcfOutlierFY)} ${fmtB(fcfOutlierValue)}
               </span>
               <span class="toggle-arrow">▼</span>
             </div>

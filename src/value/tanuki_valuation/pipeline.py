@@ -2073,7 +2073,7 @@ class TanukiValuationPipeline:
         else:
             _capex, _sbc, _ocf, _da = fcf_est.get("capex"), fcf_est.get("sbc"), fcf_est.get("ocf"), fcf_est.get("da")
             _fmt = lambda v: f"${v/1e6:,.0f}M" if v is not None else "N/A"
-            L.append(f"FCF_Breakdown（直近年）: OCF={_fmt(_ocf)} / CapEx={_fmt(_capex)} / "
+            L.append(f"FCF_Breakdown（{fcf_est.get('period_label') or '直近年'}）: OCF={_fmt(_ocf)} / CapEx={_fmt(_capex)} / "
                      f"SBC(非現金)={_fmt(_sbc)} / D&A={_fmt(_da)}")
             L.append("  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途")
             L.append("   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの")

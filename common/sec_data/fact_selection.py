@@ -129,6 +129,16 @@ def abs_term(e: dict[str, Any] | None) -> dict[str, Any] | None:
     return out
 
 
+def abs_entry(e: dict[str, Any] | None) -> dict[str, Any] | None:
+    """設備投資の符号の正規化（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2、2026-11-03）: 申告の値（val・first_val・_asof）を
+    差し引きの前（タグごとのYTD・年次の値）で abs にした写し。単独の四半期・Q4は、差し引いた結果を符号つきのまま残す
+    （YTDが前の四半期より減った期は負の四半期になる）。Layer2（normalizer.py）・Layer3（layer3_builder.py）の両方がこれを使う"""
+    out = abs_term(e)
+    if out and isinstance(out.get("val"), (int, float)):
+        out["val"] = abs(out["val"])
+    return out
+
+
 def set_derived(entry: dict[str, Any], derived: dict[str, Any]) -> dict[str, Any]:
     """entry の first_filed・first_val・_asof を derived で置き換える（元の値から写したものを残さない）。"""
     for k in DERIVED_KEYS:

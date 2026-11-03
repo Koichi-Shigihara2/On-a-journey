@@ -11,7 +11,7 @@ import json
 from common.sec_data import layer3_builder as l3
 from common.sec_data import normalizer as nz
 from common.sec_data.contracts import FinancialEntry
-from common.sec_data.fact_selection import ZERO_TERM, combine_first, derive, strip_asof, value_asof
+from common.sec_data.fact_selection import ZERO_TERM, abs_entry, combine_first, derive, strip_asof, value_asof
 from common.sec_data.q4_implied import build_q4_implied_entries
 from common.sec_data.quarterly import _process_entries, earliest_filed_by_period
 from common.sec_data.report_consistency_check import _check_restated_annual
@@ -76,11 +76,17 @@ def test_q4_without_first_values_falls_back_to_latest_with_mark():
     assert "first_val" not in q4
 
 
-def test_q4_capex_abs_applies_to_first_val():
-    entries = _process_entries([dict(f, val=-f["val"]) for f in _app_like_raw()], 99, 99)
+def test_q4_capex_sign_is_normalized_before_subtraction():
+    # 段2（2026-11-03）: 設備投資の符号は差し引きの前の申告の値で abs（abs_entry）、Q4は符号つき
+    entries = _process_entries([abs_entry(dict(f, val=-f["val"])) for f in _app_like_raw()], 99, 99)
     q4 = build_q4_implied_entries([e for e in entries if e["is_annual"]],
                                   [e for e in entries if not e["is_annual"]], "capital_expenditure")[0]
     assert q4["val"] == 130 and q4["first_val"] == 130
+    # abs を差し引きの前にかけないと、Q4は負のまま（以前のようにQ4でabsしない）
+    neg = _process_entries([dict(f, val=-f["val"]) for f in _app_like_raw()], 99, 99)
+    q4n = build_q4_implied_entries([e for e in neg if e["is_annual"]],
+                                   [e for e in neg if not e["is_annual"]], "capital_expenditure")[0]
+    assert q4n["val"] == -130
 
 
 def test_ytd_difference_carries_first_val():

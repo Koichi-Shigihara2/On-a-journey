@@ -231,6 +231,80 @@ def _check_condition1(
 # メイン公開関数
 # ============================================================
 
+def _apply_fv_items(q: dict, new_items: List[dict], tax_rate: float, note_text: str) -> dict:
+    """調整項目を足して Adj EPS を計算し直す（FAIR_VALUE_ADJUSTED の印・special_notes も）。q は写しを返す"""
+    additional_net = 0.0
+    adjusted_items: List[dict] = []
+
+    for fv_it in new_items:
+        if fv_it["pre_tax"]:
+            net_amount = fv_it["amount"] * (1.0 - tax_rate)
+            tax_applied = tax_rate
+        else:
+            net_amount = fv_it["amount"]
+            tax_applied = 0.0
+
+        adj_item = {k: v for k, v in fv_it.items() if k != "xbrl_value"}
+        adj_item["net_amount"] = net_amount
+        adj_item["tax_rate_applied"] = tax_applied
+        adjusted_items.append(adj_item)
+        additional_net += net_amount
+
+        print(
+            f"    {fv_it['item_name']}: "
+            f"XBRL={fv_it['xbrl_value']:+,.0f} → "
+            f"調整額={fv_it['amount']:+,.0f} → "
+            f"net={net_amount:+,.0f}"
+        )
+
+    # quarterly_result を shallow copy して更新
+    q = dict(q)
+    q["adjustments"] = list(q.get("adjustments", [])) + adjusted_items
+
+    old_net = q.get("net_adjustment_total", 0.0)
+    q["net_adjustment_total"] = old_net + additional_net
+    q["adjusted_net_income"] = q["gaap_net_income"] + q["net_adjustment_total"]
+
+    diluted = q.get("diluted_shares_used") or q.get("diluted_shares") or 0
+    q["adjusted_eps"] = q["adjusted_net_income"] / diluted if diluted else 0.0
+
+    print(
+        f"    → GAAP EPS={q['gaap_eps']:+.4f} "
+        f"Adj EPS={q['adjusted_eps']:+.4f}"
+    )
+
+    # [[EPS-DISCREPANCY-FLAG-OVERLOAD-1]]: 公正価値変動の自動検出・調整は
+    # XBRL vs Alpha Vantage公式値の乖離（check_eps_discrepancy()、意味の
+    # 異なる別処理）とは別のフラグ名にする（special_notesのどちらの
+    # サブキーが埋まっているかを確認しないと原因を判別できない問題を
+    # 解消するため）
+    flags = list(q.get("special_flags", []))
+    if "FAIR_VALUE_ADJUSTED" not in flags:
+        flags.append("FAIR_VALUE_ADJUSTED")
+    q["special_flags"] = flags
+
+    # special_notes に検出詳細を追加（同じ四半期に2回足すときは項目名をつなぐ）
+    notes = dict(q.get("special_notes", {}))
+    prev = (notes.get("fair_value_auto_detect") or {}).get("note")
+    text = note_text + "、".join(it["item_name"] for it in adjusted_items)
+    notes["fair_value_auto_detect"] = {"flag": "FAIR_VALUE_ADJUSTED", "note": (prev + " / " + text) if prev else text}
+    q["special_notes"] = notes
+    return q
+
+
+_NOTE_PER_QUARTER = (
+    "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。"
+    "GAAP EPSは経済実態を反映していない可能性があります。"
+    "Adj EPSは以下の項目を除外して再計算しています: "
+)
+_NOTE_SAME_YEAR = (
+    "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も"
+    "除外して再計算しています（年度内でそろえる）: "
+)
+# 条件3を問わずに項目を取り出すときに _scan_for_fv_items に渡す純利益（|金額| < |純利益|×30% が成り立たない値）
+_ANY_AMOUNT_NET_INCOME = 1e-300
+
+
 def apply_fair_value_detection(
     quarterly_raw: List[dict],
     quarterly_results: List[dict],
@@ -242,6 +316,12 @@ def apply_fair_value_detection(
     FAIR_VALUE_ADJUSTED フラグと special_notes も自動設定する
     （[[EPS-DISCREPANCY-FLAG-OVERLOAD-1]]対応: check_eps_discrepancy()の
     EPS_DISCREPANCYフラグとは意味が異なるため別名にした）。
+
+    年度内でそろえる（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段3、2026-11-03、案B）: 上の判定で、ある会計年度の
+    どれかの四半期で調整した項目（item_id）は、その年度のほかの四半期でも、同じ項目の値があれば条件1・3を問わずに調整する。
+    以前は四半期ごとに条件3（純利益の30%）を判定し、TSLAの2026年は第2四半期の +1,015M だけを調整して、
+    第3四半期の同じタグの −142M（純利益の18%）は調整していなかった（前年同期と比べるEPSの伸びが四半期でそろわない）。
+    年度でそろえる判定はこの関数の1か所（年度の範囲は quarterly_results の fiscal_year）。
 
     Args:
         quarterly_raw:     extract_quarterly_facts が返す生データリスト（FV XBRLタグ含む）
@@ -270,6 +350,7 @@ def apply_fair_value_detection(
             results_map[(fy, qn)] = q
 
     modified: List[dict] = []
+    adjusted_in_year: set = set()   # (fiscal_year, item_id): その年度のどれかの四半期で調整した項目
 
     for q in quarterly_results:
         fy = q.get("fiscal_year")
@@ -329,75 +410,31 @@ def apply_fair_value_detection(
             continue
 
         # ── 調整項目を追加して Adj EPS を再計算 ────────────────────────────
-        tax_rate = _get_tax_rate(q)
         print(
             f"  [FV Auto] {q.get('filing_date', '?')} FY{fy}Q{qn}: "
             f"{len(new_items)} 件の公正価値変動を検出 (条件1: {cond1_reason})"
         )
+        adjusted_in_year.update((fy, it["item_id"]) for it in new_items)
+        modified.append(_apply_fv_items(q, new_items, _get_tax_rate(q), _NOTE_PER_QUARTER))
 
-        additional_net = 0.0
-        adjusted_items: List[dict] = []
-
-        for fv_it in new_items:
-            if fv_it["pre_tax"]:
-                net_amount = fv_it["amount"] * (1.0 - tax_rate)
-                tax_applied = tax_rate
-            else:
-                net_amount = fv_it["amount"]
-                tax_applied = 0.0
-
-            adj_item = {k: v for k, v in fv_it.items() if k != "xbrl_value"}
-            adj_item["net_amount"] = net_amount
-            adj_item["tax_rate_applied"] = tax_applied
-            adjusted_items.append(adj_item)
-            additional_net += net_amount
-
-            print(
-                f"    {fv_it['item_name']}: "
-                f"XBRL={fv_it['xbrl_value']:+,.0f} → "
-                f"調整額={fv_it['amount']:+,.0f} → "
-                f"net={net_amount:+,.0f}"
-            )
-
-        # quarterly_result を shallow copy して更新
-        q = dict(q)
-        q["adjustments"] = list(q.get("adjustments", [])) + adjusted_items
-
-        old_net = q.get("net_adjustment_total", 0.0)
-        q["net_adjustment_total"] = old_net + additional_net
-        q["adjusted_net_income"] = q["gaap_net_income"] + q["net_adjustment_total"]
-
-        diluted = q.get("diluted_shares_used") or q.get("diluted_shares") or 0
-        q["adjusted_eps"] = q["adjusted_net_income"] / diluted if diluted else 0.0
-
+    # ── 年度内でそろえる（案B）: その年度で調整した項目を、ほかの四半期でも調整 ──
+    if not adjusted_in_year:
+        return modified
+    aligned: List[dict] = []
+    for q in modified:
+        fy, qn = q.get("fiscal_year"), q.get("quarter")
+        if fy is None or qn is None or not any(k[0] == fy for k in adjusted_in_year):
+            aligned.append(q)
+            continue
+        existing_ids = {a.get("item_id") for a in q.get("adjustments", [])}
+        same = [it for it in _scan_for_fv_items(raw_map.get((fy, qn), {}), _ANY_AMOUNT_NET_INCOME)
+                if (fy, it["item_id"]) in adjusted_in_year and it["item_id"] not in existing_ids]
+        if not same:
+            aligned.append(q)
+            continue
         print(
-            f"    → GAAP EPS={q['gaap_eps']:+.4f} "
-            f"Adj EPS={q['adjusted_eps']:+.4f}"
+            f"  [FV Auto] {q.get('filing_date', '?')} FY{fy}Q{qn}: "
+            f"{len(same)} 件の公正価値変動を年度内でそろえて調整（同じ年度のほかの四半期で調整した項目）"
         )
-
-        # [[EPS-DISCREPANCY-FLAG-OVERLOAD-1]]: 公正価値変動の自動検出・調整は
-        # XBRL vs Alpha Vantage公式値の乖離（check_eps_discrepancy()、意味の
-        # 異なる別処理）とは別のフラグ名にする（special_notesのどちらの
-        # サブキーが埋まっているかを確認しないと原因を判別できない問題を
-        # 解消するため）
-        flags = list(q.get("special_flags", []))
-        if "FAIR_VALUE_ADJUSTED" not in flags:
-            flags.append("FAIR_VALUE_ADJUSTED")
-        q["special_flags"] = flags
-
-        # special_notes に検出詳細を追加
-        notes = dict(q.get("special_notes", {}))
-        notes["fair_value_auto_detect"] = {
-            "flag": "FAIR_VALUE_ADJUSTED",
-            "note": (
-                "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。"
-                "GAAP EPSは経済実態を反映していない可能性があります。"
-                "Adj EPSは以下の項目を除外して再計算しています: "
-                + "、".join(it["item_name"] for it in adjusted_items)
-            ),
-        }
-        q["special_notes"] = notes
-
-        modified.append(q)
-
-    return modified
+        aligned.append(_apply_fv_items(q, same, _get_tax_rate(q), _NOTE_SAME_YEAR))
+    return aligned

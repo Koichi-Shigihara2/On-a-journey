@@ -193,6 +193,11 @@ class KoichiValuationCalculator:
         net_cash_data  = financials.get("net_cash_data", {"net_cash": 0.0, "available": False})  # v7.0
         # v7.1: FCF外れ値分析用（net_cash_dataのfiscal_yearを流用）
         fiscal_year_of_latest = net_cash_data.get("fiscal_year", 0)
+        # 段3（2026-11-03）: fcf_list_raw[0] の期のラベル（"TTM 2026-09-30"・"FY2025"）。注記と一過性費用を探す期はこれに合わせる
+        _fcf_labels = financials.get("fcf_period_labels") or []
+        fcf_latest_label = _fcf_labels[0] if _fcf_labels else None
+        fcf_latest_ttm_end = (fcf_dates_raw[0] if fcf_latest_label and fcf_latest_label.startswith("TTM") and fcf_dates_raw
+                              else None)
 
         # ── バリデーション ──
         if diluted_shares <= 100_000:
@@ -254,6 +259,8 @@ class KoichiValuationCalculator:
             fiscal_year_of_latest=fiscal_year_of_latest,
             eps_data_dir=self.eps_data_dir,
             cv_threshold=self.fcf_base_threshold,
+            period_label=fcf_latest_label,
+            transient_ttm_end=fcf_latest_ttm_end,
         )
         if fcf_outlier_result.detected:
             action_tag = "除外" if fcf_outlier_result.action == "excluded" else "要確認"
@@ -307,6 +314,8 @@ class KoichiValuationCalculator:
             sbc_list=financials.get("sbc_list", []),
             ocf_list=financials.get("ocf_list", []),
             da_list=financials.get("da_list", []),
+            latest_components=financials.get("fcf_latest_components"),
+            period_label=fcf_latest_label,
         )
         if fcf_composition.applied:
             print(f"   [{ticker}] FCF内訳: フォールバック → {fcf_composition.fallback_reason}")

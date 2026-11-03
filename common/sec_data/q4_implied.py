@@ -127,10 +127,8 @@ def implied_q4_value(annual: dict, quarters: list, field_name: str) -> tuple[flo
         extra = {Q4_BASIS_KEY: Q4_BASIS_LATEST}
     # first_filed・first_val は、ほかの派生の値と同じく最初の申告どうしで作る（[[STAGE-V2-ROLLOUT-1]]で使う）
     extra.update(combine_first([(1, annual)] + [(-1, q) for q in quarters]))
-    if _SNAKE_TO_PASCAL.get(field_name, field_name) == "CapEx":
-        q4_val = abs(q4_val)
-        if extra.get("first_val") is not None:
-            extra["first_val"] = abs(extra["first_val"])
+    # 設備投資のQ4は符号つき（年次・Q1〜Q3は差し引きの前に abs 済み。年次がQ1〜Q3の合計より小さい年は負、
+    # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2、2026-11-03。以前はここで abs）
     return q4_val, extra
 
 
@@ -156,11 +154,9 @@ def build_q4_implied_entries(
     - 同一end日付の四半期エントリが既にquarterly_entries内に存在する
       場合はそのFYをスキップする（重複生成防止、旧ttm_calculator.py
       ::BUG-TTM-Q4DUP-1ガードと同等）。
-    - 正規化後のfield_nameが"CapEx"の場合、算出したq4_valにabs()を
-      適用する（[[CAPEX-SIGN-UNNORMALIZED-1]]・[[RICE-TTM-CAPEX-SUM-
-      SIGN-1]]対応。normalizer.py側の最終出力時abs()・layer3_builder.py
-      側のLayer2 sign_normalize:"abs"と重複適用されても
-      abs(abs(x))==abs(x)のため無害）。
+    - "CapEx"のq4_valは符号つき（2026-11-03、[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2。年次・Q1〜Q3は
+      差し引きの前に abs 済み〈fact_selection.abs_entry〉。以前は[[CAPEX-SIGN-UNNORMALIZED-1]]・
+      [[RICE-TTM-CAPEX-SUM-SIGN-1]]対応でここでも abs していた）。
     - 未来のFY（fy_end > 本日）はアナリスト予想化を避けるため対象外。
     - Q4の値は、最初の10-Kの年次と、その提出日以前に申告されたQ1〜Q3の最も新しい値の差
       （年次と同じ時点の値どうし。implied_q4_value()、[[LAYER3-FIRST-FILED-DATE-1]]）。その時点の値が
