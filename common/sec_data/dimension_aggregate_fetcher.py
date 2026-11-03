@@ -116,7 +116,7 @@ def get_filing_directory_items(cik: int, accn: str) -> Optional[List[str]]:
     """
     url = f"{SEC_BASE}/Archives/edgar/data/{int(cik)}/{accn.replace('-', '')}/index.json"
     try:
-        r = sec_get(url, "dimension aggregate")
+        r = sec_get(url, "dimension aggregate", expect_json=True)
         r.raise_for_status()
         data = r.json()
         return [it["name"] for it in data.get("directory", {}).get("item", [])]

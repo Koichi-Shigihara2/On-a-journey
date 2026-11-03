@@ -172,7 +172,7 @@ def fetch_company_facts(cik: str) -> Dict:
     print(f"Fetching company facts from {url}")
     
     try:
-        response = sec_get(url, "EPS company facts")
+        response = sec_get(url, "EPS company facts", expect_json=True)
         response.raise_for_status()
         return response.json()
     except Exception as e:

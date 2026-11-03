@@ -64,7 +64,7 @@ def get_cik(ticker: str) -> Optional[str]:
     """EDGAR company_tickers.json からティッカー → CIK（10桁）"""
     ticker = ticker.upper()
     try:
-        r = sec_get("https://www.sec.gov/files/company_tickers.json", "TAIL KPI XBRL")
+        r = sec_get("https://www.sec.gov/files/company_tickers.json", "TAIL KPI XBRL", expect_json=True)
         r.raise_for_status()
         for entry in r.json().values():
             if entry.get("ticker", "").upper() == ticker:
@@ -109,7 +109,7 @@ def get_10q_filings(cik: str, n: int = 8) -> List[Dict[str, Any]]:
             })
 
     try:
-        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL KPI XBRL")
+        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL KPI XBRL", expect_json=True)
         r.raise_for_status()
         data = r.json()
         _extract(data.get("filings", {}).get("recent", {}))
@@ -123,7 +123,7 @@ def get_10q_filings(cik: str, n: int = 8) -> List[Dict[str, Any]]:
                 if not nm.endswith(".json"):
                     continue
                 try:
-                    sr = sec_get(f"https://data.sec.gov/submissions/{nm}", "TAIL KPI XBRL")
+                    sr = sec_get(f"https://data.sec.gov/submissions/{nm}", "TAIL KPI XBRL", expect_json=True)
                     sr.raise_for_status()
                     _extract(sr.json())
                 except Exception:

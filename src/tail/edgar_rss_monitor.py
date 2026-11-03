@@ -121,7 +121,7 @@ def get_filing_period(cik: str, accn: str) -> Optional[str]:
     この鮮度要件を壊すリスクがあるため見送り、重複APIコールは許容する。
     """
     try:
-        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL RSS")
+        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL RSS", expect_json=True)
         r.raise_for_status()
         recent = r.json().get("filings", {}).get("recent", {})
         accns  = recent.get("accessionNumber", [])
@@ -141,7 +141,7 @@ def get_fiscal_year_end(cik: str) -> Optional[str]:
     過ぎた銘柄だけが呼ぶ（毎回の実行で全銘柄を呼ばない）。
     """
     try:
-        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL RSS")
+        r = sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json", "TAIL RSS", expect_json=True)
         r.raise_for_status()
         fye = r.json().get("fiscalYearEnd")
         return fye if fye and len(fye) == 4 and fye.isdigit() else None
@@ -230,7 +230,7 @@ def get_cik_map(tickers: List[str]) -> Dict[str, Optional[str]]:
     upper = {t.upper() for t in tickers}
     result: Dict[str, Optional[str]] = {t: None for t in upper}
     try:
-        r = sec_get("https://www.sec.gov/files/company_tickers.json", "TAIL RSS")
+        r = sec_get("https://www.sec.gov/files/company_tickers.json", "TAIL RSS", expect_json=True)
         r.raise_for_status()
         for entry in r.json().values():
             t = entry.get("ticker", "").upper()

@@ -240,6 +240,8 @@ class TestTranslateTimeoutConfig:
 
         class _FakeResp:
             status_code = 200
+            # Grokの呼び出しは2xxの中身がJSONかを見る（[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]）ので本物の応答と同じく中身を持つ
+            content = b'{"choices": [{"message": {"content": "ok"}}], "usage": {}}'
 
             def json(self):
                 return {"choices": [{"message": {"content": "ok"}}], "usage": {}}

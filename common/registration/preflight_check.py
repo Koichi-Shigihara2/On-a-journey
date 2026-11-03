@@ -84,7 +84,7 @@ class PreflightResult:
 
 def _fetch_json(url: str) -> dict | None:
     try:
-        resp = sec_get(url, "登録の事前確認")
+        resp = sec_get(url, "登録の事前確認", expect_json=True)
         if resp.status_code != 200:
             return None
         return resp.json()

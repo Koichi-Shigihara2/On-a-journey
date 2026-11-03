@@ -14,8 +14,14 @@ common/external_api.py
 
 失敗の形: 通信が最後まで失敗したら ExternalApiError（requests.exceptions.RequestException の仲間なので、
 これまでの `except requests.exceptions.RequestException` / `except Exception` で受けられる）。
+
+JSONを期待する呼び出し（expect_json=True。Grok・FREDは常に、SEC・FRBは呼び出し側が渡す）では、2xxなのに中身がJSONとして
+読めない応答（空・HTML等）も一時的な失敗として、429・5xxと同じ回数・待ち時間で再試行する。尽きたら ExternalApiError
+（理由は「2xx・非JSON」と中身の先頭）。JSONを期待しない呼び出し（テキスト・HTML・XML）の動きは変えない
+（[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]、2026-11-03）。
 """
 
+import json
 import os
 import time
 from typing import Any, Dict, Optional
@@ -24,7 +30,8 @@ import requests
 
 # ── 1つの設定 ────────────────────────────────────────────────────
 RETRY_ATTEMPTS = 3                       # 1回目＋再試行2回
-RETRY_WAITS_SEC = (2, 5)                 # 再試行の前に待つ秒数（429・5xx・通信の失敗）
+RETRY_WAITS_SEC = (2, 5)                 # 再試行の前に待つ秒数（429・5xx・通信の失敗・JSONを期待する呼び出しの2xx・非JSON）
+NONJSON_HEAD_CHARS = 60                  # 2xx・非JSONの失敗の理由に残す中身の先頭の文字数
 TIMEOUT_SEC = {"grok": 120, "sec": 120, "fred": 30, "frb": 20}   # 2026-10-24 までの呼び出しごとの値の最大（frbは2026-10-26）
 GROK_URL = "https://api.x.ai/v1/chat/completions"
 SEC_MIN_INTERVAL_SEC = 0.11              # SECは毎秒10件まで
@@ -36,15 +43,28 @@ FRED_API_KEY_ENV = "FRED_API_KEY"
 
 
 class ExternalApiError(requests.exceptions.RequestException):
-    """外部APIの呼び出しが最後まで失敗した（通信の失敗、再試行しても429・5xx、Grokの2xx以外）。"""
+    """外部APIの呼び出しが最後まで失敗した（通信の失敗、再試行しても429・5xx、JSONを期待する呼び出しの2xx・非JSON、Grokの2xx以外）。"""
 
 
 def _retryable(status: int) -> bool:
     return status == 429 or status >= 500
 
 
-def _request(kind: str, method: str, url: str, label: str, **kw) -> requests.Response:
-    """再試行つきの1回の呼び出し。429・5xxで尽きたら最後の応答を返し、通信の失敗で尽きたら ExternalApiError。"""
+def _nonjson_reason(resp: requests.Response) -> Optional[str]:
+    """2xxの応答の中身がJSONとして読めなければ理由（「2xx・非JSON」と中身の先頭）、読めればNone。
+    先頭のBOMは許す（FRBの calendar.json）"""
+    raw = resp.content or b""
+    try:
+        json.loads(raw.decode("utf-8-sig"))
+        return None
+    except (ValueError, UnicodeDecodeError):
+        head = raw[:NONJSON_HEAD_CHARS * 4].decode("utf-8", "replace")[:NONJSON_HEAD_CHARS]
+        return f"HTTP {resp.status_code}・2xx・非JSON（{len(raw)}バイト、先頭: {head!r}）"
+
+
+def _request(kind: str, method: str, url: str, label: str, expect_json: bool = False, **kw) -> requests.Response:
+    """再試行つきの1回の呼び出し。429・5xxで尽きたら最後の応答を返し、通信の失敗で尽きたら ExternalApiError。
+    expect_json: 2xxで中身がJSONとして読めない応答も再試行し、尽きたら ExternalApiError（判定はここの1か所）"""
     last_resp: Optional[requests.Response] = None
     last_err = ""
     for i in range(RETRY_ATTEMPTS):
@@ -55,8 +75,12 @@ def _request(kind: str, method: str, url: str, label: str, **kw) -> requests.Res
             last_resp, last_err = None, f"{type(e).__name__}: {e}"
         else:
             if not _retryable(resp.status_code):
-                return resp
-            last_resp, last_err = resp, f"HTTP {resp.status_code}"
+                bad = _nonjson_reason(resp) if expect_json and 200 <= resp.status_code < 300 else None
+                if bad is None:
+                    return resp
+                last_resp, last_err = None, bad
+            else:
+                last_resp, last_err = resp, f"HTTP {resp.status_code}"
         if i < RETRY_ATTEMPTS - 1:
             wait = RETRY_WAITS_SEC[min(i, len(RETRY_WAITS_SEC) - 1)]
             print(f"  [{kind}] {label}: {last_err} → {wait}秒待って再試行（{i + 2}/{RETRY_ATTEMPTS}）")
@@ -73,7 +97,7 @@ def grok_request(payload: Dict[str, Any], label: str, api_key: Optional[str] = N
     key = api_key if api_key is not None else os.environ.get("XAI_API_KEY", "")
     if not key:
         raise ExternalApiError(f"{label}: XAI_API_KEY が無い")
-    resp = _request("grok", "POST", GROK_URL, f"Grok {label}",
+    resp = _request("grok", "POST", GROK_URL, f"Grok {label}", expect_json=True,
                     headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"}, json=payload)
     if not 200 <= resp.status_code < 300:
         raise ExternalApiError(f"{label}: HTTP {resp.status_code} {resp.text[:200]}")
@@ -108,14 +132,15 @@ def sec_user_agent() -> str:
     return f"On-a-journey {email}"
 
 
-def sec_get(url: str, label: str = "", params: Optional[dict] = None) -> requests.Response:
-    """SEC（www.sec.gov・data.sec.gov）から取る。毎秒10件の制限を守る。404等はそのまま返し、呼び出し側が読む。"""
+def sec_get(url: str, label: str = "", params: Optional[dict] = None, expect_json: bool = False) -> requests.Response:
+    """SEC（www.sec.gov・data.sec.gov）から取る。毎秒10件の制限を守る。404等はそのまま返し、呼び出し側が読む。
+    expect_json: JSONを読む呼び出し（submissions・companyfacts・company_tickers.json・index.json等）は True"""
     headers = {"User-Agent": sec_user_agent(), "Accept-Encoding": "gzip, deflate"}
     wait = SEC_MIN_INTERVAL_SEC - (time.monotonic() - _SEC_LAST_AT[0])
     if wait > 0:
         time.sleep(wait)
     try:
-        return _request("sec", "GET", url, f"SEC {label or url}", headers=headers, params=params)
+        return _request("sec", "GET", url, f"SEC {label or url}", expect_json=expect_json, headers=headers, params=params)
     finally:
         _SEC_LAST_AT[0] = time.monotonic()
 
@@ -135,7 +160,7 @@ def fred_get(path: str, params: Optional[dict] = None, api_key: Optional[str] = 
     """FREDのREST API（https://api.stlouisfed.org/fred/<path>）の応答のJSON。2xx以外・通信の失敗は ExternalApiError。"""
     q = dict(params or {})
     q.update(api_key=_fred_key(api_key), file_type="json")
-    resp = _request("fred", "GET", FRED_URL + path, f"FRED {path}", params=q)
+    resp = _request("fred", "GET", FRED_URL + path, f"FRED {path}", expect_json=True, params=q)
     if not 200 <= resp.status_code < 300:
         raise ExternalApiError(f"FRED {path}: HTTP {resp.status_code}")
     return resp.json()
@@ -150,7 +175,9 @@ def fred_client():
 
 
 # ── FRB ──────────────────────────────────────────────────────────
-def frb_get(path: str, label: str = "") -> requests.Response:
+def frb_get(path: str, label: str = "", expect_json: bool = False) -> requests.Response:
     """FRB（https://www.federalreserve.gov<path>）のページ。404等はそのまま返し、呼び出し側が読む。
-    MACRO PULSEのFOMCの予定（fomccalendars.htm）と声明（[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]、2026-10-26）。"""
-    return _request("frb", "GET", FRB_URL + path, f"FRB {label or path}", headers={"User-Agent": "Mozilla/5.0"})
+    MACRO PULSEのFOMCの予定（fomccalendars.htm）と声明（[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]、2026-10-26）。
+    expect_json: JSONを読む呼び出し（Market Pulseの /json/calendar.json）は True"""
+    return _request("frb", "GET", FRB_URL + path, f"FRB {label or path}", expect_json=expect_json,
+                    headers={"User-Agent": "Mozilla/5.0"})

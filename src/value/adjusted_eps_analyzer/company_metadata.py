@@ -23,7 +23,7 @@ def get_company_metadata(cik: str) -> Dict:
     """
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     try:
-        response = sec_get(url, "EPS 会社の情報")
+        response = sec_get(url, "EPS 会社の情報", expect_json=True)
         if response.status_code == 200:
             data = response.json()
             return {

@@ -1025,7 +1025,7 @@ class TanukiDataFetcher:
         cik_padded = cik_num.zfill(10)
 
         try:
-            r = sec_get(f'https://data.sec.gov/submissions/CIK{cik_padded}.json', "TANUKI インサイダー取引")
+            r = sec_get(f'https://data.sec.gov/submissions/CIK{cik_padded}.json', "TANUKI インサイダー取引", expect_json=True)
             if r.status_code != 200:
                 return None
             sub_data = r.json()

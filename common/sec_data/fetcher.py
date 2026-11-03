@@ -87,10 +87,11 @@ class SECFetcher:
         self.request_count = 0
 
     def _get(self, url: str, timeout: int = 0):
-        """SECから取る（common/external_api.py の sec_get。User-Agent・毎秒10件の制限・再試行。timeout は使わない）。"""
+        """SECから取る（common/external_api.py の sec_get。User-Agent・毎秒10件の制限・再試行。timeout は使わない）。
+        ここで取るのは submissions・companyfacts のJSONだけ（2xx・非JSONも再試行する）"""
         from common.external_api import sec_get
         self.request_count += 1
-        return sec_get(url, "SEC層")
+        return sec_get(url, "SEC層", expect_json=True)
 
     def _load_cik_cache(self) -> dict:
         """CIKキャッシュ読み込み"""

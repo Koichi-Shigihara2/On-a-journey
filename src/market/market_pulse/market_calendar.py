@@ -66,7 +66,7 @@ def _frb_json(path: str) -> Any:
     """FRB（https://www.federalreserve.gov<path>）のJSON（common/external_api.py の frb_get。2xx以外は例外）。
     calendar.json は先頭にBOMが付くことがあるので utf-8-sig で読む（2026-11-01 までの _http_json と同じ）。"""
     from common.external_api import frb_get
-    r = frb_get(path, "FRB calendar.json")
+    r = frb_get(path, "FRB calendar.json", expect_json=True)
     r.raise_for_status()
     return json.loads(r.content.decode("utf-8-sig"))
 
