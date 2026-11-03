@@ -27,12 +27,12 @@ def main():
         print("portfolio.json not found")
         return
 
-    with open(pf_path) as f:
+    with open(pf_path, encoding="utf-8") as f:
         pf = json.load(f)
 
     # market_data.jsonからUSD/JPYと現在株価を取得
     mp_path = Path("docs/market-monitor/market-pulse/data/market_data.json")
-    with open(mp_path) as f:
+    with open(mp_path, encoding="utf-8") as f:
         mp = json.load(f)
 
     last_mp = mp[-1]
@@ -45,7 +45,7 @@ def main():
     hc_dir = Path("docs/value-monitor/hypecore/data")
     for f in hc_dir.glob("*_poc.json"):
         ticker = f.stem.replace("_poc", "")
-        with open(f) as fp:
+        with open(f, encoding="utf-8") as fp:
             h = json.load(fp)
         monthly = h.get("monthly", [])
         if monthly:
@@ -118,7 +118,7 @@ def main():
     # history.jsonに追記
     hist_path = Path("docs/portfolio/data/history.json")
     if hist_path.exists():
-        with open(hist_path) as f:
+        with open(hist_path, encoding="utf-8") as f:
             history = json.load(f)
     else:
         history = {"snapshots": []}
@@ -130,7 +130,7 @@ def main():
     snaps.sort(key=lambda x: x["date"])
     history["snapshots"] = snaps
 
-    with open(hist_path, "w") as f:
+    with open(hist_path, "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
 
     print(f"スナップショット保存: {date_str}")

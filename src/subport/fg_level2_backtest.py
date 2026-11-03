@@ -20,7 +20,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
-import requests
+
+# 取得は common/external_api.py の web_get（[[COMMON-PATH-GUARD-1]]）。直接実行でも common を読めるように根を足す
+_REPO_ROOT = str(Path(__file__).resolve().parents[2])
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+from common.external_api import web_get  # noqa: E402
 
 warnings.filterwarnings("ignore")
 
@@ -58,7 +63,7 @@ def fetch_fg_cnn_api() -> "pd.DataFrame | None":
     }
     print(f"  [CNN API] {url}")
     try:
-        resp = requests.get(url, headers=headers, timeout=30)
+        resp = web_get(url, "CNN F&G", headers=headers, expect_json=True)
         resp.raise_for_status()
         data = resp.json()
 
@@ -90,7 +95,7 @@ def fetch_fg_github() -> "pd.DataFrame | None":
     url = "https://raw.githubusercontent.com/whit3rabbit/fear-greed-data/main/fear-greed.csv"
     print(f"  [GitHub] {url}")
     try:
-        resp = requests.get(url, timeout=30)
+        resp = web_get(url, "GitHub F&G CSV", headers={})
         resp.raise_for_status()
 
         from io import StringIO

@@ -15,7 +15,7 @@ def test_nyse_and_federal_holidays_are_different_concepts():
     assert date(2026, 10, 12) in cu.us_federal_holidays(2026) and cu.is_nyse_trading_day("2026-10-12")
     assert date(2026, 4, 3) not in cu.us_federal_holidays(2026) and not cu.is_nyse_trading_day("2026-04-03")
     assert date(2026, 6, 19) not in cu.us_federal_holidays(2026) and "2026-06-19" in cu.nyse_holidays("2026-01-01", "2026-12-31")
-    # 連邦の営業日の加算はコロンブス・デーを飛ばす（S&P500 の t+N は今はこの数え方。FINDINGS 2026-10-23）
+    # 連邦の営業日の加算はコロンブス・デーを飛ばす（経済指標の公表の予定用。S&P500 の t+N は nyse_trading_days_add。[[COMMON-PATH-GUARD-1]]）
     assert cu.us_federal_business_days_add(date(2026, 10, 9), 1) == date(2026, 10, 13)
     assert cu.previous_us_federal_business_day(date(2026, 10, 12)) == date(2026, 10, 9)
 
@@ -44,3 +44,12 @@ def test_write_sp500_copy_copies_the_cache(tmp_path):
     out = str(tmp_path / "copy" / "sp500_tickers.json")
     assert cu.write_sp500_copy(out, base_dir=str(tmp_path)) == ["AAA", "BBB"]
     assert json.load(open(out, encoding="utf-8")) == {"fetched_at": fetched, "count": 2, "tickers": ["AAA", "BBB"]}
+
+
+def test_nyse_trading_days_add_counts_nyse_trading_days():
+    """[[COMMON-PATH-GUARD-1]]: MACRO PULSE の sp500_t1〜t20 は NYSE の取引日で数える"""
+    assert cu.nyse_trading_days_add(date(2026, 10, 9), 1) == date(2026, 10, 12)    # コロンブス・デーはNYSEが開く
+    assert cu.nyse_trading_days_add(date(2026, 4, 2), 1) == date(2026, 4, 6)      # 聖金曜日はNYSEが休場
+    assert cu.nyse_trading_days_add("2026-06-18", 1) == date(2026, 6, 22)          # ジューンティーンス（金）は休場
+    assert cu.nyse_trading_days_add(date(2026, 10, 10), 1) == date(2026, 10, 12)   # 起点が土曜でもその後の1取引日目
+    assert cu.nyse_trading_days_add(date(2026, 10, 1), 20) == date(2026, 10, 29)

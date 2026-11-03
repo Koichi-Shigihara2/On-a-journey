@@ -11,6 +11,9 @@ common/external_api.py
     User-Agent は環境変数 SEC_USER_AGENT_EMAIL から作り、無ければ止める（架空のアドレスで続けない）。毎秒10件の制限を守る
   - FRED: fred_get(path, params) がREST APIの応答のJSONを返す。fred_client() は fredapi の Fred（系列の取得、マクロデータ層）
   - FRB（www.federalreserve.gov）: frb_get(path) が応答を返す（FOMCの予定・声明のページ。404等はそのまま）
+  - そのほかの取得元（stooq・Wikipedia・GitHub・RSS・feargreedchart・CNN・Alpha Vantage）: web_get(url, label) が応答を返す
+    （404等はそのまま）。requests.get を直接呼ぶのはこのファイルだけ（tests/test_common_path_guard.py が検査する。
+    [[COMMON-PATH-GUARD-1]]、2026-11-03）
 
 失敗の形: 通信が最後まで失敗したら ExternalApiError（requests.exceptions.RequestException の仲間なので、
 これまでの `except requests.exceptions.RequestException` / `except Exception` で受けられる）。
@@ -32,11 +35,13 @@ import requests
 RETRY_ATTEMPTS = 3                       # 1回目＋再試行2回
 RETRY_WAITS_SEC = (2, 5)                 # 再試行の前に待つ秒数（429・5xx・通信の失敗・JSONを期待する呼び出しの2xx・非JSON）
 NONJSON_HEAD_CHARS = 60                  # 2xx・非JSONの失敗の理由に残す中身の先頭の文字数
-TIMEOUT_SEC = {"grok": 120, "sec": 120, "fred": 30, "frb": 20}   # 2026-10-24 までの呼び出しごとの値の最大（frbは2026-10-26）
+TIMEOUT_SEC = {"grok": 120, "sec": 120, "fred": 30, "frb": 20,   # 2026-10-24 までの呼び出しごとの値の最大（frbは2026-10-26）
+               "web": 30}                                         # 2026-11-03 までの呼び出しごとの値（10・15・30秒）の最大
 GROK_URL = "https://api.x.ai/v1/chat/completions"
 SEC_MIN_INTERVAL_SEC = 0.11              # SECは毎秒10件まで
 FRED_URL = "https://api.stlouisfed.org/fred/"
 FRB_URL = "https://www.federalreserve.gov"
+WEB_USER_AGENT = "Mozilla/5.0"           # web_get で headers を渡さないときの User-Agent
 GROK_UNAVAILABLE_TEXT = "AI（Grok）の解説は取得できませんでした"
 SEC_USER_AGENT_ENV = "SEC_USER_AGENT_EMAIL"
 FRED_API_KEY_ENV = "FRED_API_KEY"
@@ -181,3 +186,13 @@ def frb_get(path: str, label: str = "", expect_json: bool = False) -> requests.R
     expect_json: JSONを読む呼び出し（Market Pulseの /json/calendar.json）は True"""
     return _request("frb", "GET", FRB_URL + path, f"FRB {label or path}", expect_json=expect_json,
                     headers={"User-Agent": "Mozilla/5.0"})
+
+
+# ── そのほかの取得元 ─────────────────────────────────────────────
+def web_get(url: str, label: str, headers: Optional[dict] = None, params: Optional[dict] = None,
+            expect_json: bool = False) -> requests.Response:
+    """Grok・SEC・FRED・FRB 以外の取得元（stooq・Wikipedia・GitHub・RSS・feargreedchart・CNN・Alpha Vantage）から取る。
+    404等はそのまま返し、呼び出し側が読む（raise_for_status 等）。headers を渡さなければ User-Agent は WEB_USER_AGENT。
+    expect_json: 応答をJSONとして読む呼び出しは True（2xx・非JSONも再試行する）"""
+    return _request("web", "GET", url, f"WEB {label}", expect_json=expect_json,
+                    headers=headers if headers is not None else {"User-Agent": WEB_USER_AGENT}, params=params)

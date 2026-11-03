@@ -50,8 +50,8 @@ GROK_MODEL = "grok-4.3"
 
 
 def _default_fetch(url: str) -> bytes:
-    import requests
-    r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+    from common.external_api import web_get
+    r = web_get(url, "Market Pulse 見出し")
     r.raise_for_status()
     return r.content
 

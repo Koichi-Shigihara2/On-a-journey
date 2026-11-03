@@ -83,9 +83,10 @@ if not HAS_MACRO_DATA:
 
 # 連邦の祝日・営業日（経済指標の公表の予定用。NYSEの休場日ではない）は common/market_data/calendar_universe.py
 # （[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]、2026-10-23に us_holidays・us_business_days_add から移した。規則は同じ）
-from common.market_data.calendar_universe import previous_us_federal_business_day, us_federal_business_days_add  # noqa: E402
+# 市場の日付（t+N の終値の日）は NYSE の取引日で数える（nyse_trading_days_add。[[COMMON-PATH-GUARD-1]]、2026-11-03）
+from common.market_data.calendar_universe import nyse_trading_days_add, previous_us_federal_business_day  # noqa: E402
 # 外部APIの呼び出し（Grok・FRED・FRB。再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）
-from common.external_api import GROK_UNAVAILABLE_TEXT, ExternalApiError, fred_get, frb_get, grok_text  # noqa: E402
+from common.external_api import GROK_UNAVAILABLE_TEXT, ExternalApiError, fred_get, frb_get, grok_text, web_get  # noqa: E402
 # [[GROK-MODEL-PRICE-1]]: grok-3-mini/grok-3は実際にはgrok-4.3へ自動ルーティングされ、grok-2-1212は廃止済み。実際に応答する現行モデル名
 GROK_MODEL = "grok-4.3"
 
@@ -808,7 +809,7 @@ def _stooq(symbol: str, target_date: date):
         d1 = (target_date - timedelta(days=10)).strftime("%Y%m%d")
         d2 = target_date.strftime("%Y%m%d")
         url = f"https://stooq.com/q/d/l/?s={symbol}&d1={d1}&d2={d2}&i=d"
-        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=15)
+        r = web_get(url, f"stooq {symbol}")
         r.raise_for_status()
         txt = r.text.strip()
         if not txt or "No data" in txt:
@@ -1027,7 +1028,7 @@ def _load_sp500_cache(from_date: str, to_date: str) -> pd.Series:
         d1 = from_date.replace("-", "")
         d2 = to_date.replace("-", "")
         url = f"https://stooq.com/q/d/l/?s=%5Espx&d1={d1}&d2={d2}&i=d"
-        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
+        r = web_get(url, "stooq ^spx")
         r.raise_for_status()
         df = pd.read_csv(StringIO(r.text))
         df.columns = [c.strip() for c in df.columns]
@@ -1136,8 +1137,8 @@ def fill_returns():
         ]:
             if events.at[idx, col_sp]:
                 continue
-            # t+N は連邦の祝日を除く営業日で数える（NYSEの取引日ではない。FINDINGS 2026-10-23）
-            target_n = us_federal_business_days_add(rd, n)
+            # t+N は NYSE の取引日で数える（2026-11-03 まで連邦の営業日だった。FINDINGS 2026-10-23・[[COMMON-PATH-GUARD-1]]）
+            target_n = nyse_trading_days_add(rd, n)
             if target_n > today:
                 skip_future += 1
                 continue
@@ -2530,7 +2531,7 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
     JST = timezone(timedelta(hours=9))
     meta = {"generated_at": datetime.now(JST).strftime("%Y-%m-%dT%H:%M:%S+09:00")}
     meta_path = os.path.join(BASE_DATA_DIR, "05_meta.json")
-    with open(meta_path, "w") as f:
+    with open(meta_path, "w", encoding="utf-8") as f:
         json.dump(meta, f)
 
     logger.info(

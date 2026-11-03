@@ -97,7 +97,7 @@ class SECFetcher:
         """CIKキャッシュ読み込み"""
         if os.path.exists(self.cik_cache_path):
             try:
-                with open(self.cik_cache_path, "r") as f:
+                with open(self.cik_cache_path, "r", encoding="utf-8") as f:
                     return json.load(f)
             except:
                 pass
@@ -105,7 +105,7 @@ class SECFetcher:
     
     def _save_cik_cache(self):
         """CIKキャッシュ保存"""
-        with open(self.cik_cache_path, "w") as f:
+        with open(self.cik_cache_path, "w", encoding="utf-8") as f:
             json.dump(self.cik_cache, f, indent=2)
     
     def get_cik(self, ticker: str) -> Optional[str]:

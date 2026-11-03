@@ -37,7 +37,9 @@ funda/timing・tanuki_score・matrix・トラップ判定）やTANUKI VALUATION�
 出力: docs/common/sec_data/rotce/{TICKER}.json と _summary.json（TANUKI SCOREの散布図用）。
 会社発表のROTCE: config/company_reported_metrics.jsonに登録した銘柄は、{TICKER}.jsonのcompany_reportedに
 会社の値・こちらの計算値・差・ガイダンス・長期目標と、直近の四半期末が登録済みか（latest_registered）を書く。
-実行: python common/sec_data/rotce.py [TICKER ...]（引数なしは common/sec_data/config.py の全銘柄）
+実行: python common/sec_data/rotce.py [TICKER ...]（引数なしは common/sec_data/config.py の全銘柄）。
+銘柄を指定した実行では、_summary.json はほかの銘柄の行と generated_at を残し、指定の銘柄の行だけ差し替える
+（全銘柄の集計を一部の銘柄の実行で書き直さない。common/sec_data/freshness.py の write と同じ規則。[[COMMON-PATH-GUARD-1]]）
 """
 import contextlib
 import io
@@ -662,8 +664,19 @@ def _summary_row(r: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUTPUT_DIR) -> Dict[str, Any]:
-    """全銘柄を計算して {TICKER}.json と _summary.json を書き出す"""
+def _previous_summary(out_dir: str) -> Dict[str, Any]:
+    try:
+        with open(os.path.join(out_dir, "_summary.json"), encoding="utf-8") as f:
+            prev = json.load(f)
+        return prev if isinstance(prev, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUTPUT_DIR,
+              partial: bool = False) -> Dict[str, Any]:
+    """銘柄を計算して {TICKER}.json と _summary.json を書き出す。
+    partial=True（銘柄を指定した実行）: _summary.json は前回のほかの銘柄の行と generated_at を残し、計算した銘柄の行だけ差し替える"""
     os.makedirs(out_dir, exist_ok=True)
     splits_all = load_split_history()
     reported = load_company_reported()
@@ -685,8 +698,13 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
         with open(_path, "w", encoding="utf-8") as f:
             json.dump(r, f, ensure_ascii=False, indent=1)
         rows[r["ticker"]] = _summary_row(r)
+    summary_generated_at = generated_at
+    if partial:
+        prev = _previous_summary(out_dir)
+        rows = {**(prev.get("tickers") or {}), **rows}
+        summary_generated_at = prev.get("generated_at") or generated_at
     summary = {
-        "generated_at": generated_at,
+        "generated_at": summary_generated_at,
         "reference_only": True,
         "thresholds": {
             "min_quarters": MIN_QUARTERS_FOR_PERCENTILE,
@@ -706,10 +724,11 @@ def build_all(tickers: List[str], repo_root: str = REPO_ROOT, out_dir: str = OUT
 def main(argv: List[str]) -> int:
     from common.sec_data.config import get_all
     tickers = [a.upper() for a in argv] if argv else get_all()
-    summary = build_all(tickers)
-    rows = summary["tickers"].values()
+    summary = build_all(tickers, partial=bool(argv))
+    rows = [summary["tickers"][t] for t in tickers if t in summary["tickers"]]
     ok = sum(1 for r in rows if r["rotce"] is not None and r["ptbv"] is not None)
-    print(f"ROTCE/P/TBV: {ok}/{len(summary['tickers'])}銘柄で算出 → {OUTPUT_DIR}")
+    print(f"ROTCE/P/TBV: {ok}/{len(rows)}銘柄で算出 → {OUTPUT_DIR}"
+          + (f"（_summary.json はほかの{len(summary['tickers']) - len(rows)}銘柄の行を残した）" if argv else ""))
     return 0
 
 

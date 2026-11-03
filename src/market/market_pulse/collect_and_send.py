@@ -9,7 +9,6 @@ from datetime import datetime, timezone, timedelta
 import json
 import csv
 import re
-import requests   # 追加: requests で非ASCII URLを扱う
 
 # --- 設定 ---
 XAI_API_KEY  = os.getenv("XAI_API_KEY")
@@ -529,11 +528,8 @@ def fetch_hy_spread_from_fred():
 def fetch_fg_score_from_feargreedchart():
     """feargreedchart.com APIからF&Gスコア（0〜100）を取得する"""
     try:
-        resp = requests.get(
-            "https://feargreedchart.com/api/?action=all",
-            timeout=15,
-            headers={"User-Agent": "Mozilla/5.0"},
-        )
+        from common.external_api import web_get
+        resp = web_get("https://feargreedchart.com/api/?action=all", "feargreedchart F&G", expect_json=True)
         resp.raise_for_status()
         score = float(resp.json()["score"]["score"])
         print(f"[INFO] feargreedchart.com F&G score: {score}")
@@ -1057,8 +1053,9 @@ def get_market_news():
     all_entries = []
     for url in urls:
         try:
-            # requests で取得（非ASCII文字列でも自動処理）
-            response = requests.get(url, timeout=10, headers={'User-Agent': 'Mozilla/5.0'})
+            # common/external_api.py の web_get で取得（非ASCII文字列でも自動処理）
+            from common.external_api import web_get
+            response = web_get(url, "Market Pulse RSS")
             response.raise_for_status()
             feed = feedparser.parse(response.content)
             for e in feed.entries[:8]:

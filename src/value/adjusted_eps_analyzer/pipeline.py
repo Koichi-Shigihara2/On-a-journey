@@ -7,7 +7,6 @@ import os
 import sys
 import csv
 import threading
-import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
@@ -48,7 +47,8 @@ def fetch_alpha_vantage_earnings(ticker: str) -> List[Dict]:
 
     url = f"https://www.alphavantage.co/query?function=EARNINGS&symbol={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
     try:
-        response = requests.get(url, timeout=15)
+        from common.external_api import web_get
+        response = web_get(url, f"Alpha Vantage EPS {ticker}", headers={}, expect_json=True)
         if response.status_code == 200:
             data = response.json()
             # エラーレスポンスのチェック

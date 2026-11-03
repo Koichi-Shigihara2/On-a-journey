@@ -159,3 +159,27 @@ def test_grok_nonjson_2xx_is_retried(monkeypatch, no_wait):
     monkeypatch.setattr(ea.requests, "post", _seq([_Resp(200, raw=b""), _Resp(200, body)], calls))
     assert ea.grok_request({"model": "m"}, "t", api_key="k") == body
     assert len(calls) == 2
+
+
+# ── そのほかの取得元（web_get、[[COMMON-PATH-GUARD-1]]、2026-11-03） ──
+def test_web_get_default_user_agent_timeout_and_retry(monkeypatch, no_wait):
+    sent = []
+    seq = [_Resp(503), _Resp(200, raw=b"Date,Close\n2026-11-02,6800\n")]
+
+    def fake_get(url, timeout=None, headers=None, params=None):
+        sent.append((url, timeout, headers))
+        return seq[len(sent) - 1]
+    monkeypatch.setattr(ea.requests, "get", fake_get)
+    r = ea.web_get("https://stooq.com/q/d/l/?s=%5Espx", "stooq ^spx")
+    assert r.status_code == 200 and len(sent) == 2 and no_wait == [2]
+    assert sent[0][1] == ea.TIMEOUT_SEC["web"] and sent[0][2] == {"User-Agent": ea.WEB_USER_AGENT}
+
+
+def test_web_get_text_is_not_json_checked_but_json_call_is(monkeypatch, no_wait):
+    calls = []
+    monkeypatch.setattr(ea.requests, "get", _seq([_Resp(200, raw=_HTML)], calls))
+    assert ea.web_get("https://example.com/rss", "RSS", headers={}).status_code == 200 and len(calls) == 1
+    calls = []
+    monkeypatch.setattr(ea.requests, "get", _seq([_Resp(200, raw=_HTML), _Resp(200, {"score": {"score": 40}})], calls))
+    assert ea.web_get("https://feargreedchart.com/api/", "F&G", expect_json=True).json()["score"]["score"] == 40
+    assert len(calls) == 2

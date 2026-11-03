@@ -9,7 +9,8 @@ common/market_data/calendar_universe.py
   - NYSEの取引日・休場日・取引時間: pandas_market_calendars の XNYS（2000〜2027年で NYSE の暦と取引日・時刻とも同じ）
   - 銘柄ごとの取引日: ^N225 は JPX、先物は CME_TradeDate（清算のある取引日）、JPY=X は土日を除く日
   - 連邦の祝日（経済指標の公表の予定用。MACRO PULSE）: コロンブス・デー・退役軍人の日を含み、聖金曜日・ジューンティーンスを含まない。
-    NYSEの休場日ではない（規則は 2026-10-23 までの 05_main.py の us_holidays のまま）
+    NYSEの休場日ではない（規則は 2026-10-23 までの 05_main.py の us_holidays のまま）。市場の日付（終値の日・t+N）には使わない
+    （nyse_trading_days_add 等を使う。使ってよい場所は tests/test_common_path_guard.py の一覧だけ。[[COMMON-PATH-GUARD-1]]）
   - 日足の確定時刻と暫定の足の判定（市場データ層の fetcher.py の決まりのまま）
   - S&P500の構成銘柄（common/market_data/_sp500_constituents_cache.json を正。Wikipedia→GitHub CSV、7日の控え）
 """
@@ -25,7 +26,6 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pandas_market_calendars as mcal
-import requests
 
 MARKET_DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -83,6 +83,16 @@ def nyse_trading_days_ending(anchor: Any, n: int) -> List[str]:
 @functools.lru_cache(maxsize=256)
 def _trading_days_ending(anchor: date, n: int) -> tuple:
     return tuple(nyse_trading_days(anchor - timedelta(days=n * 3 + 15), anchor)[-n:])
+
+
+def nyse_trading_days_add(start: Any, n: int) -> date:
+    """start の n 取引日後（NYSEの取引日で数える。start が取引日でなくても、start より後の n 番目の取引日）。n>=1。
+    MACRO PULSEの 05_events.csv の sp500_t1〜t20（[[COMMON-PATH-GUARD-1]]、2026-11-03。それまでは連邦の営業日で数えていた）"""
+    if n < 1:
+        raise ValueError("n は1以上")
+    d0 = _as_date(start)
+    days = nyse_trading_days(d0 + timedelta(days=1), d0 + timedelta(days=n * 2 + 15))
+    return _as_date(days[n - 1])
 
 
 def nyse_close_utc(day: str) -> Optional[datetime]:
@@ -315,10 +325,11 @@ def sp500_constituents(base_dir: Optional[str] = None, max_age_days: int = 7) ->
         except Exception:
             pass
 
+    from common.external_api import web_get
     tickers: Optional[List[str]] = None
     try:
         headers = {"User-Agent": "Mozilla/5.0 (compatible; MarketDataFetcher/1.0)"}
-        resp = requests.get("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", headers=headers, timeout=30)
+        resp = web_get("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", "S&P500構成銘柄 Wikipedia", headers=headers)
         resp.raise_for_status()
         df = pd.read_html(io.StringIO(resp.text))[0]
         tickers = [t.strip() for t in df["Symbol"].str.replace(".", "-", regex=False).tolist() if t.strip()]
@@ -327,8 +338,8 @@ def sp500_constituents(base_dir: Optional[str] = None, max_age_days: int = 7) ->
 
     if not tickers:
         try:
-            resp = requests.get("https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
-                                timeout=30)
+            resp = web_get("https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
+                           "S&P500構成銘柄 GitHub CSV", headers={})
             resp.raise_for_status()
             df = pd.read_csv(io.StringIO(resp.text))
             tickers = [t.strip() for t in df["Symbol"].str.replace(".", "-", regex=False).tolist() if t.strip()]
