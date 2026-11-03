@@ -351,32 +351,147 @@ def _download_historical_bars(symbols: List[str], period: str = "5d",
     return results
 
 
-def _merge_daily_records(existing_records: List[Dict[str, Any]],
-                          new_records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """日付をキーに新レコードで置き換え（同一日付は新しい方で上書き）、
-    日付昇順でソートして返す。fetch_daily_prices()の_append_daily_record()
-    と同じ「同一date上書き」冪等性設計をリスト全体のマージに一般化した版
-    （バックフィルで既存の単発日次取得分を消さずに過去分を統合するため）。
-    """
-    merged = {r["date"]: r for r in existing_records if r.get("date")}
-    for r in new_records:
-        if r.get("date"):
-            merged[r["date"]] = r
-    return sorted(merged.values(), key=lambda r: r.get("date", ""))
+# ── 日足の行の書き込み（[[MARKETDATA-DAILY-ROW-WRITE-1]]、2026-11-03） ─────────────────────────
+# daily/{SYMBOL}.json の行を書くのは write_daily_rows だけ（毎日の取得・暫定の行の置き換え・終値の無い行の取り直し・
+# 過去分の取り込み〈--backfill、登録のStep 1.5〉・抜けた取引日の取り直し・暫定の印の付け直し・足なしの印は、みなこれを呼ぶ。
+# 直接書く場所は tests/test_market_data_daily_write.py の DAILY_WRITE_ALLOWED の1か所で禁止）。
+#   - 確定の行（`_provisional`でなく終値のある行）は上書きしない。値（open・high・low・close・volume・限月の欄）が違う行が来たら
+#     書かずに _daily_rejected_overwrites.json に記録する（どの行・どの項目・前と新しい値・どの経路）。同じ値なら何もしない
+#   - 直すのは理由を指定した経路だけ（CORRECTION_REASONS: 株式分割の調整・暫定の行の確定・明示の修正）。行の`_corrections`に
+#     前の値・理由・時刻を残す
+#   - 確定していない行（暫定の印・終値の無い行）は新しい足で置き換える（暫定の行の確定・終値の取り直しはここ）
+#   - 暫定の印は、書く行すべてに同じ判定（calendar_universe.is_provisional_bar〈先物の平らな足・^N225の出来高0・確定時刻の前〉）で付ける
+#   - 印だけを変える経路（reason=MARK_ONLY: --repair-provisional の印・足なしの印）は値を変えられない
+# 以前は経路ごとに書き方が違い、--backfill（登録のStep 1.5も）は既存の確定の行も取り直した値で上書きし（2026-10-26、FINDINGS）、
+# 暫定の印は毎日の取得の時にだけ付いていた
+DAILY_REJECT_LOG = "_daily_rejected_overwrites.json"
+DAILY_REJECT_KEEP_DAYS = 90
+CORRECTION_REASONS = {
+    "split_adjust": "株式分割の調整",
+    "provisional_final": "暫定の行の確定",
+    "manual": "明示の修正",
+}
+MARK_ONLY = "mark"
+_MARK_KEYS = ("_provisional", "_no_yahoo_bar")
 
 
-def _append_daily_record(symbol: str, record: Dict[str, Any], base_dir: str) -> None:
-    """daily/{symbol}.json に1営業日分のレコードを追記する（同一dateは上書き、
-    記録キーは日付ベースで重複排除するリポジトリ規約に準拠）。
-    """
+def _row_values(r: Dict[str, Any]) -> Dict[str, Any]:
+    """行の値（印・検証の警告・訂正の記録〈_で始まる欄〉と日付を除く）"""
+    return {k: v for k, v in r.items() if not k.startswith("_") and k != "date"}
+
+
+def _is_replaceable(r: Dict[str, Any]) -> bool:
+    """確定していない行（暫定の印・終値の無い行）か"""
+    return bool(r.get("_provisional")) or not _has_valid_close(r)
+
+
+def _diff_fields(old: Dict[str, Any], new: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    ov, nv = _row_values(old), _row_values(new)
+    return {k: {"old": ov.get(k), "new": nv.get(k)} for k in sorted(set(ov) | set(nv)) if ov.get(k) != nv.get(k)}
+
+
+def _log_rejected(base_dir: str, rejects: List[Dict[str, Any]], now: datetime) -> None:
+    """拒んだ上書きの記録（同じ行・同じ新しい値は1件にまとめ、回数と最後の時刻を更新する。DAILY_REJECT_KEEP_DAYS日より前のものは捨てる）"""
+    path = os.path.join(base_dir, DAILY_REJECT_LOG)
+    doc = _load_json(path, default={"entries": []})
+    at = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    floor = (now - timedelta(days=DAILY_REJECT_KEEP_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    entries = [e for e in doc.get("entries", []) if (e.get("last_at") or "") >= floor]
+    index = {(e["symbol"], e["date"], json.dumps({k: v["new"] for k, v in e["fields"].items()}, sort_keys=True)): e for e in entries}
+    for r in rejects:
+        key = (r["symbol"], r["date"], json.dumps({k: v["new"] for k, v in r["fields"].items()}, sort_keys=True))
+        e = index.get(key)
+        if e is None:
+            e = {**r, "first_at": at, "last_at": at, "count": 0}
+            entries.append(e)
+            index[key] = e
+        e["last_at"], e["count"] = at, e["count"] + 1
+    doc = {"note": "確定の行への違う値の上書きを拒んだ記録（common/market_data/fetcher.py::write_daily_rows、[[MARKETDATA-DAILY-ROW-WRITE-1]]）。"
+                   "直すなら理由を指定して write_daily_rows(reason=...) を呼ぶ",
+           "entries": sorted(entries, key=lambda e: (e["symbol"], e["date"], e["first_at"]))}
+    _atomic_write_json(path, doc)
+
+
+def write_daily_rows(symbol: str, rows: List[Dict[str, Any]], base_dir: str, now: Optional[datetime] = None,
+                     source: str = "", reason: Optional[str] = None, note: str = "") -> Dict[str, List[str]]:
+    """daily/{symbol}.json に行を書く唯一の関数（規則は上の説明）。日付ごとの結果
+    {"added", "replaced", "corrected", "marked", "unchanged", "rejected"}（日付の一覧）を返す。
+    reason: None（ふつうの書き込み）・CORRECTION_REASONS のキー（確定の行を直す）・MARK_ONLY（印だけを変える）"""
+    if reason is not None and reason != MARK_ONLY and reason not in CORRECTION_REASONS:
+        raise ValueError(f"直す理由が決まりに無い: {reason}（{sorted(CORRECTION_REASONS)} か {MARK_ONLY}）")
+    now = now or datetime.now(timezone.utc)
     path = os.path.join(base_dir, "daily", f"{symbol}.json")
     payload = _load_json(path, default={"symbol": symbol, "records": []})
-    records = [r for r in payload.get("records", []) if r.get("date") != record["date"]]
-    records.append(record)
-    records.sort(key=lambda r: r.get("date", ""))
-    payload["symbol"] = symbol
-    payload["records"] = records
-    _atomic_write_json(path, payload)
+    by_date = {r["date"]: r for r in payload.get("records", []) if r.get("date")}
+    out: Dict[str, List[str]] = {k: [] for k in ("added", "replaced", "corrected", "marked", "unchanged", "rejected")}
+    rejects: List[Dict[str, Any]] = []
+    for inc in rows:
+        d = inc.get("date")
+        if not d:
+            continue
+        old = by_date.get(d)
+        if reason == MARK_ONLY:
+            if old is None or _row_values(old) != _row_values(inc):
+                out["rejected"].append(d)
+                rejects.append({"symbol": symbol, "date": d, "source": source or "印の付け直し",
+                                "fields": _diff_fields(old or {}, inc)})
+                continue
+            new = {k: v for k, v in old.items() if k not in _MARK_KEYS}
+            new.update({k: True for k in _MARK_KEYS if inc.get(k)})
+            if new != old:
+                by_date[d] = new
+                out["marked"].append(d)
+            else:
+                out["unchanged"].append(d)
+            continue
+        new = {k: v for k, v in inc.items() if k not in _MARK_KEYS and k not in ("_validation_warnings", "_corrections")}
+        _mark_provisional(symbol, new, now)
+        new["_validation_warnings"] = validate_price_record(new)
+        if old is None:
+            by_date[d] = new
+            out["added"].append(d)
+        elif _is_replaceable(old):
+            if new != old:
+                by_date[d] = new
+                out["replaced"].append(d)
+            else:
+                out["unchanged"].append(d)
+        elif _row_values(old) == _row_values(new):
+            out["unchanged"].append(d)          # 確定の行は値が同じなら印も含めてそのまま
+        elif reason in CORRECTION_REASONS:
+            prev = {k: v["old"] for k, v in _diff_fields(old, new).items()}
+            new["_corrections"] = list(old.get("_corrections") or []) + [
+                {"at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "reason": reason, "reason_label": CORRECTION_REASONS[reason],
+                 "source": source, "prev": prev, **({"note": note} if note else {})}]
+            by_date[d] = new
+            out["corrected"].append(d)
+        else:
+            out["rejected"].append(d)
+            rejects.append({"symbol": symbol, "date": d, "source": source, "fields": _diff_fields(old, new)})
+    if out["added"] or out["replaced"] or out["corrected"] or out["marked"]:
+        payload["symbol"] = symbol
+        payload["records"] = [by_date[d] for d in sorted(by_date)]
+        _atomic_write_json(path, payload)
+    if rejects:
+        _log_rejected(base_dir, rejects, now)
+        print(f"   [{symbol}] 確定の行への違う値の上書きを{len(rejects)}件拒んだ（{DAILY_REJECT_LOG}に記録）: "
+              + ", ".join(f"{r['date']}({'・'.join(r['fields'])})" for r in rejects[:5]) + ("…" if len(rejects) > 5 else ""))
+    return out
+
+
+def correct_daily_rows(symbol: str, rows: List[Dict[str, Any]], reason: str, note: str = "",
+                       base_dir: Optional[str] = None, now: Optional[datetime] = None) -> Dict[str, List[str]]:
+    """確定の行を理由つきで直す（株式分割の調整・明示の修正等）。行の`_corrections`に前の値・理由を残す"""
+    if reason not in CORRECTION_REASONS:
+        raise ValueError(f"直す理由が決まりに無い: {reason}")
+    return write_daily_rows(symbol, rows, _resolve_base_dir(base_dir), now=now, source=f"correct_daily_rows:{reason}",
+                            reason=reason, note=note)
+
+
+def _append_daily_record(symbol: str, record: Dict[str, Any], base_dir: str, now: Optional[datetime] = None,
+                         source: str = "fetch_daily_prices") -> Dict[str, List[str]]:
+    """daily/{symbol}.json に1営業日分の行を書く（write_daily_rows。確定の行に違う値なら書かずに記録）。"""
+    return write_daily_rows(symbol, [record], base_dir, now=now, source=source)
 
 
 def _mark_provisional(symbol: str, record: Dict[str, Any], now: Optional[datetime] = None) -> Dict[str, Any]:
@@ -397,30 +512,24 @@ def _replace_provisional_records(symbol: str, valid_bars: List[Dict[str, Any]], 
     if not payload or not valid_bars:
         return 0
     by_date = {b["date"]: b for b in valid_bars}
-    replaced = 0
-    changed = False
-    records = []
+    incoming = []
     for r in payload.get("records", []):
         b = by_date.get(r.get("date"))
         if b is not None and is_flat_futures_bar(symbol, b):
             b = None   # 先物の平らな足では置き換えない（値も印もそのまま。7日後に足なしの印になる）
         if r.get("_provisional") and b is not None:
-            new = _mark_provisional(symbol, dict(b), now)
+            new = dict(b)
             if symbol in FUTURES_SYMBOLS and r.get("contract"):
                 # 保存時と同じ限月の値で付け直す（連続シンボルの過去の足は、Yahooの乗り換え日の定義で別の限月になりうる）
                 closes = contract_closes if (contract_closes is not None and r["contract"] == contract) else \
                     _contract_close_map(r["contract"], (datetime.strptime(r["date"], "%Y-%m-%d") - timedelta(days=10)).strftime("%Y-%m-%d"))
                 _attach_contract_fields(new, r["contract"], closes)
-            new["_validation_warnings"] = validate_price_record(new)
-            if not new.get("_provisional"):
-                replaced += 1
-            changed = changed or new != r
-            records.append(new)
-        else:
-            records.append(r)
-    if changed:
-        payload["records"] = records
-        _atomic_write_json(path, payload)
+            incoming.append(new)
+    if not incoming:
+        return 0
+    res = write_daily_rows(symbol, incoming, base_dir, now=now, source="暫定の行の置き換え")
+    after = {r.get("date"): r for r in _load_json(path, default={}).get("records", [])}
+    replaced = sum(1 for d in res["replaced"] if not after.get(d, {}).get("_provisional"))
     if replaced:
         print(f"   [{symbol}] 暫定の行を{replaced}件、確定した日足で置き換えた")
     return replaced
@@ -442,10 +551,8 @@ def mark_and_repair_provisional_rows(rows: List[Dict[str, str]], base_dir: Optio
         if not payload:
             continue
         ds = set(dates)
-        for rec in payload["records"]:
-            if rec.get("date") in ds:
-                rec["_provisional"] = True
-        _atomic_write_json(path, payload)
+        write_daily_rows(sym, [{**rec, "_provisional": True} for rec in payload["records"] if rec.get("date") in ds],
+                         base, now=now, source="--repair-provisional", reason=MARK_ONLY)
         bars = [b for b in (_download_historical_bars([sym], start=min(dates)).get(sym) or []) if _has_valid_close(b)]
         n = _replace_provisional_records(sym, bars, base_dir=base, now=now)
         left = [r["date"] for r in _load_json(path, default={}).get("records", []) if r.get("_provisional")]
@@ -467,19 +574,9 @@ def _repair_close_missing_records(symbol: str, valid_bars: List[Dict[str, Any]],
     if not payload or not valid_bars:
         return 0
     by_date = {b["date"]: b for b in valid_bars}
-    repaired = 0
-    records = []
-    for r in payload.get("records", []):
-        if not _has_valid_close(r) and r.get("date") in by_date:
-            fixed = dict(by_date[r["date"]])
-            fixed["_validation_warnings"] = validate_price_record(fixed)
-            records.append(fixed)
-            repaired += 1
-        else:
-            records.append(r)
+    incoming = [dict(by_date[r["date"]]) for r in payload.get("records", []) if not _has_valid_close(r) and r.get("date") in by_date]
+    repaired = len(write_daily_rows(symbol, incoming, base_dir, source="終値の無い行の取り直し")["replaced"]) if incoming else 0
     if repaired:
-        payload["records"] = records
-        _atomic_write_json(path, payload)
         print(f"   [{symbol}] 終値の無い行を{repaired}件取り直した")
     return repaired
 
@@ -655,17 +752,17 @@ def _mark_no_bar_rows(symbol: str, bar_dates: set, covered_from: Optional[str], 
     if not payload:
         return []
     marked = []
+    incoming = []
     for r in payload.get("records", []):
         d = r.get("date")
         if not r.get("_provisional") or r.get(NO_BAR_MARK) or not d or d < covered_from or d in bar_dates:
             continue
         final = bar_final_at(symbol, d)
         if final is not None and now >= final + timedelta(days=NO_BAR_MARK_DAYS):
-            r.pop("_provisional", None)
-            r[NO_BAR_MARK] = True
+            incoming.append({**{k: v for k, v in r.items() if k != "_provisional"}, NO_BAR_MARK: True})
             marked.append(d)
     if marked:
-        _atomic_write_json(path, payload)
+        write_daily_rows(symbol, incoming, base_dir, now=now, source="足なしの印", reason=MARK_ONLY)
         print(f"   [{symbol}] Yahooに足が無い暫定の行{len(marked)}件に足なしの印: {', '.join(marked)}")
     return marked
 
@@ -716,6 +813,7 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
             start = (datetime.strptime(history[s][0]["date"], "%Y-%m-%d") - timedelta(days=10)).strftime("%Y-%m-%d")
             contract_closes[s] = _contract_close_map(contracts[s], start) if contracts[s] else {}
     refetched = _refetch_stale_provisional(target_symbols, history, base, now)
+    rejected_total = 0
     for symbol in target_symbols:
         # c: その銘柄の取引日でない足（土曜のJPY=X・Labor Dayの先物・日本の祝日の^N225）は保存にも置き換えにも使わない
         raw_bars = history.get(symbol) or []
@@ -764,8 +862,7 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
                 filled = _mark_provisional(symbol, dict(b), now)
                 if symbol in FUTURES_SYMBOLS:
                     _attach_contract_fields(filled, contracts.get(symbol), contract_closes.get(symbol) or {})
-                filled["_validation_warnings"] = validate_price_record(filled)
-                _append_daily_record(symbol, filled, base_dir=base)
+                _append_daily_record(symbol, filled, base_dir=base, now=now)
                 print(f"   [{symbol}] 抜けていた{b['date']}の終値を追加")
         bar = valid_bars[-1]
         if is_flat_futures_bar(symbol, bar) and bar["date"] in have:
@@ -776,12 +873,12 @@ def fetch_daily_prices(symbols: List[str], base_dir: Optional[str] = None,
         if symbol in FUTURES_SYMBOLS:
             _attach_contract_fields(record, contracts.get(symbol), contract_closes.get(symbol) or {})
         record_warnings = validate_price_record(record)
-        record["_validation_warnings"] = record_warnings
-
-        _append_daily_record(symbol, record, base_dir=base)
+        res = _append_daily_record(symbol, record, base_dir=base, now=now)
+        rejected_total += len(res["rejected"])
         if record_warnings:
             print(f"   [{symbol}] 保存前検証で{len(record_warnings)}件の警告を検知（保存は継続）")
-    return {"status": "fetched", "no_close_after_retry": len(retry["still_missing"]), "with_bars": len(with_bars)}
+    return {"status": "fetched", "no_close_after_retry": len(retry["still_missing"]), "with_bars": len(with_bars),
+            "rejected_overwrites": rejected_total}
 
 
 def backfill_daily_prices(symbols: List[str], period: str = "1y",
@@ -802,11 +899,9 @@ def backfill_daily_prices(symbols: List[str], period: str = "1y",
     start="2021-01-01"のような固定開始日には`period`文字列では正確に
     対応できないため）。
 
-    fetch_daily_prices()と同じ保存前検証（validate_price_record()）・
-    アトミック書き込みを適用する。同一日付が既存レコードにある場合は
-    新しい取得値で上書きする（fetch_daily_prices()の「同一date上書き」
-    冪等性設計と一貫。日次cronが既に取得済みの日付を再取得しても、
-    同じ取引日の確定値であれば内容は変わらない）。検証の警告は各レコードの
+    行は write_daily_rows で書く（[[MARKETDATA-DAILY-ROW-WRITE-1]]、2026-11-03）。同じ日付の確定の行に違う値が来たら
+    上書きせずに記録する（以前は取り直した値で上書きし、2026-10-26の9銘柄の取り込みで出来高・高値・安値が変わった）。
+    暫定の行・終値の無い行は置き換え、暫定の印は毎日の取得と同じ判定で付ける。検証の警告は各レコードの
     _validation_warningsと、完了時の標準出力（警告の日数・終値の無い足の数）に出す。
     """
     base = _resolve_base_dir(base_dir)
@@ -836,15 +931,12 @@ def backfill_daily_prices(symbols: List[str], period: str = "1y",
                 dates_with_warnings.append(record["date"])
             new_records.append(record)
 
-        path = os.path.join(base, "daily", f"{symbol}.json")
-        payload = _load_json(path, default={"symbol": symbol, "records": []})
-        merged = _merge_daily_records(payload.get("records", []), new_records)
-        payload["symbol"] = symbol
-        payload["records"] = merged
-        _atomic_write_json(path, payload)
+        res = write_daily_rows(symbol, new_records, base, source="--backfill")
+        total = len(_load_json(os.path.join(base, "daily", f"{symbol}.json"), default={}).get("records", []))
 
         print(f"   [{symbol}] バックフィル完了: {len(new_records)}日分取得 → "
-              f"累計{len(merged)}日分保存"
+              f"追加{len(res['added'])}・置き換え{len(res['replaced'])}・同じ{len(res['unchanged'])}・拒否{len(res['rejected'])}"
+              f"・累計{total}日分保存"
               + (f"（検証警告{len(dates_with_warnings)}日分）" if dates_with_warnings else "")
               + (f"（終値の無い足{skipped_no_close}本は保存せず）" if skipped_no_close else ""))
 
@@ -922,15 +1014,7 @@ def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = No
         by_date = {b["date"]: b for b in (history.get(symbol) or []) if _has_valid_close(b)}
         filled = [d for d in missing if d in by_date]
         if filled:
-            path = os.path.join(base, "daily", f"{symbol}.json")
-            payload = _load_json(path, default={"symbol": symbol, "records": []})
-            new_records = []
-            for d in filled:
-                rec = dict(by_date[d])
-                rec["_validation_warnings"] = validate_price_record(rec)
-                new_records.append(rec)
-            payload["records"] = sorted(payload.get("records", []) + new_records, key=lambda r: r.get("date", ""))
-            _atomic_write_json(path, payload)
+            write_daily_rows(symbol, [dict(by_date[d]) for d in filled], base, source="抜けた取引日の取り直し")
         result[symbol] = {"filled": filled, "unresolved": [d for d in missing if d not in by_date]}
         print(f"   [{symbol}] 抜けていた取引日{len(missing)}日: 取得{len(filled)}日・取得できず{len(missing) - len(filled)}日")
     return result

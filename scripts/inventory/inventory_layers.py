@@ -441,6 +441,9 @@ _MARKET.update(
             "S&P500の構成銘柄の写し（正は common/market_data/_sp500_constituents_cache.json）。Market Pulseの breadth_calculator.py が "
             "calendar_universe.write_sp500_copy で書き、browser_checks/market_pulse_elements.py が読む（2026-10-23に書き手を calendar_universe.py へ移した）",
         "/tmp/daily_status.json": "Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む",
+        "common/market_data/_daily_rejected_overwrites.json":
+            "確定の日足の行に違う値が来て上書きを拒んだ記録（どの行・どの項目・前と新しい値・経路・回数、90日分。fetcher.write_daily_rows、"
+            "[[MARKETDATA-DAILY-ROW-WRITE-1]]、2026-11-03）。Market_Data_Daily_Updateが commit し、その実行の分を Step Summary に出す",
     },
     DECISION_DEFAULT="残す（2026-10-22）",
     DECISIONS={},

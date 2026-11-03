@@ -150,16 +150,18 @@ class TestNoViolationsLog:
 
 
 class TestAppendDailyRecordDedup:
-    def test_same_date_refetch_replaces_not_duplicates(self, tmp_path):
+    def test_same_date_refetch_does_not_duplicate_and_keeps_confirmed_row(self, tmp_path):
+        """同じ日付は1行のまま。確定の行に違う値が来たら上書きせずに記録する（[[MARKETDATA-DAILY-ROW-WRITE-1]]、2026-11-03。
+        以前は新しい値で上書きしていた）"""
         base = str(tmp_path)
         record_v1 = {"date": "2026-08-10", "close": 100.0, "volume": 1000, "_validation_warnings": []}
         record_v2 = {"date": "2026-08-10", "close": 101.0, "volume": 1100, "_validation_warnings": []}
         fetcher._append_daily_record("AAPL", record_v1, base_dir=base)
-        fetcher._append_daily_record("AAPL", record_v2, base_dir=base)
+        res = fetcher._append_daily_record("AAPL", record_v2, base_dir=base)
         path = os.path.join(base, "daily", "AAPL.json")
         saved = json.load(open(path, encoding="utf-8"))
         assert len(saved["records"]) == 1
-        assert saved["records"][0]["close"] == 101.0
+        assert saved["records"][0]["close"] == 100.0 and res["rejected"] == ["2026-08-10"]
 
     def test_different_dates_both_kept_sorted(self, tmp_path):
         base = str(tmp_path)
@@ -636,37 +638,6 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         assert "next_quarter_eps_date" not in saved
 
 
-class TestMergeDailyRecords:
-    def test_disjoint_dates_are_all_kept_sorted(self):
-        existing = [{"date": "2026-08-10", "close": 100.0}]
-        new = [{"date": "2026-08-11", "close": 101.0}, {"date": "2026-08-09", "close": 99.0}]
-        merged = fetcher._merge_daily_records(existing, new)
-        assert [r["date"] for r in merged] == ["2026-08-09", "2026-08-10", "2026-08-11"]
-
-    def test_overlapping_date_is_overwritten_by_new_value(self):
-        existing = [{"date": "2026-08-10", "close": 100.0, "_validation_warnings": ["stale mock"]}]
-        new = [{"date": "2026-08-10", "close": 305.49, "_validation_warnings": []}]
-        merged = fetcher._merge_daily_records(existing, new)
-        assert len(merged) == 1
-        assert merged[0]["close"] == 305.49
-        assert merged[0]["_validation_warnings"] == []
-
-    def test_empty_existing_returns_new_only(self):
-        new = [{"date": "2026-08-10", "close": 100.0}]
-        assert fetcher._merge_daily_records([], new) == new
-
-    def test_empty_new_returns_existing_only(self):
-        existing = [{"date": "2026-08-10", "close": 100.0}]
-        assert fetcher._merge_daily_records(existing, []) == existing
-
-    def test_records_without_date_are_ignored(self):
-        existing = [{"date": "2026-08-10", "close": 100.0}]
-        new = [{"close": 999.0}]  # date欠落レコードはマージ対象外
-        merged = fetcher._merge_daily_records(existing, new)
-        assert len(merged) == 1
-        assert merged[0]["close"] == 100.0
-
-
 class TestDownloadHistoricalBarsStartParam:
     """[[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-8前提作業1
     （2026-08-11）: _download_historical_bars()のstart引数がyf.download()
@@ -743,9 +714,13 @@ class TestBackfillDailyPrices:
         saved = json.load(open(path, encoding="utf-8"))
         dates = [r["date"] for r in saved["records"]]
         assert dates == ["2026-08-08", "2026-08-10"]
-        # 既存の2026-08-10（モック値close=303.0）はバックフィル取得値で上書きされる
+        # 既存の2026-08-10（確定の行、close=303.0）は上書きせず、拒んだ記録を残す（[[MARKETDATA-DAILY-ROW-WRITE-1]]、2026-11-03。
+        # 以前はバックフィルの取得値で上書きしていた）
         aug10 = [r for r in saved["records"] if r["date"] == "2026-08-10"][0]
-        assert aug10["close"] == 305.49
+        assert aug10["close"] == 303.0
+        log = json.load(open(os.path.join(base, fetcher.DAILY_REJECT_LOG), encoding="utf-8"))["entries"]
+        assert [(e["symbol"], e["date"], e["source"], e["fields"]["close"]) for e in log] == [
+            ("AAPL", "2026-08-10", "--backfill", {"old": 303.0, "new": 305.49})]
 
     def test_missing_symbol_in_history_is_skipped_gracefully(self, tmp_path, monkeypatch):
         base = str(tmp_path)

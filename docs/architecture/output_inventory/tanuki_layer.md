@@ -9,7 +9,7 @@
 
 **件数**: 出力 11（ファイル 9・人が見るもの 2）／読み手0件 0／テストだけ 0／1件 4／2件以上 5／規則の二重 9（検出式 11種のうち。TANUKIのファイルを含むもの 4）
 
-**画面の項目**: 画面が読むキー 386（この段階の書き手あり 343・ほかの書き手あり 29・画面の中で作る値 6・**書き手なし 8**）／書き手があるのに誰も読まないキー **13**（今の書き手のコードに無いキー 67 は数えない）
+**画面の項目**: 画面が読むキー 387（この段階の書き手あり 344・ほかの書き手あり 29・画面の中で作る値 6・**書き手なし 8**）／書き手があるのに誰も読まないキー **13**（今の書き手のコードに無いキー 67 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 3件＋ファイル名で当たった行 2件／解決できた読み込み 31件＋ファイル名で当たった行 67件（4.9%）→ 当たらない
 
@@ -399,10 +399,11 @@
 | — | `year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1056・1056 | 残す（2026-10-20） |
 | — | `yoy_growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json` | 465 | 残す（2026-10-20） |
 
-### `docs/value-monitor/tanuki_valuation/index.html`（37項目）
+### `docs/value-monitor/tanuki_valuation/index.html`（38項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
+| — | `at` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 570・571 | 残す（2026-10-20） |
 | — | `base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 394・397・403・404 | 残す（2026-10-20） |
 | — | `calculation_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 417・569 | 残す（2026-10-20） |
 | — | `cf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 497・497 | 残す（2026-10-20） |
@@ -713,7 +714,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
-| （ページの先頭） | `base`（この段階の書き手あり）<br>`calculation_date`（この段階の書き手あり）<br>`cf`（この段階の書き手あり）<br>`cf_conversion`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`count`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`fcf_base`（この段階の書き手あり）<br>`fcf_base_method`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`growth_options`（この段階の書き手あり）<br>`growth_rate`（この段階の書き手あり）<br>`growth_scenarios`（この段階の書き手あり）<br>`intrinsic_value_beta`（この段階の書き手あり）<br>`intrinsic_value_per_share`（この段階の書き手あり）<br>`ivps_beta`（画面の中で作る値）<br>`ma200`（この段階の書き手あり）<br>`ma200_dev_md`（画面の中で作る値）<br>`method`（この段階の書き手あり）<br>`moat_score`（この段階の書き手あり）<br>`moat_score_source`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`primary`（この段階の書き手あり）<br>`q`（この段階の書き手あり）<br>`rate`（この段階の書き手あり）<br>`rice`（この段階の書き手あり）<br>`rice_per`（画面の中で作る値）<br>`rice_per_ratio`（この段階の書き手あり）<br>`scenario_valuations`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`tickers`（この段階の書き手あり）<br>`type`（この段階の書き手あり）<br>`upside`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`wacc`（この段階の書き手あり） |  |
+| （ページの先頭） | `at`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`calculation_date`（この段階の書き手あり）<br>`cf`（この段階の書き手あり）<br>`cf_conversion`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`count`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`fcf_base`（この段階の書き手あり）<br>`fcf_base_method`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`growth_options`（この段階の書き手あり）<br>`growth_rate`（この段階の書き手あり）<br>`growth_scenarios`（この段階の書き手あり）<br>`intrinsic_value_beta`（この段階の書き手あり）<br>`intrinsic_value_per_share`（この段階の書き手あり）<br>`ivps_beta`（画面の中で作る値）<br>`ma200`（この段階の書き手あり）<br>`ma200_dev_md`（画面の中で作る値）<br>`method`（この段階の書き手あり）<br>`moat_score`（この段階の書き手あり）<br>`moat_score_source`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`primary`（この段階の書き手あり）<br>`q`（この段階の書き手あり）<br>`rate`（この段階の書き手あり）<br>`rice`（この段階の書き手あり）<br>`rice_per`（画面の中で作る値）<br>`rice_per_ratio`（この段階の書き手あり）<br>`scenario_valuations`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`tickers`（この段階の書き手あり）<br>`type`（この段階の書き手あり）<br>`upside`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`wacc`（この段階の書き手あり） |  |
 
 ### `docs/value-monitor/tanuki_valuation/stock.html`
 

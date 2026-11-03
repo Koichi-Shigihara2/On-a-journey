@@ -265,7 +265,7 @@ class TestProvisionalRows:
         early = datetime(2026, 9, 29, 1, 6, tzinfo=timezone.utc)    # 09-28の足は確定前（NYの翌日0時より前）
         rec = fetcher._mark_provisional("CL=F", _bar("2026-09-28", 93.33), early)
         assert rec["_provisional"] is True
-        fetcher._append_daily_record("CL=F", rec, base_dir=base)
+        fetcher._append_daily_record("CL=F", rec, base_dir=base, now=early)   # 暫定の印は書いた時刻で判定する
         later = datetime(2026, 10, 1, 12, 0, tzinfo=timezone.utc)
         n = fetcher._replace_provisional_records("CL=F", [_bar("2026-09-25", 1.0), _bar("2026-09-28", 92.60)], base, later)
         recs = _read_daily(base, "CL=F")

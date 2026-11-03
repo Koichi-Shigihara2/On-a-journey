@@ -105,6 +105,8 @@ jobs:
             echo "saved=true" >> "$GITHUB_OUTPUT"
           fi
           git add common/market_data/daily/ || true
+          # 確定の行への違う値の上書きを拒んだ記録（[[MARKETDATA-DAILY-ROW-WRITE-1]]、fetcher.py::write_daily_rows）
+          git add common/market_data/_daily_rejected_overwrites.json || true
           git add common/market_data/_sp500_constituents_cache.json || true
           git add docs/common/sec_data/rotce/ || true
           if git diff --staged --quiet; then
@@ -123,6 +125,18 @@ jobs:
           echo "- 取得: status=${{ steps.fetch.outputs.status }} / 新しいデータの保存: ${{ steps.commit.outputs.saved }}" >> $GITHUB_STEP_SUMMARY
           count=$(ls -1 common/market_data/daily/*.json 2>/dev/null | wc -l)
           echo "- daily/ 保存銘柄数: ${count}" >> $GITHUB_STEP_SUMMARY
+          # 確定の行への違う値の上書きを拒んだ記録（直近の実行の分。[[MARKETDATA-DAILY-ROW-WRITE-1]]）
+          python - <<'PY' >> $GITHUB_STEP_SUMMARY || true
+          import json, os
+          from datetime import datetime, timedelta, timezone
+          p = "common/market_data/_daily_rejected_overwrites.json"
+          es = json.load(open(p, encoding="utf-8")).get("entries", []) if os.path.exists(p) else []
+          since = (datetime.now(timezone.utc) - timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%SZ")
+          now = [e for e in es if e["last_at"] >= since]
+          print(f"- 確定の行への上書きを拒んだ記録: この実行 {len(now)}件（記録の全体 {len(es)}件）")
+          for e in now[:20]:
+              print(f"  - {e['symbol']} {e['date']}（{e['source']}）: " + "、".join(f"{k} {v['old']}→{v['new']}" for k, v in e["fields"].items()))
+          PY
 
       # 何もしなかった実行・新しいデータを保存しなかった実行は、下流を起動しないよう自分自身を取り消す
       # （conclusionが'cancelled'になり、下流のジョブの`conclusion == 'success'`の条件に当たらない）

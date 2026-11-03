@@ -605,7 +605,7 @@
 
 段階の.pyを動かすワークフローの中で、`$GITHUB_STEP_SUMMARY`に書く段。`.get()`で読むキーが、この段階のJSON（全ファイル）にあるか。
 
-- `.github/workflows/Market_Data_Daily_Update.yml`（行 120・121・122・123・125）: 
+- `.github/workflows/Market_Data_Daily_Update.yml`（行 122・123・124・125・127・129）: `entries`（**無い**）
 - `.github/workflows/SEC_Data_Update.yml`（行 104・105・106・107・113）: 
 - `.github/workflows/Stonks_Silo_Update.yml`（行 75・76・77・78・87）: `overall_score`（**無い**）・`overall_verdict`（**無い**）・`tickers`（ある）
 - `.github/workflows/TANUKI_VALUATION_Update.yml`（行 104・105・106・107・112）: `intrinsic_value_per_share`（**無い**）・`overall`（**無い**）・`validation`（**無い**）

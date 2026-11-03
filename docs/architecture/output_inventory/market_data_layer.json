@@ -10,7 +10,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "<module>",
-     "line": 1389
+     "line": 1473
     }
    ],
    "writers_outside_layer": [],
@@ -57,6 +57,54 @@
    "reader_count_compute": 0,
    "group": "1件",
    "note": "Market_Data_Daily_Updateの1回の日次取得の結果（status）。同じワークフローの後の段が読む",
+   "decision": "残す（2026-10-22）"
+  },
+  {
+   "path": "common/market_data/_daily_rejected_overwrites.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/fetcher.py",
+     "func": "_log_rejected",
+     "line": 412
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Daily_Update.yml",
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 0,
+   "top_keys_sampled_files": 0,
+   "top_keys": [],
+   "readers": [
+    {
+     "file": ".github/workflows/Market_Data_Daily_Update.yml",
+     "line": 132,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 367,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 2,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "確定の日足の行に違う値が来て上書きを拒んだ記録（どの行・どの項目・前と新しい値・経路・回数、90日分。fetcher.write_daily_rows、[[MARKETDATA-DAILY-ROW-WRITE-1]]、2026-11-03）。Market_Data_Daily_Updateが commit し、その実行の分を Step Summary に出す",
    "decision": "残す（2026-10-22）"
   },
   {
@@ -161,7 +209,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_analyst_events",
-     "line": 1289
+     "line": 1373
     }
    ],
    "writers_outside_layer": [],
@@ -453,7 +501,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_weekly_attributes",
-     "line": 1144
+     "line": 1228
     }
    ],
    "writers_outside_layer": [],
@@ -1649,38 +1697,8 @@
    "writers": [
     {
      "file": "common/market_data/fetcher.py",
-     "func": "_append_daily_record",
-     "line": 379
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "_replace_provisional_records",
-     "line": 423
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "mark_and_repair_provisional_rows",
-     "line": 448
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "_repair_close_missing_records",
-     "line": 482
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "_mark_no_bar_rows",
-     "line": 668
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "backfill_daily_prices",
-     "line": 844
-    },
-    {
-     "file": "common/market_data/fetcher.py",
-     "func": "repair_missing_trading_days",
-     "line": 933
+     "func": "write_daily_rows",
+     "line": 474
     }
    ],
    "writers_outside_layer": [],
@@ -1693,17 +1711,17 @@
    "top_keys": [
     {
      "key": "records",
-     "reader_files": 8
+     "reader_files": 9
     },
     {
      "key": "symbol",
-     "reader_files": 6
+     "reader_files": 8
     }
    ],
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Daily_Update.yml",
-     "line": 124,
+     "line": 126,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1767,7 +1785,79 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 614,
+     "line": 510,
+     "func": "_replace_provisional_records",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 511,
+     "func": "_replace_provisional_records",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 531,
+     "func": "_replace_provisional_records",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 549,
+     "func": "mark_and_repair_provisional_rows",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 550,
+     "func": "mark_and_repair_provisional_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 557,
+     "func": "mark_and_repair_provisional_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_replace_provisional_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 558,
+     "func": "mark_and_repair_provisional_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 572,
+     "func": "_repair_close_missing_records",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 573,
+     "func": "_repair_close_missing_records",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 711,
      "func": "_stale_provisional_dates",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1775,7 +1865,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 631,
+     "line": 728,
      "func": "_refetch_stale_provisional",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_stale_provisional_dates",
@@ -1783,7 +1873,23 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 718,
+     "line": 750,
+     "func": "_mark_no_bar_rows",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 751,
+     "func": "_mark_no_bar_rows",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 815,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_stale_provisional_dates",
@@ -1791,7 +1897,47 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 760,
+     "line": 842,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_replace_provisional_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 844,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_mark_no_bar_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 848,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_repair_close_missing_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 850,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_replace_provisional_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 852,
+     "func": "fetch_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_mark_no_bar_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 858,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1799,7 +1945,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 761,
+     "line": 859,
      "func": "fetch_daily_prices",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1807,7 +1953,15 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 865,
+     "line": 935,
+     "func": "backfill_daily_prices",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 957,
      "func": "repair_close_missing_records",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1815,7 +1969,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 866,
+     "line": 958,
      "func": "repair_close_missing_records",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1823,7 +1977,15 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 895,
+     "line": 973,
+     "func": "repair_close_missing_records",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_repair_close_missing_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 987,
      "func": "find_missing_trading_days",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::_load_json",
@@ -1831,7 +1993,31 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1375,
+     "line": 1010,
+     "func": "repair_missing_trading_days",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1444,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::mark_and_repair_provisional_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1451,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1459,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::repair_close_missing_records",
@@ -1839,7 +2025,15 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1386,
+     "line": 1467,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::backfill_daily_prices",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/fetcher.py",
+     "line": 1470,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::fetch_daily_prices",
@@ -2439,10 +2633,34 @@
     },
     {
      "file": "tests/test_close_missing_price.py",
+     "line": 150,
+     "func": "TestMissingTradingDays.test_repair_fills_only_missing_days_with_real_bars",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 161,
+     "func": "TestMissingTradingDays.test_unavailable_day_is_reported_not_guessed",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::find_missing_trading_days",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
      "line": 237,
      "func": "TestCloseRetryInSameRun.test_missing_earlier_day_in_window_is_added",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 270,
+     "func": "TestProvisionalRows.test_provisional_saved_then_replaced_by_final",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::_replace_provisional_records",
      "type": "テスト"
     },
     {
@@ -2587,6 +2805,46 @@
      "func": "TestSharesFromMarketData.test_implied_shares_preferred_over_outstanding",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 680,
+     "func": "TestDownloadHistoricalBarsStartParam.test_backfill_daily_prices_passes_start_through",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::backfill_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 711,
+     "func": "TestBackfillDailyPrices.test_merges_with_existing_single_day_record",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::backfill_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 728,
+     "func": "TestBackfillDailyPrices.test_missing_symbol_in_history_is_skipped_gracefully",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::backfill_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 739,
+     "func": "TestBackfillDailyPrices.test_validation_warnings_are_embedded_per_record",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::backfill_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_market_data_fetcher.py",
+     "line": 756,
+     "func": "TestBackfillDailyPrices.test_no_symbols_is_a_noop",
+     "how": "保存済みファイル",
+     "via": "common/market_data/fetcher.py::backfill_daily_prices",
      "type": "テスト"
     },
     {
@@ -3432,7 +3690,6 @@
    ],
    "readers_compute": [],
    "producers": [
-    "common/market_data/fetcher.py::_mark_provisional",
     "common/market_data/fetcher.py::_resolve_base_dir"
    ],
    "screens": [
@@ -3503,7 +3760,7 @@
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
    "reader_count": 15,
-   "reader_count_test": 10,
+   "reader_count_test": 11,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
@@ -3891,7 +4148,7 @@
    "dir": "common/market_data",
    "file": "common/market_data/fetcher.py",
    "decision": "残す（2026-10-22）",
-   "lines": 1394,
+   "lines": 1478,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml",
     ".github/workflows/Market_Data_Weekly_Update.yml"
@@ -4018,19 +4275,19 @@
   }
  ],
  "stop_condition": {
-  "outputs": 7,
+  "outputs": 8,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 12,
+  "python_read_sites_into_layer_resolved": 13,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/market_data/fetcher.py",
-    "line": 1358,
+    "line": 1442,
     "func": "<module>",
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 22,
+  "name_hit_sites_resolved": 29,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
@@ -4040,7 +4297,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.056,
+  "ratio_reader": 0.045,
   "threshold": 0.1,
   "hit": false
  },
@@ -4048,13 +4305,19 @@
   {
    "workflow": ".github/workflows/Market_Data_Daily_Update.yml",
    "lines": [
-    120,
-    121,
     122,
     123,
-    125
+    124,
+    125,
+    127,
+    129
    ],
-   "keys": []
+   "keys": [
+    {
+     "key": "entries",
+     "in_json": false
+    }
+   ]
   },
   {
    "workflow": ".github/workflows/Market_Data_Weekly_Update.yml",
