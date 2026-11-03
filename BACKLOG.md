@@ -2081,9 +2081,14 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   ①売上×8%の下限が効く条件を`structural_deficit`（5年・2年とも≤0）と同じ1つの条件に ②Policy Aの発火を「DCFの基準に下限の値を実際に使ったとき」に
 - 段2: 符号の正規化を差し引きの前のYTDへ（`normalizer.py`の106〜111行・`layer3_builder.py`の`_apply_sign_normalize`）**済 2026-11-03（`3c58eb2bf6`）**
 - 段3: report.txt・画面のFCFの注記を計算に使った値・期から作る（TSLAの3つの文言）、調整後EPSの調整を年度内でそろえる（TSLA）**済 2026-11-03（`3c58eb2bf6`）**
-- 段4: 版で値が違う176行（VRTの実例）の調査。parserとLayer3で採る申告が違う15期（FLYW 2022年 7.07M／1.35M・ASTS 2022年 30.3M／57.3M・HON 2023・2024年の組み替え等）も
+- 段4: 版で値が違う176行（VRTの実例）の調査。parserとLayer3で採る申告が違う15期（FLYW 2022年 7.07M／1.35M・ASTS 2022年 30.3M／57.3M・HON 2023・2024年の組み替え等）も**記録だけで閉じた（2026-11-04）**。結果と決定は下の「段4のSTEP 0」
 - 段5（新）: 申告のXBRLインスタンスの取得（SEC_Data_Updateで取得・記録・再利用）。「CapExは0」の判定（CF計算書にCapExの行が無い期。LYFT・NVDAの独自タグで誤らない）、
   CapExの欠けの規則の1つ化、APPの`TICKER_RESTRICTIONS`の除外の廃止（試算 +21.5%）、LYFTの独自タグの四半期（TTM）。`dimension_aggregate_fetcher.py`の仕組みを広げる案から
+  - **FLYW型（2026-11-04、段4から）**: CapExの行の一部が独自タグ（自社開発ソフトウェアの資産計上〈capitalization of internally developed software〉等）で、companyfactsのAPIに入らず、CapExが少なく出る。
+    根拠: FLYWの2023年度の10-K（`0000950170-24-021713`、R7.htm Consolidated Statement of Cash Flows）の投資CFは「Capitalization of internally developed software」(5,004)／(5,717)／(5,635)千ドルと
+    「Purchases of property and equipment」(1,009)／(1,353)／(1,049)千ドル（2023／2022／2021年）の2行。最初の10-K（2022年度）は1行で7,070千ドル（＝5,717＋1,353）で、companyfactsの`PaymentsToAcquirePropertyPlantAndEquipment`も2022年は7.07M（最初の申告）→1.35M（2023年度の10-Kから）。
+    ソフトウェアの行はcompanyfactsのus-gaapに無い（独自タグ）。今のLayer3は最新の申告の値（1.35M）を採るのでCapExが少なく、parserの年次はその年の10-Kの値（7.07M）。同じ形（同じ区分の中の行の分け直し、段4のa3）は21銘柄60行で、
+    VST（2019年 520M→713M）・DELLのように最新の値のほうが広い定義の銘柄もあるため、値の版の選び方ではなくCF計算書の行（タグ）の取り方で直す
 
 #### 段1のSTEP 0（2026-11-02 夜、読み取りと手元のシミュレーション。実装・公開はしていない）
 1. FCFの式の実装箇所: `ttm_calculator.py:116`（`_calc_fcf`、382行でTTMの`flow.FCF`）・`parser.py:3381-3395`（年次・四半期の`cf.free_cash_flow`、CapExが無いと0とみなし`ocf != 0`のときだけ書く、`fcf_method`・`finance_lease_payments_applied`も書く）・
@@ -2177,6 +2182,35 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   新しい四半期（FY2026Q4、2026-09-26）で計算方法の変更ではない。Discordの🛠はSOUNだけで「計算方法の分 60→50／残り −15.0」（残りも計算方法の分）、AAPLは相場の節
 - テスト: `test_capex_sign.py`・`test_fcf_notes_and_fv_year.py`（既存の`test_first_filed.py`のQ4の abs・`test_ttm_anchor_reach.py`の負の設備投資の例を新しい規則に）、pytest 2762件成功・5件スキップ、
   audit 0、rcc NG 0・WARN 219。出力の一覧（sec・tanuki・eps）を作り直した。段4・段5が残るのでBACKLOGに残す
+
+#### 段4のSTEP 0（2026-11-04、読み取りと手元の試算だけ。記録だけで閉じた）
+- 数え直し（今のHEAD `923b8f7d6b`、Layer3の5項目〈OCF・CapEx・リース・SBC・D&A〉の単独の四半期・年次でval≠first_val、YTDを除く）: 419行・46銘柄（Q4の逆算16行を除くと403行。今の計算に効く範囲〈四半期2023-06以降・年次2021年以降〉は229行）。
+  依頼の176行は元の数え方が記録に無く再現できない
+- 分類（機械的な下書き。a1: 同じ申告で売上・営業利益・純利益も0.5%以上変わった、a1s: そのうち事業の値が90%以上変わった〈SPACの合併等で会社が入れ替わった〉、a2: 投資CF・財務CFも同時に変わった〈区分をまたぐ組み替え〉、
+  a3: 親の区分の合計は変わらずその行だけ〈同じ区分の中の行の分け直し〉、b: 10-Q/A・10-K/A、c: 差が100万ドル未満かつ0.5%未満、または千倍、e: そのほか）。行数/銘柄数:
+
+  | 項目 | a1 | a1s | a2 | a3 | b | c | e |
+  |---|---|---|---|---|---|---|---|
+  | OCF | 13/7 | 15/8 | 38/15 | 0 | 11/6 | 55/15 | 4/3 |
+  | CapEx | 19/9 | 0 | 9/5 | 34/12 | 6/3 | 46/13 | 0 |
+  | リース | 5/2 | 0 | 4/2 | 4/3 | 2/1 | 1/1 | 0 |
+  | SBC | 11/5 | 1/1 | 0 | 1/1 | 1/1 | 47/12 | 0 |
+  | D&A | 15/5 | 0 | 7/5 | 21/6 | 2/2 | 31/12 | 0 |
+  | 計 | 63/15 | 16/9 | 58/20 | 60/21 | 22/6 | 180/17 | 4/3 |
+
+  - VRTの実例（2025Q3のOCF 508.7M→482.7M）はa2（投資CFも+3.7%）。HONの2023〜2025はa1（売上−10%、2025Q3の申告で−52.6%、basis_mixの印あり）
+  - 一次資料で確かめた行: FLYW（a3、段5のFLYW型）、VST・DELL（a3、最新の値のほうが広い定義）、LMT（a3、D&Aの定義の変更 2020年 1,290M→1,019M）、
+    RKLB・SOUN（e、合併前の器の会社のYTD〈RKLB 2021上半期 −0.82M〉が最初の四半期の逆算に混ざった。最新の値〈−13.3M〉が正しい）
+  - basis_mix: 20%の線より下のa1（HONの2023〜2024年等）は単独では印が付かないが、HONは2025Q3の申告をきっかけに印が付き実害なし。OCF・SBC・D&Aは判定の対象外だが同じ申告で売上も組み替えるので足りる
+- 年次の読み手: その年の10-Kの値（parserの`annual_YYYY.json`、最初の申告）を読むのはTANUKIの`_load_extra_data`（FCFの5年の履歴）・`_calc_moat_inputs`（Moat、FCFマージン3年平均）・`data_fetcher.get_financials`（5年・RICE 4年）・
+  `adjustments.capitalize_rd`、Stonksの`load_annual_data`（5年）。最新の申告の値（Layer3・TTM）はTTMの系列（TANUKIのDCFの`fcf_list_raw`・HypeCore）・ROTCE・basis_mix・TAIL。
+  自分の年の10-Kの値を使う年次79行のうち、Layer3と1%超違うのは48行
+- 試算（手元、作り直し→TANUKI→HypeCore→TANUKI、前回と同じ条件。案F: TTMの5項目を全部first_val、案M: a3だけfirst_val、案P: parserの年次をLayer3の最新の値に）:
+  **どの案も判定・funda・stageの変化0**。理論株価が変わるのは 案F 9銘柄（最大 **FLYW +2.02%**、VRT +0.58%・LOAR +0.19%、ほかは0.1%未満）、案M 2銘柄（LOAR +0.19%・META −0.05%）、案P 0銘柄（moat_scoreが最大+0.0035、SNPSのBearの理論株価196.76→197.21）。
+  **保有銘柄の理論株価はどの案でも不変**（5年平均・下限の部品だけ微小に変わる: 案FでSOFI・SOUN・CELH・TSLA・CRWV、案MでSOFI。案PでSOUNのFCFの履歴）。案Fはbasis_mixの検知も壊す（HONのCapExの組み替えがrestatedから消える）。Stonksは試算していない
+- **決定（チャット側、2026-11-04）**: 版の選び方は今のまま（TTMは最新の申告、年次は最初の申告）。a3（同じ区分の中の行の分け直し）は値の版ではなくタグの取り方の問題として段5へ（FLYW型）。
+  範囲外の2件はFINDINGS 2026-11-04（parserの年次がSPACの器の会社の値を採る・ZSのD&Aのタグの食い違い）
+- 試算の道具は今回のセッションのscratchpad（`s4/`のrows.py・classify.py・annual_cmp.py・apply_sim.py・annual_P.py・run.sh）
 
 ---
 
