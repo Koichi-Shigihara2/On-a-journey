@@ -26,8 +26,8 @@ kaihatsuの最新は`1f73f1d215`（Beta_Config_Updateのcron修正）。この�
 Market Data Dailyの起動を20:17〜23:17 UTCの30分おき＋保険01:47・02:17 UTC（火〜土）＋ガードに変更（`001e1d028a`・`06e33c84e1`）、
 暫定値ならdata_qualityをpartialに（`d774518693`）、TANUKI VALUATIONを一晩1回に（`67915329a0`）。
 
-**次回の確認手順（2026-11-01 終業の更新〈それまでは2026-10-30 夜の終業〉。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
-BACKLOG.mdのアクティブは**15件**（2026-11-02 夜、`^### [`の機械カウント。手順13の合格〈CHECK-66の検査の直し `20ef290ee5`〉で`[[QUARTERLY-BASIS-MIX-1]]`を移設して16件→15件）。それまでは**16件**（2026-11-02 朝、`^### [`の機械カウント。11-01の束ね〈`docs/architecture/BUNDLING_2026-11-01.md`〉で根治策4件`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`・`[[CHECK-REFERENCE-DEFINITION-1]]`・`[[MARKETDATA-DAILY-ROW-WRITE-1]]`・`[[COMMON-PATH-GUARD-1]]`を登録して12件→16件。移設は0件〈手順13が1項目残り、`[[QUARTERLY-BASIS-MIX-1]]`は残す〉）。それまでは**12件**（2026-11-01 終業、`^### [`の機械カウント。11-01に大きく動いた日の事後分析の`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`と前提の`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`・`[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]`・`[[MARKETPULSE-DAILY-ENTRY-GAP-1]]`を登録して7件→11件、`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`を登録して12件。移設は0件〈ECON-FETCH-1・CNBC-STALE-1・EPICの①②は実装済みで、11-03朝の手順17〜20の本番の確認まで残す〉）。それまでは**7件**（2026-11-01 朝、`^### [`の機械カウント。手順16の確認で`[[MACRODATA-FRED-IMPORT-PATH-1]]`を移設して8件→7件）。それまでは**8件**（2026-10-30 夜の終業、`^### [`の機械カウント。`[[MACRODATA-FRED-IMPORT-PATH-1]]`を登録して7件→8件、手順16の確認まで残す。それまでは**7件**（2026-10-30、手順14の合格〈チャット側の確認〉で`[[EPS-SHARES-BASIS-MISMATCH-1]]`を移設、9件→8件。`[[TAIL-REVIEW-PERIOD-FILTER-1]]`を実装して移設、8件→7件））。それまでは**9件**（2026-10-29 夜の終業、`^### [`の機械カウント。`[[NAV-MOBILE-1]]`・`[[PORTFOLIO-TABLE-OVERFLOW-1]]`を実装して移設、11件→9件。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は実装済みで手順14の確認まで残す）。それまでは**11件**（2026-10-29 終業、`^### [`の機械カウント。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`を登録して13件、手順8の確認で`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`と一緒に移設して11件）。それまでは**12件**（2026-10-28 終業、`^### [`の機械カウント。`[[MACRO-PULSE-SLOT-ROWS-1]]`を移設して12件→11件、`[[PORTFOLIO-TABLE-OVERFLOW-1]]`を登録して12件。`[[PORTFOLIO-MEMO-COLUMN-WRAP-1]]`は同じ日に登録・移設）。それまでは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
+**次回の確認手順（2026-11-03 終業の更新〈それまでは2026-11-01 終業〉。確認する日時〈JST〉の順に並べる。番号は前のまま〈BACKLOGが番号を参照するため〉で、済んだ手順は番号だけ残す。各項目は「日時｜期限｜確認の手順」。下の日付つきの各ブロックの「残っている確認」より、こちらを正とする）**:
+BACKLOG.mdのアクティブは**11件**（2026-11-03 終業、`^### [`の機械カウント。11-03に`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`〈手順21〉・`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`〈手順2〉・`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`〈手順17の本体〉・`[[COMMON-PATH-GUARD-1]]`を移設して15件→11件。`[[CHECK-REFERENCE-DEFINITION-1]]`〈手順23〉・`[[MARKETDATA-DAILY-ROW-WRITE-1]]`〈手順24〉・`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`〈手順17の追加〉は実装済みで確認待ち、`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`は段1〜段3を公開して段4・段5が残る）。それまでは**15件**（2026-11-02 夜、`^### [`の機械カウント。手順13の合格〈CHECK-66の検査の直し `20ef290ee5`〉で`[[QUARTERLY-BASIS-MIX-1]]`を移設して16件→15件）。それまでは**16件**（2026-11-02 朝、`^### [`の機械カウント。11-01の束ね〈`docs/architecture/BUNDLING_2026-11-01.md`〉で根治策4件`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`・`[[CHECK-REFERENCE-DEFINITION-1]]`・`[[MARKETDATA-DAILY-ROW-WRITE-1]]`・`[[COMMON-PATH-GUARD-1]]`を登録して12件→16件。移設は0件〈手順13が1項目残り、`[[QUARTERLY-BASIS-MIX-1]]`は残す〉）。それまでは**12件**（2026-11-01 終業、`^### [`の機械カウント。11-01に大きく動いた日の事後分析の`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`と前提の`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`・`[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]`・`[[MARKETPULSE-DAILY-ENTRY-GAP-1]]`を登録して7件→11件、`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`を登録して12件。移設は0件〈ECON-FETCH-1・CNBC-STALE-1・EPICの①②は実装済みで、11-03朝の手順17〜20の本番の確認まで残す〉）。それまでは**7件**（2026-11-01 朝、`^### [`の機械カウント。手順16の確認で`[[MACRODATA-FRED-IMPORT-PATH-1]]`を移設して8件→7件）。それまでは**8件**（2026-10-30 夜の終業、`^### [`の機械カウント。`[[MACRODATA-FRED-IMPORT-PATH-1]]`を登録して7件→8件、手順16の確認まで残す。それまでは**7件**（2026-10-30、手順14の合格〈チャット側の確認〉で`[[EPS-SHARES-BASIS-MISMATCH-1]]`を移設、9件→8件。`[[TAIL-REVIEW-PERIOD-FILTER-1]]`を実装して移設、8件→7件））。それまでは**9件**（2026-10-29 夜の終業、`^### [`の機械カウント。`[[NAV-MOBILE-1]]`・`[[PORTFOLIO-TABLE-OVERFLOW-1]]`を実装して移設、11件→9件。`[[EPS-SHARES-BASIS-MISMATCH-1]]`は実装済みで手順14の確認まで残す）。それまでは**11件**（2026-10-29 終業、`^### [`の機械カウント。`[[MACRO-PULSE-FOMC-REGIME-INVALID-1]]`を登録して13件、手順8の確認で`[[MACRO-PULSE-FED-REGIME-MONTHLY-LAG-1]]`と一緒に移設して11件）。それまでは**12件**（2026-10-28 終業、`^### [`の機械カウント。`[[MACRO-PULSE-SLOT-ROWS-1]]`を移設して12件→11件、`[[PORTFOLIO-TABLE-OVERFLOW-1]]`を登録して12件。`[[PORTFOLIO-MEMO-COLUMN-WRAP-1]]`は同じ日に登録・移設）。それまでは**12件**（2026-10-26 終業、`^### [`の機械カウント。10-26に`[[QUARTERLY-BASIS-MIX-1]]`を登録して13件、`[[MARKETDATA-DAILY-HISTORY-POLICY-1]]`を移設して12件）。それまでは**12件**（2026-10-24、`[[EXTERNAL-API-CLIENT-UNIFY-1]]`を移設して13件→12件）・**13件**（2026-10-22の`^### [`の機械カウントも13件。2026-10-20に`[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]`を移設して14件→13件。2026-10-19 夜の初回の束ねで51件→14件。根治策3件の登録、統合35件・捨てる5件の移設。`docs/architecture/BUNDLING_2026-10-19.md`の「確定」。以下はそれまでの経緯: `^### [`の機械カウント、2026-10-19 夜。10-17の`[[NAV-LINK-AUDIT-CI-1]]`・`[[NAV-MOBILE-1]]`・`[[DOCS-README-STALE-1]]`の登録で57件 → 10-19 朝に`[[EPS-SILENT-TICKER-FAILURE-1]]`・`[[SEC-UPDATE-EXIT1-BLOCKS-ALL-1]]`、夜に`[[LAYER3-RETENTION-PERIOD-1]]`・`[[SEC-UPDATE-SUMMARY-HEADER-ORDER-1]]`をBACKLOG_DONE.mdへ移して53件 → 同じ夜に`[[DOCS-README-STALE-1]]`・`[[TANUKI-RECOMMENDED-G-HYPECORE-ORPHAN-1]]`を削除で完了して51件）。
 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md`に1行で記録する（CHAT_RULES.md「発見の溜め方と根治の判断（2026-10-16新設）」・事例41）。GitHubのscheduleは数時間遅れることがあるため、実行の有無は`gh run list`で先に確かめる。
 **2026-10-19 朝の確認**: 日曜の連鎖（SEC `39138117185` ✅ 98/98・FAILED 0・Gate NG=0 → TANUKI VALUATION → TANUKI Score）と手動実行（HypeCore `39161789572` → TANUKI VALUATION `39161925163` → TANUKI Score `39162895773`〈`--force`〉、すべてsuccess、Runner Imageはubuntu-24.04 20261012.334.1）。
 判定4件は試算どおり、timingの値は試算と違う（F&Gの区分で全銘柄+15、計算方法の変更による分はBSY・DDOGで一致、NOWは0。`[[LAYER3-RETENTION-PERIOD-1]]`の「確認（2026-10-19 朝）」）。CHECK-63 0件、5銘柄は年次の代用。2件を移設
@@ -36,21 +36,31 @@ BACKLOG.mdのアクティブは**15件**（2026-11-02 夜、`^### [`の機械カ
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
-**確かめる順（日時の順）**:
-① （済 2026-11-01 朝）手順16
-② 11-01（日）のSEC_Data_Update（12:00 UTC＝21:00 JSTの枠。遅れて11-02 JSTになることがある）と連鎖のTANUKI VALUATIONの後 … 手順13・手順5、その後に「11-01（日）の束ね」（下、入力28行）。**2026-11-01 終業の時点（12:59 UTC）では未**: SEC_Data_Updateが起動していない（最新は10-25の`40205244163`）。手順13・5・束ねは次回に回す。**2026-11-02 朝**: SEC_Data_Update `41330561316`（11-01 17:15 UTC）の後に確認。手順13は1項目（rccのCHECK-66の「保存した印が食い違う」の行、検査の側）が残り未済、手順5・束ねは下の各項目。**2026-11-02 夜**: CHECK-66の検査を直して（`20ef290ee5`）手順13は済、`[[QUARTERLY-BASIS-MIX-1]]`を移設
-②' 11-03（火）朝 JST（11-02 21:30 UTC頃〈冬時間〉のMarket Pulseの実行の後） … 手順17・手順18・手順19・手順20。**まず夜のMarket Pulseが成功してpushまで済んだかを見る**（`gh run list --workflow Market_Pulse_Update.yml`。2026-11-01からpushは`headlines_push.py`を通る〈見出しのファイルの衝突は積み足し直す、3回だめならjobが失敗〉ため、Commit and pushの段のログも見る）。手順19は新しいワークフロー`Market_Pulse_Headlines.yml`の最初の回から（2026-11-01 13:05 UTCの時点で手動・cronとも0回）
-②'' その後のBACKLOGの順（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の流れ）: 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤（1/8・2/8・3/8①・4/8②は2026-11-01に実装、確認待ち）
-③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15
-②''' （済 2026-11-02 夜）手順13の閉じ方: チャット側の判断でCHECK-66の検査を直した（`20ef290ee5`）。`[[QUARTERLY-BASIS-MIX-1]]`を移設、FINDINGSのHONの行（2026-10-26）は「済（手順13）」
-④ 束ねの後 … （済 2026-11-02 夜）`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の実装（`2b42795069`、確認は手順21＝次の計算方法の変更の公開のとき）。残りのアクティブの件の判断（2026-11-02に登録した根治策4件〈実装は許可されていない〉の着手の順を含む）
-④' 次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）を出したとき … 手順21（「計算方法の変更の手順」に沿って出す）
-⑤ 起きた回・いつでも … 手順2（Discordの本文をKoichiさんが見たら）・手順9（RSS 取得エラーの回）
+**確かめる順（日時の順。2026-11-03 終業の更新。GitHubのscheduleは遅れることがあるので、各回は`gh run list`で先に実行の有無を確かめる）**:
+① 11-04（水）朝 JST（11-03 夜〜11-04 朝の定時の後）
+   - Market Data Daily（11-03のNYSEの引けの後、`Market_Data_Daily_Update.yml`）の後 … 手順24（拒んだ上書きの記録・既存の確定の行・NIY=Fの777行とGC=Fの2行）
+   - Market Pulse（11-03 21:25 UTC頃＝11-04 06:30 JSTの回）の後 … 手順17の追加（`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`、期限11-04）・手順18（見出しの配信元3本）・
+     手順19（見出しの日ごとの積み足し）・手順20（5分足の日ごとの保存）。**まず夜のMarket Pulseが成功してpushまで済んだか**（Commit and pushの段のログも）を見る
+   - Stonks Siloの定時の後 … 手順22のStonksの分（`FCF-DEFINITION-SINGLE-SOURCE-1-2`の印。11-03 夜に`-3`を出したので、先頭の`method_change`に`-2`・`-3`のどちらが付くかも記録する）
+   - 08:30 JST（23:30 UTC）のSystem Health … 手順23（全15欄の重大度。[N]は手順19、[O]は手順20と一緒に見る）
+② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）、その後のMarket Data Dailyで手順22のROTCEの分。続いて「11-08（日）の束ね」
+   （CHAT_RULES.md「発見の溜め方と根治の判断」。入力はFINDINGS.mdの11-01の束ねの後の6行〈2026-11-03: 実データを読むテスト・固定データのテスト17本・古い形の印・TANUKIの画面の7キー・
+   日足の分割の経路・手元のEPSの試算とscope〉。状態は「未」5行・「未登録（束ねる前）」1行）
+③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15（期限11-30）
+④ BACKLOGの順（チャット側が決める）: `[[FCF-DEFINITION-SINGLE-SOURCE-1]]`段4・段5、`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`、
+   `[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤。判断待ち: `[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`
+⑤ 起きた回・いつでも … 手順9（RSS 取得エラーの回）
+（2026-11-01 終業の確かめる順〈手順16・13・5・束ね・17〜20・21〉は、手順16・13・21・2と束ねが済。残りは上に並べ直した）
 
-5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、残りはVだけ）
-   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18・10-25〈run `40205244163`〉とも4銘柄ともSEC_LAG。**11-01〈run `41330561316`〉でCDNS・KO・RMBSはREFRESHED〈Q3の10-Qまで〉、VはSEC_LAG**〈local 2026-04-29、submissions 2026-07-29〉、XOMはOK_NO_NEW。2026-11-02 朝にwarn_acknowledged.jsonのCDNS・KO・RMBSの3件を消した）
-   - 期限: Vの7月の10-Q（`0001403161-26-000104`）がcompanyfactsに入るまで
-   - 確認の手順: `common/sec_data/data/_freshness.json`でVがREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`のVの1件を消して移設する。入らないままなら直し方の候補2をチャット側が判断
+24. **日足の行の書き込みの1つの関数の最初の本番**（`[[MARKETDATA-DAILY-ROW-WRITE-1]]`、2026-11-03 実装 `2395a604b5`・`eaa2be2fef`）
+   - 日時: 2026-11-03（火）夜〜11-04 朝のMarket Data Daily（`Market_Data_Daily_Update.yml`、NYSEの引けの後）
+   - 期限: 2026-11-05
+   - 確認の手順:
+     - その回のStep Summaryの「確定の行への上書きを拒んだ記録」の件数と内容（`common/market_data/_daily_rejected_overwrites.json`のcommit）。
+       出たら、どの銘柄・日付・項目か、前と新しい値、経路を報告する（Yahooの改訂か、取り直しの窓の中の確定の行か）。0件でも合格
+     - `daily/`の行の数が前の回から取引日1日分だけ増え、既存の確定の行が変わっていない（`git show --stat`で銘柄ファイルの差分が新しい日付の行・暫定の行の置き換えだけ）
+     - 印の無い平らな足だった779行（`dff021dcef`）: NIY=Fの777行（2021-01-04〜2026-10-07）が`_no_yahoo_bar`のままで、毎日の取得で値・印が変わっていない（2026-11-03に--repair-provisionalで足なしの印に変えた。依頼の時点の想定〈次の夜の取得で変わる〉と違い、毎日の取得は90日より古い行に届かないため先に変えた）。GC=Fの2行（2021-09-10・2022-05-25）は2026-11-03に`correct_daily_rows`でYahooの今の足（終値1792.1・1846.3、出来高つき）に置き換え済み（理由 provisional_final・注記「平らな足の取り直し（2026-11-03）」、前の値は行の`_corrections`）。毎日の取得で値が変わらず、rccのWARN-62が0件
+   - 合格ならBACKLOG.mdの`[[MARKETDATA-DAILY-ROW-WRITE-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
 
 17. **Market Pulseの予定の経済指標（FRED）**（`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`、2026-11-01 実装 `8fcd156800`）**本体は済 2026-11-03（移設済み）。`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`の11-04の回の確認（下の「追加」）だけ残る**
    - 日時: 2026-11-02 21:30 UTC頃（11-03 06:30 JST）のMarket Pulseの実行の後（冬時間〈11-01から〉は外部起動の21:25 UTCの回で取得し、Market Data Dailyの完了で起動。`gh run list --workflow Market_Pulse_Update.yml`で先に確かめる）
@@ -92,19 +102,6 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 2026-11-02.jsonは、ETで11-02が終わる前に書いた分なので、次の回（11-03の夜）で夜の先物の足が足される（足が増える）
    - 満たしたらBACKLOGの②に確認を書き足す（②はEPICの中の段階なので、EPICが済むまでBACKLOGに残す）
 
-21. **計算方法の変更の印の最初の本番**（`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`、2026-11-02 実装 `2b42795069`）**済 2026-11-03 朝（移設済み）**
-   - 日時: 次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）を出したとき。そのcommitの後の最初のTANUKI VALUATION（と、読み合いの手動の TANUKI → HypeCore → TANUKI）の後
-   - 期限: その変更の公開の翌日
-   - 確認の手順:
-     - `config/method_change.json`の新しい形の件のscopeが`scripts/method_change_scope.py diff --write`で作られている（手で書いていない）。派生ファイル（ttm/・normalized/）が同じcommitに入っている
-     - 最初の実行のlatest.json: scopeの銘柄だけに`method_change`、全銘柄に`method_change_applied`（そのID）。scope外の銘柄に`method_change`が無い
-     - 次の実行（読み合いの2回目のTANUKI・翌朝の毎日の実行）では`method_change`が付かない（`method_change_applied`はそのまま）
-     - Discordの「TANUKI SCORE 変化検知」: 🛠に入るのはscopeの項目（判定・乖離率・funda・stage）の変化だけで、各行に「計算方法の分」と「残り（相場等）」がある。scope外の銘柄・項目の変化は📈相場の変化
-     - HypeCoreの{T}_poc.json・ROTCE・Stonksにも、最初の実行だけ印（全銘柄のファイルは先頭）
-   - 満たしたら`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
-   - **2026-11-03 朝: HypeCoreも合格（2回目、`FCF-DEFINITION-SINGLE-SOURCE-1-2`＝段1の残りの公開 `65a9fbe4a2`）**。poc.jsonの印はscopeの7銘柄だけ・`method_change_prev_missing` 0件・CHECK-67なし、TANUKIの印は1回目だけscopeの7銘柄・2回目0、理論株価・判定は試算と96銘柄一致。[[METHOD-CHANGE-PUBLISH-TIMING-1]]をBACKLOG_DONE.mdへ移した。Stonks・ROTCEの最初の実行は未確認
-   - **2026-11-03: TANUKI・Discordは合格（FCF-DEFINITION-SINGLE-SOURCE-1 段1・段1bの公開）、HypeCoreは次の計算方法の変更で確認**（前回の出力を公開の場所から読むように直した `e196105b5e`。今回のIDはHypeCoreのpoc.jsonに読んだ記録があり、今回は確かめられない）。移設は次の変更の確認の後。以下は11-03の記録: TANUKIの印はscopeの36銘柄だけ・2回目は0、理論株価・判定は試算と一致、Discordの🛠は6銘柄8件で「計算方法の分」「残り」つき。HypeCoreは前回の出力を`src/value/hypecore/data/`（CIに無い）から読み、印を付けない。直し方はチャット側の判断（BACKLOGの「手順21の確認」）。移設していない
-
 22. **計算方法の変更の印: Stonks・ROTCEの最初の実行**（`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`の残りの確認、2026-11-03 チャット側の指示）
    - 日時: Stonksは2026-11-04 朝の定時（Stonks Silo）、ROTCEは2026-11-08（日）のSEC_Data_Updateの後のMarket Data Daily（`common/sec_data/rotce.py`）
    - 期限: 2026-11-09（ROTCEの回の翌日）
@@ -122,20 +119,28 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - あわせて: `common/macro_data/macro_data_violations_log.json`に失敗の系列があれば`failed_since`が付いているか（成功の系列には付かない）
    - 合格ならBACKLOG.mdの`[[CHECK-REFERENCE-DEFINITION-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
 
-24. **日足の行の書き込みの1つの関数の最初の本番**（`[[MARKETDATA-DAILY-ROW-WRITE-1]]`、2026-11-03 実装 `2395a604b5`・`eaa2be2fef`）
-   - 日時: 2026-11-03（火）夜〜11-04 朝のMarket Data Daily（`Market_Data_Daily_Update.yml`、NYSEの引けの後）
-   - 期限: 2026-11-05
-   - 確認の手順:
-     - その回のStep Summaryの「確定の行への上書きを拒んだ記録」の件数と内容（`common/market_data/_daily_rejected_overwrites.json`のcommit）。
-       出たら、どの銘柄・日付・項目か、前と新しい値、経路を報告する（Yahooの改訂か、取り直しの窓の中の確定の行か）。0件でも合格
-     - `daily/`の行の数が前の回から取引日1日分だけ増え、既存の確定の行が変わっていない（`git show --stat`で銘柄ファイルの差分が新しい日付の行・暫定の行の置き換えだけ）
-     - 印の無い平らな足だった779行（`dff021dcef`）: NIY=Fの777行（2021-01-04〜2026-10-07）が`_no_yahoo_bar`のままで、毎日の取得で値・印が変わっていない（2026-11-03に--repair-provisionalで足なしの印に変えた。依頼の時点の想定〈次の夜の取得で変わる〉と違い、毎日の取得は90日より古い行に届かないため先に変えた）。GC=Fの2行（2021-09-10・2022-05-25）は2026-11-03に`correct_daily_rows`でYahooの今の足（終値1792.1・1846.3、出来高つき）に置き換え済み（理由 provisional_final・注記「平らな足の取り直し（2026-11-03）」、前の値は行の`_corrections`）。毎日の取得で値が変わらず、rccのWARN-62が0件
-   - 合格ならBACKLOG.mdの`[[MARKETDATA-DAILY-ROW-WRITE-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+5. **SECのcompanyfactsの取り込みの遅れ**（`[[SEC-COMPANYFACTS-API-LAG-1]]`、残りはVだけ）
+   - 日時: 毎週日曜のSEC_Data_Updateの後（10-18・10-25〈run `40205244163`〉とも4銘柄ともSEC_LAG。**11-01〈run `41330561316`〉でCDNS・KO・RMBSはREFRESHED〈Q3の10-Qまで〉、VはSEC_LAG**〈local 2026-04-29、submissions 2026-07-29〉、XOMはOK_NO_NEW。2026-11-02 朝にwarn_acknowledged.jsonのCDNS・KO・RMBSの3件を消した）
+   - 期限: Vの7月の10-Q（`0001403161-26-000104`）がcompanyfactsに入るまで
+   - 確認の手順: `common/sec_data/data/_freshness.json`でVがREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`のVの1件を消して移設する。入らないままなら直し方の候補2をチャット側が判断
 
 15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
    - 期限: 2026-11-30
    - 確認の手順: 新しいレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）に`data_as_of`（キューのfiled）が入り、`backfilled`がfalse、`kpi_snapshot`・`layer3_snapshot`の期が対象の期まで（対象より後の期が無い）、SECの財務の値が対象の期の申告日以前の値（Layer3の`first_val`）であること。確かめたらBACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」に書き足す
+
+21. **計算方法の変更の印の最初の本番**（`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`、2026-11-02 実装 `2b42795069`）**済 2026-11-03 朝（移設済み）**
+   - 日時: 次の計算方法の変更（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`の見込み）を出したとき。そのcommitの後の最初のTANUKI VALUATION（と、読み合いの手動の TANUKI → HypeCore → TANUKI）の後
+   - 期限: その変更の公開の翌日
+   - 確認の手順:
+     - `config/method_change.json`の新しい形の件のscopeが`scripts/method_change_scope.py diff --write`で作られている（手で書いていない）。派生ファイル（ttm/・normalized/）が同じcommitに入っている
+     - 最初の実行のlatest.json: scopeの銘柄だけに`method_change`、全銘柄に`method_change_applied`（そのID）。scope外の銘柄に`method_change`が無い
+     - 次の実行（読み合いの2回目のTANUKI・翌朝の毎日の実行）では`method_change`が付かない（`method_change_applied`はそのまま）
+     - Discordの「TANUKI SCORE 変化検知」: 🛠に入るのはscopeの項目（判定・乖離率・funda・stage）の変化だけで、各行に「計算方法の分」と「残り（相場等）」がある。scope外の銘柄・項目の変化は📈相場の変化
+     - HypeCoreの{T}_poc.json・ROTCE・Stonksにも、最初の実行だけ印（全銘柄のファイルは先頭）
+   - 満たしたら`[[METHOD-CHANGE-PUBLISH-TIMING-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
+   - **2026-11-03 朝: HypeCoreも合格（2回目、`FCF-DEFINITION-SINGLE-SOURCE-1-2`＝段1の残りの公開 `65a9fbe4a2`）**。poc.jsonの印はscopeの7銘柄だけ・`method_change_prev_missing` 0件・CHECK-67なし、TANUKIの印は1回目だけscopeの7銘柄・2回目0、理論株価・判定は試算と96銘柄一致。[[METHOD-CHANGE-PUBLISH-TIMING-1]]をBACKLOG_DONE.mdへ移した。Stonks・ROTCEの最初の実行は未確認
+   - **2026-11-03: TANUKI・Discordは合格（FCF-DEFINITION-SINGLE-SOURCE-1 段1・段1bの公開）、HypeCoreは次の計算方法の変更で確認**（前回の出力を公開の場所から読むように直した `e196105b5e`。今回のIDはHypeCoreのpoc.jsonに読んだ記録があり、今回は確かめられない）。移設は次の変更の確認の後。以下は11-03の記録: TANUKIの印はscopeの36銘柄だけ・2回目は0、理論株価・判定は試算と一致、Discordの🛠は6銘柄8件で「計算方法の分」「残り」つき。HypeCoreは前回の出力を`src/value/hypecore/data/`（CIに無い）から読み、印を付けない。直し方はチャット側の判断（BACKLOGの「手順21の確認」）。移設していない
 
 **11-01（日）の束ね**（**済 2026-11-02 朝**。`docs/architecture/BUNDLING_2026-11-01.md`。下の29行を根治策4件・既存2件・状態のまま1件に分け、FINDINGSの27行の状態にIDを書いた。以下は入力の記録として残す）（手順13・5の後。CHAT_RULES.md「発見の溜め方と根治の判断」。10-25の束ねはしていないので2週分）。入力はFINDINGS.mdの「未登録（束ねる前）」の27行と、束ね済みで未修正の1行と、登録済みで束ねの入力にする1行（2026-10-26 終業に機械的に拾い、2026-10-28の1行・2026-10-30の2行・2026-10-31の1行・2026-11-01の6行〈R6-INV〉と1行〈チャット側の確認〉、2026-11-01の経済指標の1行〈チャット側の指示〉・出力の一覧の1行〈チャット側の指示〉を足した。型は各行のとおり）:
 - 2026-11-01 型A: 出力の一覧（market_pulse・tanuki）は`build_output_inventory.py --check`では古いのに、CHECK-INVはNG=0で通る（CHECK-INVは出力・消えた読み手・新しい規則の二重・注記・画面の新しいキーの集合だけを比べ、行番号・件数・mdの本文は見ない）

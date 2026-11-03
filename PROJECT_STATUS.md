@@ -11,7 +11,16 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-02 夜 更新〈それまでは2026-11-02 朝〉。上から順）**:
+**次の作業（2026-11-03 終業 更新〈それまでは2026-11-02 夜〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」の「確かめる順」が正）**:
+1. 11-04（水）朝の確認: 手順24（日足の行の書き込みの1つの関数の最初の本番、`[[MARKETDATA-DAILY-ROW-WRITE-1]]`）→ 手順17の追加（`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`、期限11-04）・
+   手順18〜20（Market Pulseの見出しの配信元3本・見出しの積み足し・5分足の保存）→ 手順22のStonksの分 → 手順23（08:30 JSTのSystem Health、`[[CHECK-REFERENCE-DEFINITION-1]]`）。合格したものから移設
+2. 11-08（日）: SEC_Data_Updateの後に手順5（V）・手順22のROTCEの分、続いて束ね（FINDINGS.mdの11-01の束ねの後の6行〈2026-11-03〉。CHAT_RULES.md「発見の溜め方と根治の判断」）
+3. `[[FCF-DEFINITION-SINGLE-SOURCE-1]]` 段4（版で値が違う176行・parserとLayer3で採る申告が違う15期）・段5（申告のXBRLインスタンスの取得）。段1〜段3は2026-11-02〜11-03に公開済み
+4. `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`（外部の取得元の変化の監視。MACRO PULSEの予備のFOMCの日付を統合済み）
+5. 判断待ち: HypeCoreのstageの定義v2の検証の再開（`[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`）。再開の時期はチャット側の判断
+6. いつでも・起きた回: 手順9（RSS 取得エラーの回）、手順15（保有銘柄の次のTAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8（順はチャット側）
+
+**（旧）次の作業（2026-11-02 夜 更新〈それまでは2026-11-02 朝〉。上から順。2026-11-03 終業に上へ置き換えた。記録として残す）**:
 1. （済 2026-11-01 朝）「次回の確認手順」の16: Macro Data Update 2回とも成功25件・失敗0件、System Health `41160489865` で`[L] MacroData ✅`・Overall ✅ HEALTHY・success、MACRO PULSEとMarket PulseのFREDの日付が新しい。`[[MACRODATA-FRED-IMPORT-PATH-1]]`をBACKLOG_DONE.mdへ移設（アクティブ8件→7件）
 2. （2026-11-02 朝に確認。SEC_Data_Update run `41330561316`〈11-01 17:15 UTC〉の後）「次回の確認手順」の13（`[[QUARTERLY-BASIS-MIX-1]]`）: HONのデータ・理論株価・判定・funda・HypeCoreのstageは合格、rccのCHECK-66の「保存した印が食い違う」の行（検査の側。FINDINGS 2026-11-02）が残った。**2026-11-02 夜にチャット側の指示で検査を直し（`20ef290ee5`、系列にある期末だけと比べる）、CHECK-66はHONの1件・食い違いの行なし。手順13は済、`[[QUARTERLY-BASIS-MIX-1]]`をBACKLOG_DONE.mdへ移設（アクティブ16件→15件）**。
    5（`[[SEC-COMPANYFACTS-API-LAG-1]]`）: CDNS・KO・RMBSはREFRESHEDでwarn_acknowledged.jsonの3件を削除、Vだけ残す（BACKLOGの件も残す）
@@ -92,6 +101,20 @@
 **後回し（2026-10-19 初回の束ねの根治策）**: R-C2 `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`・R-X `[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`・R-D `[[NAV-MOBILE-1]]`（R-Dは2026-10-29に済、`2d3defffab`）。
 2026-10-15登録の後回しの5件（`[[DAILY-PICK-RICE-SCORE-MISSING-1]]`・`[[RICE-WARNINGS-ALWAYS-TRUE-1]]`・`[[SEC-GATE-PER-TICKER-NG-BLOCKS-ALL-1]]`・`[[METHOD-CHANGE-LAYER3-EARLY-PUBLISH-1]]`・`[[TAIL-REVIEW-BACKFILL-DATA-PERIOD-1]]`）は、束ねで各根治策に統合した（BACKLOG_DONE.md「2026-10-19（初回の束ね）」）
 
+- **2026-11-02〜11-03（根治策4件の実装と公開・終業のブラッシュアップ）**: チャット側の指示で、11-01の束ねの根治策4件のうち3件を実装し、FCFは段1〜段3を計算方法の変更として公開した。
+  - `[[FCF-DEFINITION-SINGLE-SOURCE-1]]`: 段1・段1b（FCFの式を`common/sec_data/fcf.py`の1か所に、リースの負債、CapExの候補、構造的赤字の下限）・段1の残り（凍結は入力だけ `65a9fbe4a2`）・
+    段2（設備投資の符号を差し引きの前に、負のTTMは欠け `3c58eb2bf6`）・段3（FCFの注記を使った期〈TTM〉で、調整後EPSの公正価値の調整を年度でそろえる 同）。公開はID `-1`〜`-3`。
+    `-3`は理論株価がINTU +0.34%だけ、判定の変化0、fundaはSOUN 60→35（試算は60→50、手元のEPSの試算と公開のEPSの差。FINDINGS 2026-11-03）。段4・段5が残る
+  - `[[METHOD-CHANGE-PUBLISH-TIMING-1]]`（印をscopeの銘柄・初めて読んだ実行だけに）: 手順21の2回目でHypeCoreも合格して移設。Stonks・ROTCEの最初の実行は手順22
+  - `[[COMMON-PATH-GUARD-1]]`（`7c3f0c5744`・`9515653377`、外部の取得とt+Nの数え方の禁止のテスト）・`[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]`・`[[SYSHEALTH-SEVERITY-MISMATCH-1]]`を移設。
+    `[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`（`4570610dfa`）・`[[CHECK-REFERENCE-DEFINITION-1]]`（`38e475edb7`、System Healthの重大度の表・出力の一覧のキーを書き手のコードで・rcc CHECK-68）・
+    `[[MARKETDATA-DAILY-ROW-WRITE-1]]`（`2395a604b5`、日足を書く関数を1つに・確定の行は上書きしない。NIY=Fの平らな足777行に足なしの印、GC=Fの2行を理由つきで置き換え）は実装済みで11-04朝の確認待ち
+  - 終業のブラッシュアップ: CLAUDE_CODE_START.mdの次回の確認手順を11-04朝の確認（手順24・17の追加・18〜20・22・23）を先頭に並べ直し、確かめる順を書き直した。FINDINGSに1行（手元のEPSの試算とscope・Discordの内訳）。
+    アクティブ11件（`^### [`の機械カウント）、BACKLOG.mdの中のID重複0、BACKLOG.mdとBACKLOG_DONE.md・IDEAS_AND_WATCH.mdとの重なり0、移設の印107件（BACKLOG_DONE.md 106・IDEAS_AND_WATCH.md 1、段落ごとの機械の数）で先はすべてある。rcc NG 0・WARN 219
+  **終業の数（新しい数え方）**: 読み手の決まっていない出力 1（変わらず）、二重実装の規則 **14**（CHECK-INV-3の規則の種類12〈WARN 20件〉＋MAC-11・MAC-20の2。変わらず）、サブシステム 10、
+  Python 71,323行・145ファイル（前回の終業`065646f693`の69,629行・140ファイルから+1,694行・+5ファイル: `fcf.py`・`finance_lease.py`・`fetch_failure.py`・`reference_check.py`等、根治策の実装）、
+  テスト38,235行・166ファイル（+1,586行）、docs配下のHTML・JS 20,343行・20ファイル（±0）、ワークフロー21本。数え方は10-28と同じ（`git ls-tree`のPythonからtestsと`test_`を除き、改行の数。
+  10-30の終業の`0a25183144`で数え直して68,868行・35,722行・20,343行が一致）。増えた分は全部「数を増やさない」の対象外（束ねで決めた根治策の実装と、その再発を止めるテスト）
 - **2026-11-01（Market Pulseの大きく動いた日の事後分析の準備・終業のブラッシュアップ）**: チャット側の指示で、EPIC `[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の調査・登録と、1/8〜4/8の実装をした。
   - 調査（読み取り）と登録 `b9d170bb3f`: 10-30（S&P500 −1.82%、ギャップが動きの64%）・9-21の事後分析の実現可能性。FINDINGSに4行、BACKLOG（高）にEPICと前提の3件（アクティブ7→11）
   - 1/8 `[[MARKETPULSE-CALENDAR-ECON-FETCH-1]]` `8fcd156800`: 予定の経済指標（FRED）が10-24から毎回`MissingSchema: Invalid URL 'releases/dates'`で失敗していた（R-E2で`fred_get`がパスを受けるようにしたのに、呼び出し元がURL全体の関数を渡していた。試験は差し替えた関数しか通していなかった）。FRED・FRBの取得の関数を分け、既定の経路を通す試験を足した。`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`（中）を登録（アクティブ12）。記録 `427eb801d8`
