@@ -89,6 +89,13 @@ jobs:
         continue-on-error: true
         run: python common/sec_data/rotce.py
 
+      # [[EXTERNAL-SOURCE-CHANGE-WATCH-1]] B3（2026-11-04）: 先物の限月の切り替えの日に印（_contract_roll、値は変えない。
+      # write_daily_rows の印だけの経路）。失敗しても株価の保存・下流の起動は止めない
+      - name: Mark futures contract rolls
+        if: steps.guard.outputs.run == 'true' && steps.fetch.outputs.status != 'reset_window'
+        continue-on-error: true
+        run: python common/market_data/futures_roll.py
+
       # reset_window（Yahooの作り直しの時間帯）で終わった実行はcommitしない（2026-10-03）。daily/は変わらず、
       # _daily_close_retry_log.json（2026-10-22に削除）の記録だけのcommitが「Update Market Data Daily」の件名で残っていた（10-03の2本）
       - name: Commit and push changes

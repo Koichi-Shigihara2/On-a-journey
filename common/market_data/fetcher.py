@@ -361,7 +361,7 @@ def _download_historical_bars(symbols: List[str], period: str = "5d",
 #     前の値・理由・時刻を残す
 #   - 確定していない行（暫定の印・終値の無い行）は新しい足で置き換える（暫定の行の確定・終値の取り直しはここ）
 #   - 暫定の印は、書く行すべてに同じ判定（calendar_universe.is_provisional_bar〈先物の平らな足・^N225の出来高0・確定時刻の前〉）で付ける
-#   - 印だけを変える経路（reason=MARK_ONLY: --repair-provisional の印・足なしの印）は値を変えられない
+#   - 印だけを変える経路（reason=MARK_ONLY: --repair-provisional の印・足なしの印・先物の限月の切り替えの印）は値を変えられない
 # 以前は経路ごとに書き方が違い、--backfill（登録のStep 1.5も）は既存の確定の行も取り直した値で上書きし（2026-10-26、FINDINGS）、
 # 暫定の印は毎日の取得の時にだけ付いていた
 DAILY_REJECT_LOG = "_daily_rejected_overwrites.json"
@@ -372,7 +372,9 @@ CORRECTION_REASONS = {
     "manual": "明示の修正",
 }
 MARK_ONLY = "mark"
-_MARK_KEYS = ("_provisional", "_no_yahoo_bar")
+# 印の欄（値ではない）。_contract_roll は先物の限月の切り替えの印（"confirmed"・"possible"、common/market_data/futures_roll.py、
+# [[EXTERNAL-SOURCE-CHANGE-WATCH-1]] B3、2026-11-04）。印だけを変える経路で付け、確定の行は値が同じなら印も含めてそのまま残る
+_MARK_KEYS = ("_provisional", "_no_yahoo_bar", "_contract_roll")
 
 
 def _row_values(r: Dict[str, Any]) -> Dict[str, Any]:
@@ -437,7 +439,7 @@ def write_daily_rows(symbol: str, rows: List[Dict[str, Any]], base_dir: str, now
                                 "fields": _diff_fields(old or {}, inc)})
                 continue
             new = {k: v for k, v in old.items() if k not in _MARK_KEYS}
-            new.update({k: True for k in _MARK_KEYS if inc.get(k)})
+            new.update({k: (inc[k] if k == "_contract_roll" else True) for k in _MARK_KEYS if inc.get(k)})
             if new != old:
                 by_date[d] = new
                 out["marked"].append(d)
