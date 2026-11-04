@@ -23,7 +23,7 @@ env:
 
 jobs:
   update-beta:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       # 定時起動は日曜（UTC）の分だけ続ける。GitHubの定時起動は遅れて始まることがある（日曜23:00 UTCの起動が月曜の1時台になった例あり）
       # ため、今の時刻から6時間引いた日付の曜日で判定する（23:00 UTCの起動が6時間以内に遅れても、予定していた日の曜日になる）

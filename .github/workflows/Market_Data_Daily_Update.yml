@@ -36,7 +36,7 @@ env:
 
 jobs:
   update-market-data-daily:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
       actions: write   # 何もしなかった実行を自分で取り消すため（gh run cancel）
