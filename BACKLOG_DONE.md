@@ -5,7 +5,7 @@
 ## 2026-11-04（完了）
 
 ### ✅ [FCF-DEFINITION-SINGLE-SOURCE-1] FCFとその入力（CapEx・リース・符号）の定義を1か所にし、欠けを0とみなさない（型Bを中心にした根治策）
-**完了（2026-11-04）:** 段1〜5すべて公開（段5cの公開で完了、チャット側の指示）
+**完了（2026-11-04）:** 段1〜5すべて公開。段5cの公開の後、段5d（parserの四半期・normalizedのCapExを書かない）でWARN-47のCapExの17件〈21銘柄分〉が消えて完了
 **型・処置（2026-11-01 束ね）:** 型B（中心）・A・C・E・X・根治策。登録だけ（実装の指示待ち）
 **優先度:** 高
 **分類:** 根治策 / `common/sec_data/parser.py`・`ttm_calculator.py::_calc_fcf`・`layer3_builder.py`（`calc_fcf`・`_apply_sign_normalize`）・`normalizer.py`・STONKS SILO・TANUKI VALUATION（report.txt・画面の注記）・EPS ANALYZER（調整後EPS）
@@ -215,6 +215,15 @@
   印は1回目のTANUKI・HypeCoreとも31銘柄でscope内だけ（ZSはStonksの項目だけでTANUKIの印なし、Stonksは次の定時の回）、2回目は0。Discordの🛠（1回目、手元で作り直し）は
   CSGP・FICO・FLYW・FRSH・HQY・PAYS・S・ZETAの8銘柄、どれも「計算方法の分／残り +0.0pt」（HQY HOLD→BUY・ZETA BUY→WATCHも計算方法の分）
 - 確認: 次回の確認手順25（11-08のSEC_Data_Updateで、新しい申告だけを取って保存する）
+
+#### 段5d（2026-11-04 昼、チャット側の追加の指示）
+- 経緯: 段5cの記録（`bd6bed955b`）で移設したが、チャット側の指示は「段5dでWARN-47の17件が消えてから移設」。段5dを済ませてWARN-47のCapExが消えたので、移設のままにした
+- 読み手（grep）: parserの四半期の cf を読むコードは無い（cf の読み手はどれも年次のファイル）。normalizedのCapExの読み手は rcc の WARN-47・CHECK-64 だけ
+  （Stonksの傾向・TANUKIのRICEはLayer3・TTM）→ そろえるより軽い「書くのをやめる」
+- `bbe89bd9d3`: parser.py の QUARTERLY_CF_NOT_WRITTEN（四半期の capital_expenditure・free_cash_flow、cf_provenance も）、normalizer.py の NORMALIZED_NOT_WRITTEN（CapEx）、
+  rcc の WARN-47・CHECK-64 から CapEx を外した。派生ファイル quarterly 3,030・normalized 98（違いはこのキーが消えたことだけ）
+- 試算（手元、TANUKI→HypeCore→TANUKI→Stonks）: 段5cの公開と96銘柄同じ、scope 0銘柄（計算方法の変更の印は付けない、公開の手順は不要）
+- ゲート: pytest 2807件成功・4件スキップ、audit 0、rcc NG 0・WARN 208（237→208: WARN-47のCapExの21銘柄分、CHECK-64のCapExの10件〈normalizedにCapExが無くなり、CapExの年次の組み替えはこの検査の対象外に〉）
 
 ---
 

@@ -2053,7 +2053,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-（[[FCF-DEFINITION-SINGLE-SOURCE-1]]は2026-11-04、段5cの公開で段1〜5すべて済、BACKLOG_DONE.md「2026-11-04（完了）」参照）
+（[[FCF-DEFINITION-SINGLE-SOURCE-1]]は2026-11-04、段5cの公開と段5d〈parserの四半期・normalizedのCapExを書かない〉で段1〜5すべて済、BACKLOG_DONE.md「2026-11-04（完了）」参照）
 
 ---
 

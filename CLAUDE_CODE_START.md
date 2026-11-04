@@ -38,12 +38,12 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **確かめる順（日時の順。2026-11-03 終業の更新。GitHubのscheduleは遅れることがあるので、各回は`gh run list`で先に実行の有無を確かめる）**:
 ① 11-04（水）朝 JST（11-03 夜〜11-04 朝の定時の後）
-   - （2026-11-04 朝: 手順24・手順17の追加は済、手順22はStonks・ROTCEの1回目が合格、残りは11-05 朝の2回目で印が付かないこと。手順23は11-04 10:31 JSTの時点で11-04の回のSystem Healthがまだ動いていない〈前日は12:57 JSTに動いた〉ので残る。11-04に`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`段5a・段5bを公開〈`6230e12749`、method_change -1-4〉→手順25。11-04 昼に段5cを公開〈`9571bc483d`、method_change -1-5〉して`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`を移設。手順23は11-04 03:03 UTCの回〈run 41764667527〉で[J] CronRunsだけが✅→🔴〈`Market_Pulse_Headlines.yml`の失敗、`ModuleNotFoundError: No module named 'common'`〉。ほかの14欄は11-03の回と同じ。[J]の変化は取得の失敗の表の範囲外〈ワークフローの失敗〉なので合格にせず、チャット側の判断待ち）
+   - （2026-11-04 朝: 手順24・手順17の追加は済、手順22はStonks・ROTCEの1回目が合格、残りは11-05 朝の2回目で印が付かないこと。手順23は11-04 10:31 JSTの時点で11-04の回のSystem Healthがまだ動いていない〈前日は12:57 JSTに動いた〉ので残る。11-04に`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`段5a・段5bを公開〈`6230e12749`、method_change -1-4〉→手順25。11-04 昼に段5cを公開〈`9571bc483d`、method_change -1-5〉して`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`を移設。手順23は11-04 03:03 UTCの回〈run 41764667527〉で[J] CronRunsだけが✅→🔴〈`Market_Pulse_Headlines.yml`の失敗、`ModuleNotFoundError: No module named 'common'`〉。ほかの14欄は11-03の回と同じ。[J]の変化は取得の失敗の表の範囲外〈ワークフローの失敗〉。チャット側の判定で重大度の表の確認としては合格、見出しの取得は`3e8ca9609d`で直した〈run 41777315836 成功〉。`[[CHECK-REFERENCE-DEFINITION-1]]`は11-05 08:30 JSTのSystem Healthで[J]が✅に戻るのを見てから移設。段5d〈`bbe89bd9d3`〉でWARN-47のCapExが消え、rcc WARN 208）
    - Market Data Daily（11-03のNYSEの引けの後、`Market_Data_Daily_Update.yml`）の後 … 手順24（拒んだ上書きの記録・既存の確定の行・NIY=Fの777行とGC=Fの2行）
    - Market Pulse（11-03 21:25 UTC頃＝11-04 06:30 JSTの回）の後 … 手順17の追加（`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`、期限11-04）・手順18（見出しの配信元3本）・
      手順19（見出しの日ごとの積み足し）・手順20（5分足の日ごとの保存）。**まず夜のMarket Pulseが成功してpushまで済んだか**（Commit and pushの段のログも）を見る
    - Stonks Siloの定時の後 … 手順22のStonksの分（`FCF-DEFINITION-SINGLE-SOURCE-1-2`の印。11-03 夜に`-3`を出したので、先頭の`method_change`に`-2`・`-3`のどちらが付くかも記録する）
-   - 08:30 JST（23:30 UTC）のSystem Health … 手順23（全15欄の重大度。[N]は手順19、[O]は手順20と一緒に見る）
+   - 08:30 JST（23:30 UTC）のSystem Health … 手順23（全15欄の重大度。[N]は手順19、[O]は手順20と一緒に見る）。**11-04の回は重大度の表の確認として合格、残りは11-05 08:30 JSTの回で[J]が✅に戻ること**（見出しの取得の直し `3e8ca9609d` の後）
 ② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）・手順25（cf_linesの最初のCIの取得）、その後のMarket Data Dailyで手順22のROTCEの分。続いて「11-08（日）の束ね」
    （CHAT_RULES.md「発見の溜め方と根治の判断」。入力はFINDINGS.mdの11-01の束ねの後の6行〈2026-11-03: 実データを読むテスト・固定データのテスト17本・古い形の印・TANUKIの画面の7キー・
    日足の分割の経路・手元のEPSの試算とscope〉。状態は「未」5行・「未登録（束ねる前）」1行）
@@ -61,7 +61,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
        「cf_lines の取得エラー」・SystemExit（SEC_USER_AGENT_EMAIL）が無い。リクエストの数が数十〜数百で、1回の上限（3,000）に届いていない
      - commitに`common/sec_data/data/{T}/cf_lines/{accn}.json`の新しいファイルが入り、既存の2,229ファイルが変わっていない（取り直さない）
      - 新しい申告の status が ok（no_cf_statement・not_found なら reason を報告）。APPの新しい10-Qが「CF計算書にCapExの行なし」（取得系の行なし）なら、TTMのCapExの0の点が増える
-     - rcc NG 0。WARNは237前後（11-04 段5cの後。+17はWARN-47 parser⇔Layer3のCapEx、FINDINGS 2026-11-04）
+     - rcc NG 0。WARNは208前後（11-04 段5dの後）
      - 新しい申告にタグだけでは決まらない行（PaymentsToAcquireOtherProductiveAssets）があれば、その申告だけラベルも取り（1リクエスト増）、記録の lines[].labels に表示名が入る
    - 合格なら、BACKLOG_DONE.mdの`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`（2026-11-04 移設）に「確認」を書き足す
 
@@ -133,7 +133,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - 期限: 2026-11-05
    - 確認の手順: その回のログ（`gh run view`）とDiscordの1行で、全15欄の重大度（✅・⚠️・🔴・⚪）が前の回（11-03 08:30 JST）と同じか。変わった欄があれば、
      その理由が取得の失敗の表（`common/fetch_failure.py`: 全件の失敗・同じ項目の2日以上の失敗は🔴、一部で1日目は⚠️）で説明できるか
-   - **結果（2026-11-04 昼）: 合格にしない（チャット側の判断待ち）**。run 41764667527（11-04 03:03 UTC）で[J] CronRunsだけが✅→🔴（`Market_Pulse_Headlines.yml`が11-03 07:14・19:48 UTCに失敗、`ModuleNotFoundError: No module named 'common'`、FINDINGS 2026-11-04）。ほかの14欄（[L]・[M]・[O]を含む）は11-03の回と同じ。[J]はワークフローの失敗で、取得の失敗の表では説明できない（表の誤りではなく実際の失敗を正しく示した）
+   - **結果（2026-11-04 昼、チャット側の判定）: 重大度の表の確認としては合格**。[J]の🔴は見出しの取得の退行（`3e8ca9609d`で直した）によるもので、表の規則（ワークフローの失敗）どおりの重大度。**残り: 直しの後の次のSystem Health（11-05 08:30 JSTの回）で[J]が✅に戻ること**を見てから`[[CHECK-REFERENCE-DEFINITION-1]]`を移設（期限11-06）。以下はその前の記録: run 41764667527（11-04 03:03 UTC）で[J] CronRunsだけが✅→🔴（`Market_Pulse_Headlines.yml`が11-03 07:14・19:48 UTCに失敗、`ModuleNotFoundError: No module named 'common'`、FINDINGS 2026-11-04）。ほかの14欄（[L]・[M]・[O]を含む）は11-03の回と同じ。[J]はワークフローの失敗で、取得の失敗の表では説明できない（表の誤りではなく実際の失敗を正しく示した）
      （[L]の文言は「全25系列取得成功」の形に変わる。[O]の欠け・[M]のFETCH_FAILEDは以前は✅・10%以上で🔴だった）。説明できない変化は不合格
    - あわせて: `common/macro_data/macro_data_violations_log.json`に失敗の系列があれば`failed_since`が付いているか（成功の系列には付かない）
    - 合格ならBACKLOG.mdの`[[CHECK-REFERENCE-DEFINITION-1]]`をBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
