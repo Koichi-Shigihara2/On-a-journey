@@ -75,6 +75,13 @@ NEAR_NAMES = {
     "intangible_assets_excl_goodwill": re.compile(r"Intangible|Trademark|TradeName|License|Patent|CustomerRelationship|Franchise", re.I),
     "minority_interest": re.compile(r"Noncontrolling|NonControlling|Minority", re.I),
 }
+# 近い名前から外す、分類ごとの期間の取り違え（短期の分類に長期の行、長期の分類に短期の行を数えない。LLYの長期投資〈LongTermInvestments〉が
+# 短期投資の「近い名前」になって0にならなかった、2026-11-04 夜）
+NEAR_EXCLUDE_BY_FIELD = {
+    "short_term_investments": re.compile(r"LongTerm|Non[Cc]urrent"),
+    "short_term_debt": re.compile(r"Non[Cc]urrent|LongTerm(?!\w*Current)"),
+    "long_term_debt": re.compile(r"(?<![Nn]on)Current$|ShortTerm"),
+}
 _NEAR_EXCLUDE = re.compile(r"Lease|InterestPayable|Accrued|Receivable|IncludingPortionAttributableToNoncontrollingInterest|"
                            r"StockholdersEquityAttributableToParent|Expense|Income", re.I)
 # Layer3 で補う項目（ROTCEのTCE・TANUKIが読む項目）
@@ -215,7 +222,8 @@ def zero_fields(rec: Dict[str, Any]) -> List[str]:
         if f in present or (f in listed and f not in with_values):
             continue        # 行はあるがどの時点にも軸の無い値が無い（軸つきの値だけ、CATの部門別の借入金等）は0にしない＝不明。
             #                 前の期の列にだけ値がある（当期の欄が空、CAKEの1年内返済の借入金）は0
-        if any(NEAR_NAMES[f].search(o) and not _NEAR_EXCLUDE.search(o) for o in others):
+        ex = NEAR_EXCLUDE_BY_FIELD.get(f)
+        if any(NEAR_NAMES[f].search(o) and not _NEAR_EXCLUDE.search(o) and not (ex and ex.search(o)) for o in others):
             continue
         out.append(f)
     return out

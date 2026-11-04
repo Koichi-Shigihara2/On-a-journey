@@ -142,3 +142,15 @@ def test_zero_if_10k_needs_10k_without_line(tmp_path):
     recs = bl.load_records("X", data_dir=str(tmp_path))
     z = bl.zero_fields_with_10k(recs["q"], recs)
     assert "goodwill" not in z and "long_term_debt" in z     # 10-Kにのれんの行がある → 10-Qで行が無くても0にしない
+
+
+def test_near_names_exclude_other_term(tmp_path):
+    """短期の分類の「近い名前」に長期の行を数えない（LLY: 短期投資の行が無く長期投資の行だけ → 0）。借入金も同じ形（2026-11-04 夜）"""
+    cash = "us-gaap:CashAndCashEquivalentsAtCarryingValue"
+    _save(tmp_path, "L", [
+        _rec("k", "10-K", "2026-02-12", "2025-12-31", [cash, "us-gaap:LongTermInvestments", "abc:ConvertibleNotesNoncurrent"]),
+        _rec("q", "10-Q", "2026-10-29", "2026-09-30", [cash, "us-gaap:LongTermInvestments", "abc:ConvertibleNotesNoncurrent"])])
+    recs = bl.load_records("L", data_dir=str(tmp_path))
+    z = bl.zero_fields_with_10k(recs["q"], recs)
+    assert "short_term_investments" in z                       # 長期投資の行は短期投資の近い名前ではない
+    assert "short_term_debt" in z and "long_term_debt" not in z   # 長期の転換社債の行は、長期の借入金だけを止める
