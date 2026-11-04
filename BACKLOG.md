@@ -2196,6 +2196,51 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 #### 規模の見込み
 中
 
+#### 原則（チャット側、2026-11-04）
+外の変化は直さずに検知して知らせる。検知はSystem Healthの1欄（[P] ExternalChange）かrccの1本に集め、重大度は共通の表（`common/fetch_failure.py`）に乗せる。
+銘柄ごとの事情は台帳（出力の一覧・warn_acknowledged）に記録
+
+#### A（2026-11-04 実装・push）
+- A1 `16e969f384`: 全21本の`runs-on`を**ubuntu-26.04**に固定（`ubuntu-latest`は2026-10-25頃に24.04→26.04へ移っていて、11-02以降に見た回はすべて26.04で成功。
+  チャット側の指示で、その版に固定）。`tests/test_workflow_runner_pinned.py`（版は`RUNNER`の1か所、`*-latest`を禁止）。FINDINGS 2026-10-18を済に
+- A2 `c6333c6dd4`: 予備のFOMCの日付の決め打ちの一覧を削除。`common/macro_data/fomc_calendar.py`（予定のページの読み取り・取れた回のキャッシュ
+  `common/macro_data/fomc_calendar_cache.json`）、取れない日はキャッシュの声明を使い、`05_fed_context.csv`の新しい列`fomc_date_source`に`cache`。
+  キャッシュが古い（最後に取れてから7日超、または会合の予定がすべて過去）とSystem Healthの新しい欄**[P] ExternalChange**が⚠️（表の行「予備のキャッシュが古い」
+  `judge_stale`、🔴にはしない）。初めのキャッシュは11-04 06:06 UTC（声明95件・会合56件、次の会合 2026-12-09）。確認は次回の確認手順26
+
+#### B STEP 0（2026-11-04、読み取りと手元の試算）
+- 3. CIKの切り替え: 今の食い違いは**0件**（`config/cik_lookup.csv`の98銘柄〈dormant 1〉・`_cik_cache.json`の106件と、SECの`company_tickers.json`〈11-04に1回取得〉）。
+  案: SEC_Data_Updateの最初に`company_tickers.json`を1回取り（1リクエスト）、登録銘柄のCIKと照合し、食い違い・ティッカーが無い銘柄を[P]に出す。
+  `cik_history.json`への旧CIKの登録・`cik_lookup.csv`の変更は人が判断。submissionsの社名の履歴（former_names）は合図にしない
+  （今の社名の「最後の日」が直近の申告の日になっている銘柄が6件〈WMT・LMT・CSGP・ASTS・RBRK・FROG〉あり、表記の変更でも出る。食い違いのときの補足の表示だけ）
+- 4. タグの移行（Layer3の36項目、最新の10-K・10-Qの当期）:
+  (a) 途切れ（前の年の同じ四半期に値があり、最新の期に値も候補のタグも無い。出力に効く21項目） **13件**（CRWVの借入金2〈既知 [[LAYER3-CUSTOM-TAG-MIGRATION-1]]〉・
+  CAKE・RKLBの短期借入金・FLYWの長期借入金・META・PLTR・TSLAの無形資産・TSLAののれん・LLYの短期投資・非支配持分・HWMの優先株・MRVLのRPO）。
+  前の版の数え方（前の1年に値があれば）は48件で、10-Kにしか出ない項目を10-Qの期で数えていた
+  (b) 切り替え（最新の期のタグが前の4期の多数と違う）18件、うち値が±50%を超えて飛んだもの **5件**（HONのCapEx 0.24倍〈分社の組み替え〉・HONのSBC 2.04倍・
+  LITEの売上 1.83倍・ONDSの短期借入金 0.36倍・RCATのD&A 1.81倍）
+  (c) 候補外（最新の申告に、項目に当たる候補外のタグの値がある。項目ごとのタグの完全な名前の表）86件、うち前受収益を除き値が無いもの **6件**
+  （GOOGLの転換優先株・Vの`PreferredStockValueOutstanding`〈既知 [[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]〉、HEIの`StockOptionPlanExpense`〈既知 [[SBC-TAG-STOCKOPTIONPLAN-1]]〉、
+  KOの`IndefiniteLivedTrademarks`〈既知 [[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]〉、CPRT・TERの償還可能な非支配持分）。前受収益（72件）はLayer3の読み手が無いので対象外。
+  名前の規則を広くした版（部分一致）は368件で使えない
+  CapEx・CF: 段5cでcf_linesの行が正なので、Layer3との差は出ない。分類の表の外（other_acq）の行のタグは22種（記録だけ）。
+  SBC・ROTCEの優先株・TCEの部品は(c)の表で拾える（統合済みの既知の件はすべて出た）。AVAVの非支配持分の途絶・PLTRののれん（2022年末だけ）は(a)の条件では出ない（前の年の同じ四半期にも値が無い）
+- 5. 同じ四半期の期末の数日違い（2〜6日）の重複: 全部で25件（14銘柄。AVAV・VZのRPO等）、**すべて2019〜2024年**で、直近2年（TTMの窓）は0件。
+  案: Layer3を作るときにTTMの窓の中だけを数えて[P]に出す（今は0件）
+- 6. 先物の限月の切り替え: 2026-09-29以降は行の`contract`で確定できる。変化は3件で、本当の切り替えはCL=Fの2026-10-14（CLX26→CLZ26）だけ。
+  ES=F・NQ=Fの10-29→10-30は`ESZ26.CME→ES.CME→ESZ26.CME`（Yahooが1日だけ月の記号の無い名前を返した。切り替えではない）。
+  過去（09-28以前）は値の飛びで探すしかない: ES=F・NQ=Fは前日比と^GSPC・^NDXの前日比の差が0.6%・0.8%を超える日のうち、**満期の日（3・6・9・12月の第3金曜）に当たるもの10件ずつ**
+  （23四半期のうち10。Yahooの連続系列は満期の日に乗り換える）。GC=F（GLD）・NIY=F（^N225）は相手と引けの時刻が違い誤報が多い（9件・47件）、CL=FはETFが無く、4σの飛びは相場の急変（2025-04等）
+  案: ①`contract`が変わった日は「限月の切り替え」（Market Pulseは同じ限月の前日比にする既存の処理）②月の記号の無い`contract`・`contract`の欠けは[P]に⚠️
+  ③過去のES=F・NQ=Fの満期の日の20行に「限月の切り替えの可能性」の印（日足の書き込みの1つの関数の印だけの経路 MARK_ONLY）
+- 7. 今の状態で出るWARN: CIK 0・(a) 13・(b) 5・(c) 6・重複 0・限月 2（ES=F・NQ=Fの月の記号の無い名前、10-29の1日）＝**26件**。
+  案: [P]は「台帳に無い新しい件」だけ⚠️にする。最初の26件はチャット側が確かめて台帳（`config/warn_acknowledged.json`と同じ形の`match`つき）に入れる。
+  既知の件（GOOGL・V・HEI・KO・CRWV）は統合済みの7件の記録をそのまま理由にできる
+- 実装の分け方の案: B1 [P]の枠（台帳つき）＋CIKの照合（SEC_Data_Updateが結果のファイルを書き、[P]が読む。小）→
+  B2 タグの(a)(b)(c)と重複（Layer3を作るときに結果のファイル、(c)の名前の表は1か所）→ B3 先物の限月（日足の`contract`の異常と過去20行の印）。
+  B2の後に、最初の件をチャット側が台帳に入れる
+- 試算の道具: scratchpad `b/`（tagwatch.py・tagwatch2.py・roll.py、company_tickers.json）
+
 ---
 
 （[[NAV-MOBILE-1]]は2026-10-29、実装・push済みで完了、BACKLOG_DONE.md「2026-10-29（完了）」参照）
