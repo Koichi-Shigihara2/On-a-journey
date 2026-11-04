@@ -18,16 +18,19 @@ common/sec_data/data/{T}/cf_lines/{accn}.json に保存する（生のファイ�
   両方含む表のうち、いちばん大きいものをCF計算書とする（表の名前に頼らない）。木を順に平らにし、直前の合計の行
   （…Activities）の次から投資CFの合計までを投資CFの区分とする（平らな木・入れ子の木の両方）。値は次元の無い文脈だけ。
 
-行の種類（classify()、読むときに決める。保存はタグと値だけ）:
-  ppe（有形固定資産等の取得。独自タグ・取得と売却の純額の行〈LOARの PaymentsForProceedsFromProductiveAssets〉を含む）・
-  software（ソフトウェアの資産計上・取得）・other_acq（無形資産の取得等）・excluded（企業買収・投資・有価証券・売却収入等）・
-  total（投資CFの合計）
+行の種類（読むときに決める。保存はタグと値、タグだけでは決まらない行には表示名〈labels〉も）: 下の「行の分類の表」の1か所。
+  classify()はタグの規則、line_kinds()は申告の中での決め方（タグだけでは決まらない行は表示名の規則〈LABEL_RULES〉、
+  表示名が無ければ同じ申告のほかの有形固定資産等の行）。表示名は、そういう行がある申告だけラベルの linkbase から取る
 
-段5b（CapExの欠けの規則、ここの1か所）:
+CapExの規則（ここの1か所。段5b・段5c、2026-11-04）:
+  - CapEx ＝ ppe ＋ software の行（案B、段5c）。取得系の行が軸の無い値を1つも持たない申告の期は使わない
   - 申告のCF計算書の投資CFの区分に、取得系の行（ppe・software）が無ければ、その申告が最新の期のCapExは0
     （印 fcf.CAPEX_NO_CF_LINE_MARK「CF計算書にCapExの行なし」）
-  - Layer3に無い期（単独の四半期〈Q4はTTMの逆算に任せる〉・年次）は、cf_linesの ppe の行で埋める（案A。software は含めない＝段5c）
-  - parserの年次: その年の10-Kの行で、行が無ければ0（印）、parserに値が無ければ ppe で埋める。それでも無い年は欠け（None）
+  - Layer3: cf_lines の値を正とする（段5c。段5bは欠けの補いだけ）。値が違う期はLayer3の最初の申告の値・申告の履歴を
+    同じ差だけずらして残し、無い期（Q4を除く）は足し、Q4の逆算を作り直す（fill_layer3_capex()）
+  - parserの年次: その年の10-Kの行を正とし、行が無ければ0（印）。記録の無い年（2021年より前の申告等）はそのまま
+  - VZ・LOARの quarterly.py の capex_concept は残す（やめると2021年より前の年次・四半期のCapExが消える。cf_linesは
+    2021年以降の申告だけ）
 """
 from __future__ import annotations
 
@@ -57,22 +60,39 @@ LINK = "{http://www.xbrl.org/2003/linkbase}"
 XL = "{http://www.w3.org/1999/xlink}"
 XBRLI = "{http://www.xbrl.org/2003/instance}"
 
+# ━━━ 行の分類の表（1か所。タグの規則と、タグだけでは決まらない行の表示名の規則。銘柄の一覧は作らない） ━━━
+# CapEx（段5c、2026-11-04）＝ ppe（有形固定資産等の取得。独自タグ・取得と売却の純額の行を含む）＋ software（ソフトウェアの資産計上・取得）。
+# CapExに入れないもの: other_acq（無形資産の取得・廃炉基金・金融債権等）・excluded（企業買収・投資・有価証券・売却収入・
+#   賃貸用の機器〈CATの「Expenditures for equipment leased to others」・DOCNの「Acquisition of equipment under
+#   financing arrangements」〉）・total（投資CFの合計）
 _EXCL = re.compile(r"Proceed|Sale|Business|Acquisitions?NetOfCash|Investment|Securit|Marketable|Equity|Loan|Debt|Deposit|"
                    r"Divest|Disposal|Maturit|Restricted|Notes?Receivable|Interest|Collateral|Derivative|Hedg|Lease(?!hold)", re.I)
 _PPE = re.compile(r"(PropertyPlantAndEquipment|PropertyAndEquipment|ProductiveAssets|CapitalExpenditure|FixedAssets|"
                   r"Equipment|Leasehold|RealEstate|Facilit|Building|Construction|ScooterFleet|Fleet|ProductiveAsset)", re.I)
 _ACQ = re.compile(r"^(Payments?|Purchases?|Acquisitions?|Capitaliz|Capital|Additions?|Investments?In(Property|Software))", re.I)
+_LEASED_EQUIPMENT = re.compile(r"EquipmentOnLease|EquipmentLeasedToOthers", re.I)   # 賃貸用の機器
+# タグだけでは決まらない行: 会社によって、ふつうのCapEx（VZ）・ソフトウェアの資産計上（SNPS）・資産や事業の取得
+# （BROS・LITE・PLTR・SOUN）に使われる。表示名（申告のラベル、記録の lines[].labels）で決め、表示名が無ければ
+# 同じ申告にほかの有形固定資産等の行（値あり）が無いときだけ ppe、あれば excluded
+AMBIGUOUS_TAGS = ("PaymentsToAcquireOtherProductiveAssets",)
+LABEL_RULES = (   # 上から順に、表示名のどれかに当たった最初の規則
+    ("excluded", re.compile(r"acqui\w*\s+of\s+(an?\s+)?(business|assets?)|assets?\s+acquisitions?|business|held\s+for\s+sale",
+                            re.I)),
+    ("ppe", re.compile(r"capital\s+expenditure|property|equipment|plant", re.I)),
+    ("software", re.compile(r"software", re.I)),
+)
 
-
-# ━━━ 行の種類 ━━━
 
 def classify(concept: str) -> str:
+    """タグだけで決まる行の種類（AMBIGUOUS_TAGS は ppe を返す。申告の中での決め方は line_kinds()）"""
     local = concept.split(":", 1)[-1]
     if re.match(r"NetCashProvidedByUsedInInvestingActivities", local):
         return "total"
     if re.match(r"PaymentsForProceedsFrom(ProductiveAssets|PropertyPlantAndEquipment|OtherProductiveAssets)", local):
         return "ppe"  # 取得と売却の純額の行（LOAR等）
     if not _ACQ.match(local) and not re.search(r"Capitaliz|Expenditure", local, re.I):
+        return "excluded"
+    if _LEASED_EQUIPMENT.search(local):
         return "excluded"
     if re.search(r"Software", local, re.I) and not re.search(r"Proceed|Sale", local, re.I):
         return "software"
@@ -83,6 +103,24 @@ def classify(concept: str) -> str:
     if _PPE.search(local):
         return "ppe"
     return "other_acq"
+
+
+def _ambiguous(concept: str) -> bool:
+    return concept.split(":", 1)[-1] in AMBIGUOUS_TAGS
+
+
+def line_kinds(rec: Dict[str, Any]) -> List[Tuple[str, Dict[str, Any]]]:
+    """1申告の行ごとの種類 [(kind, line)]。タグだけでは決まらない行は表示名、無ければ同じ申告のほかの ppe の行で決める"""
+    kinds = [(classify(x["concept"]), x) for x in rec.get("lines") or []]
+    other_ppe = any(k == "ppe" and not _ambiguous(x["concept"]) and any(x["values"].values()) for k, x in kinds)
+    out = []
+    for k, x in kinds:
+        if _ambiguous(x["concept"]):
+            labels = x.get("labels") or []
+            k = next((kind for kind, rx in LABEL_RULES if any(rx.search(lb) for lb in labels)), None) \
+                or ("excluded" if other_ppe else "ppe")
+        out.append((k, x))
+    return out
 
 
 # ━━━ 抜き出し ━━━
@@ -171,6 +209,26 @@ def instance_values(inst: bytes, concepts: List[str]) -> Dict[str, Dict[str, flo
             continue
         vals[name][ctx[el.get("contextRef")]] = v
     return vals
+
+
+def label_texts(lab: bytes, concepts: List[str]) -> Dict[str, List[str]]:
+    """ラベルの linkbase（_lab.xml、無ければ .xsd に埋め込まれたもの）から、各タグの表示名（役割を問わず、重複なし）"""
+    root = ET.fromstring(lab)
+    want = set(concepts)
+    out: Dict[str, List[str]] = {}
+    for ll in root.iter(LINK + "labelLink"):
+        loc = {l.get(XL + "label"): l.get(XL + "href", "").split("#", 1)[-1].replace("_", ":", 1)
+               for l in ll.iter(LINK + "loc")}
+        res: Dict[str, List[str]] = {}
+        for lb in ll.iter(LINK + "label"):
+            res.setdefault(lb.get(XL + "label"), []).append((lb.text or "").strip())
+        for a in ll.iter(LINK + "labelArc"):
+            c = loc.get(a.get(XL + "from"))
+            if c in want:
+                for t in res.get(a.get(XL + "to"), []):
+                    if t and t not in out.setdefault(c, []):
+                        out[c].append(t)
+    return out
 
 
 def extract(pre: Optional[bytes], inst: Optional[bytes]) -> Dict[str, Any]:
@@ -279,7 +337,29 @@ def fetch_filing(cik: int, accn: str, form: str, filed: str, budget: Budget) -> 
             return None
         got[kind] = rr.content
     rec = extract(got["pre"], got["instance"])
-    return {**head, **rec, "source_files": {"instance": inst_n, "pre": pre_n}}
+    files = {"instance": inst_n, "pre": pre_n}
+    amb = [x["concept"] for x in rec.get("lines") or [] if _ambiguous(x["concept"])]
+    if amb:  # タグだけでは決まらない行があるときだけ、表示名を取る（.xsd に埋め込まれていればそれ）
+        lab_n = pre_n if pre_n.endswith(".xsd") else next((n for n in items if n.endswith("_lab.xml")), None)
+        lab = got["pre"] if lab_n == pre_n else None
+        if lab_n and lab is None:
+            rr = _get(f"{base}/{lab_n}", f"cf_lines {accn} lab", budget)
+            if rr.status_code != 200:
+                return None
+            lab = rr.content
+        if lab is not None:
+            add_labels(rec, lab)
+            files["lab"] = lab_n
+    return {**head, **rec, "source_files": files}
+
+
+def add_labels(rec: Dict[str, Any], lab: bytes) -> None:
+    """記録のタグだけでは決まらない行に、表示名（labels）を足す"""
+    amb = [x["concept"] for x in rec.get("lines") or [] if _ambiguous(x["concept"])]
+    texts = label_texts(lab, amb)
+    for x in rec.get("lines") or []:
+        if x["concept"] in texts:
+            x["labels"] = texts[x["concept"]]
 
 
 def fetch_new_filings(ticker: str, cik: int, company_facts: Dict[str, Any], data_dir: str = DATA_DIR,
@@ -324,8 +404,11 @@ def period_values(records: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any
     for accn, rec in records.items():
         if rec.get("status") != "ok":
             continue
-        kinds = [(classify(x["concept"]), x) for x in rec["lines"]]
-        has_line = any(k in ("ppe", "software") for k, _x in kinds)
+        kinds = line_kinds(rec)
+        cap = [x for k, x in kinds if k in ("ppe", "software")]
+        if cap and all(not x["values"] for x in cap):
+            continue  # 取得系の行が軸の無い値を1つも持たない申告（軸つきの値だけ、FCX 2026年Q2）は使わない
+        has_line = bool(cap)
         tot = next((x for k, x in kinds if k == "total"), None)
         periods = set()
         for _k, x in kinds:
@@ -345,14 +428,14 @@ def period_values(records: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any
 
 
 def capex_periods(records: Dict[str, Dict[str, Any]]) -> Dict[Tuple[str, bool], Dict[str, Any]]:
-    """単独の四半期・年次の CapEx（ppe の行。CapExの行が無い申告の期は0）。{(end, is_annual): {...}}。
+    """単独の四半期・年次の CapEx（ppe＋software の行。CapExの行が無い申告の期は0）。{(end, is_annual): {...}}。
     四半期は3か月の列を優先し、無ければ同じ申告の中のYTDの差（6か月−3か月・9か月−6か月）、同じ申告に前の期間が無いときだけ
     別の申告の値と引く。負になる四半期は使わない。Q4（12か月−9か月）は作らない（TTMのQ4の逆算〈q4_implied.py〉に任せる）。
     年次は10-K（/Aを含む）の12か月だけ（10-QのTTMの列は使わない）。期末は2021年より前でもよい（2021年以降の申告の前年の列）"""
     pv = period_values(records)
 
     def val(v):
-        return 0.0 if not v["has_capex_line"] else v["ppe"]
+        return 0.0 if not v["has_capex_line"] else v["ppe"] + v["software"]
 
     by_filing: Dict[str, Dict[Tuple[str, str], Dict[str, Any]]] = {}
     for p, v in pv.items():
@@ -383,23 +466,34 @@ def capex_periods(records: Dict[str, Dict[str, Any]]) -> Dict[Tuple[str, bool], 
 
 
 def fill_layer3_capex(ticker: str, entries: List[Dict[str, Any]], data_dir: str = DATA_DIR) -> List[Dict[str, Any]]:
-    """Layer3の capital_expenditure のエントリに段5bの規則を当てた新しいリストを返す（元のリストは変えない）。
-    - CapExの行が無い申告が最新の期: 0（印）。Layer3に値があっても置き換える
-    - Layer3に無い期（単独の四半期〈Q4を除く〉・年次。cf_linesは2021年以降の申告で、前年の列を含む）: cf_lines の ppe の行で埋める"""
+    """Layer3の capital_expenditure のエントリに cf_lines の値を正として当てた新しいリストを返す（元のリストは変えない）。
+    段5b（2026-11-04）は欠けの補いだけ、段5c（同日）で正に切り替えた。
+    - CapExの行が無い申告が最新の期: 0（印 CAPEX_NO_CF_LINE_MARK）
+    - cf_lines と値が同じ期: Layer3のエントリをそのまま
+    - 値が違う期: Layer3のエントリを残し、val・first_val・申告の履歴（_asof）を同じ差だけずらす（最初の申告の時点を
+      保ったまま。Q4の逆算が年次と同じ時点の値どうしのまま、[[LAYER3-FIRST-FILED-DATE-1]]）。印 capex_basis="cf_lines"
+    - Layer3に無い期（単独の四半期〈Q4を除く〉・年次。cf_linesは2021年以降の申告で、前年の列を含む）: cf_lines の値で足す
+    - その後、Q4の逆算（is_implied）を作り直す（タグが期によって違っても作れるよう、source_tagをそろえた写しで計算する）"""
+    import copy
+    from .q4_implied import build_q4_implied_entries
     recs = load_records(ticker, data_dir)
     if not recs:
         return entries
     cp = capex_periods(recs)
-    have = {(e["end"], bool(e.get("is_annual"))) for e in entries if not e.get("is_ytd") and e.get("val") is not None}
+    ents = [copy.deepcopy(e) for e in entries if not e.get("is_implied")]
+    idx = {(e["end"], bool(e.get("is_annual"))): e for e in ents if not e.get("is_ytd") and e.get("val") is not None}
     fy = {e["end"]: e.get("fy") for e in entries if e.get("fy") is not None}
-    keep, add = [], []
-    zero_keys = {k for k, v in cp.items() if v["no_capex_line"]}
-    for e in entries:
-        if not e.get("is_ytd") and (e["end"], bool(e.get("is_annual"))) in zero_keys:
-            continue
-        keep.append(e)
     for (end, ann), v in sorted(cp.items()):
-        if (end, ann) in have and (end, ann) not in zero_keys:
+        e = idx.get((end, ann))
+        if e is not None and not v["no_capex_line"]:
+            delta = v["val"] - abs(e["val"])
+            if abs(delta) > 0.5:
+                e["val"] = _num(abs(e["val"]) + delta)
+                if e.get("first_val") is not None:
+                    e["first_val"] = _num(abs(e["first_val"]) + delta)
+                if e.get("_asof"):
+                    e["_asof"] = [[f, abs(x) + delta if x is not None else x] for f, x in e["_asof"]]
+                e["capex_basis"] = "cf_lines"
             continue
         n = {"end": end, "start": v["start"], "val": _num(v["val"]), "first_val": _num(v["val"]), "accn": v["accn"],
              "filed": v["filed"], "first_filed": v["filed"], "form": v["form"],
@@ -409,12 +503,17 @@ def fill_layer3_capex(ticker: str, entries: List[Dict[str, Any]], data_dir: str 
         if v["no_capex_line"]:
             n["capex_basis"] = "no_cf_line"
             n["mark"] = CAPEX_NO_CF_LINE_MARK
-        add.append(n)
-    return sorted(keep + add, key=lambda e: (e["end"], bool(e.get("is_annual")), bool(e.get("is_ytd"))))
+        if e is not None:
+            ents.remove(e)
+        ents.append(n)
+    same_tag = [dict(e, source_tag="cf_lines") for e in ents if not e.get("is_ytd")]
+    q4 = build_q4_implied_entries([e for e in same_tag if e.get("is_annual")],
+                                  [e for e in same_tag if not e.get("is_annual")], "capital_expenditure")
+    return sorted(ents + q4, key=lambda e: (e["end"], bool(e.get("is_annual")), bool(e.get("is_ytd"))))
 
 
 def annual_capex_from_10k(ticker: str, accn: Optional[str], data_dir: str = DATA_DIR) -> Optional[Dict[str, Any]]:
-    """parserの年次: その年の10-K（accn）の当期の12か月の CapEx。{"val", "no_capex_line", "accn"} か None（記録が無い）"""
+    """parserの年次: その年の10-K（accn）の当期の12か月の CapEx（ppe＋software）。{"val", "no_capex_line", "accn"} か None（記録が無い）"""
     if not accn:
         return None
     rec = load_records(ticker, data_dir).get(accn)
@@ -425,5 +524,5 @@ def annual_capex_from_10k(ticker: str, accn: Optional[str], data_dir: str = DATA
     if not yrs:
         return None
     end, v = max(yrs, key=lambda x: x[0])
-    return {"end": end, "val": 0 if not v["has_capex_line"] else _num(v["ppe"]),
+    return {"end": end, "val": 0 if not v["has_capex_line"] else _num(v["ppe"] + v["software"]),
             "no_capex_line": not v["has_capex_line"], "accn": accn}

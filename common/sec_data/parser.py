@@ -3950,7 +3950,8 @@ class SECParser:
     def _apply_cf_lines_capex(self, ticker: str, result: Dict[str, Any]) -> None:
         """年次のCapExに段5bの規則を当てる（[[FCF-DEFINITION-SINGLE-SOURCE-1]]、2026-11-04。規則は cf_lines.py）。
         その年の10-K（営業CFの由来の申告）のCF計算書に取得系の行が無ければ0（印 CAPEX_NO_CF_LINE_MARK）、
-        CapExが無い年は有形固定資産等の行（独自タグを含む）で埋める。記録の無い年（2021年より前の申告等）はそのまま"""
+        記録のある年は10-Kの行（有形固定資産等〈独自タグを含む〉＋ソフトウェアの資産計上・取得、段5c 2026-11-04）を正とし、
+        値が違えば置き換える。記録の無い年（2021年より前の申告等）はそのまま"""
         from common.sec_data.cf_lines import annual_capex_from_10k
         from common.sec_data.fcf import CAPEX_NO_CF_LINE_MARK
         for annual in (result.get("annual") or {}).values():
@@ -3967,7 +3968,7 @@ class SECParser:
                 annual.setdefault("cf_provenance", {})["capital_expenditure"] = {
                     "accn": r["accn"], "filed": own.get("filed"), "is_own_data": True, "source": "cf_lines",
                     "mark": CAPEX_NO_CF_LINE_MARK}
-            elif cf.get("capital_expenditure") is None:
+            elif cf.get("capital_expenditure") is None or abs(abs(cf["capital_expenditure"]) - r["val"]) > 0.5:
                 cf["capital_expenditure"] = r["val"]
                 annual.setdefault("cf_provenance", {})["capital_expenditure"] = {
                     "accn": r["accn"], "filed": own.get("filed"), "is_own_data": True, "source": "cf_lines"}
