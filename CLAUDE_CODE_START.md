@@ -60,7 +60,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 全ワークフローのログの Runner Image が ubuntu-26.04（`runs-on: ubuntu-26.04`）で、ランナーの割り当ての失敗が無い
      - MACRO PULSEの回: 予定のページが取れ、commitに`common/macro_data/fomc_calendar_cache.json`が入る（`last_success_utc`が11-05。中身が同じ日は書かない）。
        「キャッシュ（予備）の声明を使う」の行がログに無い（取れた回）。`git add`のパスの誤りで失敗していない
-     - System Health: 16欄（[P]が増えた）。[P] が「✅ 1件監視 / FOMCの予定 最後に取れた 2026-11-05・次の会合 2026-12-09」。Discordの1行に`ExtChange✅`
+     - System Health: 16欄（[P]が増えた）。[P] は台帳（`config/external_change_acknowledged.json`）に26件を入れるまでは「⚠️ 26件検知（確認済み0・新しい件26） / タグの途切れ 13件…」（B1〜B3、2026-11-04 夕）。FOMCの予定のキャッシュの古さの⚠️が無いこと（あれば理由に「最後に取れてから」）。Discordの1行に`ExtChange⚠️`。台帳に入れた後の回で`ExtChange✅`・「確認済み26・新しい件0」になれば`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`を移設
    - 合格なら、BACKLOGの`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`の「A」に書き足す（Bが残るので項目はBACKLOGに残す）
 
 25. **申告のCF計算書の行（cf_lines）の最初のCIの取得**（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]` 段5a・段5b、2026-11-04 実装 `f56a1a10fd`・`6230e12749`）
@@ -72,6 +72,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - commitに`common/sec_data/data/{T}/cf_lines/{accn}.json`の新しいファイルが入り、既存の2,229ファイルが変わっていない（取り直さない）
      - 新しい申告の status が ok（no_cf_statement・not_found なら reason を報告）。APPの新しい10-Qが「CF計算書にCapExの行なし」（取得系の行なし）なら、TTMのCapExの0の点が増える
      - rcc NG 0。WARNは208前後（11-04 段5dの後）
+     - 取得元の変化の検知（`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]` B1・B2）: ログの最後に「CIKの照合: 食い違い 0件」「取得元の変化の検知: n件」（11-04の手元で24件）、`common/sec_data/data/_source_watch.json`がcommitに入り、`cik_checked_at`がその回。銘柄ごとの「取得元の変化の検知のエラー」が無い
      - 新しい申告にタグだけでは決まらない行（PaymentsToAcquireOtherProductiveAssets）があれば、その申告だけラベルも取り（1リクエスト増）、記録の lines[].labels に表示名が入る
    - 合格なら、BACKLOG_DONE.mdの`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`（2026-11-04 移設）に「確認」を書き足す
 

@@ -2241,6 +2241,23 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
   B2の後に、最初の件をチャット側が台帳に入れる
 - 試算の道具: scratchpad `b/`（tagwatch.py・tagwatch2.py・roll.py、company_tickers.json）
 
+#### B1〜B3の実装（2026-11-04 夕、チャット側の指示）
+- B1 `90cdee92eb`: `common/external_watch.py`（件を集め、台帳`config/external_change_acknowledged.json`〈warn_acknowledgedと同じ形、(kind, ticker, match)、空で始める〉に無い
+  新しい件だけを分ける）、`common/fetch_failure.py`に表の行「台帳に無い外の変化（新しい件）」⚠️（`judge_external`、🔴にはしない）、System Healthの[P]が件数（確認済み・新しい件）と種類ごとの要約。
+  `common/sec_data/source_watch.py`のCIKの照合（`tickers.get_all_rows`〈retired以外〉とSECの`company_tickers.json`）。SEC_Data_Update（update.py）が実行の最後に
+  `company_tickers.json`を1回だけ取り、`common/sec_data/data/_source_watch.json`に書く（銘柄を絞った実行はその銘柄の件だけ置き換え）
+- B2 `2e77f94875`: `source_watch.tag_items`（update.pyの手順6、Layer3を作った直後）: tag_gap（4a、出力に効く21項目）・tag_switch（4b、±50%の値の飛び）・
+  tag_outside（4c、項目ごとの完全な名前の表〈SBC・優先株・無形資産・非支配持分〉、前受収益は入れない）・dup_period（TTMの窓730日の中）。最初の結果は手元で作った（SECは呼ばない）
+- B3 `c591ec0e26`: `common/market_data/futures_roll.py`: 限月の欄の異常（銘柄ごとに最初に限月を記録した日より後の欠け・月の記号の無い限月）を[P]に、印`_contract_roll`
+  （"confirmed"＝限月が前の行から変わった日、"possible"＝限月を記録する前のES=F・NQ=Fの満期の日〈3・6・9・12月の第3金曜〉で^GSPC・^NDXとの前日比の差が0.6%・0.8%超）。
+  印は`write_daily_rows`の印だけの経路（`fetcher.py`の印の欄に`_contract_roll`、値〈文字列〉を残す）。付けた21行（CL=F 2026-10-15、ES=F・NQ=F 各10行）の値は変わらない。
+  **訂正**: STEP 0の報告の「CL=Fの10-14の切り替え」は、新しい限月の最初の行が**10-15**（10-14はその前の行）、「ES=F・NQ=Fの10-29」は**10-30**の行。Market_Data_Daily_Updateに印の段（continue-on-error）
+- 一覧 `a39be77ac9`（テストのファイルを分けた後の読み手で作り直し、pushの前のrccのNG-INV-2を直した）。ゲート: pytest 2827件成功・4件スキップ、audit 0、rcc NG 0・WARN 208
+- 最初の26件（[P]は台帳が空なので「26件検知（確認済み0・新しい件26）」の⚠️）: tag_gap 13・tag_outside 6・tag_switch 5・contract 2・CIK 0・dup_period 0。
+  1件ごとの今の公開の値への影響は2026-11-04のチャットの報告。影響あり（直す候補）: **CRWV（保有）の借入金**（独自タグへの移行で、TANUKIはFY2025の年次の借入金21.6Bを使い、
+  2026-06-30の`DebtInstrumentCarryingAmount`は35.6B。純有利子負債が約13.9B小さく、理論株価 83.81→約58.6〈−30%、純キャッシュ÷株数の線形の試算〉、乖離率 +56%→約+9%）ほか
+- **移設の条件**: 26件の扱いを決めて台帳に入れ、System Healthの次の回で[P]が✅になるのを見てから
+
 ---
 
 （[[NAV-MOBILE-1]]は2026-10-29、実装・push済みで完了、BACKLOG_DONE.md「2026-10-29（完了）」参照）
