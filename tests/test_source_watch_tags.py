@@ -51,3 +51,21 @@ def test_saved_source_watch_matches_rules():
     d = sw.load()
     assert d.get("generated_at") and isinstance(d.get("tags"), dict)
     assert {i["kind"] for i in sw.all_items()} <= set(ew.KIND_LABELS)
+
+
+def test_tag_gap_only_when_rules_cannot_fill():
+    """4aは、決めた補いの規則（bs_lines.covered_by_rules）でも埋まらない件だけ（2026-11-04 夜）。
+    無形資産・のれん・短期投資で直近の10-Kの年度末の値がある（LLY・META・TSLA型）は出ない／借入金は年次の値があっても出る（CRWV型）"""
+    defs = {"short_term_investments": {"candidates": ["ShortTermInvestments"]}, "goodwill": {"candidates": ["Goodwill"]},
+            "long_term_debt": {"candidates": ["LongTermDebtNoncurrent"]}}
+    fy = {"fp": "FY", "form": "10-K"}
+    store = {"fields": {
+        "short_term_investments": {"entries": [_e("2025-06-30", 100.0, "ShortTermInvestments"),
+                                               {**_e("2025-12-31", 120.0, "ShortTermInvestments"), **fy}]},
+        "goodwill": {"entries": [_e("2025-06-30", 5.0, "Goodwill"), {**_e("2025-12-31", 5.0, "Goodwill"), **fy}]},
+        "long_term_debt": {"entries": [_e("2025-06-30", 900.0, "LongTermDebtNoncurrent"),
+                                       {**_e("2025-12-31", 950.0, "LongTermDebtNoncurrent"), **fy}]},
+    }}
+    got = {(i["kind"], i["match"]) for i in sw.tag_items("X", store, _facts("a1", "2026-06-30", []), defs)}
+    assert ("tag_gap", "short_term_investments") not in got and ("tag_gap", "goodwill") not in got
+    assert ("tag_gap", "long_term_debt") in got

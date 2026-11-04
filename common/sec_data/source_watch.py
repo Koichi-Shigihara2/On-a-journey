@@ -7,7 +7,8 @@ RESULT_FILE（common/sec_data/data/_source_watch.json）へ書く。System Healt
 件の種類（kind）と台帳の match:
   cik          CIKの切り替え（config/cik_lookup.csv と SECの company_tickers.json の食い違い・ティッカーが無い）。match「<手元のCIK>→<SECのCIK>」
                submissions の社名の履歴（former_names）は合図にしない（今の社名の「最後の日」が直近の申告の日になる銘柄があり、表記の変更でも出る）
-  tag_gap      4a 途切れ: 前の年の同じ四半期（350〜380日前）に0でない値があり、最新の申告の期末に値も候補のタグも無い（KEY_FIELDS だけ）。match「<項目>」
+  tag_gap      4a 途切れ: 前の年の同じ四半期（350〜380日前）に0でない値があり、最新の申告の期末に値も候補のタグも無く、決めた補いの規則
+               （bs_lines.covered_by_rules: 申告の貸借対照表の行・行なしの0・無形資産等の直近の10-Kの年度末の値）でも埋まらない（KEY_FIELDS だけ）。match「<項目>」
   tag_switch   4b 切り替え: 最新の期末の値のタグが前の4期の多数と違い、値が前の期の SWITCH_RATIO 倍の外。match「<項目> <前のタグ>→<今のタグ>」
   tag_outside  4c 候補外: 最新の申告の当期に、項目に当たる候補外のタグ（OUTSIDE_TAGS の完全な名前）の値があり、その項目に値が無い。match「<項目> <タグ>」
   dup_period   同じ期の期末の数日違い（1〜6日）の2件（TTMの窓〈最新の期末から DUP_WINDOW_DAYS 日〉の中だけ）。match「<項目> <期末>/<期末>」
@@ -79,6 +80,7 @@ def _item(kind: str, ticker: str, match: str, detail: str) -> Dict[str, str]:
 def tag_items(ticker: str, store: Dict[str, Any], company_facts: Dict[str, Any],
               defs: Optional[Dict[str, Any]] = None) -> List[Dict[str, str]]:
     """4a・4b・4c・重複の件（Layer3のストアと company_facts から）"""
+    from .bs_lines import covered_by_rules
     from .layer3_builder import get_field_entries
     if defs is None:
         with open(CONCEPT_DEFS, encoding="utf-8") as f:
@@ -94,7 +96,8 @@ def tag_items(ticker: str, store: Dict[str, Any], company_facts: Dict[str, Any],
         prev = sorted((e for e in ents if e["end"] < end and _days(e["end"], end) <= 400), key=lambda e: e["end"])
         if field in KEY_FIELDS:
             yago = [e for e in ents if 350 <= _days(e["end"], end) <= 380 and e.get("val") not in (0, 0.0)]
-            if yago and not at_end and not (cands & in_latest):
+            # 決めた補いの規則（bs_lines.py: 申告の貸借対照表の行・行なしの0・直近の10-Kの年度末の値）でも埋まらない件だけ
+            if yago and not at_end and not (cands & in_latest) and not covered_by_rules(field, ents, end):
                 out.append(_item("tag_gap", ticker, field,
                                  f"{field}: {yago[-1]['end']} に {yago[-1].get('source_tag')} の値があり、最新の申告（{accn}、期末 {end}）に値も候補のタグも無い"))
         if at_end and prev:

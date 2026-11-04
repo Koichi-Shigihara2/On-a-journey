@@ -258,6 +258,31 @@ def values(records: Dict[str, Dict[str, Any]]) -> Dict[Tuple[str, str], Dict[str
     return out
 
 
+ANNUAL_NOTE_DAYS = 400
+
+
+def annual_note_value(field: str, entries: List[Dict[str, Any]], end: str) -> Optional[Dict[str, Any]]:
+    """ZERO_IF_10K（無形資産・のれん・短期投資）で、end 以前 ANNUAL_NOTE_DAYS 日以内の年度末の値（注記を含むcompanyfacts）。
+    10-Qに行が無いときは、この年次の値で補う（ROTCEの年次の補い〈rotce.component_at〉）。借入金等は年次で補ったとみなさない（古い値が残る＝CRWV型）。
+    Layer3の貸借対照表の項目は is_annual を持たず、10-Kの値が後の10-Qに再掲されると form は10-Q になるので、fp="FY" か form=10-K で見る"""
+    if field not in ZERO_IF_10K:
+        return None
+    prior = sorted((e for e in entries if (e.get("fp") == "FY" or str(e.get("form", "")).startswith("10-K"))
+                    and e.get("val") and e["end"] <= end), key=lambda e: e["end"])
+    if prior and (date.fromisoformat(end) - date.fromisoformat(prior[-1]["end"])).days <= ANNUAL_NOTE_DAYS:
+        return prior[-1]
+    return None
+
+
+def covered_by_rules(field: str, entries: List[Dict[str, Any]], end: str) -> bool:
+    """決めた補いの規則で end の値が埋まるか（[P]の4a〈タグの途切れ〉は埋まらない件だけ知らせる。source_watch.py が呼ぶ）。
+    entries は bs_lines の補い（fill_layer3_bs）を当てた後のLayer3のエントリ。end の値がある（companyfacts か bs_lines〈行なしの0を含む〉）
+    か、ZERO_IF_10K で直近の年度末の値（annual_note_value）があれば埋まる"""
+    if any(e.get("end") == end and e.get("val") is not None for e in entries):
+        return True
+    return annual_note_value(field, entries, end) is not None
+
+
 def fill_layer3_bs(ticker: str, fields_out: Dict[str, Any], data_dir: str = DATA_DIR) -> Dict[str, int]:
     """Layer3の貸借対照表の項目（LAYER3_FIELDS）に、純資産の値がある期末日で値が無い期を bs_lines の値で足す（その場で書き換え）。
     戻り値は項目ごとの足した数"""
@@ -271,10 +296,6 @@ def fill_layer3_bs(ticker: str, fields_out: Dict[str, Any], data_dir: str = DATA
         fd = fields_out.setdefault(f, {"source_tag": None, "entries": []})
         have = {e["end"] for e in fd.get("entries") or [] if e.get("val") is not None}
         new = []
-        # 年度末の値（注記を含む。Layer3の貸借対照表の項目は is_annual を持たず、10-Kの値が後の10-Qに再掲されると form は10-Q
-        # になるので、fp="FY" か form=10-K で見る）
-        annual = sorted((e for e in fd.get("entries") or [] if (e.get("fp") == "FY" or str(e.get("form", "")).startswith("10-K"))
-                         and e.get("val")), key=lambda e: e["end"])
         never = not any(e.get("val") is not None for e in fd.get("entries") or [])
         for end, eq in equity.items():
             v = bv.get((f, end))
@@ -282,11 +303,8 @@ def fill_layer3_bs(ticker: str, fields_out: Dict[str, Any], data_dir: str = DATA
                 continue
             if v.get("no_bs_line") and never:
                 continue        # 一度も申告の無い項目は足さない（ROTCEは0として扱っている。最近の期だけに0を足すと過去の期が欠けになる〈XOMの優先株〉）
-            if v.get("no_bs_line") and f in ZERO_IF_10K:
-                # 10-Kの貸借対照表に行が無くても、注記の値（companyfactsの年次）が直近の年にあれば0にしない（WMT・AMZN・FCXの無形資産）
-                prior = [e for e in annual if e["end"] <= end]
-                if prior and (date.fromisoformat(end) - date.fromisoformat(prior[-1]["end"])).days <= 400:
-                    continue
+            if v.get("no_bs_line") and annual_note_value(f, fd.get("entries") or [], end) is not None:
+                continue        # 10-Kの貸借対照表に行が無くても、注記の値が直近の年にあれば0にしない（WMT・AMZN・FCXの無形資産）
             new.append({"end": end, "start": "", "val": v["val"], "first_val": v["val"], "accn": v["accn"], "form": v["form"],
                         "filed": v["filed"], "first_filed": v["filed"], "fp": eq.get("fp"), "fy": eq.get("fy"),
                         "period_days": 0, "is_ytd": False, "is_annual": bool(eq.get("is_annual")), "source_tag": "bs_lines",
