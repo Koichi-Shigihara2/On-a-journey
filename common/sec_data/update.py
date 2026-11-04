@@ -35,6 +35,7 @@ from common.sec_data.normalizer import normalize, save_normalized
 from common.sec_data.layer3_builder import build_ticker_store
 from common.sec_data.ttm_calculator import calc_ttm_series, mark_basis_mix, save_ttm_series
 from common.sec_data.basis_mix import from_store as basis_mix_from_store
+from common.sec_data import source_watch  # 取得元の変化の検知（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] B1・B2）
 from common.sec_data.revenue_tag_conflict_check import check_revenue_tag_conflict, _format_conflict
 from common.sec_data import cf_lines
 
@@ -270,6 +271,7 @@ def process_ticker(ticker: str, fetcher: SECFetcher, parser: SECParser, data_dir
     n = len(ttm_series)
     fields_sample = list(ttm_series[0].get("flow", {}).keys()) if ttm_series else []
     print(f"   TTM: {n} periods → {fields_sample[:5]}...")
+
     return entry
 
 
@@ -334,6 +336,7 @@ def run(tickers: list, full_run: bool, data_dir: Optional[str] = None) -> int:
     failures = []          # [{"ticker", "stage", "reason"}]
     freshness_entries = {}
     revenue_rows = []
+    watch_items = {}       # 銘柄 → 取得元の変化の件（source_watch.tag_items）
     aborted = None         # 銘柄のループの外の例外
     fetcher = None
 
@@ -345,6 +348,7 @@ def run(tickers: list, full_run: bool, data_dir: Optional[str] = None) -> int:
             ctx = {"stage": STAGE_FETCH}
             try:
                 freshness_entries[ticker] = process_ticker(ticker, fetcher, parser, data_dir, ctx, revenue_rows)
+                watch_items[ticker] = ctx.get("watch") or []
                 success += 1
             except Exception as e:
                 if isinstance(e, TickerFailed):
@@ -359,10 +363,37 @@ def run(tickers: list, full_run: bool, data_dir: Optional[str] = None) -> int:
         aborted = f"{type(e).__name__}: {e}"
         traceback.print_exc()
     finally:
+        _write_source_watch(watch_items, full_run and aborted is None, fetcher, data_dir)
         aborted = _finalize(tickers, full_run, data_dir, started, started_at, success, failures,
                             freshness_entries, revenue_rows, aborted, fetcher)
 
     return exit_code(len(tickers), len(failures), aborted is not None)
+
+
+COMPANY_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
+
+
+def _write_source_watch(watch_items: dict, full_run: bool, fetcher, data_dir: str) -> None:
+    """取得元の変化の検知の結果を書く（source_watch.py）。CIKの照合は SECの company_tickers.json を1回だけ取る。
+    検査だけなので、失敗しても実行の失敗にしない（CIKが取れなければ前回の照合を残す）"""
+    cik = None
+    try:
+        if fetcher is not None:
+            r = fetcher._get(COMPANY_TICKERS_URL, timeout=30)
+            if r.status_code == 200:
+                cik = source_watch.cik_items(r.json())
+                print(f"CIKの照合: 食い違い {len(cik)}件" + ("（" + "・".join(i["ticker"] for i in cik) + "）" if cik else ""))
+            else:
+                print(f"[WARN] company_tickers.json: HTTP {r.status_code}（CIKの照合は前回のまま）")
+    except Exception as e:  # noqa: BLE001
+        print(f"[WARN] CIKの照合のエラー: {e}（前回のまま）")
+    try:
+        path = os.path.join(data_dir, os.path.basename(source_watch.RESULT_FILE))
+        doc = source_watch.write(watch_items, cik, full_run=full_run, path=path)
+        n = len(doc.get("cik") or []) + sum(len(v) for v in (doc.get("tags") or {}).values())
+        print(f"取得元の変化の検知: {n}件（{path}）")
+    except Exception as e:  # noqa: BLE001
+        print(f"[WARN] 取得元の変化の検知を書けない: {e}")
 
 
 def _finalize(tickers, full_run, data_dir, started, started_at, success, failures,

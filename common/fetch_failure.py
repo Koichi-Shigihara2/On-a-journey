@@ -16,7 +16,8 @@ _freshness.json。[O] は日ごとのファイルが残るので、前の取引�
 
 取得元が取れず、前に取れた結果（予備のキャッシュ）で動いている項目は、別の行で決める（judge_stale、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]、
 2026-11-04）: キャッシュが古い（各項目の上限の日数を超える等）なら ⚠️。予備で動いているので🔴にはしない。
-System Health の [P] ExternalChange（外の変化・ばらつきの検知、最初はMACRO PULSEのFOMCの予定のキャッシュ）が使う。
+System Health の [P] ExternalChange（外の変化・ばらつきの検知、common/external_watch.py）が使う。外の変化の検知の件は、
+台帳（config/external_change_acknowledged.json）に無い新しい件があれば ⚠️（judge_external）。直さずに知らせるので🔴にはしない。
 """
 from __future__ import annotations
 
@@ -80,6 +81,14 @@ def judge(n_total: int, failed: Mapping[str, int]) -> Tuple[int, str]:
 
 
 STALE_CACHE_ROW = (1, "予備のキャッシュが古い（取得元が取れず、前に取れた結果で動いている）")
+
+
+EXTERNAL_NEW_ROW = (1, "台帳に無い外の変化（新しい件）")
+
+
+def judge_external(n_new: int) -> Tuple[int, str]:
+    """外の変化の検知の新しい件（台帳に無い件）の数から (重大度, 当てはまった表の行)。直さずに知らせるので⚠️まで"""
+    return EXTERNAL_NEW_ROW if n_new else (0, SEVERITY_TABLE[3][1])
 
 
 def judge_stale(reasons) -> Tuple[int, str]:

@@ -277,6 +277,7 @@ def _patch_main(monkeypatch, j, k_ok=True, k_detail="すべて正常"):
     # [N]（見出しの積み足しの鮮度）は実データの headlines/ を読むため、正常に固定する
     monkeypatch.setattr(sh, "_check_n", lambda: {"label": "✅", "ok": True, "detail": "OK", "critical": False})
     monkeypatch.setattr(sh, "_check_o", lambda: {"label": "✅", "ok": True, "detail": "OK", "critical": False})
+    monkeypatch.setattr(sh, "_check_p", lambda: {"label": "✅", "ok": True, "detail": "", "severity": 0, "critical": False})
     sent = []
     monkeypatch.setattr(sh, "post_discord", lambda text: sent.append(text) or False)
     monkeypatch.setattr(sys, "argv", ["system_health.py", "--quiet"])

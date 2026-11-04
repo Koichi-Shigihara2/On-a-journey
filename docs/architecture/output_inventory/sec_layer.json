@@ -605,7 +605,7 @@
     {
      "file": "common/sec_data/update.py",
      "func": "_finalize",
-     "line": 413
+     "line": 452
     }
    ],
    "writers_outside_layer": [],
@@ -786,7 +786,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1211,
+     "line": 1226,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -794,7 +794,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1287,
+     "line": 1302,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1018,7 +1018,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 292,
+     "line": 293,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1026,7 +1026,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 300,
+     "line": 301,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1034,7 +1034,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 432,
+     "line": 433,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1042,7 +1042,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 445,
+     "line": 446,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/freshness.py::load",
@@ -1059,6 +1059,132 @@
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのSECデータの新しさ（REFRESHED・SEC_LAG・FAILED等）",
+   "decision": "残す（2026-10-20）"
+  },
+  {
+   "path": "common/sec_data/data/_source_watch.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/sec_data/source_watch.py",
+     "func": "write",
+     "line": 157
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/SEC_Data_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "cik",
+     "reader_files": 3
+    },
+    {
+     "key": "cik_checked_at",
+     "reader_files": 1
+    },
+    {
+     "key": "generated_at",
+     "reader_files": 3
+    },
+    {
+     "key": "tags",
+     "reader_files": 2
+    },
+    {
+     "key": "updated_at",
+     "reader_files": 1
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/external_watch.py",
+     "line": 44,
+     "func": "collect",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/source_watch.py",
+     "line": 26,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/source_watch.py",
+     "line": 165,
+     "func": "load",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/source_watch.py",
+     "line": 172,
+     "func": "all_items",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1110,
+     "func": "_check_p",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_external_watch.py",
+     "line": 41,
+     "func": "test_write_partial_run_keeps_other_tickers",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_external_watch.py",
+     "line": 43,
+     "func": "test_write_partial_run_keeps_other_tickers",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_external_watch.py",
+     "line": 108,
+     "func": "test_saved_source_watch_matches_rules",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_external_watch.py",
+     "line": 110,
+     "func": "test_saved_source_watch_matches_rules",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [
+    "common/sec_data/source_watch.py::cik_items"
+   ],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 3,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "SECの取得元の変化・ばらつきの検知の結果（CIKの照合・タグの途切れ・切り替え・候補外・期末の数日違い）。SEC_Data_Updateが書き、System Healthの[P]が台帳と比べて読む（source_watch.py・external_watch.py）",
    "decision": "残す（2026-10-20）"
   },
   {
@@ -3611,7 +3737,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 192,
+     "line": 193,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/cf_lines.py::load_records",
@@ -3619,7 +3745,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 258,
+     "line": 259,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/cf_lines.py::load_records",
@@ -3627,7 +3753,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 347,
+     "line": 358,
      "func": "run",
      "how": "保存済みファイル",
      "via": "common/sec_data/cf_lines.py::load_records",
@@ -4382,7 +4508,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 58,
+     "line": 59,
      "func": "plan_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4390,7 +4516,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 123,
+     "line": 124,
      "func": "dry_run",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4398,7 +4524,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 178,
+     "line": 179,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4406,7 +4532,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 200,
+     "line": 201,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -4414,7 +4540,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 208,
+     "line": 209,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4422,7 +4548,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 247,
+     "line": 248,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4430,7 +4556,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 258,
+     "line": 259,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -4438,7 +4564,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 347,
+     "line": 358,
      "func": "run",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4446,7 +4572,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 449,
+     "line": 488,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4454,7 +4580,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 452,
+     "line": 491,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -4478,7 +4604,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1198,
+     "line": 1213,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
@@ -4486,7 +4612,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1209,
+     "line": 1224,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -4494,7 +4620,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1287,
+     "line": 1302,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -5846,7 +5972,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 292,
+     "line": 293,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -5854,7 +5980,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 300,
+     "line": 301,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -5862,7 +5988,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 432,
+     "line": 433,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -5870,7 +5996,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 445,
+     "line": 446,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -6967,7 +7093,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 200,
+     "line": 201,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -7228,7 +7354,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 96,
+     "line": 97,
      "func": "execute_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -8911,7 +9037,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1198,
+     "line": 1213,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
@@ -10179,6 +10305,22 @@
      "type": "Python"
     },
     {
+     "file": "common/sec_data/source_watch.py",
+     "line": 27,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/source_watch.py",
+     "line": 132,
+     "func": "cik_items",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/tickers.py::_load",
+     "type": "Python"
+    },
+    {
      "file": "common/sec_data/tickers.py",
      "line": 13,
      "func": "<module>",
@@ -10276,7 +10418,15 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 446,
+     "line": 392,
+     "func": "_write_source_watch",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/tickers.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/update.py",
+     "line": 485,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -10324,7 +10474,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1205,
+     "line": 1220,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -10332,7 +10482,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1209,
+     "line": 1224,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -10340,7 +10490,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1287,
+     "line": 1302,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -10803,6 +10953,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_external_watch.py",
+     "line": 25,
+     "func": "test_cik_items",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/tickers.py::_load",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_flag_consumer_audit_3.py",
      "line": 59,
      "func": "TestHypecoreFilterTickers.test_production_enb_excluded",
@@ -11188,7 +11346,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 292,
+     "line": 293,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -11196,7 +11354,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 300,
+     "line": 301,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -11204,7 +11362,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 432,
+     "line": 433,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -11212,7 +11370,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 445,
+     "line": 446,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::check_p4_orphan_configs",
@@ -11275,8 +11433,8 @@
     "理論株価・判定（TANUKI VALUATION）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 28,
-   "reader_count_test": 16,
+   "reader_count": 29,
+   "reader_count_test": 17,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "登録銘柄の一覧（CIK・状態・各システムに載せるかの印）。新規登録の検証で状態を書き換える",
@@ -11577,7 +11735,7 @@
     {
      "file": "common/sec_data/update.py",
      "func": "_finalize",
-     "line": 432
+     "line": 471
     }
    ],
    "writers_outside_layer": [],
@@ -12407,6 +12565,7 @@
     "common/sec_data/newfield_q4_cutoff_check.py",
     "common/sec_data/reader.py",
     "common/sec_data/rotce.py",
+    "common/sec_data/source_watch.py",
     "common/sec_data/ttm_calculator.py",
     "common/sec_data/update.py"
    ],
@@ -12714,6 +12873,22 @@
   },
   {
    "dir": "common/sec_data",
+   "file": "common/sec_data/source_watch.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 173,
+   "workflows": [],
+   "code": [
+    "common/external_watch.py"
+   ],
+   "same_dir": [
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_external_watch.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
    "file": "common/sec_data/split_adjust.py",
    "decision": "残す（2026-10-20）",
    "lines": 97,
@@ -12802,7 +12977,8 @@
     "common/sec_data/newfield_q4_cutoff_check.py",
     "common/sec_data/registration_validator.py",
     "common/sec_data/report_consistency_check.py",
-    "common/sec_data/revenue_tag_conflict_check.py"
+    "common/sec_data/revenue_tag_conflict_check.py",
+    "common/sec_data/source_watch.py"
    ],
    "tests": [
     "tests/test_eps_get_cik_registry_only.py",
@@ -12843,7 +13019,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/update.py",
    "decision": "残す（2026-10-20）",
-   "lines": 456,
+   "lines": 495,
    "workflows": [
     ".github/workflows/SEC_Data_Update.yml"
    ],
@@ -12978,10 +13154,10 @@
   }
  ],
  "stop_condition": {
-  "outputs": 22,
+  "outputs": 23,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 64,
+  "python_read_sites_into_layer_resolved": 65,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/method_change.py",
@@ -12990,7 +13166,7 @@
     "path": "docs/common/sec_data/rotce/<?>"
    }
   ],
-  "name_hit_sites_resolved": 79,
+  "name_hit_sites_resolved": 81,
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",
@@ -13006,7 +13182,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.021,
+  "ratio_reader": 0.02,
   "threshold": 0.1,
   "hit": false
  },
@@ -13014,12 +13190,12 @@
   {
    "workflow": ".github/workflows/Market_Data_Daily_Update.yml",
    "lines": [
-    122,
-    123,
-    124,
-    125,
-    127,
-    129
+    129,
+    130,
+    131,
+    132,
+    134,
+    136
    ],
    "keys": [
     {
@@ -13511,7 +13687,7 @@
     "note": ""
    }
   ],
-  "written_key_count": 455,
+  "written_key_count": 466,
   "stale_keys": [
    {
     "key": "acquisition",
@@ -13762,12 +13938,6 @@
     "key": "months",
     "sources": [
      "common/sec_data/data/{T}/company_facts.json"
-    ]
-   },
-   {
-    "key": "name",
-    "sources": [
-     "config/cik_lookup.csv"
     ]
    },
    {

@@ -80,6 +80,7 @@ ANNOTATIONS: Dict[str, str] = {
     "common/sec_data/ttm/{T}_ttm_series.json": "直近4四半期の合計（TTM）の時系列",
     "common/sec_data/store_v2/{T}.json": "Layer3（項目ごとの四半期・年次の値と提出日）をファイルに保存したもの",
     "common/sec_data/data/_freshness.json": "銘柄ごとのSECデータの新しさ（REFRESHED・SEC_LAG・FAILED等）",
+    "common/sec_data/data/_source_watch.json": "SECの取得元の変化・ばらつきの検知の結果（CIKの照合・タグの途切れ・切り替え・候補外・期末の数日違い）。SEC_Data_Updateが書き、System Healthの[P]が台帳と比べて読む（source_watch.py・external_watch.py）",
     "common/sec_data/data/{T}/cf_lines/{accn}.json": "申告ごとのCF計算書の投資CFの区分の行（2021年以降の10-K・10-Q。CapExの欠けの規則・独自タグの行で使う、cf_lines.py）",
     "common/sec_data/data/_cik_cache.json": "銘柄とCIKの対応の控え",
     "common/sec_data/dimension_aggregate_registry.json": "セグメント等の内訳タグを合計して使う銘柄・項目の登録簿",

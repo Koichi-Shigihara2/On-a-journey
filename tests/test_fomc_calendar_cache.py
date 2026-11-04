@@ -65,9 +65,15 @@ def test_save_and_fallback_and_staleness(tmp_path):
 def test_system_health_p_uses_the_table(tmp_path):
     p = str(tmp_path / "c.json")
     fc.save_cache(PAGE, now=datetime(2026, 11, 4, tzinfo=timezone.utc), path=p)
-    ok = sh._check_p(date(2026, 11, 5), p)
+    empty = tmp_path / "w.json"
+    empty.write_text("{}", encoding="utf-8")
+    (tmp_path / "daily").mkdir()
+    led = tmp_path / "led.json"
+    led.write_text('{"acknowledged": []}', encoding="utf-8")
+    kw = {"source_watch_path": str(empty), "daily_dir": str(tmp_path / "daily"), "ledger_path": str(led)}
+    ok = sh._check_p(date(2026, 11, 5), p, **kw)
     assert ok["ok"] and ok["severity"] == 0 and "次の会合 2026-12-09" in ok["label"]
-    ng = sh._check_p(date(2026, 11, 20), p)
+    ng = sh._check_p(date(2026, 11, 20), p, **kw)
     assert not ng["ok"] and ng["severity"] == 1 and fetch_failure.STALE_CACHE_ROW[1] in ng["label"]
     assert "ExtChange⚠️" in sh.build_one_line("2026-11-20", {"P": {"ok": False, "short": "x", "severity": 1}})
 
