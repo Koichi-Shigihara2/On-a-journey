@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 184.36992815265444,
   "intrinsic_value_beta": 93.55,
-  "upside_percent_beta": -60.4,
-  "intrinsic_value_rf": 704.84,
-  "upside_percent_rf": 198.7,
-  "intrinsic_value_rf_rate": 0.04952000141143799,
+  "upside_percent_beta": -54.5,
+  "intrinsic_value_rf": 727.01,
+  "upside_percent_rf": 253.7,
+  "intrinsic_value_rf_rate": 0.048940000534057615,
   "v0": 35239271384.40133,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 219.36,
       "value_growth_pct": 19.0,
-      "expected_return_pct": -7.0
+      "expected_return_pct": 6.7
     },
     "2年後": {
       "future_value": 261.0,
       "value_growth_pct": 41.6,
-      "expected_return_pct": 10.6
+      "expected_return_pct": 27.0
     },
     "3年後": {
       "future_value": 310.54,
       "value_growth_pct": 68.4,
-      "expected_return_pct": 31.6
+      "expected_return_pct": 51.1
     },
     "4年後": {
       "future_value": 369.48,
       "value_growth_pct": 100.4,
-      "expected_return_pct": 56.6
+      "expected_return_pct": 79.8
     },
     "5年後": {
       "future_value": 439.6,
       "value_growth_pct": 138.4,
-      "expected_return_pct": 86.3
+      "expected_return_pct": 113.9
     }
   },
-  "upside_percent": -21.9,
-  "calculation_date": "2026-11-04T19:58:01+09:00",
+  "upside_percent": -10.3,
+  "calculation_date": "2026-11-05T06:42:48+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -221,7 +221,7 @@
       "total_transient_amount": 21000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断されるため。"
+        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的なコストと判断される。"
       }
     },
     "action": "flagged",
@@ -351,7 +351,7 @@
     "roe_10yr_avg": 0.20164462743094222,
     "roe_years_used": 9,
     "roe_outlier_adj": true,
-    "current_price": 235.97000122070312,
+    "current_price": 205.5500030517578,
     "latest_revenue": 10229900000.0,
     "rpo": 125200000,
     "beta": 2.048,
@@ -383,11 +383,11 @@
     "alpha_uncapped": 0.8469074352099573,
     "per": 43.457943,
     "per_is_forward": false,
-    "per_adjusted": 39.14,
+    "per_adjusted": 34.1,
     "peg": 0.7311,
     "ps": 6.8254385,
     "ev_ebitda": 27.969,
-    "ma200": 271.0855501556396,
+    "ma200": 271.23740020751956,
     "forward_eps": 9.45203,
     "next_quarter_eps": 2.28,
     "analyst_target_median": 338.0,
@@ -406,7 +406,7 @@
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 83.3,
     "max_eps": 5.4985,
-    "max_eps_per": 42.9,
+    "max_eps_per": 37.4,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
     "max_eps_shares": 392052512.25,
@@ -435,14 +435,14 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.12428241939173934,
-  "risk_free_rate_live": 0.04952000141143799,
-  "risk_free_rate_live_date": "2026-11-03",
+  "required_growth_rf_base": -0.1481243450084031,
+  "risk_free_rate_live": 0.048940000534057615,
+  "risk_free_rate_live_date": "2026-11-04",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.050114262014941846,
+  "required_growth_rf_live": -0.08153304852674581,
   "tanuki_score": "HOLD",
   "funda_score": 100,
-  "score_comment": "割高(-22%超)、FCF黒字、売上成長加速",
+  "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -522,7 +522,7 @@
     "shares_yr_now": 390652824,
     "shares_yr_3ago": 378224051
   },
-  "net_current_assets_ratio": 0.0376,
+  "net_current_assets_ratio": 0.0431,
   "dupont": {
     "ni_ttm": 2098000000,
     "revenue_ttm": 13116600000,
@@ -585,7 +585,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0095,
+  "erp": -0.003,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }
