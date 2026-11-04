@@ -49,10 +49,10 @@ def test_layer3_quarter_after_ytd_decrease_is_negative_regardless_of_reported_si
         assert [e["val"] for e in entries if e.get("is_annual")] == [260]
 
 
-def test_layer2_normalizer_keeps_negative_quarter():
+def test_layer2_normalizer_does_not_write_capex():
+    """normalized は CapEx を書かない（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04。符号つきの四半期は Layer3 の側で確かめる）"""
     nz = normalize("TEST", build_raw_table("TEST", _company_facts(-1)))
-    q = _q(nz["fields"]["CapEx"])
-    assert q["2024-06-30"] == -20 and q["2024-09-30"] == 70
+    assert "CapEx" not in nz["fields"]
 
 
 def _store(capex):

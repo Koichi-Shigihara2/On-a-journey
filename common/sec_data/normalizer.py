@@ -11,13 +11,15 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 
 from .contracts import validate_fields
-from .fact_selection import ZERO_TERM, abs_entry, abs_term, derive, set_derived, strip_asof
+from .fact_selection import ZERO_TERM, abs_term, derive, set_derived, strip_asof
 from .q4_implied import build_q4_implied_entries, implied_q4_value
 
 logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(__file__)
 NORMALIZED_DIR = os.path.join(BASE_DIR, "normalized")
+# normalized に書かない項目（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04。読み手が無く、公開の定義と違った）
+NORMALIZED_NOT_WRITTEN = ("CapEx",)
 
 
 def normalize(ticker: str, raw: dict) -> dict:
@@ -33,10 +35,10 @@ def normalize(ticker: str, raw: dict) -> dict:
     fields_raw = raw.get("fields", {})
     fields_norm: dict[str, list] = {}
 
-    # 設備投資の符号の正規化は差し引きの前の申告の値（YTD・年次）で（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段2、2026-11-03。
-    # 以前は差し引きの後に abs で、YTDが減った期の負の四半期が正の値になっていた）。単独の四半期・Q4は符号つき
-    if fields_raw.get("CapEx"):
-        fields_raw = {**fields_raw, "CapEx": [abs_entry(e) for e in fields_raw["CapEx"]]}
+    # 設備投資（CapEx）は normalized に書かない（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04）。公開の定義
+    # （cf_lines の行＋ソフトウェア、common/sec_data/cf_lines.py）はLayer3・TTMにあり、ここの値（companyfactsのタグ）は
+    # 検査（rccのWARN-47・CHECK-64）のほかに読み手が無い別の定義だった
+    fields_raw = {k: v for k, v in fields_raw.items() if k not in NORMALIZED_NOT_WRITTEN}
     for field_name, entries in fields_raw.items():
         if field_name == "_COGS":
             # _COGSもYTD変換を適用してからQ4 implied計算に備える

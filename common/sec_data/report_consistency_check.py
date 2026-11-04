@@ -822,7 +822,8 @@ _WARN47_FIELD_MAP: dict[str, tuple[str, str]] = {
     "gross_profit":               ("GrossProfit", "gross_profit"),
     "operating_cash_flow":        ("OCF", "operating_cash_flow"),
     "stock_based_compensation":   ("SBC", "stock_based_compensation"),
-    "capital_expenditure":        ("CapEx", "capital_expenditure"),
+    # capital_expenditure は比べない（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04。normalized はCapExを書かない。
+    # 公開の定義はLayer3〈cf_lines の行＋ソフトウェア〉の1か所）
     "operating_income":           ("OperatingIncome", "operating_income"),
 }
 
@@ -1673,7 +1674,7 @@ def _check_latest_period_missing(data_dir: Optional[str] = None) -> list[tuple[s
 
 
 # CHECK-64 の対象（Q4の逆算の基準の混在の調査と同じ6項目。docs/architecture/Q4_IMPLIED_BASIS_MIX.md）
-_RESTATED_ANNUAL_FIELDS = ("Revenue", "GrossProfit", "OperatingIncome", "NetIncome", "OCF", "CapEx")
+_RESTATED_ANNUAL_FIELDS = ("Revenue", "GrossProfit", "OperatingIncome", "NetIncome", "OCF")  # CapExは normalized に書かない（段5d）
 _RESTATED_ANNUAL_MIN_RATIO = 0.01
 
 

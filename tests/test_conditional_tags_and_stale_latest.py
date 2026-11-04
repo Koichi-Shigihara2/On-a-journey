@@ -103,11 +103,10 @@ class TestFcxRealData:
         p = SECParser(data_dir=os.path.join(_REPO, "common", "sec_data", "data"))
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             r = p.parse_company_facts("FCX")
-        q2 = r["quarterly"]["2026Q2"]
-        assert abs(q2["cf"]["capital_expenditure"]) == 1_104_000_000
-        assert q2["cf_provenance"]["capital_expenditure"]["fallback_reason"] == "segment_total"
-        assert abs(r["quarterly"]["2026Q1"]["cf"]["capital_expenditure"]) == 973_000_000
-        assert "capital_expenditure" not in (r["quarterly"]["2026Q1"].get("cf_provenance") or {})
+        # parserの四半期はCapExを書かない（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04）。FCXの軸つきの合計の値は Layer3 の側
+        for q in ("2026Q1", "2026Q2"):
+            assert "capital_expenditure" not in r["quarterly"][q]["cf"]
+            assert "capital_expenditure" not in (r["quarterly"][q].get("cf_provenance") or {})
 
     # HONは事業の分離後に過去の設備投資を修正再表示しており、Layer3が持つ最後の申告の値とは
     # 一致する（13期間一致・不一致0）ため採用される。最初の申告の値とは一致しない

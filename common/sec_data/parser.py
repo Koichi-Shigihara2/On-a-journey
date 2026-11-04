@@ -29,6 +29,8 @@ from .dimension_aggregate_fetcher import (
 
 _FACT_OVERRIDES_PATH = os.path.join(os.path.dirname(__file__), "fact_overrides.json")
 _FIXED_REGISTRY_PATH = os.path.join(os.path.dirname(__file__), "fixed_registry.json")
+# 四半期のファイルに書かないCFの項目（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04。読み手が無く、公開の定義と違った）
+QUARTERLY_CF_NOT_WRITTEN = ("capital_expenditure", "free_cash_flow")
 
 # SECDATA-STORAGE-FRAGMENTATION-1 normalized/→data/統合: quarterly_{FYQ}.jsonの
 # pl/cf/shares区分がYTD累積値のまま保存されていた問題への対応（統一アルゴリズム）。
@@ -820,6 +822,12 @@ class SECParser:
         for quarter in quarters:
             quarterly_data = self._build_period_data(extracted, quarter, is_annual=False)
             if quarterly_data:
+                # 四半期のCapEx・FCFは書かない（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04）。公開の定義
+                # （cf_lines の行＋ソフトウェア、common/sec_data/cf_lines.py）はLayer3・TTMとparserの年次にだけあり、
+                # ここの値（companyfactsのタグ）は誰も読まない別の定義だった
+                for _k in QUARTERLY_CF_NOT_WRITTEN:
+                    (quarterly_data.get("cf") or {}).pop(_k, None)
+                    (quarterly_data.get("cf_provenance") or {}).pop(_k, None)
                 result["quarterly"][quarter] = quarterly_data
 
         # [[CHECK29-ACCOUNTING-IDENTITY-DETECTION-LAYER-1]]: 会計恒等式

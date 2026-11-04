@@ -145,3 +145,32 @@ class TestPolicyAUsesFloorInBase:
                      "fcf_base": {"base_fcf": 500_000_000}, "financial_health": {}, "fcf_estimation": {}}
         r = pipe._compute_tanuki_score("BROS", valuation)
         assert r["rounded_by_policy"] != "A"
+
+
+class TestStage5dQuarterlyCapexNotWritten:
+    """段5d（2026-11-04）: parserの四半期・normalizedはCapEx（・四半期のFCF）を書かない。公開の定義はLayer3・TTM・parserの年次だけ"""
+
+    _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    def test_saved_quarterly_files_have_no_capex_or_fcf(self):
+        import glob
+        files = glob.glob(os.path.join(self._ROOT, "common", "sec_data", "data", "*", "quarterly_*.json"))
+        assert len(files) > 1000
+        for p in files:
+            d = json.load(open(p, encoding="utf-8"))
+            for sec in ("cf", "cf_provenance"):
+                assert not {"capital_expenditure", "free_cash_flow"} & set(d.get(sec) or {}), (p, sec)
+
+    def test_saved_normalized_has_no_capex(self):
+        import glob
+        files = glob.glob(os.path.join(self._ROOT, "common", "sec_data", "normalized", "*_quarterly_normalized.json"))
+        assert len(files) > 50
+        for p in files:
+            assert "CapEx" not in (json.load(open(p, encoding="utf-8")).get("fields") or {}), p
+
+    def test_normalize_drops_capex(self):
+        from common.sec_data.normalizer import normalize
+        e = {"end": "2025-03-31", "start": "2025-01-01", "val": 10.0, "is_ytd": False, "is_annual": False,
+             "fy": 2025, "fp": "Q1", "form": "10-Q", "filed": "2025-05-01", "accn": "a"}
+        out = normalize("X", {"fields": {"CapEx": [dict(e)], "OCF": [dict(e)]}})
+        assert "CapEx" not in out["fields"] and "OCF" in out["fields"]
