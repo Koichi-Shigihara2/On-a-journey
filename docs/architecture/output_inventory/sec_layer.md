@@ -112,7 +112,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `counts`(3)・`generated_at`(4)・`tickers`(5)
 - Python・保存済みファイル: `common/sec_data/freshness.py` 行 19・115
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1804・3700・3778（経由 `common/sec_data/freshness.py::load`）
-- Python・保存済みファイル: `common/system_health.py` 行 893・976・1189・1260（経由 `common/sec_data/freshness.py::load`）
+- Python・保存済みファイル: `common/system_health.py` 行 893・976・1211・1287（経由 `common/sec_data/freshness.py::load`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/freshness.py::load`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/freshness.py::load`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 385・396・417・422・428・434・443・446・449・469・472・494 ほか3（経由 `common/sec_data/freshness.py::load`）
@@ -226,7 +226,7 @@
 - Python・保存済みファイル: `common/sec_data/revenue_tag_conflict_check.py` 行 91・176・188（経由 `common/sec_data/fetcher.py::load_company_facts`）
 - Python・保存済みファイル: `common/sec_data/rotce.py` 行 417・423・687・727（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `common/sec_data/update.py` 行 58・123・178・200・208・247・258・347・449・452（経由 `common/sec_data/fetcher.py::load_company_facts`、`common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/parser.py::SECParser.parse_company_facts`）
-- Python・保存済みファイル: `common/system_health.py` 行 89・791・1176・1187・1260（経由 `common/sec_data/audit.py::audit_ticker`、`common/sec_data/registration_validator.py::check_p4_orphan_configs`）
+- Python・保存済みファイル: `common/system_health.py` 行 89・791・1198・1209・1287（経由 `common/sec_data/audit.py::audit_ticker`、`common/sec_data/registration_validator.py::check_p4_orphan_configs`）
 - Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 190・553・723・781・822（経由 `common/sec_data/fetcher.py::load_company_facts`、`common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 280・1626・1637・1844（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 137・207（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
@@ -385,7 +385,7 @@
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 885・892・1751・1878・2668・3492・3598・3660・3778（経由 `common/sec_data/basis_mix.py::load`、`common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation`、`common/sec_data/stonks_flag_rule.py::_latest_ttm`）
 - Python・保存済みファイル: `common/sec_data/rollback_failed.py` 行 46・57・95・112（経由 `common/sec_data/rollback_failed.py::ticker_paths`）
 - Python・保存済みファイル: `common/sec_data/stonks_flag_rule.py` 行 56・60・101（経由 `common/sec_data/stonks_flag_rule.py::_latest_ttm`）
-- Python・保存済みファイル: `common/system_health.py` 行 89・1176（経由 `common/sec_data/audit.py::audit_ticker`）
+- Python・保存済みファイル: `common/system_health.py` 行 89・1198（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 253・706（経由 `common/sec_data/basis_mix.py::load`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 452・515・1053・1131・1375・1379・3199・3214・3476・3481・3971（経由 `common/sec_data/basis_mix.py::load`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result`）
 - ワークフロー・保存済みファイル: `.github/workflows/SEC_Data_Update.yml` 行 112
@@ -434,7 +434,7 @@
 - Python・保存済みファイル: `common/sec_data/rotce.py` 行 726（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sec_data/tickers.py` 行 13・19・25・38・58・72・102・110・115・120・125・168（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sec_data/update.py` 行 446（経由 `common/sec_data/tickers.py::_load`）
-- Python・保存済みファイル: `common/system_health.py` 行 296・297・373・759・791・1183・1187・1260（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`、`common/sec_data/tickers.py::_load`）
+- Python・保存済みファイル: `common/system_health.py` 行 296・297・373・759・791・1205・1209・1287（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`、`common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 719・822（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 407・459（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 636・668（経由 `common/sec_data/tickers.py::_load`）

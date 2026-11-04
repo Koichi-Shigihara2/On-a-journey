@@ -7,11 +7,11 @@
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_valuation/`・`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`・`src/market/macro_pulse/`・`docs/market-monitor/macro-pulse/index.html`があれば「効く」
 - 残す／消す: 段階2の判断（2026-10-23、Koichiさんの判断）。移行のスクリプトと誰も読まないキー3つを消し、出力はすべて残す（macro_data_violations_log.json は System Health の [L] が読む）。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 4（ファイル 3・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 0／2件以上 3／規則の二重 12（検出式 16種のうち。マクロデータ層のファイルを含むもの 1）
+**件数**: 出力 5（ファイル 4・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 0／2件以上 4／規則の二重 12（検出式 16種のうち。マクロデータ層のファイルを含むもの 1）
 
-**誰も読まないキー**: **1**（この段階のJSONのキーで今の書き手のコードにある 39 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 0 は数えない）
+**誰も読まないキー**: **1**（この段階のJSONのキーで今の書き手のコードにある 44 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 0 は数えない）
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 0件／解決できた読み込み 7件＋ファイル名で当たった行 9件（0.0%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 0件／解決できた読み込み 8件＋ファイル名で当たった行 10件（0.0%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
@@ -24,6 +24,7 @@
 
 | 区分 | 出力（パスの型） | 何か | 書き手 | 読み手の数（その場で計算） | 画面 | 投資判断 | 定義 | 残す／消す |
 |---|---|---|---|---|---|---|---|---|
+| 2件以上 | `common/macro_data/fomc_calendar_cache.json`<br>（1ファイル） | FOMCの予定のページ（FRB）が取れた回の結果（声明のリンク・定例の会合の予定日）。MACRO PULSE（05_main.py）が書き、取れない日の予備に読む。古ければ System Health の [P] ExternalChange が⚠️（fomc_calendar.py、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]） | `fomc_calendar.py:save_cache` | 3・テスト1 | market-monitor/macro-pulse/index.html（経由） | 効く: MACRO PULSE（景気後退リスクの点数・局面） | — | 残す（2026-10-23） |
 | 2件以上 | `common/macro_data/macro_data_violations_log.json`<br>（1ファイル） | 系列ごとの保存前の検証の結果（警告と取得の成否 fetch_status）。System Health の [L]（check_l_macro_data）が取得の失敗を見るのに読む | `fetcher.py:_write_violations_section` | 2・テスト3 | — | — | — | 残す（2026-10-23） |
 | 2件以上 | `common/macro_data/series/{series_id}.json`<br>（26ファイル） | FREDの系列ごとの観測値（records）。Macro_Data_Update（毎日10:00 UTC、直近400日）が取り直す。MACRO PULSE（05_main.py）・Market Pulse（collect_and_send.py）が reader.py 経由で読む | `fetcher.py:update_series` | 8・テスト4 | market-monitor/macro-pulse/index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: MACRO PULSE（景気後退リスクの点数・局面） | AS-IS-019・AS-IS-046 | 残す（2026-10-23） |
 | 2件以上 | `common/macro_data/series_meta.json`<br>（1ファイル） | 系列ごとのメタ情報（fred_release_id・obs_to_release_lag・category・note）。**コードの書き手は無い（人の手で書く静的なファイル）**。fetcher.py が取得する系列の一覧として読む |  | 2・テスト5 | — | — | — | 残す（2026-10-23） |
@@ -35,6 +36,15 @@
 | `${GITHUB_STEP_SUMMARY}` | Macro_Data_Update の取得の成功・失敗の件数と、失敗した系列と理由の表 | `fetcher.py:<module>` | .github/workflows/Macro_Data_Update.yml |
 
 ## 読み手の内訳
+
+### `common/macro_data/fomc_calendar_cache.json`（2件以上）
+- 起動元: .github/workflows/MACRO_PULSE_Update.yml
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `last_success_utc`(2)・`meetings`(2)・`statements`(2)
+- Python・保存済みファイル: `common/macro_data/fomc_calendar.py` 行 19・90・99・108・128（経由 `common/macro_data/fomc_calendar.py::load_cache`）
+- Python・保存済みファイル: `common/system_health.py` 行 1105・1110・1115・1217（経由 `common/macro_data/fomc_calendar.py::load_cache`）
+- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 1226・1373（経由 `common/macro_data/fomc_calendar.py::load_cache`）
+- テスト・保存済みファイル: `tests/test_fomc_calendar_cache.py` 行 54・55・56・57・59・60・68・70・85・90・112（経由 `common/macro_data/fomc_calendar.py::load_cache`）
+- 画面（経由（src/market/macro_pulse/05_main.py → docs/market-monitor/macro-pulse/data/05_events.csv））: `docs/market-monitor/macro-pulse/index.html`
 
 ### `common/macro_data/macro_data_violations_log.json`（2件以上）
 - 起動元: .github/workflows/Macro_Data_Update.yml
@@ -131,11 +141,12 @@
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（2ファイル・567行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（3ファイル・697行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
 | `fetcher.py` | 442 | `.github/workflows/Macro_Data_Update.yml` | — | `common/macro_data/__init__.py`<br>`common/macro_data/reader.py` | 4件 |
+| `fomc_calendar.py` | 130 | — | `common/system_health.py`<br>`src/market/macro_pulse/05_main.py` | — | 1件 |
 | `reader.py` | 125 | — | `browser_checks/market_pulse_elements.py`<br>`src/market/macro_pulse/05_main.py`<br>`src/market/market_pulse/collect_and_send.py` | `common/macro_data/__init__.py` | 2件 |
 
 ## 止める条件の内訳

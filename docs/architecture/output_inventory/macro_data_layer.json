@@ -4,6 +4,233 @@
  "stage": "段階1（一覧の下書き。CHECK としてはまだ動かさない）",
  "outputs": [
   {
+   "path": "common/macro_data/fomc_calendar_cache.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/macro_data/fomc_calendar.py",
+     "func": "save_cache",
+     "line": 82
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/MACRO_PULSE_Update.yml"
+   ],
+   "files_tracked": 1,
+   "top_keys_sampled_files": 1,
+   "top_keys": [
+    {
+     "key": "last_success_utc",
+     "reader_files": 2
+    },
+    {
+     "key": "meetings",
+     "reader_files": 2
+    },
+    {
+     "key": "statements",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/macro_data/fomc_calendar.py",
+     "line": 19,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/fomc_calendar.py",
+     "line": 90,
+     "func": "load_cache",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/fomc_calendar.py",
+     "line": 99,
+     "func": "latest_statement_from_cache",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/fomc_calendar.py",
+     "line": 108,
+     "func": "staleness",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "common/macro_data/fomc_calendar.py",
+     "line": 128,
+     "func": "summary",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1105,
+     "func": "_check_p",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1110,
+     "func": "_check_p",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1115,
+     "func": "check_p_external_change",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1217,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1226,
+     "func": "fetch_latest_fomc_statement",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "src/market/macro_pulse/05_main.py",
+     "line": 1373,
+     "func": "update_fed_context",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 54,
+     "func": "test_save_and_fallback_and_staleness",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 55,
+     "func": "test_save_and_fallback_and_staleness",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 56,
+     "func": "test_save_and_fallback_and_staleness",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 57,
+     "func": "test_save_and_fallback_and_staleness",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 59,
+     "func": "test_save_and_fallback_and_staleness",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 60,
+     "func": "test_save_and_fallback_and_staleness",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 68,
+     "func": "test_system_health_p_uses_the_table",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 70,
+     "func": "test_system_health_p_uses_the_table",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 85,
+     "func": "test_05_main_uses_cache_when_page_unavailable_and_marks_row",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 90,
+     "func": "test_05_main_uses_cache_when_page_unavailable_and_marks_row",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_fomc_calendar_cache.py",
+     "line": 112,
+     "func": "test_saved_cache_is_valid",
+     "how": "保存済みファイル",
+     "via": "common/macro_data/fomc_calendar.py::load_cache",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [
+    {
+     "page": "docs/market-monitor/macro-pulse/index.html",
+     "how": "経由（src/market/macro_pulse/05_main.py → docs/market-monitor/macro-pulse/data/05_events.csv）"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "MACRO PULSE（景気後退リスクの点数・局面）"
+   ],
+   "reader_count": 3,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "FOMCの予定のページ（FRB）が取れた回の結果（声明のリンク・定例の会合の予定日）。MACRO PULSE（05_main.py）が書き、取れない日の予備に読む。古ければ System Health の [P] ExternalChange が⚠️（fomc_calendar.py、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）",
+   "decision": "残す（2026-10-23）"
+  },
+  {
    "path": "common/macro_data/macro_data_violations_log.json",
    "kind": "ファイル",
    "writers": [
@@ -2067,10 +2294,7 @@
    "decision": "残す（2026-10-23）",
    "lines": 30,
    "workflows": [],
-   "code": [
-    "common/system_health.py",
-    "src/market/macro_pulse/05_main.py"
-   ],
+   "code": [],
    "same_dir": [],
    "tests": [
     "tests/test_workflow_script_imports.py"
@@ -2094,6 +2318,21 @@
     "tests/test_macro_data_reader.py",
     "tests/test_system_health_macro_data.py",
     "tests/test_workflow_script_imports.py"
+   ]
+  },
+  {
+   "dir": "common/macro_data",
+   "file": "common/macro_data/fomc_calendar.py",
+   "decision": "残す（2026-10-23）",
+   "lines": 130,
+   "workflows": [],
+   "code": [
+    "common/system_health.py",
+    "src/market/macro_pulse/05_main.py"
+   ],
+   "same_dir": [],
+   "tests": [
+    "tests/test_fomc_calendar_cache.py"
    ]
   },
   {
@@ -2179,12 +2418,12 @@
   }
  ],
  "stop_condition": {
-  "outputs": 4,
+  "outputs": 5,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 7,
+  "python_read_sites_into_layer_resolved": 8,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [],
-  "name_hit_sites_resolved": 9,
+  "name_hit_sites_resolved": 10,
   "name_hit_sites_undetermined": [],
   "ratio_writer": 0.0,
   "ratio_reader": 0.0,
@@ -2212,7 +2451,7 @@
     "note": "残す: 値の出所の記録（取得した系列。BAMLH0A0HYM2 の古い6,947件は 05_events.csv から移した印 migrated_from）。読んでいたのは2026-10-23に消した移行のスクリプト（二重に動かさない判定）だけ"
    }
   ],
-  "written_key_count": 39,
+  "written_key_count": 44,
   "stale_keys": []
  }
 }

@@ -701,6 +701,9 @@ _MACRO_DATA.update(
         "common/macro_data/series_meta.json":
             "系列ごとのメタ情報（fred_release_id・obs_to_release_lag・category・note）。**コードの書き手は無い（人の手で書く静的なファイル）**。"
             "fetcher.py が取得する系列の一覧として読む",
+        "common/macro_data/fomc_calendar_cache.json":
+            "FOMCの予定のページ（FRB）が取れた回の結果（声明のリンク・定例の会合の予定日）。MACRO PULSE（05_main.py）が書き、"
+            "取れない日の予備に読む。古ければ System Health の [P] ExternalChange が⚠️（fomc_calendar.py、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）",
         "${GITHUB_STEP_SUMMARY}": "Macro_Data_Update の取得の成功・失敗の件数と、失敗した系列と理由の表",
     },
     DECISION_DEFAULT="残す（2026-10-23）",
