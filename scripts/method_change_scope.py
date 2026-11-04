@@ -39,7 +39,10 @@ SOURCES = {
     "stonks": os.path.join(REPO_ROOT, "docs", "value-monitor", "stonks-silo", "data", "results.json"),
     "rotce": os.path.join(REPO_ROOT, "docs", "common", "sec_data", "rotce"),
 }
-IGNORE = {"calculation_date", "generated", "generated_at", "checked_at", "method_change", "method_change_applied"}
+# 時刻・印のキー（比べない）。updated_at・fetched_at は Stonks の financial_vectors・valuation の取得時刻
+# （[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b、2026-11-04 に足した。無いと実行のたびに Stonks の全銘柄が scope に入る）
+IGNORE = {"calculation_date", "generated", "generated_at", "checked_at", "updated_at", "fetched_at",
+          "method_change", "method_change_applied"}
 JST = timezone(timedelta(hours=9))
 
 

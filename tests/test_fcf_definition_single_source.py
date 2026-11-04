@@ -112,13 +112,10 @@ class TestFactOverridesFillMissing:
         parser_mod.SECParser()._apply_fact_overrides("X", ex)
         assert ex["capital_expenditure"]["annual"][2024] is None
 
-    def test_repo_lyft_entries_have_citation(self):
+    def test_repo_lyft_entries_removed(self):
+        """段5b（2026-11-04）: LYFTの10-Kの年次3年の手入れはやめた（申告のCF計算書の独自タグの行を cf_lines.py で読む）"""
         with open(os.path.join(_ROOT, "common", "sec_data", "fact_overrides.json"), encoding="utf-8") as f:
-            lyft = json.load(f)["LYFT"]
-        assert sorted(lyft) == ["2023", "2024", "2025"]
-        for y, v in lyft.items():
-            ov = v["fields"]["capital_expenditure"]
-            assert ov["fill_missing"] is True and ov["source_accn"] and ov["citation"]
+            assert "LYFT" not in json.load(f)
 
 
 class TestStructuralDeficitFloor:

@@ -37,7 +37,6 @@ def test_json_has_no_ticker_overrides_copy():
     ("JOBY", "cost_of_revenue", ("append_concept", "OtherCostAndExpenseOperating")),
     # 従来からJSONに移行済みだった設定（挙動が変わらないこと）
     ("MSFT", "depreciation_and_amortization", ("exclude", None)),
-    ("APP", "capital_expenditure", ("exclude", None)),
     ("SOFI", "revenue", ("override_concept", "RevenuesNetOfInterestExpense")),
     ("SOFI", "long_term_debt", ("override_concept", "DebtLongtermAndShorttermCombinedAmount")),
     ("IONQ", "revenue", ("override_concept", "RevenueFromContractWithCustomerExcludingAssessedTax")),
@@ -47,6 +46,11 @@ def test_override_derived_from_ticker_restrictions(ticker, field, expected):
     ov = lb._get_ticker_field_override({}, ticker, field)
     assert ov is not None
     assert (ov["action"], ov.get("override_concept")) == expected
+
+
+def test_app_capex_not_excluded():
+    """[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b（2026-11-04）: APPのCapExの除外はやめた（CapExの行が無い申告の期は cf_lines.py で0）"""
+    assert lb._get_ticker_field_override({}, "APP", "capital_expenditure") is None
 
 
 def test_every_concept_key_in_ticker_restrictions_reaches_layer3():

@@ -36,6 +36,10 @@ from common.sec_data.layer3_builder import build_ticker_store
 from common.sec_data.ttm_calculator import calc_ttm_series, mark_basis_mix, save_ttm_series
 from common.sec_data.basis_mix import from_store as basis_mix_from_store
 from common.sec_data.revenue_tag_conflict_check import check_revenue_tag_conflict, _format_conflict
+from common.sec_data import cf_lines
+
+# 1回の実行で cf_lines が使うリクエストの上限（全銘柄で共有。cf_lines.MAX_REQUESTS_PER_RUN）
+_CF_BUDGET = cf_lines.Budget(cf_lines.MAX_REQUESTS_PER_RUN)
 # 失敗の一覧（JSON）の書き出し先。リポジトリの外（環境変数SEC_UPDATE_RESULT → RUNNER_TEMP → 一時ディレクトリ）。
 # 巻き戻しの段（rollback_failed.py）と同じ場所を使う
 from common.sec_data.rollback_failed import default_result_path as result_path
@@ -178,6 +182,18 @@ def process_ticker(ticker: str, fetcher: SECFetcher, parser: SECParser, data_dir
     print(f"   鮮度: {entry['status']}（{entry['case']}）" + (f" {entry['note']}" if entry["note"] else ""))
     if not raw:
         raise TickerFailed(STAGE_FETCH, entry["note"] or "company_factsを取得できない")
+
+    # 1b. 申告のCF計算書の投資CFの区分の行（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5a、2026-11-04）。
+    #     まだ保存していない申告だけを取る（cf_lines.py。間隔・1回の上限もそこ）。失敗しても銘柄の失敗にしない
+    #     （保存しない申告は次の実行で取り直す。parser・Layer3は保存済みの行だけを読む）
+    try:
+        cik = int(raw.get("cik") or 0)
+        if cik:
+            n = cf_lines.fetch_new_filings(ticker, cik, raw, data_dir=data_dir, budget=_CF_BUDGET)
+            if n["new"]:
+                print(f"   cf_lines: 新しい申告 {n['new']}件 → 保存 {n['saved']}件・次の実行で取り直す {n['retry_later']}件")
+    except Exception as e:  # noqa: BLE001
+        print(f"   [WARN] cf_lines の取得エラー: {e}")
 
     # 2. 従来パース＆保存（annual等）
     ctx["stage"] = STAGE_PARSE

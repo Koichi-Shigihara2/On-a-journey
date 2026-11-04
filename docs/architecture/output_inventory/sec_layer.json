@@ -65,7 +65,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_bs_identity_violations_log",
-     "line": 3853
+     "line": 3856
     }
    ],
    "writers_outside_layer": [],
@@ -245,7 +245,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fy_collision_log",
-     "line": 3471
+     "line": 3474
     }
    ],
    "writers_outside_layer": [],
@@ -365,7 +365,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fy_tag_mismatch_log",
-     "line": 3489
+     "line": 3492
     }
    ],
    "writers_outside_layer": [],
@@ -485,7 +485,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser._save_fye_boundary_collision_log",
-     "line": 3516
+     "line": 3519
     }
    ],
    "writers_outside_layer": [],
@@ -605,7 +605,7 @@
     {
      "file": "common/sec_data/update.py",
      "func": "_finalize",
-     "line": 397
+     "line": 413
     }
    ],
    "writers_outside_layer": [],
@@ -1068,7 +1068,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser.save_parsed_data",
-     "line": 4062
+     "line": 4094
     }
    ],
    "writers_outside_layer": [],
@@ -1096,7 +1096,7 @@
     },
     {
      "key": "cf_provenance",
-     "reader_files": 4
+     "reader_files": 5
     },
     {
      "key": "data_quality",
@@ -1262,7 +1262,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 813,
+     "line": 816,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
@@ -1270,7 +1270,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4002,
+     "line": 4034,
      "func": "SECParser._apply_fixed_registry_freeze",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1278,7 +1278,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4008,
+     "line": 4040,
      "func": "SECParser._apply_fixed_registry_freeze",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1286,7 +1286,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4085,
+     "line": 4117,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze",
@@ -3471,6 +3471,429 @@
    "decision": "残す（2026-10-20）"
   },
   {
+   "path": "common/sec_data/data/{T}/cf_lines/{accn}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/sec_data/cf_lines.py",
+     "func": "save_record",
+     "line": 200
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/SEC_Data_Update.yml"
+   ],
+   "files_tracked": 2229,
+   "top_keys_sampled_files": 2229,
+   "top_keys": [
+    {
+     "key": "accn",
+     "reader_files": 9
+    },
+    {
+     "key": "filed",
+     "reader_files": 10
+    },
+    {
+     "key": "form",
+     "reader_files": 10
+    },
+    {
+     "key": "lines",
+     "reader_files": 2
+    },
+    {
+     "key": "reason",
+     "reader_files": 7
+    },
+    {
+     "key": "role",
+     "reader_files": 2
+    },
+    {
+     "key": "source_files",
+     "reader_files": 1
+    },
+    {
+     "key": "status",
+     "reader_files": 5
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/sec_data/basis_mix.py",
+     "line": 186,
+     "func": "load",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/cf_lines.py",
+     "line": 210,
+     "func": "load_records",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/cf_lines.py",
+     "line": 289,
+     "func": "fetch_new_filings",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/cf_lines.py",
+     "line": 389,
+     "func": "fill_layer3_capex",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/cf_lines.py",
+     "line": 420,
+     "func": "annual_capex_from_10k",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/layer3_builder.py",
+     "line": 1451,
+     "func": "build_ticker_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/newfield_q4_cutoff_check.py",
+     "line": 133,
+     "func": "check_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 808,
+     "func": "SECParser._parse_raw_data",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/parser.py",
+     "line": 3962,
+     "func": "SECParser._apply_cf_lines_capex",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/reader.py",
+     "line": 55,
+     "func": "get_ttm_revenue",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/rotce.py",
+     "line": 417,
+     "func": "compute_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/update.py",
+     "line": 192,
+     "func": "process_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/update.py",
+     "line": 258,
+     "func": "process_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/update.py",
+     "line": 347,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/kpi_proposer.py",
+     "line": 553,
+     "func": "route_rejected_to_layer3",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 280,
+     "func": "load_layer1_financials",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/quarterly_review_generator.py",
+     "line": 1626,
+     "func": "generate_review",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/tail_dcf_bridge.py",
+     "line": 137,
+     "func": "_load_layer1_financials",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/tail/xbrl_segment_fetcher.py",
+     "line": 411,
+     "func": "fetch_layer3_kpis",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/hypecore/hypecore.py",
+     "line": 262,
+     "func": "fetch_quarterly_fundamentals",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/financial_trend_calculator.py",
+     "line": 388,
+     "func": "load_all_normalized",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 147,
+     "func": "run",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
+     "line": 218,
+     "func": "_total_revenue_series",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 427,
+     "func": "TanukiValuationPipeline._get_layer3_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 114,
+     "func": "TestRule.test_no_capex_line_is_zero_with_mark",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 127,
+     "func": "TestRule.test_custom_tag_fills_missing_quarters",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 140,
+     "func": "TestRule.test_existing_layer3_kept",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 159,
+     "func": "TestRule.test_fetch_skips_saved_and_records_404",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 162,
+     "func": "TestRule.test_fetch_skips_saved_and_records_404",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 189,
+     "func": "TestSavedRecords._annual",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 194,
+     "func": "TestSavedRecords.test_lyft_custom_tag_matches_10k",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 195,
+     "func": "TestSavedRecords.test_lyft_custom_tag_matches_10k",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 196,
+     "func": "TestSavedRecords.test_lyft_custom_tag_matches_10k",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 199,
+     "func": "TestSavedRecords.test_app_no_capex_line",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 203,
+     "func": "TestSavedRecords.test_vz_and_loar",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_cf_lines.py",
+     "line": 204,
+     "func": "TestSavedRecords.test_vz_and_loar",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_conditional_tags_and_stale_latest.py",
+     "line": 50,
+     "func": "_build",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_conditional_tags_and_stale_latest.py",
+     "line": 89,
+     "func": "_real_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [
+    "common/sec_data/cf_lines.py::fetch_filing"
+   ],
+   "screens": [
+    {
+     "page": "docs/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/portfolio/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/detail.html",
+     "how": "経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json）"
+    },
+    {
+     "page": "docs/portfolio/tail/index.html",
+     "how": "経由（src/tail/kpi_proposer.py → docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+    },
+    {
+     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/{T}.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/detail.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    },
+    {
+     "page": "docs/value-monitor/hypecore/index.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/stonks-silo/index.html",
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_score/index.html",
+     "how": "経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/_summary.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/index.html",
+     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+    },
+    {
+     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+     "how": "経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json）"
+    }
+   ],
+   "definitions": [],
+   "decision_effect": [
+    "理論株価・判定（TANUKI VALUATION）",
+    "HypeCore（TANUKI のtiming・判定の入力）",
+    "保有銘柄の監視（TANUKI TAIL）"
+   ],
+   "reader_count": 17,
+   "reader_count_test": 2,
+   "reader_count_compute": 0,
+   "group": "2件以上",
+   "note": "申告ごとのCF計算書の投資CFの区分の行（2021年以降の10-K・10-Q。CapExの欠けの規則・独自タグの行で使う、cf_lines.py）",
+   "decision": "残す（2026-10-20）"
+  },
+  {
    "path": "common/sec_data/data/{T}/company_facts.json",
    "kind": "ファイル",
    "writers": [
@@ -3489,7 +3912,7 @@
    "top_keys": [
     {
      "key": "cik",
-     "reader_files": 4
+     "reader_files": 5
     },
     {
      "key": "entityName",
@@ -3647,7 +4070,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4085,
+     "line": 4117,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -3655,7 +4078,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4095,
+     "line": 4127,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -3911,7 +4334,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 54,
+     "line": 58,
      "func": "plan_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3919,7 +4342,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 119,
+     "line": 123,
      "func": "dry_run",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3927,7 +4350,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 174,
+     "line": 178,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3935,7 +4358,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 184,
+     "line": 200,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
@@ -3943,7 +4366,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 192,
+     "line": 208,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3951,7 +4374,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 231,
+     "line": 247,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3959,7 +4382,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 242,
+     "line": 258,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -3967,7 +4390,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 331,
+     "line": 347,
      "func": "run",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3975,7 +4398,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 433,
+     "line": 449,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -3983,7 +4406,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 436,
+     "line": 452,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_company_facts",
@@ -5502,7 +5925,7 @@
     {
      "file": "common/sec_data/parser.py",
      "func": "SECParser.save_parsed_data",
-     "line": 4073
+     "line": 4105
     }
    ],
    "writers_outside_layer": [],
@@ -6342,7 +6765,7 @@
     },
     {
      "key": "cik",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "former_names",
@@ -6408,7 +6831,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4085,
+     "line": 4117,
      "func": "SECParser.parse_and_save",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -6416,7 +6839,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 4095,
+     "line": 4127,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -6488,7 +6911,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 184,
+     "line": 200,
      "func": "process_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::load_submissions",
@@ -6699,7 +7122,7 @@
     },
     {
      "key": "cik",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "ticker",
@@ -6749,7 +7172,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 92,
+     "line": 96,
      "func": "execute_company_facts",
      "how": "保存済みファイル",
      "via": "common/sec_data/fetcher.py::SECFetcher._read_json_or_none",
@@ -6871,7 +7294,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 825,
+     "line": 828,
      "func": "SECParser._parse_raw_data",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6879,7 +7302,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3712,
+     "line": 3715,
      "func": "SECParser._bs_identity_extra_components",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6887,7 +7310,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3826,
+     "line": 3829,
      "func": "SECParser._check_bs_identity_violations",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6895,7 +7318,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3928,
+     "line": 3931,
      "func": "SECParser._apply_dimension_aggregate_field_overrides",
      "how": "保存済みファイル",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6905,7 +7328,7 @@
    "readers_compute": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 3712,
+     "line": 3715,
      "func": "SECParser._bs_identity_extra_components",
      "how": "その場で計算",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -6913,7 +7336,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3928,
+     "line": 3931,
      "func": "SECParser._apply_dimension_aggregate_field_overrides",
      "how": "その場で計算",
      "via": "common/sec_data/dimension_aggregate_fetcher.py::load_dimension_aggregate_registry",
@@ -9781,7 +10204,7 @@
     },
     {
      "file": "common/sec_data/update.py",
-     "line": 430,
+     "line": 446,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -11082,7 +11505,7 @@
     {
      "file": "common/sec_data/update.py",
      "func": "_finalize",
-     "line": 416
+     "line": 432
     }
    ],
    "writers_outside_layer": [],
@@ -11162,7 +11585,7 @@
    "sites": [
     {
      "file": "common/sec_data/parser.py",
-     "line": 2314,
+     "line": 2317,
      "text": "implied_q4 = annual_val - total_q"
     },
     {
@@ -11209,6 +11632,11 @@
     "def\\s+select_latest_filed\\s*\\("
    ],
    "sites": [
+    {
+     "file": "common/sec_data/cf_lines.py",
+     "line": 342,
+     "text": "if cur is None or v[\"filed\"] >= cur[\"filed\"]:"
+    },
     {
      "file": "common/sec_data/fact_selection.py",
      "line": 19,
@@ -11266,6 +11694,7 @@
     }
    ],
    "files": [
+    "common/sec_data/cf_lines.py",
     "common/sec_data/fact_selection.py",
     "common/sec_data/layer3_builder.py",
     "common/sec_data/normalizer.py",
@@ -11292,7 +11721,7 @@
     },
     {
      "file": "common/sec_data/parser.py",
-     "line": 3037,
+     "line": 3040,
      "text": "def _freshness(idx: int) -> tuple[int, str, int]:"
     },
     {
@@ -11687,6 +12116,22 @@
   },
   {
    "dir": "common/sec_data",
+   "file": "common/sec_data/cf_lines.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 429,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/layer3_builder.py",
+    "common/sec_data/parser.py",
+    "common/sec_data/update.py"
+   ],
+   "tests": [
+    "tests/test_cf_lines.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
    "file": "common/sec_data/conditional_tags.py",
    "decision": "残す（2026-10-20）",
    "lines": 84,
@@ -11779,19 +12224,21 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/fcf.py",
    "decision": "残す（2026-10-20）",
-   "lines": 38,
+   "lines": 44,
    "workflows": [],
    "code": [
     "src/value/stonks_silo/analyzer.py",
     "src/value/stonks_silo/fetcher.py"
    ],
    "same_dir": [
+    "common/sec_data/cf_lines.py",
     "common/sec_data/parser.py",
     "common/sec_data/ttm_calculator.py",
     "common/sec_data/utils.py"
    ],
    "tests": [
     "tests/test_capex_sign.py",
+    "tests/test_cf_lines.py",
     "tests/test_fcf_definition_single_source.py"
    ]
   },
@@ -11870,7 +12317,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/layer3_builder.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1629,
+   "lines": 1635,
    "workflows": [],
    "code": [
     "src/tail/kpi_proposer.py",
@@ -11941,7 +12388,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/parser.py",
    "decision": "残す（2026-10-20）",
-   "lines": 4098,
+   "lines": 4130,
    "workflows": [],
    "code": [
     "common/registration/preflight_check.py",
@@ -11959,6 +12406,7 @@
     "tests/test_bs_entity_mixing.py",
     "tests/test_bs_field_cross_year_misselect.py",
     "tests/test_cash_tag_missing.py",
+    "tests/test_cf_lines.py",
     "tests/test_conditional_tags_and_stale_latest.py",
     "tests/test_fcf_bottom_up_capex_concept.py",
     "tests/test_fcf_definition_single_source.py",
@@ -12004,7 +12452,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/quarterly.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1129,
+   "lines": 1131,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -12321,7 +12769,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/update.py",
    "decision": "残す（2026-10-20）",
-   "lines": 440,
+   "lines": 456,
    "workflows": [
     ".github/workflows/SEC_Data_Update.yml"
    ],
@@ -12456,10 +12904,10 @@
   }
  ],
  "stop_condition": {
-  "outputs": 21,
+  "outputs": 22,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 63,
+  "python_read_sites_into_layer_resolved": 64,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/method_change.py",
@@ -12468,7 +12916,7 @@
     "path": "docs/common/sec_data/rotce/<?>"
    }
   ],
-  "name_hit_sites_resolved": 78,
+  "name_hit_sites_resolved": 79,
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",
@@ -12773,6 +13221,13 @@
     "note": ""
    },
    {
+    "key": "mark",
+    "sources": [
+     "common/sec_data/data/{T}/annual_{YYYY}.json"
+    ],
+    "note": "残す: 年次の cf_provenance.capital_expenditure の印「CF計算書にCapExの行なし」（cf_lines.py、[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b、2026-11-04）。0が欠けでなく申告の行の無いことを人が確かめるための出所の記録"
+   },
+   {
     "key": "method_change_applied",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json",
@@ -12910,6 +13365,13 @@
     "note": ""
    },
    {
+    "key": "role",
+    "sources": [
+     "common/sec_data/data/{T}/cf_lines/{accn}.json"
+    ],
+    "note": ""
+   },
+   {
     "key": "rotce_pctl_max",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
@@ -12947,6 +13409,13 @@
     "note": ""
    },
    {
+    "key": "source_files",
+    "sources": [
+     "common/sec_data/data/{T}/cf_lines/{accn}.json"
+    ],
+    "note": ""
+   },
+   {
     "key": "source_is_own_data",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
@@ -12961,7 +13430,7 @@
     "note": ""
    }
   ],
-  "written_key_count": 449,
+  "written_key_count": 454,
   "stale_keys": [
    {
     "key": "acquisition",

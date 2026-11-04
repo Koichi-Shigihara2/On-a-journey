@@ -1444,6 +1444,12 @@ def build_ticker_store(ticker: str) -> dict | None:
     # _backfill_operating_income()のdocstring参照）。
     _backfill_operating_income(fields_out)
 
+    # CapExの欠けの規則（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b、2026-11-04。規則は cf_lines.py の1か所）:
+    # 申告のCF計算書にCapExの行が無い期は0（印）、Layer3に無い期は cf_lines の有形固定資産等の行で埋める
+    from .cf_lines import fill_layer3_capex
+    capex_f = fields_out.setdefault("capital_expenditure", {"source_tag": None, "entries": []})
+    capex_f["entries"] = fill_layer3_capex(ticker, capex_f.get("entries") or [])
+
     # 申告の履歴（_asof）はQ4の逆算・補完のためのメモリの中だけのキー。読み手に渡す前に消す（[[LAYER3-FIRST-FILED-DATE-1]]）
     for f in fields_out.values():
         strip_asof(f["entries"])

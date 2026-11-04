@@ -9,8 +9,10 @@ FCF＝営業CF − |CapEx|。ファイナンス・リースの支払いは足さ
 読み手: parser.py（年次・四半期の cf.free_cash_flow）・ttm_calculator.py（TTMの flow.FCF）・
 STONKS SILO（src/value/stonks_silo/fetcher.py の補完・analyzer.py の月次バーン）
 
-CapExの欠け（None）の扱いは呼び出し側が決める（今は parser と STONKS SILO の月次バーンが0とみなし、TTMはNone。
-1つの規則にするのは段5〈申告のXBRLインスタンスで「CF計算書にCapExの行なし」を判定〉）。
+CapExの欠け（None）は欠け（FCFもNone）。0とみなすのは「申告のCF計算書にCapExの行なし」の期だけで、
+その判定と、Layer3・parserの年次に無い期を申告のCF計算書の行で埋める規則は common/sec_data/cf_lines.py の1か所
+（段5b、2026-11-04。それまでは parser が欠けを0とみなし、TTMはNone、APPは TICKER_RESTRICTIONS でTTMのCapExを除外していた）。
+STONKS SILOの月次バーン（analyzer.py）は年次ファイルの値を読み、欠けの年だけ0とみなす（年次ファイルは上の規則を当てた後の値）。
 """
 
 from __future__ import annotations
@@ -22,6 +24,10 @@ from typing import Optional
 # （YTDが前の四半期より減った期は負）で保存するため、合計が負になる点がある（FLYW TTM 2022-06-30・ONDS TTM 2025-06-30）。
 # 負の設備投資は |CapEx| で引くと符号が逆になるため、その点の設備投資は欠け（None）にし、FCFも作らない（読み手は既存の代用）
 CAPEX_TTM_NEGATIVE_MARK = "capex_ttm_negative"
+
+# 申告のCF計算書の投資CFの区分に取得系の行（有形固定資産等・ソフトウェア）が無い期の印（段5b、2026-11-04）。
+# その期のCapExは0（欠けではない）。判定は cf_lines.py（APPの2023年以降の申告等）
+CAPEX_NO_CF_LINE_MARK = "CF計算書にCapExの行なし"
 
 
 def ttm_capex(total: Optional[float]) -> Optional[float]:

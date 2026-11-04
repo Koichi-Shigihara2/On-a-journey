@@ -804,6 +804,9 @@ class SECParser:
             if annual_data:
                 result["annual"][year] = annual_data
 
+        # CapExの欠けの規則（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b、2026-11-04。規則は cf_lines.py の1か所）
+        self._apply_cf_lines_capex(ticker, result)
+
         # [[SEC-DATA-REDESIGN-OPERATIONAL-POLICY-1]]: fixed_registry.json
         # 登録済みのticker×年度について、フィックス対象フィールドを
         # 既存annual_{year}.jsonの値へ強制復元する（差分適用方式）。
@@ -3944,16 +3947,45 @@ class SECParser:
                 "source_citation": entry.get("source_citation"),
             }
 
+    def _apply_cf_lines_capex(self, ticker: str, result: Dict[str, Any]) -> None:
+        """年次のCapExに段5bの規則を当てる（[[FCF-DEFINITION-SINGLE-SOURCE-1]]、2026-11-04。規則は cf_lines.py）。
+        その年の10-K（営業CFの由来の申告）のCF計算書に取得系の行が無ければ0（印 CAPEX_NO_CF_LINE_MARK）、
+        CapExが無い年は有形固定資産等の行（独自タグを含む）で埋める。記録の無い年（2021年より前の申告等）はそのまま"""
+        from common.sec_data.cf_lines import annual_capex_from_10k
+        from common.sec_data.fcf import CAPEX_NO_CF_LINE_MARK
+        for annual in (result.get("annual") or {}).values():
+            cf = annual.setdefault("cf", {})
+            prov = annual.get("cf_provenance") or {}
+            own = prov.get("operating_cash_flow") or {}
+            if not own.get("is_own_data") or not own.get("accn"):
+                continue
+            r = annual_capex_from_10k(ticker, own["accn"])
+            if r is None:
+                continue
+            if r["no_capex_line"]:
+                cf["capital_expenditure"] = 0
+                annual.setdefault("cf_provenance", {})["capital_expenditure"] = {
+                    "accn": r["accn"], "filed": own.get("filed"), "is_own_data": True, "source": "cf_lines",
+                    "mark": CAPEX_NO_CF_LINE_MARK}
+            elif cf.get("capital_expenditure") is None:
+                cf["capital_expenditure"] = r["val"]
+                annual.setdefault("cf_provenance", {})["capital_expenditure"] = {
+                    "accn": r["accn"], "filed": own.get("filed"), "is_own_data": True, "source": "cf_lines"}
+            else:
+                continue
+            self._set_free_cash_flow(annual)
+
     @staticmethod
     def _set_free_cash_flow(data: Dict[str, Any]) -> None:
         """FCF計算。式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]、2026-11-02）。
-        CapExの欠けはここで0とみなす（今の扱い。TTMはNone。1つの規則にするのは段5）。
-        営業CFが無い・0の期は書かない（今の扱い）。凍結の後にも呼ぶ（凍結した入力から作り直す、2026-11-03）"""
+        CapExの欠けは欠け（FCFを書かない）。0とみなすのは「CF計算書にCapExの行なし」の期だけで、その判定は
+        cf_lines.py（段5b、2026-11-04。それまではここで欠けを0とみなしていた）。
+        営業CFが無い・0の期は書かない。凍結の後にも呼ぶ（凍結した入力から作り直す、2026-11-03）"""
         from common.sec_data.fcf import free_cash_flow
         cf = data.get("cf") or {}
         ocf = cf.get("operating_cash_flow", 0)
-        capex = cf.get("capital_expenditure", 0)  # 欠けは0とみなす（呼び出し側の扱い）
-        if ocf != 0:
+        capex = cf.get("capital_expenditure")
+        if ocf != 0 and capex is not None:
             data.setdefault("cf", {})["free_cash_flow"] = free_cash_flow(ocf, capex)  # 既にあれば同じ位置で書き換え
         else:
             cf.pop("free_cash_flow", None)

@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 # 銘柄別制限（ハードコード）
 TICKER_RESTRICTIONS: dict[str, dict] = {
     "MSFT":  {"exclude": ["DA"]},
-    "APP":   {"exclude": ["CapEx"]},
     "GOOGL": {
         "approximate": ["DA"],
         "note_discontinuous": ["LTDebt"],
@@ -279,9 +278,12 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
     # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段1（2026-11-02）: LYFTの上書き（CapitalizedComputerSoftwareAdditions、
     # 60603f9835）はやめた。CF計算書の行は独自タグ lyft:PaymentsToAcquirePropertyAndEquipmentAndScooterFleet で
     # companyfactsのAPIに入らない（2024・2025年のソフトウェアの値は0で、FCFが営業CFと同じになっていた）。
-    # 10-Kの年次3年は common/sec_data/fact_overrides.json に引用つき（四半期〈TTM〉は段5）。
-    # VZ・LOARはCF計算書のCapExの行が候補外のタグ。全体の候補に足すとFCXの2009〜2011年・VZの古い四半期の値も
-    # 変わる（候補の中で最新の期末のタグを勝者にするため）ので、銘柄別にする
+    # [[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b（2026-11-04）: LYFTの10-Kの年次3年（fact_overrides.json）・APPの
+    # "exclude": ["CapEx"] はやめた。申告のCF計算書の行（common/sec_data/cf_lines.py、独自タグ・純額の行を含む）で、
+    # Layer3・parserの年次に無い期を埋め、CapExの行が無い申告の期（APPの2023年以降）は0（印）にする。
+    # VZ・LOARの capex_concept は残す（試算で確かめた）: cf_linesは2021年以降の申告だけで、parserの四半期は埋めないため、
+    # やめるとVZの2020年以前の年・全四半期のファイルのCapEx・FCFが消える。LOARはQ4がTTMの逆算（年次−最新の申告の
+    # 9か月）になり、今のLayer3の逆算と2024Q4で違う（2.787M→2.465M、TTM 2025-06-30のFCF 79.78M→80.10M）。段5cで
     "VZ": {"capex_concept": "PaymentsToAcquireOtherProductiveAssets"},
     "LOAR": {"capex_concept": "PaymentsForProceedsFromProductiveAssets"},
 }
