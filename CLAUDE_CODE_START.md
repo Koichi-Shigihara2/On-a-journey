@@ -38,13 +38,13 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 
 **確かめる順（日時の順。2026-11-03 終業の更新。GitHubのscheduleは遅れることがあるので、各回は`gh run list`で先に実行の有無を確かめる）**:
 ① 11-04（水）朝 JST（11-03 夜〜11-04 朝の定時の後）
-   - （2026-11-04 朝: 手順24・手順17の追加は済、手順22はStonks・ROTCEの1回目が合格、残りは11-05 朝の2回目で印が付かないこと）
+   - （2026-11-04 朝: 手順24・手順17の追加は済、手順22はStonks・ROTCEの1回目が合格、残りは11-05 朝の2回目で印が付かないこと。手順23は11-04 10:31 JSTの時点で11-04の回のSystem Healthがまだ動いていない〈前日は12:57 JSTに動いた〉ので残る。11-04に`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`段5a・段5bを公開〈`6230e12749`、method_change -1-4〉→手順25）
    - Market Data Daily（11-03のNYSEの引けの後、`Market_Data_Daily_Update.yml`）の後 … 手順24（拒んだ上書きの記録・既存の確定の行・NIY=Fの777行とGC=Fの2行）
    - Market Pulse（11-03 21:25 UTC頃＝11-04 06:30 JSTの回）の後 … 手順17の追加（`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`、期限11-04）・手順18（見出しの配信元3本）・
      手順19（見出しの日ごとの積み足し）・手順20（5分足の日ごとの保存）。**まず夜のMarket Pulseが成功してpushまで済んだか**（Commit and pushの段のログも）を見る
    - Stonks Siloの定時の後 … 手順22のStonksの分（`FCF-DEFINITION-SINGLE-SOURCE-1-2`の印。11-03 夜に`-3`を出したので、先頭の`method_change`に`-2`・`-3`のどちらが付くかも記録する）
    - 08:30 JST（23:30 UTC）のSystem Health … 手順23（全15欄の重大度。[N]は手順19、[O]は手順20と一緒に見る）
-② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）、その後のMarket Data Dailyで手順22のROTCEの分。続いて「11-08（日）の束ね」
+② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）・手順25（cf_linesの最初のCIの取得）、その後のMarket Data Dailyで手順22のROTCEの分。続いて「11-08（日）の束ね」
    （CHAT_RULES.md「発見の溜め方と根治の判断」。入力はFINDINGS.mdの11-01の束ねの後の6行〈2026-11-03: 実データを読むテスト・固定データのテスト17本・古い形の印・TANUKIの画面の7キー・
    日足の分割の経路・手元のEPSの試算とscope〉。状態は「未」5行・「未登録（束ねる前）」1行）
 ③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15（期限11-30）
@@ -52,6 +52,17 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    `[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤。判断待ち: `[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`
 ⑤ 起きた回・いつでも … 手順9（RSS 取得エラーの回）
 （2026-11-01 終業の確かめる順〈手順16・13・5・束ね・17〜20・21〉は、手順16・13・21・2と束ねが済。残りは上に並べ直した）
+
+25. **申告のCF計算書の行（cf_lines）の最初のCIの取得**（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]` 段5a・段5b、2026-11-04 実装 `f56a1a10fd`・`6230e12749`）
+   - 日時: 2026-11-08（日）のSEC_Data_Update（`SEC_Data_Update.yml`）の後
+   - 期限: 2026-11-09
+   - 確認の手順:
+     - ログの各銘柄に「cf_lines: 新しい申告 n件 → 保存 n件・次の実行で取り直す 0件」が、11-04より後に10-K・10-Qを出した銘柄にだけ出る（出ない銘柄は新しい申告なし）。
+       「cf_lines の取得エラー」・SystemExit（SEC_USER_AGENT_EMAIL）が無い。リクエストの数が数十〜数百で、1回の上限（3,000）に届いていない
+     - commitに`common/sec_data/data/{T}/cf_lines/{accn}.json`の新しいファイルが入り、既存の2,229ファイルが変わっていない（取り直さない）
+     - 新しい申告の status が ok（no_cf_statement・not_found なら reason を報告）。APPの新しい10-Qが「CF計算書にCapExの行なし」（取得系の行なし）なら、TTMのCapExの0の点が増える
+     - rcc NG 0。WARNは220前後（APPのWARN-45「2024(5M)→2025(0M)」は11-04からの既知）
+   - 合格なら、BACKLOGの段5a・段5bの「確認」に書き足す（段5cが残るので項目はBACKLOGに残す）
 
 24. **日足の行の書き込みの1つの関数の最初の本番**（`[[MARKETDATA-DAILY-ROW-WRITE-1]]`、2026-11-03 実装 `2395a604b5`・`eaa2be2fef`）**済 2026-11-04 朝（移設済み）**: Market Data Daily run `41721714983`・`b4a01f8dea`。拒んだ上書き1件（KVUE 2026-10-30 出来高 66,595,400→66,377,525、Yahooの後からの改訂、保存の時点の値を残した）、既存の確定の行の変化なし（差分は新しい日の行と暫定の行の置き換えだけ）、NIY=Fの足なしの印の行は`dff021dcef`と同じ、GC=Fの2行は置き換えた値のまま、rcc WARN-62 0。詳細はBACKLOG_DONE.md「2026-11-04（完了）」
    - 日時: 2026-11-03（火）夜〜11-04 朝のMarket Data Daily（`Market_Data_Daily_Update.yml`、NYSEの引けの後）

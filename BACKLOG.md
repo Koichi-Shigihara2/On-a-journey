@@ -2082,13 +2082,16 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 段2: 符号の正規化を差し引きの前のYTDへ（`normalizer.py`の106〜111行・`layer3_builder.py`の`_apply_sign_normalize`）**済 2026-11-03（`3c58eb2bf6`）**
 - 段3: report.txt・画面のFCFの注記を計算に使った値・期から作る（TSLAの3つの文言）、調整後EPSの調整を年度内でそろえる（TSLA）**済 2026-11-03（`3c58eb2bf6`）**
 - 段4: 版で値が違う176行（VRTの実例）の調査。parserとLayer3で採る申告が違う15期（FLYW 2022年 7.07M／1.35M・ASTS 2022年 30.3M／57.3M・HON 2023・2024年の組み替え等）も**記録だけで閉じた（2026-11-04）**。結果と決定は下の「段4のSTEP 0」
-- 段5（新）: 申告のXBRLインスタンスの取得（SEC_Data_Updateで取得・記録・再利用）。「CapExは0」の判定（CF計算書にCapExの行が無い期。LYFT・NVDAの独自タグで誤らない）、
+- 段5（新）: **段5a・段5bは済 2026-11-04（`f56a1a10fd`・`6230e12749`、method_change `FCF-DEFINITION-SINGLE-SOURCE-1-4`）。残りは段5c（下）**。申告のXBRLインスタンスの取得（SEC_Data_Updateで取得・記録・再利用）。「CapExは0」の判定（CF計算書にCapExの行が無い期。LYFT・NVDAの独自タグで誤らない）、
   CapExの欠けの規則の1つ化、APPの`TICKER_RESTRICTIONS`の除外の廃止（試算 +21.5%）、LYFTの独自タグの四半期（TTM）。`dimension_aggregate_fetcher.py`の仕組みを広げる案から
   - **FLYW型（2026-11-04、段4から）**: CapExの行の一部が独自タグ（自社開発ソフトウェアの資産計上〈capitalization of internally developed software〉等）で、companyfactsのAPIに入らず、CapExが少なく出る。
     根拠: FLYWの2023年度の10-K（`0000950170-24-021713`、R7.htm Consolidated Statement of Cash Flows）の投資CFは「Capitalization of internally developed software」(5,004)／(5,717)／(5,635)千ドルと
     「Purchases of property and equipment」(1,009)／(1,353)／(1,049)千ドル（2023／2022／2021年）の2行。最初の10-K（2022年度）は1行で7,070千ドル（＝5,717＋1,353）で、companyfactsの`PaymentsToAcquirePropertyPlantAndEquipment`も2022年は7.07M（最初の申告）→1.35M（2023年度の10-Kから）。
     ソフトウェアの行はcompanyfactsのus-gaapに無い（独自タグ）。今のLayer3は最新の申告の値（1.35M）を採るのでCapExが少なく、parserの年次はその年の10-Kの値（7.07M）。同じ形（同じ区分の中の行の分け直し、段4のa3）は21銘柄60行で、
     VST（2019年 520M→713M）・DELLのように最新の値のほうが広い定義の銘柄もあるため、値の版の選び方ではなくCF計算書の行（タグ）の取り方で直す
+- **段5c（2026-11-04、チャット側）**: 案B（ソフトウェアの資産計上・取得の行をCapExに含める）の採用。公開の前に、試算で理論株価が上がったHQY（+24.7%、CapExを足すのに上がる理由）と、
+  今のLayer3と申告のCF計算書の行が合わない19銘柄（CAT・LITE・HON・CSGP・ASTS・KULR・INTU・ALAB・AVAV・BROS・DOCN・FCX・FLYW・META・ONDS・SNPS・SOFI・SOUN・SPIR）を確かめる。
+  CF計算書の行を正（今は補いだけ）に切り替えるかもその後に判断。VZ・LOARの`capex_concept`をやめるか（cf_linesは2021年以降の申告だけ・parserの四半期は埋めない・LOARのQ4の逆算の版）もここで
 
 #### 段1のSTEP 0（2026-11-02 夜、読み取りと手元のシミュレーション。実装・公開はしていない）
 1. FCFの式の実装箇所: `ttm_calculator.py:116`（`_calc_fcf`、382行でTTMの`flow.FCF`）・`parser.py:3381-3395`（年次・四半期の`cf.free_cash_flow`、CapExが無いと0とみなし`ocf != 0`のときだけ書く、`fcf_method`・`finance_lease_payments_applied`も書く）・
@@ -2211,6 +2214,34 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - **決定（チャット側、2026-11-04）**: 版の選び方は今のまま（TTMは最新の申告、年次は最初の申告）。a3（同じ区分の中の行の分け直し）は値の版ではなくタグの取り方の問題として段5へ（FLYW型）。
   範囲外の2件はFINDINGS 2026-11-04（parserの年次がSPACの器の会社の値を採る・ZSのD&Aのタグの食い違い）
 - 試算の道具は今回のセッションのscratchpad（`s4/`のrows.py・classify.py・annual_cmp.py・apply_sim.py・annual_P.py・run.sh）
+
+#### 段5のSTEP 0（2026-11-04、読み取りと手元の試算。SECの取得は手元から毎秒10件未満）
+- 取得: 2021年以降の10-K・10-Q（/Aを含む）2,229申告・98銘柄のうち2,205を取った（6,673リクエスト・平均毎秒5.9件・6.1GB、gzipで372MB）。404は24申告
+- CF計算書の行の特定: 営業CFと投資CFの合計を両方含むいちばん大きい表、木を平らにして直前の合計の次から投資CFの合計まで。_pre.xmlの無い申告（2024年以降のFLYW・FROG・IONQ等）は.xsdに埋め込まれたlinkbase
+- 今のCapEx（Layer3、2021年以降）との比べ: 一致2,425行（93銘柄）・不一致119行（19銘柄）・Layer3にだけ無い91行・XBRLにだけ無い48行。独自タグのCapExの行はASTS・CSGP・DELL・FLYW・KULR・LYFT・NVDA、
+  ソフトウェアの行が別にあるのは23銘柄（DDOG 85.8M・MSCI 90.5M・ZS 73.2M・HQY 46.5M等）、CF計算書にCapExの行が無いのはAPPの2023〜2025年
+- 会社の定義: DDOGの10-K（FY2025）は「FCF＝営業CF −（有形固定資産の購入＋資産計上したソフトウェア開発費）」。MSCI・FLYWは取得した範囲に定義なし
+- 試算（Layer3の値は残し定義の違いだけ）: 案A（無い期を埋める・行が無ければ0）は理論株価がAPP +21.74%・LYFT +13.73%だけ、判定・funda・stage 0。
+  案B（案A＋ソフトウェア）は16銘柄（5%超10: HQY +24.7%・DOCN −24.1%・FICO −22.7%・PAYS −21.5%・S −15.7%等）、判定 HQY HOLD→BUY・ZETA BUY→WATCH
+- 最初の試算は作り方を誤った（10-Qの3か月の列で同じ四半期を2回作った・組み替えをまたぐYTDの差し引き。HON −107%・AMZN −68%等）ので捨てた
+
+#### 段5a・段5bの実装と公開（2026-11-04、チャット側の指示）
+- 段5a `f56a1a10fd`（データ）: `common/sec_data/data/{T}/cf_lines/{accn}.json` 2,229申告（ok 2,166・no_cf_statement 39〈CF計算書の無い申告: 10-K/Aの第3部だけの訂正・合併前のSPAC等〉・
+  not_found 24〈SECが404〉、理由は各ファイルの reason）。手元の取得から作り、CIでは取り直さない。生のファイルはcommitしない
+- 段5a・段5b `6230e12749`（コード・派生ファイル・scope）: `common/sec_data/cf_lines.py` 新設（取得・抜き出し・保存・規則の1か所）。SEC_Data_Update（update.py の1b）で、
+  まだ保存していない2021年以降の申告だけを取る（間隔0.13秒以上・1回3,000リクエストまで、User-Agentは既存のsecret）。規則: CF計算書に取得系の行が無い申告の期は0
+  （印 `fcf.CAPEX_NO_CF_LINE_MARK`「CF計算書にCapExの行なし」）、Layer3に無い期（Q4を除く。Q4はTTMの逆算）・parserの年次に無い年は有形固定資産等の行（独自タグを含む）で埋める。
+  parserの「欠けは0とみなす」をやめた（四半期・2020年以前の年でCapExの欠けていた期のFCF〈営業CFと同じ値〉が消える）。やめた: LYFTの`fact_overrides.json`・APPの`TICKER_RESTRICTIONS`の除外。
+  **残した: VZ・LOARの`capex_concept`**（やめるとVZの2020年以前の年・全四半期のCapExが消え、LOARはQ4の逆算が変わりTTM 2025-06-30のFCF 79.78M→80.10M）。
+  `scripts/method_change_scope.py`は時刻のキー`updated_at`・`fetched_at`（Stonks）を比べない（無いとStonksの24銘柄がscopeに入った）。出力の一覧（SEC層）を作り直した
+- 試算（手元、TANUKI→HypeCore→TANUKI→Stonks、株価固定の前後）: 理論株価はAPP +21.74%（1,139.10→1,386.76）・LYFT +13.73%（59.70→67.90）、どちらも年次の代用からTTMへ。
+  判定・funda・stage 0、VZ・LOAR不変。scopeはAPP・LYFT・NVDA（NVDAは理論株価不変。2022年度の四半期が埋まりTTMの点3→4、FCFの5年平均 81.9B→63.0B、外れ値の判定が「要確認」に、RICE 48.3→55.1）
+- SPACの合併の年（SOUN 2021・ASTS 2020・RCAT 2021）は、その年の10-K（器の会社）のCF計算書にCapExの行が無く、CapExが0になった（営業CFも器の会社の値なので組はそろう。FINDINGS 2026-11-04の行）
+- ゲート: pytest 2787件成功・5件スキップ（`venv/Scripts/python -m pytest tests/ src/subport/day_trade/test_logic.py`）、audit 0、rcc NG 0・WARN 220（+1はAPPのWARN-45「2024(5M)→2025(0M)」、🆕未確認のまま）
+- 公開: TANUKI（run 41750190158、`31d1062288`）→ HypeCore（41751995024、`b247e33f39`）→ TANUKI（41752259320、workflow_runで自動、`4364cdfc6e`）。
+  1回目は理論株価・判定が試算と96銘柄一致、印はscopeのAPP・LYFT・NVDAだけ（HypeCoreの{T}_poc.jsonも同じ3銘柄）、2回目は印0。
+  Discordの🛠（1回目）はAPP・LYFTの2銘柄で「計算方法の分 upside 364.00→464.80・理論株価 1,139.10→1,386.76／残り +0.0pt」（LYFTも同形）。2回目の通知の判定の変化（CAKE・PM・XOM TRIM→HOLD）はHypeCoreのstageの分で📈相場
+- 確認: 次回の確認手順25（11-08のSEC_Data_Updateで、新しい申告だけを取って保存する）
 
 ---
 
