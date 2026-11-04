@@ -606,6 +606,7 @@ class SECReader:
         sti_approximated = bool(_sti_prov.get("is_approximated"))
         sti_residual_pct = _sti_prov.get("residual_pct")
         sti_quarterly_missing = False
+        bs_lines_filled: list = []   # 四半期のファイルに無く、申告の貸借対照表の行（bs_lines）で埋めた項目
 
         # FY52WEEK-BS-FADEOUT-FALLBACK-1: 最新年度が完全欠損（None）の場合、
         # 過去の直近既知値が明示的0であればそれを真のゼロとして採用する
@@ -661,6 +662,24 @@ class SECReader:
                 _q_lt      = _qbs.get("long_term_debt")
                 _q_st      = _qbs.get("short_term_debt")
                 _q_sti_raw = _qbs.get("short_term_investments")
+                # 貸借対照表の行の補い（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] ②、2026-11-04。規則は bs_lines.py の1か所）: 四半期の
+                # ファイルに借入金・短期投資が無いとき（CRWVの独自タグへの移行等）、最新の申告の貸借対照表の行の値で埋める。
+                # その申告の現金の行が四半期の現金と同じときだけ（同じ時点）。行も近い名前の行も無い分類は0
+                if _q_cash is not None and None in (_q_lt, _q_st, _q_sti_raw):
+                    from common.sec_data.bs_lines import latest_balance
+                    _lb = latest_balance(ticker, _q_cash, data_dir=self.data_dir)
+                    if _lb:
+                        if _q_lt is None and "long_term_debt" in _lb:
+                            _q_lt = _lb["long_term_debt"]
+                            bs_lines_filled.append("long_term_debt")
+                        if _q_st is None and "short_term_debt" in _lb:
+                            _q_st = _lb["short_term_debt"]
+                            bs_lines_filled.append("short_term_debt")
+                        if _q_sti_raw is None and "short_term_investments" in _lb:
+                            _q_sti_raw = _lb["short_term_investments"]
+                            bs_lines_filled.append("short_term_investments")
+                    if _q_lt is None:
+                        bs_lines_filled = []   # 長期借入金が埋まらなければ四半期の値は使わない（下の年次の経路）。記録もしない
                 # 四半期にSTIが存在しない（None）場合も値は0で計算する（保守側）が、
                 # 実測ゼロと区別できるよう全項目統一分岐でsti_quarterly_missingを立てる
                 _q_sti     = 0 if _q_sti_raw is None else _q_sti_raw
@@ -775,6 +794,8 @@ class SECReader:
             "ltdebt_last_confirmed_zero_year": ltdebt_last_confirmed_zero_year,
             "stdebt_estimated_zero":  stdebt_estimated_zero,
             "stdebt_last_confirmed_zero_year": stdebt_last_confirmed_zero_year,
+            # 申告の貸借対照表の行（bs_lines）で埋めた項目（無ければキーを書かない＝出力を変えない）
+            **({"bs_lines_filled": bs_lines_filled} if bs_lines_filled else {}),
         }
 
     # =========================================

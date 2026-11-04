@@ -57,6 +57,7 @@ TAG_CANDIDATES: dict[str, tuple[str, ...]] = {
     "STOCK_BASED_COMPENSATION": (
         "ShareBasedCompensation",
         "AllocatedShareBasedCompensationExpense",  # CEG等
+        "StockOptionPlanExpense",                  # HEI・TDY（ほかの候補が無いときだけ。[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] ②、2026-11-04）
     ),
     "GROSS_PROFIT": (
         "GrossProfit",

@@ -321,23 +321,32 @@ def fetch_filing(cik: int, accn: str, form: str, filed: str, budget: Budget) -> 
     head = {"accn": accn, "form": form, "filed": filed}
     r = _get(base + "/index.json", f"cf_lines {accn} index", budget, js=True)
     if r.status_code == 404:
-        return {**head, "status": "not_found", "reason": "SECが404（申告のディレクトリが無い）"}
+        return {**head, "status": "not_found", "reason": "SECが404（申告のディレクトリが無い）",
+                "_bs": {**head, "status": "not_found", "reason": "SECが404（申告のディレクトリが無い）"}}
     if r.status_code != 200:
         return None
     items = [i["name"] for i in r.json().get("directory", {}).get("item", [])]
     inst_n, pre_n = _pick_files(items)
     if not inst_n or not pre_n:
-        return {**head, "status": "no_cf_statement", "reason": "インスタンスか表示の構造（_pre.xml・.xsd）が無い"}
+        return {**head, "status": "no_cf_statement", "reason": "インスタンスか表示の構造（_pre.xml・.xsd）が無い",
+                "_bs": {**head, "status": "no_bs_statement", "reason": "インスタンスか表示の構造（_pre.xml・.xsd）が無い"}}
     got = {}
     for kind, n in (("instance", inst_n), ("pre", pre_n)):
         rr = _get(f"{base}/{n}", f"cf_lines {accn} {kind}", budget)
         if rr.status_code == 404:
-            return {**head, "status": "not_found", "reason": f"SECが404（{n}）"}
+            return {**head, "status": "not_found", "reason": f"SECが404（{n}）",
+                    "_bs": {**head, "status": "not_found", "reason": f"SECが404（{n}）"}}
         if rr.status_code != 200:
             return None
         got[kind] = rr.content
     rec = extract(got["pre"], got["instance"])
     files = {"instance": inst_n, "pre": pre_n}
+    # 同じファイルから貸借対照表の行も作る（bs_lines.py、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] ②）。呼び出し元が別に保存する
+    from .bs_lines import extract as _bs_extract
+    try:
+        bs = {**head, **_bs_extract(got["pre"], got["instance"]), "source_files": dict(files)}
+    except Exception as e:  # noqa: BLE001 — 貸借対照表の行が作れなくてもCF計算書の行は保存する
+        bs = {**head, "status": "no_bs_statement", "reason": f"貸借対照表の行を作れない: {type(e).__name__}"}
     amb = [x["concept"] for x in rec.get("lines") or [] if _ambiguous(x["concept"])]
     if amb:  # タグだけでは決まらない行があるときだけ、表示名を取る（.xsd に埋め込まれていればそれ）
         lab_n = pre_n if pre_n.endswith(".xsd") else next((n for n in items if n.endswith("_lab.xml")), None)
@@ -350,7 +359,7 @@ def fetch_filing(cik: int, accn: str, form: str, filed: str, budget: Budget) -> 
         if lab is not None:
             add_labels(rec, lab)
             files["lab"] = lab_n
-    return {**head, **rec, "source_files": files}
+    return {**head, **rec, "source_files": files, "_bs": bs}
 
 
 def add_labels(rec: Dict[str, Any], lab: bytes) -> None:
@@ -365,8 +374,9 @@ def add_labels(rec: Dict[str, Any], lab: bytes) -> None:
 def fetch_new_filings(ticker: str, cik: int, company_facts: Dict[str, Any], data_dir: str = DATA_DIR,
                       budget: Optional[Budget] = None) -> Dict[str, int]:
     """まだ保存していない申告だけを取って保存する。戻り値は件数（取得・保存・未保存〈次の実行で取り直す〉）"""
+    from . import bs_lines as _bs
     budget = budget or Budget(MAX_REQUESTS_PER_RUN)
-    have = set(load_records(ticker, data_dir))
+    have = set(load_records(ticker, data_dir)) & set(_bs.load_records(ticker, data_dir))   # どちらかが無い申告は取る
     todo = sorted(((a, f, d) for a, (f, d) in target_filings(company_facts).items() if a not in have), key=lambda x: x[2])
     n = {"new": len(todo), "saved": 0, "retry_later": 0}
     for accn, form, filed in todo:
@@ -381,7 +391,10 @@ def fetch_new_filings(ticker: str, cik: int, company_facts: Dict[str, Any], data
         if rec is None:
             n["retry_later"] += 1
             continue
+        bs = rec.pop("_bs", None)
         save_record(ticker, accn, rec, data_dir)
+        if bs is not None:
+            _bs.save_record(ticker, accn, bs, data_dir)
         n["saved"] += 1
     return n
 

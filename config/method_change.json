@@ -10032,6 +10032,1299 @@
           }
         }
       ]
+    },
+    {
+      "id": "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
+      "committed_at": "2026-11-04T19:20:24+09:00",
+      "scope": [
+        {
+          "ticker": "AAPL",
+          "fields": [
+            "rotce.current.rotce_ttm",
+            "rotce.current.rotce_ttm_basis",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.reason",
+            "rotce.percentile.signal"
+          ],
+          "before": {
+            "rotce.current.rotce_ttm": 1.7299190253523773,
+            "rotce.current.rotce_ttm_basis": "avg4",
+            "rotce.percentile.n_quarters": 4,
+            "rotce.percentile.reason": "insufficient_quarters",
+            "rotce.percentile.signal": null
+          },
+          "after": {
+            "rotce.current.rotce_ttm": 1.7088183136337007,
+            "rotce.current.rotce_ttm_basis": "avg5",
+            "rotce.percentile.n_quarters": 20,
+            "rotce.percentile.reason": null,
+            "rotce.percentile.signal": "neutral"
+          }
+        },
+        {
+          "ticker": "ALAB",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "financial_health.net_debt_period": "2026Q2"
+          }
+        },
+        {
+          "ticker": "AMD",
+          "fields": [
+            "rotce.percentile.first_quarter",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.ptbv",
+            "rotce.percentile.rotce"
+          ],
+          "before": {
+            "rotce.percentile.first_quarter": "2021-12-25",
+            "rotce.percentile.n_quarters": 19,
+            "rotce.percentile.ptbv": 89.47368421052632,
+            "rotce.percentile.rotce": 76.3157894736842
+          },
+          "after": {
+            "rotce.percentile.first_quarter": "2021-03-27",
+            "rotce.percentile.n_quarters": 22,
+            "rotce.percentile.ptbv": 90.9090909090909,
+            "rotce.percentile.rotce": 65.9090909090909
+          }
+        },
+        {
+          "ticker": "APP",
+          "fields": [
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year"
+          ],
+          "before": {
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2024,
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2024
+          },
+          "after": {
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null
+          }
+        },
+        {
+          "ticker": "ASTS",
+          "fields": [
+            "rotce.current.prev_quarter_end",
+            "rotce.current.reason",
+            "rotce.current.rotce",
+            "rotce.current.rotce_basis",
+            "rotce.current.rotce_ttm",
+            "rotce.current.rotce_ttm_basis",
+            "rotce.current.tce",
+            "rotce.current.tce_prev_quarter",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.reason"
+          ],
+          "before": {
+            "rotce.current.prev_quarter_end": null,
+            "rotce.current.reason": "component_missing",
+            "rotce.current.rotce": null,
+            "rotce.current.rotce_basis": null,
+            "rotce.current.rotce_ttm": null,
+            "rotce.current.rotce_ttm_basis": null,
+            "rotce.current.tce": null,
+            "rotce.current.tce_prev_quarter": null,
+            "rotce.percentile.n_quarters": 4,
+            "rotce.percentile.reason": "component_missing"
+          },
+          "after": {
+            "rotce.current.prev_quarter_end": "2026-03-31",
+            "rotce.current.reason": null,
+            "rotce.current.rotce": -0.4649105852128358,
+            "rotce.current.rotce_basis": "quarter_average",
+            "rotce.current.rotce_ttm": -0.39049867198101457,
+            "rotce.current.rotce_ttm_basis": "avg5",
+            "rotce.current.tce": 1894017000,
+            "rotce.current.tce_prev_quarter": 2079375000,
+            "rotce.percentile.n_quarters": 14,
+            "rotce.percentile.reason": "rotce_nonpositive"
+          }
+        },
+        {
+          "ticker": "AVAV",
+          "fields": [
+            "rotce.current.prev_quarter_end",
+            "rotce.current.reason",
+            "rotce.current.rotce",
+            "rotce.current.rotce_basis",
+            "rotce.current.rotce_ttm",
+            "rotce.current.rotce_ttm_basis",
+            "rotce.current.tce",
+            "rotce.current.tce_prev_quarter",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.reason"
+          ],
+          "before": {
+            "rotce.current.prev_quarter_end": null,
+            "rotce.current.reason": "component_missing",
+            "rotce.current.rotce": null,
+            "rotce.current.rotce_basis": null,
+            "rotce.current.rotce_ttm": null,
+            "rotce.current.rotce_ttm_basis": null,
+            "rotce.current.tce": null,
+            "rotce.current.tce_prev_quarter": null,
+            "rotce.percentile.n_quarters": 8,
+            "rotce.percentile.reason": "component_missing"
+          },
+          "after": {
+            "rotce.current.prev_quarter_end": "2026-04-30",
+            "rotce.current.reason": null,
+            "rotce.current.rotce": -0.020339296074066194,
+            "rotce.current.rotce_basis": "quarter_average",
+            "rotce.current.rotce_ttm": -0.22683669408820747,
+            "rotce.current.rotce_ttm_basis": "avg5",
+            "rotce.current.tce": 1015700000,
+            "rotce.current.tce_prev_quarter": 976896000,
+            "rotce.percentile.n_quarters": 19,
+            "rotce.percentile.reason": "rotce_nonpositive"
+          }
+        },
+        {
+          "ticker": "CART",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "financial_health.net_debt_period": "2026Q2"
+          }
+        },
+        {
+          "ticker": "CDNS",
+          "fields": [
+            "bs_adjustment.long_term_debt",
+            "bs_adjustment.net_cash",
+            "bs_adjustment.net_cash_per_share",
+            "bs_adjustment.net_debt_period",
+            "bs_adjustment.short_term_debt",
+            "bs_adjustment.short_term_investments",
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "bs_adjustment.sti_quarterly_missing",
+            "components.analyst_vs_iv",
+            "financial_health.long_term_debt",
+            "financial_health.net_debt",
+            "financial_health.net_debt_period",
+            "financial_health.short_term_debt",
+            "financial_health.short_term_investments",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year",
+            "financial_health.sti_quarterly_missing",
+            "financial_health.total_debt",
+            "future_values.1年後",
+            "future_values.2年後",
+            "future_values.3年後",
+            "future_values.4年後",
+            "future_values.5年後",
+            "hype.expectation_score",
+            "hype.price_iv_ratio",
+            "intrinsic_value_beta",
+            "intrinsic_value_per_share",
+            "intrinsic_value_rf",
+            "upside_percent",
+            "upside_percent_beta",
+            "upside_percent_rf"
+          ],
+          "before": {
+            "bs_adjustment.long_term_debt": 2480150000.0,
+            "bs_adjustment.net_cash": -873917000.0,
+            "bs_adjustment.net_cash_per_share": -3.18507247274755,
+            "bs_adjustment.net_debt_period": "Cash=2026Q3/Debt=FY2025",
+            "bs_adjustment.short_term_debt": 0.0,
+            "bs_adjustment.short_term_investments": 154213000.0,
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2015,
+            "bs_adjustment.sti_quarterly_missing": false,
+            "components.analyst_vs_iv": 207.0,
+            "financial_health.long_term_debt": 2480150000.0,
+            "financial_health.net_debt": 873917000.0,
+            "financial_health.net_debt_period": "Cash=2026Q3/Debt=FY2025",
+            "financial_health.short_term_debt": 0.0,
+            "financial_health.short_term_investments": 154213000.0,
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2015,
+            "financial_health.sti_quarterly_missing": false,
+            "financial_health.total_debt": 2480150000.0,
+            "future_values.1年後": 156.72,
+            "future_values.2年後": 179.56,
+            "future_values.3年後": 205.73,
+            "future_values.4年後": 235.71,
+            "future_values.5年後": 270.06,
+            "hype.expectation_score": -0.329,
+            "hype.price_iv_ratio": 2.367,
+            "intrinsic_value_beta": 120.51,
+            "intrinsic_value_per_share": 136.78654506211518,
+            "intrinsic_value_rf": 670.96,
+            "upside_percent": -57.7,
+            "upside_percent_beta": -62.8,
+            "upside_percent_rf": 107.2
+          },
+          "after": {
+            "bs_adjustment.long_term_debt": 1984433000.0,
+            "bs_adjustment.net_cash": -1181222000.0,
+            "bs_adjustment.net_cash_per_share": -4.305074367936322,
+            "bs_adjustment.net_debt_period": "2026Q3",
+            "bs_adjustment.short_term_debt": 648809000.0,
+            "bs_adjustment.short_term_investments": 0.0,
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "bs_adjustment.sti_quarterly_missing": true,
+            "components.analyst_vs_iv": 209.6,
+            "financial_health.long_term_debt": 1984433000.0,
+            "financial_health.net_debt": 1181222000.0,
+            "financial_health.net_debt_period": "2026Q3",
+            "financial_health.short_term_debt": 648809000.0,
+            "financial_health.short_term_investments": 0.0,
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null,
+            "financial_health.sti_quarterly_missing": true,
+            "financial_health.total_debt": 2633242000.0,
+            "future_values.1年後": 155.44,
+            "future_values.2年後": 178.09,
+            "future_values.3年後": 204.05,
+            "future_values.4年後": 233.78,
+            "future_values.5年後": 267.85,
+            "hype.expectation_score": -0.314,
+            "hype.price_iv_ratio": 2.386,
+            "intrinsic_value_beta": 119.39,
+            "intrinsic_value_per_share": 135.6665431669264,
+            "intrinsic_value_rf": 669.84,
+            "upside_percent": -58.1,
+            "upside_percent_beta": -63.1,
+            "upside_percent_rf": 106.9
+          }
+        },
+        {
+          "ticker": "CELH",
+          "fields": [
+            "rotce.percentile.first_quarter",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.ptbv",
+            "rotce.percentile.rotce"
+          ],
+          "before": {
+            "rotce.percentile.first_quarter": "2021-12-31",
+            "rotce.percentile.n_quarters": 17,
+            "rotce.percentile.ptbv": 52.94117647058823,
+            "rotce.percentile.rotce": 61.76470588235294
+          },
+          "after": {
+            "rotce.percentile.first_quarter": "2021-03-31",
+            "rotce.percentile.n_quarters": 20,
+            "rotce.percentile.ptbv": 55.0,
+            "rotce.percentile.rotce": 67.5
+          }
+        },
+        {
+          "ticker": "CIX",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "bs_adjustment.sti_quarterly_missing",
+            "financial_health.net_debt_period",
+            "financial_health.sti_quarterly_missing"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "bs_adjustment.sti_quarterly_missing": false,
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.sti_quarterly_missing": false
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "bs_adjustment.sti_quarterly_missing": true,
+            "financial_health.net_debt_period": "2026Q2",
+            "financial_health.sti_quarterly_missing": true
+          }
+        },
+        {
+          "ticker": "CPRT",
+          "fields": [
+            "rotce.current.ptbv",
+            "rotce.current.rotce",
+            "rotce.current.rotce_ttm",
+            "rotce.current.tce",
+            "rotce.current.tce_prev_quarter"
+          ],
+          "before": {
+            "rotce.current.ptbv": 3.4819281786058083,
+            "rotce.current.rotce": 0.1565387103997642,
+            "rotce.current.rotce_ttm": 0.17033310842895213,
+            "rotce.current.tce": 8535521000,
+            "rotce.current.tce_prev_quarter": 8197618000
+          },
+          "after": {
+            "rotce.current.ptbv": 3.4887069334693472,
+            "rotce.current.rotce": 0.1568552304329031,
+            "rotce.current.rotce_ttm": 0.17069105341382107,
+            "rotce.current.tce": 8518936000,
+            "rotce.current.tce_prev_quarter": 8180437000
+          }
+        },
+        {
+          "ticker": "CRWV",
+          "fields": [
+            "bs_adjustment.long_term_debt",
+            "bs_adjustment.net_cash",
+            "bs_adjustment.net_cash_per_share",
+            "bs_adjustment.net_debt_period",
+            "bs_adjustment.short_term_debt",
+            "components.analyst_vs_iv",
+            "financial_health.long_term_debt",
+            "financial_health.net_debt",
+            "financial_health.net_debt_period",
+            "financial_health.short_term_debt",
+            "financial_health.total_debt",
+            "future_values.1年後",
+            "future_values.2年後",
+            "future_values.3年後",
+            "future_values.4年後",
+            "future_values.5年後",
+            "hype.expectation_score",
+            "hype.price_iv_ratio",
+            "intrinsic_value_beta",
+            "intrinsic_value_per_share",
+            "intrinsic_value_rf",
+            "pre_rounding_comment",
+            "stonks.valuation.net_cash",
+            "timing_score",
+            "upside_percent",
+            "upside_percent_beta",
+            "upside_percent_rf"
+          ],
+          "before": {
+            "bs_adjustment.long_term_debt": 14919000000.0,
+            "bs_adjustment.net_cash": -16088000000.0,
+            "bs_adjustment.net_cash_per_share": -29.16941494301769,
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "bs_adjustment.short_term_debt": 6708000000.0,
+            "components.analyst_vs_iv": 61.1,
+            "financial_health.long_term_debt": 14919000000.0,
+            "financial_health.net_debt": 16088000000.0,
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.short_term_debt": 6708000000.0,
+            "financial_health.total_debt": 21627000000.0,
+            "future_values.1年後": 125.72,
+            "future_values.2年後": 188.57,
+            "future_values.3年後": 282.86,
+            "future_values.4年後": 424.29,
+            "future_values.5年後": 636.43,
+            "hype.expectation_score": -0.96,
+            "hype.price_iv_ratio": 0.641,
+            "intrinsic_value_beta": 36.35,
+            "intrinsic_value_per_share": 83.81126033720199,
+            "intrinsic_value_rf": 567.25,
+            "pre_rounding_comment": "割安圏(56%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
+            "stonks.valuation.net_cash": -16088000000.0,
+            "timing_score": 80,
+            "upside_percent": 56.0,
+            "upside_percent_beta": -32.4,
+            "upside_percent_rf": 955.5
+          },
+          "after": {
+            "bs_adjustment.long_term_debt": 27776000000.0,
+            "bs_adjustment.net_cash": -29750000000.0,
+            "bs_adjustment.net_cash_per_share": -53.940209756015435,
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "bs_adjustment.short_term_debt": 7513000000.0,
+            "components.analyst_vs_iv": 128.7,
+            "financial_health.long_term_debt": 27776000000.0,
+            "financial_health.net_debt": 29750000000.0,
+            "financial_health.net_debt_period": "2026Q2",
+            "financial_health.short_term_debt": 7513000000.0,
+            "financial_health.total_debt": 35289000000.0,
+            "future_values.1年後": 88.56,
+            "future_values.2年後": 132.84,
+            "future_values.3年後": 199.26,
+            "future_values.4年後": 298.89,
+            "future_values.5年後": 448.33,
+            "hype.expectation_score": -0.797,
+            "hype.price_iv_ratio": 0.91,
+            "intrinsic_value_beta": 11.58,
+            "intrinsic_value_per_share": 59.04046552420424,
+            "intrinsic_value_rf": 542.48,
+            "pre_rounding_comment": "若干割安(10%)、FCFマイナス（投資フェーズ）、売上成長加速",
+            "stonks.valuation.net_cash": -29750000000.0,
+            "timing_score": 50,
+            "upside_percent": 9.9,
+            "upside_percent_beta": -78.5,
+            "upside_percent_rf": 909.5
+          }
+        },
+        {
+          "ticker": "CSGP",
+          "fields": [
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year"
+          ],
+          "before": {
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2017,
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2017
+          },
+          "after": {
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null
+          }
+        },
+        {
+          "ticker": "ENTG",
+          "fields": [
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year"
+          ],
+          "before": {
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2024,
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2024
+          },
+          "after": {
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null
+          }
+        },
+        {
+          "ticker": "FLYW",
+          "fields": [
+            "bs_adjustment.long_term_debt",
+            "bs_adjustment.net_cash",
+            "bs_adjustment.net_cash_per_share",
+            "bs_adjustment.net_debt_period",
+            "components.analyst_vs_iv",
+            "financial_health.long_term_debt",
+            "financial_health.net_debt",
+            "financial_health.net_debt_period",
+            "financial_health.total_debt",
+            "future_values.1年後",
+            "future_values.2年後",
+            "future_values.3年後",
+            "future_values.4年後",
+            "future_values.5年後",
+            "hype.expectation_score",
+            "hype.price_iv_ratio",
+            "intrinsic_value_beta",
+            "intrinsic_value_per_share",
+            "intrinsic_value_rf",
+            "score_comment",
+            "upside_percent",
+            "upside_percent_beta",
+            "upside_percent_rf"
+          ],
+          "before": {
+            "bs_adjustment.long_term_debt": 15000000.0,
+            "bs_adjustment.net_cash": 279184000.0,
+            "bs_adjustment.net_cash_per_share": 2.259849066780214,
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "components.analyst_vs_iv": -48.3,
+            "financial_health.long_term_debt": 15000000.0,
+            "financial_health.net_debt": -279184000.0,
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.total_debt": 15000000.0,
+            "future_values.1年後": 53.9,
+            "future_values.2年後": 71.56,
+            "future_values.3年後": 95.02,
+            "future_values.4年後": 126.17,
+            "future_values.5年後": 129.96,
+            "hype.expectation_score": 0.248,
+            "hype.price_iv_ratio": 0.472,
+            "intrinsic_value_beta": 31.53,
+            "intrinsic_value_per_share": 40.59125466244677,
+            "intrinsic_value_rf": 146.96,
+            "score_comment": "割安圏(112%)で買い余地大、FCF黒字、売上成長加速",
+            "upside_percent": 112.0,
+            "upside_percent_beta": 64.7,
+            "upside_percent_rf": 667.4
+          },
+          "after": {
+            "bs_adjustment.long_term_debt": 0.0,
+            "bs_adjustment.net_cash": 294184000.0,
+            "bs_adjustment.net_cash_per_share": 2.3812662540176746,
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "components.analyst_vs_iv": -48.4,
+            "financial_health.long_term_debt": 0.0,
+            "financial_health.net_debt": -294184000.0,
+            "financial_health.net_debt_period": "2026Q2",
+            "financial_health.total_debt": 0.0,
+            "future_values.1年後": 54.06,
+            "future_values.2年後": 71.78,
+            "future_values.3年後": 95.3,
+            "future_values.4年後": 126.55,
+            "future_values.5年後": 130.34,
+            "hype.expectation_score": 0.246,
+            "hype.price_iv_ratio": 0.47,
+            "intrinsic_value_beta": 31.66,
+            "intrinsic_value_per_share": 40.712671849684234,
+            "intrinsic_value_rf": 147.08,
+            "score_comment": "割安圏(113%)で買い余地大、FCF黒字、売上成長加速",
+            "upside_percent": 112.6,
+            "upside_percent_beta": 65.3,
+            "upside_percent_rf": 668.0
+          }
+        },
+        {
+          "ticker": "FROG",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "financial_health.net_debt_period": "2026Q2"
+          }
+        },
+        {
+          "ticker": "FRSH",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "financial_health.net_debt_period": "2026Q2"
+          }
+        },
+        {
+          "ticker": "GOOGL",
+          "fields": [
+            "rotce.current.ptbv",
+            "rotce.current.rotce",
+            "rotce.current.rotce_ttm",
+            "rotce.current.rotce_ttm_basis",
+            "rotce.current.tce",
+            "rotce.current.tce_prev_quarter",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.ptbv",
+            "rotce.percentile.rotce"
+          ],
+          "before": {
+            "rotce.current.ptbv": 5.672004495307753,
+            "rotce.current.rotce": 0.1768001337654814,
+            "rotce.current.rotce_ttm": 0.4762656530512698,
+            "rotce.current.rotce_ttm_basis": "avg4",
+            "rotce.current.tce": 610615000000,
+            "rotce.current.tce_prev_quarter": 573547000000,
+            "rotce.percentile.n_quarters": 16,
+            "rotce.percentile.ptbv": 12.5,
+            "rotce.percentile.rotce": 90.625
+          },
+          "after": {
+            "rotce.current.ptbv": 5.844511949034654,
+            "rotce.current.rotce": 0.18235091227715666,
+            "rotce.current.rotce_ttm": 0.5129163099147108,
+            "rotce.current.rotce_ttm_basis": "avg5",
+            "rotce.current.tce": 592592000000,
+            "rotce.current.tce_prev_quarter": 555524000000,
+            "rotce.percentile.n_quarters": 23,
+            "rotce.percentile.ptbv": 13.043478260869565,
+            "rotce.percentile.rotce": 93.47826086956522
+          }
+        },
+        {
+          "ticker": "GTLB",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2027Q2/Debt=FY2026",
+            "financial_health.net_debt_period": "Cash=2027Q2/Debt=FY2026"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2027Q2",
+            "financial_health.net_debt_period": "2027Q2"
+          }
+        },
+        {
+          "ticker": "HEI",
+          "fields": [
+            "components.max_eps",
+            "components.max_eps_per",
+            "components.max_eps_reliability",
+            "fcf_estimation.sbc",
+            "financial_health.sbc_ttm",
+            "matrix.key_metric_y",
+            "rice.note",
+            "rice.q"
+          ],
+          "before": {
+            "components.max_eps": 6.0108,
+            "components.max_eps_per": 56.2,
+            "components.max_eps_reliability": "MED",
+            "fcf_estimation.sbc": null,
+            "financial_health.sbc_ttm": null,
+            "matrix.key_metric_y": "RICE = 7.138",
+            "rice.note": "販売・マーケティング費未取得（FYTTM@2025-07-31, TTM@2024-07-31, TTM@2023-07-31）: 投資強度が過小になる可能性",
+            "rice.q": 1.3047
+          },
+          "after": {
+            "components.max_eps": 6.3687,
+            "components.max_eps_per": 53.0,
+            "components.max_eps_reliability": "HIGH",
+            "fcf_estimation.sbc": 50474000.0,
+            "financial_health.sbc_ttm": 34381000,
+            "matrix.key_metric_y": "RICE = 6.830",
+            "rice.note": "SBC補正済み（純利益+SBCを分母に使用） / 販売・マーケティング費未取得（FYTTM@2025-07-31, TTM@2024-07-31, TTM@2023-07-31）: 投資強度が過小になる可能性",
+            "rice.q": 1.2484
+          }
+        },
+        {
+          "ticker": "IONQ",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "financial_health.net_debt_period": "2026Q2"
+          }
+        },
+        {
+          "ticker": "IOT",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2027Q2/Debt=FY2026",
+            "financial_health.net_debt_period": "Cash=2027Q2/Debt=FY2026"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2027Q2",
+            "financial_health.net_debt_period": "2027Q2"
+          }
+        },
+        {
+          "ticker": "JNJ",
+          "fields": [
+            "rotce.percentile.n_quarters"
+          ],
+          "before": {
+            "rotce.percentile.n_quarters": 2
+          },
+          "after": {
+            "rotce.percentile.n_quarters": 4
+          }
+        },
+        {
+          "ticker": "KO",
+          "fields": [
+            "rotce.current.prev_quarter_end",
+            "rotce.current.reason",
+            "rotce.current.rotce",
+            "rotce.current.rotce_basis",
+            "rotce.current.rotce_ttm",
+            "rotce.current.rotce_ttm_basis",
+            "rotce.current.tce",
+            "rotce.current.tce_prev_quarter",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.reason"
+          ],
+          "before": {
+            "rotce.current.prev_quarter_end": null,
+            "rotce.current.reason": "component_missing",
+            "rotce.current.rotce": null,
+            "rotce.current.rotce_basis": null,
+            "rotce.current.rotce_ttm": null,
+            "rotce.current.rotce_ttm_basis": null,
+            "rotce.current.tce": null,
+            "rotce.current.tce_prev_quarter": null,
+            "rotce.percentile.n_quarters": 15,
+            "rotce.percentile.reason": "component_missing"
+          },
+          "after": {
+            "rotce.current.prev_quarter_end": "2026-07-03",
+            "rotce.current.reason": null,
+            "rotce.current.rotce": 1.8120797785185603,
+            "rotce.current.rotce_basis": "quarter_average",
+            "rotce.current.rotce_ttm": 2.119760912878102,
+            "rotce.current.rotce_ttm_basis": "avg4",
+            "rotce.current.tce": 9505000000,
+            "rotce.current.tce_prev_quarter": 8194000000,
+            "rotce.percentile.n_quarters": 7,
+            "rotce.percentile.reason": "insufficient_quarters"
+          }
+        },
+        {
+          "ticker": "KULR",
+          "fields": [
+            "bs_adjustment.net_cash",
+            "bs_adjustment.net_cash_per_share",
+            "bs_adjustment.net_debt_period",
+            "bs_adjustment.short_term_debt",
+            "bs_adjustment.sti_quarterly_missing",
+            "components.analyst_vs_iv",
+            "financial_health.net_debt",
+            "financial_health.net_debt_period",
+            "financial_health.short_term_debt",
+            "financial_health.sti_quarterly_missing",
+            "financial_health.total_debt",
+            "future_values.1年後",
+            "future_values.2年後",
+            "future_values.3年後",
+            "future_values.4年後",
+            "future_values.5年後",
+            "hype.expectation_score",
+            "hype.price_iv_ratio",
+            "intrinsic_value_beta",
+            "intrinsic_value_per_share",
+            "intrinsic_value_rf",
+            "rotce.percentile.n_excluded_assumed_zero",
+            "rotce.percentile.n_quarters",
+            "score_comment",
+            "stonks.runway.sti_quarterly_missing",
+            "stonks.valuation.net_cash",
+            "upside_percent",
+            "upside_percent_beta",
+            "upside_percent_rf"
+          ],
+          "before": {
+            "bs_adjustment.net_cash": 12783933.0,
+            "bs_adjustment.net_cash_per_share": 0.2762269448740046,
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "bs_adjustment.short_term_debt": 0.0,
+            "bs_adjustment.sti_quarterly_missing": false,
+            "components.analyst_vs_iv": 27.5,
+            "financial_health.net_debt": -12783933.0,
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.short_term_debt": 0.0,
+            "financial_health.sti_quarterly_missing": false,
+            "financial_health.total_debt": 0.0,
+            "future_values.1年後": 8.24,
+            "future_values.2年後": 12.37,
+            "future_values.3年後": 18.58,
+            "future_values.4年後": 27.89,
+            "future_values.5年後": 28.73,
+            "hype.expectation_score": -0.659,
+            "hype.price_iv_ratio": 0.299,
+            "intrinsic_value_beta": 2.68,
+            "intrinsic_value_per_share": 5.492233402973168,
+            "intrinsic_value_rf": 19.53,
+            "rotce.percentile.n_excluded_assumed_zero": 3,
+            "rotce.percentile.n_quarters": 18,
+            "score_comment": "割安圏(235%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
+            "stonks.runway.sti_quarterly_missing": false,
+            "stonks.valuation.net_cash": 12783933.0,
+            "upside_percent": 234.9,
+            "upside_percent_beta": 63.7,
+            "upside_percent_rf": 1090.8
+          },
+          "after": {
+            "bs_adjustment.net_cash": -7216067.0,
+            "bs_adjustment.net_cash_per_share": -0.15592010232032066,
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "bs_adjustment.short_term_debt": 20000000.0,
+            "bs_adjustment.sti_quarterly_missing": true,
+            "components.analyst_vs_iv": 38.3,
+            "financial_health.net_debt": 7216067.0,
+            "financial_health.net_debt_period": "2026Q2",
+            "financial_health.short_term_debt": 20000000.0,
+            "financial_health.sti_quarterly_missing": true,
+            "financial_health.total_debt": 20000000.0,
+            "future_values.1年後": 7.6,
+            "future_values.2年後": 11.41,
+            "future_values.3年後": 17.12,
+            "future_values.4年後": 25.71,
+            "future_values.5年後": 26.48,
+            "hype.expectation_score": -0.633,
+            "hype.price_iv_ratio": 0.324,
+            "intrinsic_value_beta": 2.25,
+            "intrinsic_value_per_share": 5.060086355778844,
+            "intrinsic_value_rf": 19.1,
+            "rotce.percentile.n_excluded_assumed_zero": 0,
+            "rotce.percentile.n_quarters": 21,
+            "score_comment": "割安圏(208%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
+            "stonks.runway.sti_quarterly_missing": true,
+            "stonks.valuation.net_cash": -7216067.0,
+            "upside_percent": 208.5,
+            "upside_percent_beta": 37.4,
+            "upside_percent_rf": 1064.4
+          }
+        },
+        {
+          "ticker": "META",
+          "fields": [
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year"
+          ],
+          "before": {
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2016,
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2016
+          },
+          "after": {
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null
+          }
+        },
+        {
+          "ticker": "MSCI",
+          "fields": [
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year"
+          ],
+          "before": {
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2024,
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2024
+          },
+          "after": {
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null
+          }
+        },
+        {
+          "ticker": "NOW",
+          "fields": [
+            "bs_adjustment.long_term_debt",
+            "bs_adjustment.net_cash",
+            "bs_adjustment.net_cash_per_share",
+            "bs_adjustment.net_debt_period",
+            "bs_adjustment.short_term_debt",
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "components.analyst_vs_iv",
+            "financial_health.long_term_debt",
+            "financial_health.net_debt",
+            "financial_health.net_debt_period",
+            "financial_health.short_term_debt",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year",
+            "financial_health.total_debt",
+            "future_values.1年後",
+            "future_values.2年後",
+            "future_values.3年後",
+            "future_values.4年後",
+            "future_values.5年後",
+            "hype.expectation_score",
+            "hype.price_iv_ratio",
+            "intrinsic_value_beta",
+            "intrinsic_value_per_share",
+            "intrinsic_value_rf",
+            "score_comment",
+            "upside_percent",
+            "upside_percent_beta",
+            "upside_percent_rf"
+          ],
+          "before": {
+            "bs_adjustment.long_term_debt": 1491000000.0,
+            "bs_adjustment.net_cash": 3116000000.0,
+            "bs_adjustment.net_cash_per_share": 3.0021668399303607,
+            "bs_adjustment.net_debt_period": "Cash=2026Q3/Debt=FY2025",
+            "bs_adjustment.short_term_debt": 0.0,
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2022,
+            "components.analyst_vs_iv": -11.5,
+            "financial_health.long_term_debt": 1491000000.0,
+            "financial_health.net_debt": -3116000000.0,
+            "financial_health.net_debt_period": "Cash=2026Q3/Debt=FY2025",
+            "financial_health.short_term_debt": 0.0,
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2022,
+            "financial_health.total_debt": 1491000000.0,
+            "future_values.1年後": 213.63,
+            "future_values.2年後": 260.63,
+            "future_values.3年後": 317.98,
+            "future_values.4年後": 387.95,
+            "future_values.5年後": 473.31,
+            "hype.expectation_score": -0.527,
+            "hype.price_iv_ratio": 0.623,
+            "intrinsic_value_beta": 176.81,
+            "intrinsic_value_per_share": 175.09710582347384,
+            "intrinsic_value_rf": 860.92,
+            "score_comment": "割安圏(60%)で買い余地大、FCF黒字、売上成長加速",
+            "upside_percent": 60.4,
+            "upside_percent_beta": 62.0,
+            "upside_percent_rf": 688.7
+          },
+          "after": {
+            "bs_adjustment.long_term_debt": 5438000000.0,
+            "bs_adjustment.net_cash": -2917000000.0,
+            "bs_adjustment.net_cash_per_share": -2.8104366726819197,
+            "bs_adjustment.net_debt_period": "2026Q3",
+            "bs_adjustment.short_term_debt": 2086000000.0,
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "components.analyst_vs_iv": -8.4,
+            "financial_health.long_term_debt": 5438000000.0,
+            "financial_health.net_debt": 2917000000.0,
+            "financial_health.net_debt_period": "2026Q3",
+            "financial_health.short_term_debt": 2086000000.0,
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null,
+            "financial_health.total_debt": 7524000000.0,
+            "future_values.1年後": 206.53,
+            "future_values.2年後": 251.97,
+            "future_values.3年後": 307.41,
+            "future_values.4年後": 375.06,
+            "future_values.5年後": 457.58,
+            "hype.expectation_score": -0.497,
+            "hype.price_iv_ratio": 0.645,
+            "intrinsic_value_beta": 171.0,
+            "intrinsic_value_per_share": 169.28450231086154,
+            "intrinsic_value_rf": 855.1,
+            "score_comment": "割安圏(55%)で買い余地大、FCF黒字、売上成長加速",
+            "upside_percent": 55.1,
+            "upside_percent_beta": 56.7,
+            "upside_percent_rf": 683.3
+          }
+        },
+        {
+          "ticker": "ONDS",
+          "fields": [
+            "rotce.current.rotce_ttm",
+            "rotce.current.rotce_ttm_basis",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.ptbv",
+            "rotce.percentile.rotce"
+          ],
+          "before": {
+            "rotce.current.rotce_ttm": 0.6506754481695957,
+            "rotce.current.rotce_ttm_basis": "avg3",
+            "rotce.percentile.n_quarters": 11,
+            "rotce.percentile.ptbv": 45.45454545454545,
+            "rotce.percentile.rotce": 86.36363636363636
+          },
+          "after": {
+            "rotce.current.rotce_ttm": 0.5557196383602534,
+            "rotce.current.rotce_ttm_basis": "avg4",
+            "rotce.percentile.n_quarters": 12,
+            "rotce.percentile.ptbv": 50.0,
+            "rotce.percentile.rotce": 87.5
+          }
+        },
+        {
+          "ticker": "PLTR",
+          "fields": [
+            "bs_adjustment.ltdebt_estimated_zero",
+            "bs_adjustment.ltdebt_last_confirmed_zero_year",
+            "bs_adjustment.net_debt_period",
+            "financial_health.ltdebt_estimated_zero",
+            "financial_health.ltdebt_last_confirmed_zero_year",
+            "financial_health.net_debt_period",
+            "rotce.current.prev_quarter_end",
+            "rotce.current.reason",
+            "rotce.current.rotce",
+            "rotce.current.rotce_basis",
+            "rotce.current.rotce_ttm",
+            "rotce.current.rotce_ttm_basis",
+            "rotce.current.tce",
+            "rotce.current.tce_prev_quarter",
+            "rotce.percentile.n_excluded_assumed_zero",
+            "rotce.percentile.n_quarters",
+            "rotce.percentile.reason",
+            "rotce.percentile.signal"
+          ],
+          "before": {
+            "bs_adjustment.ltdebt_estimated_zero": true,
+            "bs_adjustment.ltdebt_last_confirmed_zero_year": 2021,
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.ltdebt_estimated_zero": true,
+            "financial_health.ltdebt_last_confirmed_zero_year": 2021,
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "rotce.current.prev_quarter_end": null,
+            "rotce.current.reason": "component_missing",
+            "rotce.current.rotce": null,
+            "rotce.current.rotce_basis": null,
+            "rotce.current.rotce_ttm": null,
+            "rotce.current.rotce_ttm_basis": null,
+            "rotce.current.tce": null,
+            "rotce.current.tce_prev_quarter": null,
+            "rotce.percentile.n_excluded_assumed_zero": 3,
+            "rotce.percentile.n_quarters": 9,
+            "rotce.percentile.reason": "component_missing",
+            "rotce.percentile.signal": null
+          },
+          "after": {
+            "bs_adjustment.ltdebt_estimated_zero": false,
+            "bs_adjustment.ltdebt_last_confirmed_zero_year": null,
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "financial_health.ltdebt_estimated_zero": false,
+            "financial_health.ltdebt_last_confirmed_zero_year": null,
+            "financial_health.net_debt_period": "2026Q2",
+            "rotce.current.prev_quarter_end": "2026-03-31",
+            "rotce.current.reason": null,
+            "rotce.current.rotce": 0.46615378950789615,
+            "rotce.current.rotce_basis": "quarter_average",
+            "rotce.current.rotce_ttm": 0.39589017481103467,
+            "rotce.current.rotce_ttm_basis": "avg5",
+            "rotce.current.tce": 9774194000,
+            "rotce.current.tce_prev_quarter": 8449663000,
+            "rotce.percentile.n_excluded_assumed_zero": 0,
+            "rotce.percentile.n_quarters": 22,
+            "rotce.percentile.reason": null,
+            "rotce.percentile.signal": "neutral"
+          }
+        },
+        {
+          "ticker": "RCAT",
+          "fields": [
+            "bs_adjustment.long_term_debt",
+            "bs_adjustment.net_cash",
+            "bs_adjustment.net_cash_per_share",
+            "bs_adjustment.net_debt_period",
+            "bs_adjustment.short_term_debt",
+            "bs_adjustment.sti_quarterly_missing",
+            "components.analyst_vs_iv",
+            "financial_health.long_term_debt",
+            "financial_health.net_debt",
+            "financial_health.net_debt_period",
+            "financial_health.short_term_debt",
+            "financial_health.sti_quarterly_missing",
+            "financial_health.total_debt",
+            "future_values.1年後",
+            "future_values.2年後",
+            "future_values.3年後",
+            "future_values.4年後",
+            "future_values.5年後",
+            "intrinsic_value_per_share",
+            "stonks.runway.sti_quarterly_missing",
+            "stonks.valuation.net_cash",
+            "upside_percent"
+          ],
+          "before": {
+            "bs_adjustment.long_term_debt": 90762.0,
+            "bs_adjustment.net_cash": 325112238.0,
+            "bs_adjustment.net_cash_per_share": 2.128891046933752,
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "bs_adjustment.short_term_debt": 350000.0,
+            "bs_adjustment.sti_quarterly_missing": false,
+            "components.analyst_vs_iv": 106.4,
+            "financial_health.long_term_debt": 90762.0,
+            "financial_health.net_debt": -325112238.0,
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.short_term_debt": 350000.0,
+            "financial_health.sti_quarterly_missing": false,
+            "financial_health.total_debt": 440762.0,
+            "future_values.1年後": 11.27,
+            "future_values.2年後": 17.47,
+            "future_values.3年後": 27.07,
+            "future_values.4年後": 27.88,
+            "future_values.5年後": 28.72,
+            "intrinsic_value_per_share": 7.266005909451385,
+            "stonks.runway.sti_quarterly_missing": false,
+            "stonks.valuation.net_cash": 325112238.0,
+            "upside_percent": 62.9
+          },
+          "after": {
+            "bs_adjustment.long_term_debt": 0.0,
+            "bs_adjustment.net_cash": 324661000.0,
+            "bs_adjustment.net_cash_per_share": 2.125936262628658,
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "bs_adjustment.short_term_debt": 892000.0,
+            "bs_adjustment.sti_quarterly_missing": true,
+            "components.analyst_vs_iv": 106.5,
+            "financial_health.long_term_debt": 0.0,
+            "financial_health.net_debt": -324661000.0,
+            "financial_health.net_debt_period": "2026Q2",
+            "financial_health.short_term_debt": 892000.0,
+            "financial_health.sti_quarterly_missing": true,
+            "financial_health.total_debt": 892000.0,
+            "future_values.1年後": 11.25,
+            "future_values.2年後": 17.44,
+            "future_values.3年後": 27.04,
+            "future_values.4年後": 27.85,
+            "future_values.5年後": 28.68,
+            "intrinsic_value_per_share": 7.263051125146292,
+            "stonks.runway.sti_quarterly_missing": true,
+            "stonks.valuation.net_cash": 324661000.0,
+            "upside_percent": 62.8
+          }
+        },
+        {
+          "ticker": "RMBS",
+          "fields": [
+            "bs_adjustment.ltdebt_estimated_zero",
+            "bs_adjustment.ltdebt_last_confirmed_zero_year",
+            "bs_adjustment.net_debt_period",
+            "bs_adjustment.stdebt_estimated_zero",
+            "bs_adjustment.stdebt_last_confirmed_zero_year",
+            "financial_health.ltdebt_estimated_zero",
+            "financial_health.ltdebt_last_confirmed_zero_year",
+            "financial_health.net_debt_period",
+            "financial_health.stdebt_estimated_zero",
+            "financial_health.stdebt_last_confirmed_zero_year"
+          ],
+          "before": {
+            "bs_adjustment.ltdebt_estimated_zero": true,
+            "bs_adjustment.ltdebt_last_confirmed_zero_year": 2021,
+            "bs_adjustment.net_debt_period": "Cash=2026Q3/Debt=FY2025",
+            "bs_adjustment.stdebt_estimated_zero": true,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": 2023,
+            "financial_health.ltdebt_estimated_zero": true,
+            "financial_health.ltdebt_last_confirmed_zero_year": 2021,
+            "financial_health.net_debt_period": "Cash=2026Q3/Debt=FY2025",
+            "financial_health.stdebt_estimated_zero": true,
+            "financial_health.stdebt_last_confirmed_zero_year": 2023
+          },
+          "after": {
+            "bs_adjustment.ltdebt_estimated_zero": false,
+            "bs_adjustment.ltdebt_last_confirmed_zero_year": null,
+            "bs_adjustment.net_debt_period": "2026Q3",
+            "bs_adjustment.stdebt_estimated_zero": false,
+            "bs_adjustment.stdebt_last_confirmed_zero_year": null,
+            "financial_health.ltdebt_estimated_zero": false,
+            "financial_health.ltdebt_last_confirmed_zero_year": null,
+            "financial_health.net_debt_period": "2026Q3",
+            "financial_health.stdebt_estimated_zero": false,
+            "financial_health.stdebt_last_confirmed_zero_year": null
+          }
+        },
+        {
+          "ticker": "S",
+          "fields": [
+            "bs_adjustment.ltdebt_estimated_zero",
+            "bs_adjustment.ltdebt_last_confirmed_zero_year",
+            "bs_adjustment.net_debt_period",
+            "financial_health.ltdebt_estimated_zero",
+            "financial_health.ltdebt_last_confirmed_zero_year",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.ltdebt_estimated_zero": true,
+            "bs_adjustment.ltdebt_last_confirmed_zero_year": 2022,
+            "bs_adjustment.net_debt_period": "Cash=2027Q2/Debt=FY2026",
+            "financial_health.ltdebt_estimated_zero": true,
+            "financial_health.ltdebt_last_confirmed_zero_year": 2022,
+            "financial_health.net_debt_period": "Cash=2027Q2/Debt=FY2026"
+          },
+          "after": {
+            "bs_adjustment.ltdebt_estimated_zero": false,
+            "bs_adjustment.ltdebt_last_confirmed_zero_year": null,
+            "bs_adjustment.net_debt_period": "2027Q2",
+            "financial_health.ltdebt_estimated_zero": false,
+            "financial_health.ltdebt_last_confirmed_zero_year": null,
+            "financial_health.net_debt_period": "2027Q2"
+          }
+        },
+        {
+          "ticker": "SOUN",
+          "fields": [
+            "rotce.percentile.n_excluded_assumed_zero",
+            "rotce.percentile.n_quarters"
+          ],
+          "before": {
+            "rotce.percentile.n_excluded_assumed_zero": 3,
+            "rotce.percentile.n_quarters": 10
+          },
+          "after": {
+            "rotce.percentile.n_excluded_assumed_zero": 0,
+            "rotce.percentile.n_quarters": 13
+          }
+        },
+        {
+          "ticker": "SPIR",
+          "fields": [
+            "bs_adjustment.net_debt_period",
+            "financial_health.net_debt_period"
+          ],
+          "before": {
+            "bs_adjustment.net_debt_period": "Cash=2026Q2/Debt=FY2025",
+            "financial_health.net_debt_period": "Cash=2026Q2/Debt=FY2025"
+          },
+          "after": {
+            "bs_adjustment.net_debt_period": "2026Q2",
+            "financial_health.net_debt_period": "2026Q2"
+          }
+        },
+        {
+          "ticker": "TDY",
+          "fields": [
+            "components.max_eps",
+            "components.max_eps_per",
+            "components.max_eps_reliability",
+            "fcf_estimation.sbc",
+            "financial_health.sbc_ttm",
+            "matrix.key_metric_y",
+            "rice.note",
+            "rice.q"
+          ],
+          "before": {
+            "components.max_eps": 21.8489,
+            "components.max_eps_per": 30.4,
+            "components.max_eps_reliability": "MED",
+            "fcf_estimation.sbc": null,
+            "financial_health.sbc_ttm": null,
+            "matrix.key_metric_y": "RICE = 0.907",
+            "rice.note": "RICE-1価値創造係数=0.72(ROIC/WACC=0.72) / R&D未取得（FYTTM@2023-10-01）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-09-28, TTM@2024-09-29, TTM@2023-10-01）: 投資強度が過小になる可能性",
+            "rice.q": 1.244
+          },
+          "after": {
+            "components.max_eps": 22.7128,
+            "components.max_eps_per": 29.2,
+            "components.max_eps_reliability": "HIGH",
+            "fcf_estimation.sbc": 40600000.0,
+            "financial_health.sbc_ttm": 39600000,
+            "matrix.key_metric_y": "RICE = 0.870",
+            "rice.note": "SBC補正済み（純利益+SBCを分母に使用） / RICE-1価値創造係数=0.72(ROIC/WACC=0.72) / R&D未取得（FYTTM@2023-10-01）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-09-28, TTM@2024-09-29, TTM@2023-10-01）: 投資強度が過小になる可能性",
+            "rice.q": 1.1932
+          }
+        },
+        {
+          "ticker": "V",
+          "fields": [
+            "rotce.current.tce"
+          ],
+          "before": {
+            "rotce.current.tce": -12980000000
+          },
+          "after": {
+            "rotce.current.tce": -13508000000
+          }
+        }
+      ]
     }
   ]
 }

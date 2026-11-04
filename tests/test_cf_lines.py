@@ -244,6 +244,9 @@ class TestRule:
     def test_fetch_skips_saved_and_records_404(self, tmp_path, monkeypatch):
         cl.save_record("X", "0000000000-25-000001", {"status": "ok", "lines": [], "accn": "0000000000-25-000001",
                                                      "form": "10-Q", "filed": "2025-05-01"}, data_dir=str(tmp_path))
+        from common.sec_data import bs_lines
+        bs_lines.save_record("X", "0000000000-25-000001", {"status": "ok", "lines": [], "accn": "0000000000-25-000001",
+                                                           "form": "10-Q", "filed": "2025-05-01"}, data_dir=str(tmp_path))
         calls = []
 
         class R:
@@ -262,6 +265,7 @@ class TestRule:
         assert len(calls) == 1  # 保存済み・2021年より前の申告は取らない
         rec = cl.load_records("X", data_dir=str(tmp_path))["0000000000-25-000002"]
         assert rec["status"] == "not_found"
+        assert bs_lines.load_records("X", data_dir=str(tmp_path))["0000000000-25-000002"]["status"] == "not_found"   # 貸借対照表の行も
 
     def test_rate_and_cap_in_code(self):
         assert cl.MIN_GAP_SEC >= 0.1  # 毎秒10件未満

@@ -1450,6 +1450,11 @@ def build_ticker_store(ticker: str) -> dict | None:
     capex_f = fields_out.setdefault("capital_expenditure", {"source_tag": None, "entries": []})
     capex_f["entries"] = fill_layer3_capex(ticker, capex_f.get("entries") or [])
 
+    # 貸借対照表の行の補い（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] ②、2026-11-04。規則は bs_lines.py の1か所）: 純資産の値がある期末日で
+    # 借入金・短期投資・優先株・のれん・無形資産・非支配持分の値が無い期を、申告の貸借対照表の行（独自タグを含む）で埋める
+    from .bs_lines import fill_layer3_bs
+    fill_layer3_bs(ticker, fields_out)
+
     # 申告の履歴（_asof）はQ4の逆算・補完のためのメモリの中だけのキー。読み手に渡す前に消す（[[LAYER3-FIRST-FILED-DATE-1]]）
     for f in fields_out.values():
         strip_asof(f["entries"])

@@ -102,7 +102,7 @@ def tag_items(ticker: str, store: Dict[str, Any], company_facts: Dict[str, Any],
             same = [e for e in prev if bool(e.get("is_annual")) == bool(cur.get("is_annual"))]
             mode = Counter(e.get("source_tag") for e in prev[-4:]).most_common(1)[0][0]
             lt = cur.get("source_tag")
-            if lt and mode and lt != mode and "cf_lines" not in (lt, mode) and same and same[-1]["val"]:
+            if lt and mode and lt != mode and not ({"cf_lines", "bs_lines"} & {lt, mode}) and same and same[-1]["val"]:
                 ratio = abs(cur["val"]) / abs(same[-1]["val"])
                 if ratio > SWITCH_RATIO or ratio < 1 / SWITCH_RATIO:
                     out.append(_item("tag_switch", ticker, f"{field} {mode}→{lt}",
