@@ -1,4 +1,96 @@
 {
   "_comment": "外の変化・ばらつきの検知（System Health の [P] ExternalChange、common/external_watch.py、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）の確認済みの台帳。(kind, ticker, match) が一致した件は⚠️にしない。kind は cik・tag_gap・tag_switch・tag_outside・dup_period・contract。銘柄ごとの事情は comment に書く（直さずに記録する）。",
-  "acknowledged": []
+  "acknowledged": [
+    {
+      "kind": "tag_outside",
+      "ticker": "V",
+      "match": "preferred_stock PreferredStockValueOutstanding",
+      "acknowledged_date": "2026-11-04",
+      "comment": "優先株は PreferredStockValueOutstanding（528M）。VのTCEは負で、ROTCE・P/TBVの結果は変わらない（[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]）"
+    },
+    {
+      "kind": "tag_gap",
+      "ticker": "HWM",
+      "match": "preferred_stock",
+      "acknowledged_date": "2026-11-04",
+      "comment": "優先株は2025-12-31に0（償還済み）で、その後の申告に行が無い。TCEも負で結果は変わらない"
+    },
+    {
+      "kind": "tag_outside",
+      "ticker": "CPRT",
+      "match": "minority_interest RedeemableNoncontrollingInterestEquityCarryingAmount",
+      "acknowledged_date": "2026-11-04",
+      "comment": "償還可能な非支配持分16.6M（2026-07-31）。ROTCE（TCE 8.5B）に0.2%で無視できる（[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]の型）"
+    },
+    {
+      "kind": "tag_gap",
+      "ticker": "LLY",
+      "match": "minority_interest",
+      "acknowledged_date": "2026-11-04",
+      "comment": "非支配持分57.5M（2025-09-30）の後に申告が無い。ROTCE（TCE 12.3B）に0.5%で無視できる（[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]の型）"
+    },
+    {
+      "kind": "tag_gap",
+      "ticker": "MRVL",
+      "match": "rpo",
+      "acknowledged_date": "2026-11-04",
+      "comment": "四半期のRPOが最新の期に無い。TANUKIのRPOの調整は業種の区分（Non-SaaS）で適用されず、理論株価に効かない"
+    },
+    {
+      "kind": "tag_gap",
+      "ticker": "RKLB",
+      "match": "short_term_debt",
+      "acknowledged_date": "2026-11-04",
+      "comment": "1年内返済の借入金が最新の期に無い。RKLBはTANUKIの対象外で、純有利子負債を読む計算が無い"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "LITE",
+      "match": "revenue RevenueFromContractWithCustomerIncludingAssessedTax→RevenueFromContractWithCustomerExcludingAssessedTax",
+      "acknowledged_date": "2026-11-04",
+      "comment": "売上のタグが税の扱いの違うタグに変わっただけで、1.83倍は実際の成長（年度の比較）。値は正しい"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "ONDS",
+      "match": "short_term_debt NotesPayableCurrent→ConvertibleDebtCurrent",
+      "acknowledged_date": "2026-11-04",
+      "comment": "短期借入金が転換社債のタグに変わった。0.36倍は実際の返済で、値は正しい"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "RCAT",
+      "match": "depreciation_and_amortization Depreciation→DepreciationDepletionAndAmortization",
+      "acknowledged_date": "2026-11-04",
+      "comment": "D&Aのタグが変わった。1.81倍は実際の増加で、D&Aは表示だけ（理論株価・判定に入らない）"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "HON",
+      "match": "stock_based_compensation ShareBasedCompensation→AllocatedShareBasedCompensationExpense",
+      "acknowledged_date": "2026-11-04",
+      "comment": "SBCのタグが変わり2.04倍。SBCは表示（最大EPS・RICE）だけで、理論株価・判定に入らない"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "HON",
+      "match": "capital_expenditure PaymentsToAcquirePropertyPlantAndEquipment→SegmentExpenditureAdditionToLongLivedAssets",
+      "acknowledged_date": "2026-11-04",
+      "comment": "分社（Solstice）の組み替えでセグメントの合計のタグに変わった（0.24倍）。組み替えは[[QUARTERLY-BASIS-MIX-1]]のbasis_mixで扱う"
+    },
+    {
+      "kind": "contract",
+      "ticker": "ES=F",
+      "match": "2026-10-30",
+      "acknowledged_date": "2026-11-04",
+      "comment": "Yahooが2026-10-30の行で月の記号の無い限月「ES.CME」を返した（前後の日はESZ26.CME）。Market Pulseが限月を扱うのはCL=F・GC=Fだけで、ES=Fは表示だけ（[[MARKETDATA-FUTURES-ROLL-1]]）"
+    },
+    {
+      "kind": "contract",
+      "ticker": "NQ=F",
+      "match": "2026-10-30",
+      "acknowledged_date": "2026-11-04",
+      "comment": "Yahooが2026-10-30の行で月の記号の無い限月「NQ.CME」を返した（前後の日はNQZ26.CME）。Market Pulseが限月を扱うのはCL=F・GC=Fだけで、NQ=Fは表示だけ（[[MARKETDATA-FUTURES-ROLL-1]]）"
+    }
+  ]
 }
