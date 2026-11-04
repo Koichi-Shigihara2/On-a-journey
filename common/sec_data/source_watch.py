@@ -16,16 +16,110 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+import re
+from collections import Counter
+from datetime import date, datetime, timezone
 from typing import Any, Dict, Iterable, List, Optional
 
 _DIR = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.dirname(os.path.dirname(_DIR))
 RESULT_FILE = os.path.join(_DIR, "data", "_source_watch.json")
 CIK_LOOKUP = os.path.join(_REPO, "config", "cik_lookup.csv")
+CONCEPT_DEFS = os.path.join(_REPO, "config", "sec_concept_definitions.json")
+
+# 出力（理論株価・判定・funda・Stonks・ROTCE・P/TBV等）に効く項目（4aの対象）
+KEY_FIELDS = (
+    "revenue", "operating_cash_flow", "capital_expenditure", "stock_based_compensation", "depreciation_and_amortization",
+    "net_income", "operating_income", "gross_profit", "cash_and_equivalents", "short_term_debt", "long_term_debt",
+    "stockholders_equity", "shares_diluted", "goodwill", "intangible_assets_excl_goodwill", "preferred_stock",
+    "minority_interest", "rpo", "short_term_investments", "total_liabilities", "eps_diluted",
+)
+# 4c: 項目に当たる候補外のタグ（完全な名前の表。部分一致は別の項目〈非支配持分の増減等〉まで拾うので使わない）。
+# 前受収益（ContractWithCustomerLiability*）はLayer3の deferred_revenue を読む処理が無いので入れない
+OUTSIDE_TAGS = {
+    "stock_based_compensation": ("StockOptionPlanExpense", "RestrictedStockExpense", "EmployeeBenefitsAndShareBasedCompensation"),
+    "preferred_stock": ("ConvertiblePreferredStockNonredeemableOrRedeemableIssuerOptionValue", "PreferredStockValueOutstanding",
+                        "PreferredStockIncludingAdditionalPaidInCapital",
+                        "PreferredStockIncludingAdditionalPaidInCapitalNetOfDiscount"),
+    "intangible_assets_excl_goodwill": ("IndefiniteLivedTrademarks", "IndefiniteLivedIntangibleAssetsExcludingGoodwill"),
+    "minority_interest": ("MinorityInterest", "RedeemableNoncontrollingInterestEquityCarryingAmount"),
+}
+SWITCH_RATIO = 1.5          # 4b: 前の期の 1/1.5〜1.5 倍の外
+DUP_WINDOW_DAYS = 730       # 重複を数える窓（TTMの系列の範囲）
+FORMS = ("10-K", "10-Q")
+
+
+def _days(a: str, b: str) -> int:
+    return (date.fromisoformat(b) - date.fromisoformat(a)).days
+
+
+def latest_filing(company_facts: Dict[str, Any]):
+    """最新の10-K・10-Q（提出日の最大）の (accn, 当期の期末, その申告の当期の0でない値を持つタグの集合)"""
+    gaap = (company_facts or {}).get("facts", {}).get("us-gaap") or {}
+    best = None
+    for d in gaap.values():
+        for u in (d.get("units") or {}).values():
+            for e in u:
+                if e.get("form") in FORMS and e.get("accn") and (best is None or e.get("filed", "") > best[0]):
+                    best = (e["filed"], e["accn"])
+    if best is None:
+        return None, None, set()
+    accn = best[1]
+    ends = [e["end"] for d in gaap.values() for u in (d.get("units") or {}).values() for e in u if e.get("accn") == accn and e.get("end")]
+    end = max(ends) if ends else None
+    tags = {tag for tag, d in gaap.items() for u in (d.get("units") or {}).values() for e in u
+            if e.get("accn") == accn and e.get("end") == end and e.get("val") not in (None, 0)}
+    return accn, end, tags
+
 
 def _item(kind: str, ticker: str, match: str, detail: str) -> Dict[str, str]:
     return {"kind": kind, "ticker": ticker, "match": match, "detail": detail}
+
+
+def tag_items(ticker: str, store: Dict[str, Any], company_facts: Dict[str, Any],
+              defs: Optional[Dict[str, Any]] = None) -> List[Dict[str, str]]:
+    """4a・4b・4c・重複の件（Layer3のストアと company_facts から）"""
+    from .layer3_builder import get_field_entries
+    if defs is None:
+        with open(CONCEPT_DEFS, encoding="utf-8") as f:
+            defs = json.load(f)["fields"]
+    accn, end, in_latest = latest_filing(company_facts)
+    if not end or not store:
+        return []
+    out: List[Dict[str, str]] = []
+    for field, fd in defs.items():
+        cands = set(fd.get("candidates") or [])
+        ents = [e for e in get_field_entries(store, field) if not e.get("is_ytd") and e.get("val") is not None]
+        at_end = [e for e in ents if e["end"] == end]
+        prev = sorted((e for e in ents if e["end"] < end and _days(e["end"], end) <= 400), key=lambda e: e["end"])
+        if field in KEY_FIELDS:
+            yago = [e for e in ents if 350 <= _days(e["end"], end) <= 380 and e.get("val") not in (0, 0.0)]
+            if yago and not at_end and not (cands & in_latest):
+                out.append(_item("tag_gap", ticker, field,
+                                 f"{field}: {yago[-1]['end']} に {yago[-1].get('source_tag')} の値があり、最新の申告（{accn}、期末 {end}）に値も候補のタグも無い"))
+        if at_end and prev:
+            cur = at_end[0]
+            same = [e for e in prev if bool(e.get("is_annual")) == bool(cur.get("is_annual"))]
+            mode = Counter(e.get("source_tag") for e in prev[-4:]).most_common(1)[0][0]
+            lt = cur.get("source_tag")
+            if lt and mode and lt != mode and "cf_lines" not in (lt, mode) and same and same[-1]["val"]:
+                ratio = abs(cur["val"]) / abs(same[-1]["val"])
+                if ratio > SWITCH_RATIO or ratio < 1 / SWITCH_RATIO:
+                    out.append(_item("tag_switch", ticker, f"{field} {mode}→{lt}",
+                                     f"{field}: 期末 {end} のタグが {mode}→{lt}、値 {same[-1]['val']:,.0f}→{cur['val']:,.0f}（{ratio:.2f}倍）"))
+        win = [e for e in ents if not e.get("is_implied") and 0 <= _days(e["end"], end) <= DUP_WINDOW_DAYS]
+        for ann in (False, True):
+            es = sorted({e["end"] for e in win if bool(e.get("is_annual")) == ann})
+            for a, b in zip(es, es[1:]):
+                if 0 < _days(a, b) <= 6:
+                    out.append(_item("dup_period", ticker, f"{field} {a}/{b}",
+                                     f"{field}: {'年次' if ann else '四半期'}の期末 {a} と {b} の2件（同じ期の期末の数日違い）"))
+        if field in OUTSIDE_TAGS and not at_end:
+            for tg in OUTSIDE_TAGS[field]:
+                if tg in in_latest and tg not in cands:
+                    out.append(_item("tag_outside", ticker, f"{field} {tg}",
+                                     f"{field}: 最新の申告（{accn}、期末 {end}）に候補外のタグ {tg} の値があり、この項目に値が無い"))
+    return out
 
 
 def cik_items(company_tickers: Dict[str, Any], lookup_path: str = CIK_LOOKUP) -> List[Dict[str, str]]:

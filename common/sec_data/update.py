@@ -272,6 +272,14 @@ def process_ticker(ticker: str, fetcher: SECFetcher, parser: SECParser, data_dir
     fields_sample = list(ttm_series[0].get("flow", {}).keys()) if ttm_series else []
     print(f"   TTM: {n} periods → {fields_sample[:5]}...")
 
+    # 6. 取得元の変化・ばらつきの検知（タグの途切れ・切り替え・候補外・期末の数日違い。直さずに知らせる、source_watch.py）。
+    #    検査だけなので、例外は銘柄の失敗にしない
+    try:
+        ctx["watch"] = source_watch.tag_items(ticker, store, company_facts)
+        if ctx["watch"]:
+            print(f"   取得元の変化の検知: {len(ctx['watch'])}件（" + "・".join(sorted({i['kind'] for i in ctx['watch']})) + "）")
+    except Exception as e:  # noqa: BLE001
+        print(f"   [WARN] 取得元の変化の検知のエラー: {e}")
     return entry
 
 
