@@ -1142,6 +1142,14 @@
     },
     {
      "file": "tests/test_external_watch.py",
+     "line": 39,
+     "func": "test_write_partial_run_keeps_other_tickers",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/source_watch.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_external_watch.py",
      "line": 41,
      "func": "test_write_partial_run_keeps_other_tickers",
      "how": "保存済みファイル",
@@ -1149,24 +1157,16 @@
      "type": "テスト"
     },
     {
-     "file": "tests/test_external_watch.py",
-     "line": 43,
-     "func": "test_write_partial_run_keeps_other_tickers",
-     "how": "保存済みファイル",
-     "via": "common/sec_data/source_watch.py::load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_external_watch.py",
-     "line": 108,
+     "file": "tests/test_source_watch_tags.py",
+     "line": 51,
      "func": "test_saved_source_watch_matches_rules",
      "how": "保存済みファイル",
      "via": "common/sec_data/source_watch.py::load",
      "type": "テスト"
     },
     {
-     "file": "tests/test_external_watch.py",
-     "line": 110,
+     "file": "tests/test_source_watch_tags.py",
+     "line": 53,
      "func": "test_saved_source_watch_matches_rules",
      "how": "保存済みファイル",
      "via": "common/sec_data/source_watch.py::load",
@@ -1181,7 +1181,7 @@
    "definitions": [],
    "decision_effect": [],
    "reader_count": 3,
-   "reader_count_test": 1,
+   "reader_count_test": 2,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "SECの取得元の変化・ばらつきの検知の結果（CIKの照合・タグの途切れ・切り替え・候補外・期末の数日違い）。SEC_Data_Updateが書き、System Healthの[P]が台帳と比べて読む（source_watch.py・external_watch.py）",
@@ -10954,7 +10954,7 @@
     },
     {
      "file": "tests/test_external_watch.py",
-     "line": 25,
+     "line": 23,
      "func": "test_cik_items",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -12884,7 +12884,8 @@
     "common/sec_data/update.py"
    ],
    "tests": [
-    "tests/test_external_watch.py"
+    "tests/test_external_watch.py",
+    "tests/test_source_watch_tags.py"
    ]
   },
   {

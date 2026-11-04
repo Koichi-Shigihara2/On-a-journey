@@ -146,7 +146,7 @@
 - テスト・保存済みファイル: `tests/test_close_missing_price.py` 行 47・59・70・85・97・103・108・137・143・150・161・237 ほか3（経由 `common/market_data/fetcher.py::_replace_provisional_records`、`common/market_data/fetcher.py::fetch_daily_prices`、`common/market_data/fetcher.py::find_missing_trading_days` ほか）
 - テスト・保存済みファイル: `tests/test_common_path_guard.py` 行 137・140・152・153（経由 `common/sec_data/rotce.py::_load_prices`）
 - テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/market_data/reader.py::_load_daily_payload`）
-- テスト・保存済みファイル: `tests/test_external_watch.py` 行 146・150（経由 `common/market_data/futures_roll.py::_load`）
+- テスト・保存済みファイル: `tests/test_futures_roll.py` 行 55・60（経由 `common/market_data/futures_roll.py::_load`）
 - テスト・保存済みファイル: `tests/test_market_data_daily_write.py` 行 132・136・144・161・176・183（経由 `common/market_data/fetcher.py::backfill_daily_prices`、`common/market_data/fetcher.py::find_missing_trading_days`、`common/market_data/fetcher.py::mark_and_repair_provisional_rows`）
 - テスト・保存済みファイル: `tests/test_market_data_fetcher.py` 行 680・711・728・739・756（経由 `common/market_data/fetcher.py::backfill_daily_prices`）
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 43・48・57・64・69・74・75・80・96・108・122・127 ほか30（経由 `common/market_data/reader.py::_load_daily_payload`）
