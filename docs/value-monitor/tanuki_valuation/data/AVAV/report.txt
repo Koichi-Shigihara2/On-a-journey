@@ -1,5 +1,5 @@
 AVAV INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-04T10:13:22+09:00
+Generated: 2026-11-04T13:02:50+09:00
 Price: $123.53
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -33,7 +33,7 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×中効率
-Key_Metric_Y: RICE = 2.876
+Key_Metric_Y: RICE = 2.839
 Deviation_Rate: -29.7%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -82,8 +82,8 @@ FCF_TTM_End: 2026-08-01 (FCF/RICE算出に用いたTTM期末日)
    [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
     以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
     評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
-FCF_Base: $198.27M (5yr平均 + R&D補正) [実績avg: $-43.6M]
-FCF_Breakdown（TTM 2026-08-01）: OCF=$59M / CapEx=$84M / SBC(非現金)=$32M / D&A=$231M
+FCF_Base: $198.27M (5yr平均 + R&D補正) [実績avg: $-50.1M]
+FCF_Breakdown（TTM 2026-08-01）: OCF=$59M / CapEx=$104M / SBC(非現金)=$32M / D&A=$231M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
@@ -104,11 +104,11 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   9.0%       $81.92  $102.29  $125.49
   10.0%       $69.72  $86.79  $105.87
   11.0%       $60.58  $75.18  $91.21
-DCF_FCF_Base_Detail: $198.3M (外れ値$-25M/FY2026除外後4点平均)
-DCF_FCF_Base_Excluded: FY2026=$-25M (outlier: >60% deviation from 4yr series)
+DCF_FCF_Base_Detail: $198.3M (外れ値$-45M/FY2026除外後4点平均)
+DCF_FCF_Base_Excluded: FY2026=$-45M (outlier: >60% deviation from 4yr series)
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 全項目がマクロ変動による一時的影響または一過性の在庫評価損と明記されており、事業運営上の一時的な問題と判断される。
+  Reasoning: すべての項目の理由が『マクロ変動による一時的影響』または『一過性の在庫評価損』と明記されており、事業運営上の一時的な問題と判断される。
 Financial_Health:
   Net_Debt: $+0.15B (negative=net cash)
   Total_Debt: $0.73B  Cash: $0.28B  ST_Invest: $0.30B
@@ -124,7 +124,7 @@ FCF_History:
   2023: $-0.00B (FCF_Margin: -0.6%)
   2024: $-0.01B (FCF_Margin: -1.1%)
   2025: $-0.02B (FCF_Margin: -2.9%)
-  2026: $-0.14B (FCF_Margin: -7.1%)
+  2026: $-0.16B (FCF_Margin: -8.3%)
 Segment_Breakdown:
   Uncrewed_Systems: $0.8B (40%, YoY 12%)
   Loitering_Munitions: $1.0B (50%, YoY 20%)
@@ -206,13 +206,13 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=2.011
-BASE: RICE=2.876
-BULL: RICE=3.458
+BEAR: RICE=1.986
+BASE: RICE=2.839
+BULL: RICE=3.414
 Components (BASE scenario):
 G  = 16.3%  [TANUKI forward growth rate]
 Q  = 0.7849   [OCF / (NetIncome + SBC), 3yr avg]
-CF = 2.2478  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+CF = 2.2191  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 10.0000  [R&D除外・CapExのみ投資強度]
 RICE_adj = 12.794  [参考：R&D資本化想定]
 WACC = 10.0%

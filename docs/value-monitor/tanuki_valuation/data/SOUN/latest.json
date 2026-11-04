@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 61.0,
-  "calculation_date": "2026-11-04T10:18:18+09:00",
+  "calculation_date": "2026-11-04T13:09:19+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -174,7 +174,7 @@
     "base_fcf": 13513600.0,
     "method": "avg_5yr",
     "fcf_5yr_avg": 13513600.0,
-    "fcf_2yr_avg": -114329000.0,
+    "fcf_2yr_avg": -119031000.0,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -185,7 +185,7 @@
     "rule": "latest_negative",
     "fiscal_year": 2025,
     "period_label": "TTM 2026-06-30",
-    "fcf_value": -115879000.0,
+    "fcf_value": -125283000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -196,7 +196,7 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "TTM 2026-06-30 FCF($-115.9M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
+    "note": "TTM 2026-06-30 FCF($-125.3M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-06-30",
@@ -205,11 +205,11 @@
     "method": "bottom_up",
     "estimated_fcf": 13513600.0,
     "raw_fcf": 13513600.0,
-    "capex": 1370000.0,
+    "capex": 10774000.0,
     "sbc": 78538000.0,
     "ocf": -114509000.0,
     "da": 18824000,
-    "note": "OCF$-0.11B - CapEx$0.00B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.01B）"
+    "note": "OCF$-0.11B - CapEx$0.01B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.01B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -283,21 +283,22 @@
   },
   "fcf_source": "ttm_series",
   "fcf_ttm_end": "2026-06-30",
-  "fcf_ttm_periods": 4,
+  "fcf_ttm_periods": 5,
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -96422250.0,
-    "fcf_2yr_avg": -114329000.0,
+    "fcf_5yr_avg": -92446471.4,
+    "fcf_2yr_avg": -119031000.0,
     "structural_deficit": true,
     "fcf_base_used": 45634933.333333336,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -115879000.0,
+      -125283000.0,
       -112779000.0,
-      -74938000.0,
-      -82093000.0
+      -75216000.0,
+      -81815000.0,
+      -67139357.0
     ],
     "diluted_shares": 444112161,
     "roe_10yr_avg": -0.5433997576468458,
@@ -324,7 +325,7 @@
     "pv_high": 340207378.3111422,
     "pv_terminal": 774752622.0502459,
     "roe_used": -0.5433997576468458,
-    "fcf_floor_applied": 109935850.0,
+    "fcf_floor_applied": 105960071.4,
     "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -404,15 +405,17 @@
     "matrix": "④キャッシュ創出力系",
     "quadrant": "右下",
     "label": "割安×低FCF",
-    "key_metric_y": "FCF_Margin = -58.7%",
+    "key_metric_y": "FCF_Margin = -61.0%",
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-5",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-4"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-4",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-5"
   ],
   "fcf_history": [
     {
@@ -437,8 +440,8 @@
     },
     {
       "year": 2025,
-      "fcf": -99124000,
-      "fcf_margin": -58.7
+      "fcf": -103124000,
+      "fcf_margin": -61.0
     }
   ],
   "financial_health": {
@@ -474,7 +477,7 @@
     "shares_yr_now": 409456342,
     "shares_yr_3ago": 157317695
   },
-  "computed_runway_months": 24.548161898228482,
+  "computed_runway_months": 23.59598153679066,
   "net_current_assets_ratio": 0.1127,
   "dupont": {
     "ni_ttm": -137027000,

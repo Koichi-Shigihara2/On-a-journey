@@ -1,5 +1,5 @@
 APP INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-04T10:13:12+09:00
+Generated: 2026-11-04T13:02:38+09:00
 Price: $245.51
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -32,7 +32,7 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 右上
 Label: 割安×高効率
-Key_Metric_Y: RICE = 12.127
+Key_Metric_Y: RICE = 15.687
 Deviation_Rate: +464.8%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -112,12 +112,12 @@ Financial_Health:
   Next_Earnings_Date: 2026-11-05
   DuPont_ROE: 純利益率67.8% × 資産回転率0.79x × 財務レバレッジ2.61x = ROE139.4%
 FCF_History:
-  2021: $0.36B (FCF_Margin: 12.9%)
-  2022: $0.41B (FCF_Margin: 14.6%)
+  2021: $0.36B (FCF_Margin: 12.8%)
+  2022: $0.41B (FCF_Margin: 14.4%)
   2023: $1.06B (FCF_Margin: 32.2%)
   2024: $2.09B (FCF_Margin: 44.5%)
   2025: $3.97B (FCF_Margin: 72.5%)
-  FCF_CAGR_3yr: +112.8%
+  FCF_CAGR_3yr: +113.8%
 Segment_Breakdown:
   Software Platform: $5.5B (100%, YoY 44%)
   Segment_Weighted_Growth: 44.3%
@@ -198,15 +198,13 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=8.486
-BASE: RICE=12.127
-BULL: RICE=14.536
+BEAR: RICE=10.977
+BASE: RICE=15.687
+BULL: RICE=18.803
 Components (BASE scenario):
 G  = 44.3%  [TANUKI forward growth rate]
 Q  = 1.0538   [OCF / (NetIncome + SBC), 3yr avg]
-CF = 1.2988  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
-CF_adj = 10.0000  [R&D除外・CapExのみ投資強度]
-RICE_adj = 93.370  [参考：R&D資本化想定]
+CF = 1.6801  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 WACC = 10.0%
 VC_Factor = 2.00  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
 ROIC_WACC_Ratio = 10.38  [NOPAT/InvestedCapital / 0.10]

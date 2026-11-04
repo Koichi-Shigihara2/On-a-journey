@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 62.9,
-  "calculation_date": "2026-11-04T10:17:29+09:00",
+  "calculation_date": "2026-11-04T13:08:10+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -260,7 +260,7 @@
     "cf_years": 0,
     "avg_intensity": 0.0,
     "warnings": true,
-    "note": "Q計算不可（OCF/純利益データなし）"
+    "note": "年次データ不足（最低2年分必要）"
   },
   "fcf_source": "annual_fallback",
   "fcf_ttm_end": null,
@@ -275,7 +275,7 @@
     "substituted_by_annual": true,
     "note": "最新期の営業CFが未取得（最新期は年次の値で代用）"
   },
-  "rice_data_source": "annual_fallback",
+  "rice_data_source": "ttm_series",
   "components": {
     "fcf_5yr_avg": -16477214.333333334,
     "fcf_2yr_avg": -24016321.0,
@@ -398,11 +398,13 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-5",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-4"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-4",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-5"
   ],
   "fcf_history": [
     {

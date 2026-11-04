@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 126.2,
-  "calculation_date": "2026-11-04T10:18:16+09:00",
+  "calculation_date": "2026-11-04T13:09:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -194,7 +194,7 @@
     "base_fcf": 289068320.0,
     "method": "avg_5yr",
     "fcf_5yr_avg": 289068320.0,
-    "fcf_2yr_avg": -5906858500.0,
+    "fcf_2yr_avg": -5914573000.0,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -205,7 +205,7 @@
     "rule": "latest_negative",
     "fiscal_year": 2025,
     "period_label": "TTM 2026-06-30",
-    "fcf_value": -8792989000.0,
+    "fcf_value": -8799784000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -216,7 +216,7 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "TTM 2026-06-30 FCF($-8793.0M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
+    "note": "TTM 2026-06-30 FCF($-8799.8M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-06-30",
@@ -225,11 +225,11 @@
     "method": "bottom_up",
     "estimated_fcf": 289068320.0,
     "raw_fcf": 289068320.0,
-    "capex": 290499000.0,
+    "capex": 297294000.0,
     "sbc": 283923000.0,
     "ocf": -8502490000.0,
     "da": 262809000.0,
-    "note": "OCF$-8.50B - CapEx$0.29B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.29B）"
+    "note": "OCF$-8.50B - CapEx$0.30B（TTM 2026-06-30。5yr/2yr平均・外れ値除外後の採用値は$0.29B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -298,18 +298,18 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -5553781000.0,
-    "fcf_2yr_avg": -5906858500.0,
+    "fcf_5yr_avg": -5561907600.0,
+    "fcf_2yr_avg": -5914573000.0,
     "structural_deficit": true,
     "fcf_base_used": 447912653.3333333,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -8792989000.0,
-      -3020728000.0,
-      -2811617000.0,
-      -9681553000.0,
-      -3462018000.0
+      -8799784000.0,
+      -3029362000.0,
+      -2821229000.0,
+      -9694134000.0,
+      -3465029000.0
     ],
     "diluted_shares": 1296617325,
     "roe_10yr_avg": -0.15120344803977956,
@@ -336,7 +336,7 @@
     "pv_high": 6230098021.777416,
     "pv_terminal": 11856340832.357136,
     "roe_used": -0.15120344803977956,
-    "fcf_floor_applied": 5842849320.0,
+    "fcf_floor_applied": 5850975920.0,
     "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -420,11 +420,13 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-5",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-4"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-4",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-5"
   ],
   "fcf_history": [
     {
@@ -434,23 +436,23 @@
     },
     {
       "year": 2022,
-      "fcf": -7349059000,
-      "fcf_margin": -467.0
+      "fcf": -7359591000,
+      "fcf_margin": -467.7
     },
     {
       "year": 2023,
-      "fcf": -7338548000,
-      "fcf_margin": -345.7
+      "fcf": -7348331000,
+      "fcf_margin": -346.2
     },
     {
       "year": 2024,
-      "fcf": -1274072000,
-      "fcf_margin": -47.6
+      "fcf": -1283424000,
+      "fcf_margin": -48.0
     },
     {
       "year": 2025,
-      "fcf": -3984902000,
-      "fcf_margin": -110.3
+      "fcf": -3993575000,
+      "fcf_margin": -110.5
     }
   ],
   "financial_health": {
@@ -477,7 +479,7 @@
     "shares_yr_now": 1251767000,
     "shares_yr_3ago": 900886000
   },
-  "computed_runway_months": 22.13923152940775,
+  "computed_runway_months": 22.091150911151036,
   "dupont": {
     "ni_ttm": 636264000,
     "revenue_ttm": 4305695000,
@@ -545,7 +547,7 @@
     "damodaran_year": 2025,
     "rev_cagr_3yr": 0.31930345986002884,
     "rev_cagr_5yr": 0.4490743379621287,
-    "g_fundamental": 0.001124443320558547,
+    "g_fundamental": 0.0023004106326536006,
     "recommended_g_median": 0.31930345986002884,
     "recommended_g": 0.31930345986002884,
     "growth_model": "median",
@@ -553,7 +555,7 @@
     "hype_phase_used": 4,
     "signals": [
       "過去実績(3yr:31.9% / 5yr:44.9%)と整合 ✅",
-      "RR×ROIC(0.1%)：再投資より還元重視型、または期待値先行 ℹ️"
+      "RR×ROIC(0.2%)：再投資より還元重視型、または期待値先行 ℹ️"
     ],
     "warnings": [],
     "fcf_margin_bear_multiplier": 1.0,

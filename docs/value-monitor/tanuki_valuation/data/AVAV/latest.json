@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -29.7,
-  "calculation_date": "2026-11-04T10:13:22+09:00",
+  "calculation_date": "2026-11-04T13:02:50+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -163,7 +163,7 @@
     "base_fcf": 158147600.0,
     "method": "avg_5yr",
     "fcf_5yr_avg": 158147600.0,
-    "fcf_2yr_avg": -109270000.0,
+    "fcf_2yr_avg": -125450000.0,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -174,7 +174,7 @@
     "rule": "latest_negative",
     "fiscal_year": 2026,
     "period_label": "TTM 2026-08-01",
-    "fcf_value": -25031000.0,
+    "fcf_value": -44782000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -233,11 +233,11 @@
       "total_transient_amount": 15995000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "全項目がマクロ変動による一時的影響または一過性の在庫評価損と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "すべての項目の理由が『マクロ変動による一時的影響』または『一過性の在庫評価損』と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "excluded",
-    "note": "TTM 2026-08-01 FCF($-25.0M)がマイナス。一過性費用合計$16M(金融関連(貸倒引当金繰入（異常変動分） $5M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、在庫・サプライチェーン関連(在庫評価損・減損 $3M)、金融関連(貸倒引当金繰入（異常変動分） $-0M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $2M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M))による影響と判断し除外。5年平均($-44M)を採用。"
+    "note": "TTM 2026-08-01 FCF($-44.8M)がマイナス。一過性費用合計$16M(金融関連(貸倒引当金繰入（異常変動分） $5M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $0M)、在庫・サプライチェーン関連(在庫評価損・減損 $3M)、金融関連(貸倒引当金繰入（異常変動分） $-0M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M)、金融関連(貸倒引当金繰入（異常変動分） $2M)、在庫・サプライチェーン関連(在庫評価損・減損 $2M))による影響と判断し除外。5年平均($-50M)を採用。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-08-01",
@@ -246,11 +246,11 @@
     "method": "bottom_up",
     "estimated_fcf": 158147600.0,
     "raw_fcf": 158147600.0,
-    "capex": 83849000.0,
+    "capex": 103600000.0,
     "sbc": 31832000,
     "ocf": 58818000.0,
     "da": 230816000,
-    "note": "OCF$0.06B - CapEx$0.08B（TTM 2026-08-01。5yr/2yr平均・外れ値除外後の採用値は$0.16B）"
+    "note": "OCF$0.06B - CapEx$0.10B（TTM 2026-08-01。5yr/2yr平均・外れ値除外後の採用値は$0.16B）"
   },
   "software_system_provisional": {
     "note": ""
@@ -311,30 +311,30 @@
   "rice": {
     "available": true,
     "q": 0.7849,
-    "cf_conversion": 2.2478,
+    "cf_conversion": 2.2191,
     "cf_adj": 10.0,
     "wacc": 0.1,
     "q_years": 1,
     "cf_years": 3,
-    "avg_intensity": 0.2277,
+    "avg_intensity": 0.2315,
     "warnings": true,
     "note": "SBC補正済み（純利益+SBCを分母に使用） / Q: 1年のみ使用（3年要求） / 販売・マーケティング費未取得（FYTTM@2023-07-29）: 投資強度が過小になる可能性",
     "bear": {
       "growth_rate": 0.114,
-      "rice": 2.011,
-      "rice_per_ratio": 0.0703,
+      "rice": 1.986,
+      "rice_per_ratio": 0.0694,
       "rice_adj": 8.948
     },
     "base": {
       "growth_rate": 0.163,
-      "rice": 2.876,
-      "rice_per_ratio": 0.1005,
+      "rice": 2.839,
+      "rice_per_ratio": 0.0992,
       "rice_adj": 12.794
     },
     "bull": {
       "growth_rate": 0.196,
-      "rice": 3.458,
-      "rice_per_ratio": 0.1209,
+      "rice": 3.414,
+      "rice_per_ratio": 0.1193,
       "rice_adj": 15.385
     }
   },
@@ -344,15 +344,15 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -43590600.0,
-    "fcf_2yr_avg": -109270000.0,
+    "fcf_5yr_avg": -50062600.0,
+    "fcf_2yr_avg": -125450000.0,
     "structural_deficit": true,
     "fcf_base_used": 198268600.0,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -25031000.0,
-      -193509000.0,
+      -44782000.0,
+      -206118000.0,
       35924000.0,
       -34656000.0,
       -681000.0
@@ -382,7 +382,7 @@
     "pv_high": 870940616.195072,
     "pv_terminal": 2610569392.27405,
     "roe_used": 0.002411992231078816,
-    "fcf_floor_applied": 201738200.0,
+    "fcf_floor_applied": 208210200.0,
     "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -462,15 +462,17 @@
     "matrix": "①投資効率系",
     "quadrant": "左下",
     "label": "割高×中効率",
-    "key_metric_y": "RICE = 2.876",
+    "key_metric_y": "RICE = 2.839",
     "qx": false,
     "qy": false
   },
+  "method_change": "FCF-DEFINITION-SINGLE-SOURCE-1-5",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-4"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-4",
+    "FCF-DEFINITION-SINGLE-SOURCE-1-5"
   ],
   "fcf_history": [
     {
@@ -495,8 +497,8 @@
     },
     {
       "year": 2026,
-      "fcf": -140948000,
-      "fcf_margin": -7.1
+      "fcf": -164622000,
+      "fcf_margin": -8.3
     }
   ],
   "financial_health": {
@@ -530,7 +532,7 @@
     "shares_yr_now": 49087346,
     "shares_yr_3ago": 25044881
   },
-  "computed_runway_months": 49.399239435820306,
+  "computed_runway_months": 42.29522178080694,
   "net_current_assets_ratio": 0.2294,
   "dupont": {
     "ni_ttm": -202818000,

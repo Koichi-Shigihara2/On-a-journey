@@ -1,5 +1,5 @@
 ONDS INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-04T10:16:54+09:00
+Generated: 2026-11-04T13:07:38+09:00
 Price: $5.79
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -89,7 +89,7 @@ FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
    [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
     以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
     評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
-FCF_Base: $7.05M (4yr平均 + R&D補正) [実績avg: $-69.1M]
+FCF_Base: $7.05M (5yr平均 + R&D補正) [実績avg: $-57.6M]
 FCF_Breakdown（TTM 2026-06-30）: OCF=$-161M / CapEx=$11M / SBC(非現金)=$101M / D&A=$2M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
@@ -111,11 +111,11 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   9.0%       $2.70  $2.87  $3.11
   10.0%       $2.65  $2.79  $2.99
   11.0%       $2.61  $2.74  $2.90
-DCF_FCF_Base_Detail: $7.0M (外れ値$-172M/FY2025除外後3点平均)
-DCF_FCF_Base_Excluded: FY2025=$-172M (outlier: >60% deviation from 3yr series)
+DCF_FCF_Base_Detail: $7.0M (外れ値$-172M/FY2025除外後4点平均)
+DCF_FCF_Base_Excluded: FY2025=$-172M (outlier: >60% deviation from 4yr series)
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 市場金利変動によるローン公正価値の評価損益は、事業運営の本質とは無関係な金融市場要因による一時的評価替えであり、構造的悪化を示すものではない。
+  Reasoning: 市場金利変動によるローン公正価値評価損益は、事業運営とは無関係の金融評価項目の一時的変動であり、収益力の構造的悪化を示すものではない。
 Financial_Health:
   Net_Debt: $-1.38B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.66B  ST_Invest: $0.73B
@@ -131,8 +131,8 @@ FCF_History:
   2021: $-0.02B (FCF_Margin: -613.0%)
   2022: $-0.04B (FCF_Margin: -1921.3%)
   2023: $-0.03B (FCF_Margin: -218.1%)
-  2024: $-0.04B (FCF_Margin: -488.1%)
-  2025: $-0.04B (FCF_Margin: -80.4%)
+  2024: $-0.04B (FCF_Margin: -488.9%)
+  2025: $-0.04B (FCF_Margin: -80.5%)
 Segment_Breakdown:
   Total: $0.1B (100%, YoY 30%)
   Segment_Weighted_Growth: 30.0%
@@ -214,14 +214,14 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=-0.237
+BEAR: RICE=-0.236
 BASE: RICE=-0.338
-BULL: RICE=-0.406
+BULL: RICE=-0.405
 Components (BASE scenario):
 G  = 30.0%  [TANUKI forward growth rate]
 Q  = -0.6008   [OCF / (NetIncome + SBC), 3yr avg]
-CF = 0.1875  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
-CF_adj = 1.4747  [R&D除外・CapExのみ投資強度]
+CF = 0.1873  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+CF_adj = 1.4656  [R&D除外・CapExのみ投資強度]
 WACC = 10.0%
 SBC_Adjusted: true
 Definition:
