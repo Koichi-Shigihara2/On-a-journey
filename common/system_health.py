@@ -1095,6 +1095,27 @@ def check_o_intraday() -> tuple[str, bool, str]:
     return r["label"], r["ok"], r["detail"]
 
 
+# ── P. 外の変化・ばらつき（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]、2026-11-04） ──
+# 取得元の変化を直さずに検知して知らせる欄。最初の項目は MACRO PULSE のFOMCの予定のキャッシュ（予定のページが取れない日の予備、
+# common/macro_data/fomc_calendar.py）。重大度は取得の失敗の表の「予備のキャッシュが古い」（common/fetch_failure.py::judge_stale）
+def _check_p(today: Optional[date] = None, fomc_cache_path: Optional[str] = None) -> dict:
+    from common.fetch_failure import judge_stale
+    from common.macro_data import fomc_calendar
+    kw = {"path": fomc_cache_path} if fomc_cache_path else {}
+    reasons = fomc_calendar.staleness(today, **kw)
+    sev, row = judge_stale(reasons)
+    if sev:
+        return {"label": f"⚠️  {'・'.join(reasons)}（{row}）", "ok": False, "detail": "; ".join(reasons),
+                "severity": sev, "critical": False}
+    return {"label": f"✅ 1件監視 / {fomc_calendar.summary(today, **kw)}", "ok": True, "detail": "", "severity": 0,
+            "critical": False}
+
+
+def check_p_external_change() -> tuple[str, bool, str]:
+    r = _check_p()
+    return r["label"], r["ok"], r["detail"]
+
+
 # ── Discord 1行サマリー ───────────────────────────────────────────────
 def discord_notify_label(sent: bool) -> str:
     """post_discord()の戻り値（bool）を「送信完了／未設定／送信失敗」の3状態で
@@ -1116,6 +1137,7 @@ def build_one_line(run_date: str, results: dict) -> str:
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
         "F": "Tail", "G": "Hype", "H": "Config", "I": "EPS", "J": "CronRuns",
         "K": "TickerAudit", "L": "MacroData", "M": "SecFresh", "N": "Headlines", "O": "Intraday",
+        "P": "ExtChange",
     }
     for key, label in labels.items():
         r = results.get(key, {})
@@ -1192,6 +1214,8 @@ def main() -> int:
     label_n, ok_n, det_n = n["label"], n["ok"], n["detail"]
     o = _check_o()
     label_o, ok_o, det_o = o["label"], o["ok"], o["detail"]
+    p = _check_p()
+    label_p, ok_p, det_p = p["label"], p["ok"], p["detail"]
 
     results = {
         "A": {"ok": ok_a, "short": det_a.split("件")[0] + "件" if "件" in det_a else det_a[:10]},
@@ -1214,10 +1238,12 @@ def main() -> int:
         "N": {"ok": ok_n, "short": det_n},
         # O（5分足の日ごとの保存、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②）も切らない
         "O": {"ok": ok_o, "short": det_o},
+        # P（外の変化・ばらつき、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）も切らない（何が古いかが通知から読めるように）
+        "P": {"ok": ok_p, "short": det_p},
     }
     labels = {"A": label_a, "B": label_b, "C": label_c, "D": label_d, "E": label_e, "F": label_f, "G": label_g,
               "H": label_h, "I": label_i, "J": label_j, "K": label_k, "L": label_l, "M": label_m,
-              "N": label_n, "O": label_o}
+              "N": label_n, "O": label_o, "P": label_p}
     for key, r in results.items():
         r["severity"] = _item_severity(labels[key], r["ok"])
     # Jは自身の判定（⚪初回待ちを含む）の絵文字をそのまま使う
@@ -1243,6 +1269,7 @@ def main() -> int:
         print(f"[M] SecFreshness:  {label_m}")
         print(f"[N] Headlines:     {label_n}")
         print(f"[O] Intraday:      {label_o}")
+        print(f"[P] ExternalChange: {label_p}")
         print(f"Overall: {_overall_text(severity, n_problem)}\n")
 
     # Discord 通知

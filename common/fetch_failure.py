@@ -13,6 +13,10 @@ System Health の取得の失敗を数える欄（[L] MacroData の系列・[M] 
 引き継ぐ（[L] は common/macro_data/fetcher.py の macro_data_violations_log.json、[M] は common/sec_data/freshness.py の
 _freshness.json。[O] は日ごとのファイルが残るので、前の取引日のファイルの欠けから数える）。
 2026-10-25〜10-30 に FRED の全25系列の取得の失敗が6日続いても ⚠️ どまりだった（FINDINGS 2026-10-30）ための表。
+
+取得元が取れず、前に取れた結果（予備のキャッシュ）で動いている項目は、別の行で決める（judge_stale、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]、
+2026-11-04）: キャッシュが古い（各項目の上限の日数を超える等）なら ⚠️。予備で動いているので🔴にはしない。
+System Health の [P] ExternalChange（外の変化・ばらつきの検知、最初はMACRO PULSEのFOMCの予定のキャッシュ）が使う。
 """
 from __future__ import annotations
 
@@ -73,6 +77,14 @@ def judge(n_total: int, failed: Mapping[str, int]) -> Tuple[int, str]:
     if max(failed.values()) >= CONTINUED_DAYS:
         return 2, SEVERITY_TABLE[1][1]
     return 1, SEVERITY_TABLE[2][1]
+
+
+STALE_CACHE_ROW = (1, "予備のキャッシュが古い（取得元が取れず、前に取れた結果で動いている）")
+
+
+def judge_stale(reasons) -> Tuple[int, str]:
+    """予備のキャッシュの古さの理由（空なら古くない）から (重大度, 当てはまった表の行)"""
+    return STALE_CACHE_ROW if reasons else (0, SEVERITY_TABLE[3][1])
 
 
 ICON = {0: "✅", 1: "⚠️ ", 2: "🔴"}

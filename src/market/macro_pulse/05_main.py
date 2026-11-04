@@ -87,6 +87,8 @@ if not HAS_MACRO_DATA:
 from common.market_data.calendar_universe import nyse_trading_days_add, previous_us_federal_business_day  # noqa: E402
 # 外部APIの呼び出し（Grok・FRED・FRB。再試行・タイムアウト・ログ）は common/external_api.py（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）
 from common.external_api import GROK_UNAVAILABLE_TEXT, ExternalApiError, fred_get, frb_get, grok_text, web_get  # noqa: E402
+# FOMCの予定のページの読み取りと、取れた回の結果のキャッシュ（予備。[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] A2、2026-11-04）
+from common.macro_data import fomc_calendar as _fomc_cal  # noqa: E402
 # [[GROK-MODEL-PRICE-1]]: grok-3-mini/grok-3は実際にはgrok-4.3へ自動ルーティングされ、grok-2-1212は廃止済み。実際に応答する現行モデル名
 GROK_MODEL = "grok-4.3"
 
@@ -1191,11 +1193,8 @@ def recalc(events: pd.DataFrame) -> pd.DataFrame:
 #  fed_context.csv 更新（v5から継承）パス修正のみ
 # ─────────────────────────────────────────────────────────────────
 FOMC_CALENDAR_PATH = "/monetarypolicy/fomccalendars.htm"
-# FOMCの予定のページの声明のリンク（日付はリンクのファイル名のYYYYMMDD）
-_FOMC_STATEMENT_LINK_PATTERNS = [
-    r'href="(/newsevents/pressreleases/monetary(\d{8})a\d?\.htm)"',
-    r'href="(/monetarypolicy/(\d{8})a\d?\.htm)"',
-]
+FOMC_CACHE_PATH = _fomc_cal.CACHE_PATH   # 予定のページが取れた回の結果（取れない日の予備。テストは一時フォルダに向ける）
+FOMC_SOURCE_CACHE = "cache"              # fed_context.csv の fomc_date_source: 予備（キャッシュ）の声明で判定した行の印
 
 
 def find_latest_fomc_statement(target_date: date = None):
@@ -1208,39 +1207,29 @@ def find_latest_fomc_statement(target_date: date = None):
     except Exception as e:
         logger.warning(f"FOMC calendar fetch: {e}")
         return None, None
+    _fomc_cal.save_cache(html, path=FOMC_CACHE_PATH)   # 取れた回の結果を保存（取れない日の予備）
     limit = target_date.strftime("%Y%m%d") if target_date else "99999999"
-    candidates = []
-    for pat in _FOMC_STATEMENT_LINK_PATTERNS:
-        for path, dt in re.findall(pat, html):
-            if dt <= limit:
-                candidates.append((dt, path))
+    # 日付だけで並べる（同じ日の a.htm〈声明〉と a1.htm〈実施の注記〉は、ページの先に出る声明を選ぶ。2026-10-26 までと同じ）
+    candidates = [(dt, path) for dt, path in _fomc_cal.parse_statements(html) if dt <= limit]
     if not candidates:
         return None, None
-    # 日付だけで並べる（同じ日の a.htm〈声明〉と a1.htm〈実施の注記〉は、ページの先に出る声明を選ぶ。2026-10-26 までと同じ）
-    candidates.sort(key=lambda x: x[0], reverse=True)
     best_dt, best_path = candidates[0]
     return datetime.strptime(best_dt, "%Y%m%d").strftime("%Y-%m-%d"), best_path
 
 
 def fetch_latest_fomc_statement(target_date: date = None):
+    """(声明の日付, 本文, 出どころ)。出どころは予定のページなら ""、取れずキャッシュ（予備）を使ったら FOMC_SOURCE_CACHE。
+    以前の予備は決め打ちの日付の一覧で、実際の声明の日と合わず2026-05-07より後が無かった（FINDINGS 2026-10-26）"""
     fomc_date, found_path = find_latest_fomc_statement(target_date)
+    source = ""
+    if not found_path:
+        fomc_date, found_path = _fomc_cal.latest_statement_from_cache(target_date, FOMC_CACHE_PATH)
+        if found_path:
+            source = FOMC_SOURCE_CACHE
+            logger.warning(f"FOMCの予定のページが取れず、キャッシュ（予備）の声明 {fomc_date} を使う")
 
     if not found_path:
-        known = ["20260507","20260318","20260129","20251218","20251107","20250918","20250730"]
-        today_str = date.today().strftime("%Y%m%d")
-        for best_dt in sorted([d for d in known if d <= today_str], reverse=True):
-            p = f"/newsevents/pressreleases/monetary{best_dt}a.htm"
-            try:
-                r = frb_get(p, "FOMC statement (known)")
-                if r.status_code == 200:
-                    found_path = p
-                    fomc_date = datetime.strptime(best_dt, "%Y%m%d").strftime("%Y-%m-%d")
-                    break
-            except Exception:
-                pass
-
-    if not found_path:
-        return None, None
+        return None, None, source
 
     try:
         r2 = frb_get(found_path, "FOMC statement")
@@ -1254,10 +1243,10 @@ def fetch_latest_fomc_statement(target_date: date = None):
                 start = idx
                 break
         stmt_text = text[start:start+3000] if start != -1 else text[500:3500]
-        return fomc_date, stmt_text
+        return fomc_date, stmt_text, source
     except Exception as e:
         logger.warning(f"FOMC statement body: {e}")
-        return None, None
+        return None, None, source
 
 # [[MACRO-PULSE-FOMC-REGIME-INVALID-1]]（2026-10-29）: REGIME・FRB主眼の値はこの3つずつだけ。
 # 主眼のラベル（dominant_label）はここで主眼から決める（Grokには書かせない）
@@ -1381,7 +1370,7 @@ def update_fed_context(target_date: date):
     if already and not rejudge:
         _update_rates(last_idx)
     else:
-        fomc_date, stmt_text = fetch_latest_fomc_statement(target_date)
+        fomc_date, stmt_text, fomc_source = fetch_latest_fomc_statement(target_date)
         if stmt_text:
             analysis = analyze_fomc_with_grok(
                 fomc_date or target_date.strftime("%Y-%m-%d"),
@@ -1405,6 +1394,8 @@ def update_fed_context(target_date: date):
             "ai_reason":        analysis.get("ai_reason", ""),
             "regime_source":    analysis.get("regime_source", "DGS1数値ベース"),
             "updated_at":       datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            # 予備（FOMCの予定のキャッシュ）の声明で判定した行は "cache"（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] A2）
+            "fomc_date_source": fomc_source if stmt_text else "",
         }
         if rejudge and analysis.get("regime_source") != "FOMC声明分析（Grok）":
             # 声明の本文かGrokが取れなかった: 前の声明のGrokの判定を数値ベースで上書きしない（次の実行で取り直す）

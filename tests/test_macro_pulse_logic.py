@@ -493,6 +493,7 @@ class TestFedContextNewStatement:
         p = tmp_path / "05_fed_context.csv"
         p.write_text(_FED_CTX_CSV, encoding="utf-8")
         monkeypatch.setattr(main05, "FED_CONTEXT_PATH", str(p))
+        monkeypatch.setattr(main05, "FOMC_CACHE_PATH", str(tmp_path / "fomc_cache.json"))   # 本物のキャッシュを書かない
         monkeypatch.setattr(main05, "BASE_DATA_DIR", str(tmp_path))
         calls = {"frb": [], "grok": 0}
 

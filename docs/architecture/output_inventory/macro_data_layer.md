@@ -40,7 +40,7 @@
 - 起動元: .github/workflows/Macro_Data_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `BAMLH0A0HYM2`(2)・`CFNAI`(1)・`CFNAIMA3`(1)・`DFEDTARL`(1)・`DFEDTARU`(1)・`DGS1`(1)・`DGS3MO`(1)・`FEDFUNDS`(1)・`FTSD`(1)・`GACDFSA066MSFRBPHI`(1)・`IC4WSA`(1)・`M2SL`(1)・`MICH`(1)・`PAYEMS`(1)・`PERMIT`(1)・`RRPONTSYD`(1)・`SAHMCURRENT`(1)・`SP500`(1)・`T10Y2Y`(1)・`T5YIE`(1)・`UMCSENT`(1)・`VIXCLS`(1)・`VXNCLS`(1)・`WALCL`(1)・`WDTGAL`(1)・`WRBWFRBL`(1)・`WTREGEN`(1)
 - Python・保存済みファイル: `common/macro_data/fetcher.py` 行 109
-- Python・保存済みファイル: `common/system_health.py` 行 55・852・869・1188・1260（経由 `common/system_health.py::_check_l`）
+- Python・保存済みファイル: `common/system_health.py` 行 55・852・869・1210・1287（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 494（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_system_health_macro_data.py` 行 59（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 292・300・432・445（経由 `common/system_health.py::_check_l`）
@@ -53,7 +53,7 @@
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 965（経由 `common/macro_data/reader.py::_load_series_payload`）
 - Python・保存済みファイル: `common/macro_data/fetcher.py` 行 101
 - Python・保存済みファイル: `common/macro_data/reader.py` 行 41・49・50・62・80・116（経由 `common/macro_data/reader.py::_load_json`、`common/macro_data/reader.py::_load_series_payload`）
-- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 688・711・729・730・733・749・787・788・789・833・947・954 ほか16（経由 `common/macro_data/reader.py::_load_series_payload`）
+- Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 690・713・731・732・735・751・789・790・791・835・949・956 ほか16（経由 `common/macro_data/reader.py::_load_series_payload`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 477・504・1159・1209・1835・1878（経由 `common/macro_data/reader.py::_load_series_payload`）
 - ワークフロー・保存済みファイル: `.github/workflows/Macro_Data_Update.yml` 行 75
 - テスト・保存済みファイル: `tests/test_check_macro_pulse_reference.py` 行 62・69（経由 `browser_checks/check_macro_pulse.py::load_series_at`）
@@ -68,7 +68,7 @@
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `BAMLH0A0HYM2`(4)・`CFNAIMA3`(2)・`DFEDTARL`(1)・`DFEDTARU`(1)・`DGS1`(1)・`DGS3MO`(1)・`FEDFUNDS`(1)・`GACDFSA066MSFRBPHI`(1)・`IC4WSA`(2)・`M2SL`(2)・`MICH`(1)・`PAYEMS`(2)・`PERMIT`(2)・`RRPONTSYD`(2)・`SAHMCURRENT`(1)・`SP500`(2)・`T10Y2Y`(2)・`T5YIE`(1)・`UMCSENT`(2)・`VIXCLS`(1)・`VXNCLS`(1)・`WALCL`(2)・`WDTGAL`(1)・`WRBWFRBL`(2)・`WTREGEN`(2)
 - Python・保存済みファイル: `common/macro_data/fetcher.py` 行 105・368・414（経由 `common/macro_data/fetcher.py::_load_json`、`common/macro_data/fetcher.py::fetch_all_series`）
-- Python・保存済みファイル: `common/system_health.py` 行 56・857・869・1188・1260（経由 `common/system_health.py::_check_l`）
+- Python・保存済みファイル: `common/system_health.py` 行 56・857・869・1210・1287（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_macro_data_fetcher.py` 行 254・286・406・421・437・440・459・472・479（経由 `common/macro_data/fetcher.py::fetch_all_series`）
 - テスト・保存済みファイル: `tests/test_macro_pulse_accuracy.py` 行 279・280
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 494（経由 `common/system_health.py::_check_l`）
@@ -110,17 +110,17 @@
 
 | 規則 | ファイル数 | 場所 | マクロデータ層を含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2314`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:137`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 7 | `common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:878`<br>`common/sec_data/layer3_builder.py:1101`<br>`common/sec_data/normalizer.py:171`<br>`common/sec_data/normalizer.py:434`<br>`common/sec_data/rotce.py:347`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | いいえ |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3037`<br>`common/sec_data/report_consistency_check.py:1587`<br>`common/sec_data/report_consistency_check.py:1784`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:234`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | いいえ |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:135`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 8 | `common/sec_data/cf_lines.py:425`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:871`<br>`common/sec_data/layer3_builder.py:1094`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/rotce.py:347`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | いいえ |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1588`<br>`common/sec_data/report_consistency_check.py:1785`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:235`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
-| 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:453`<br>`common/sec_data/parser.py:462`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
+| 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
 | 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:581`<br>`docs/value-monitor/tanuki_score/index.html:1104`<br>`docs/value-monitor/tanuki_score/index.html:1333`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1140`<br>`docs/value-monitor/tanuki_valuation/stock.html:1141`<br>`src/value/tanuki_valuation/pipeline.py:647`<br>`src/value/tanuki_valuation/pipeline.py:649`<br>`src/value/tanuki_valuation/pipeline.py:651`<br>`src/value/tanuki_valuation/pipeline.py:922`<br>`src/value/tanuki_valuation/pipeline.py:935`<br>`src/value/tanuki_valuation/pipeline.py:955`<br>`src/value/tanuki_valuation/pipeline.py:957`<br>`src/value/tanuki_valuation/pipeline.py:1029`<br>`src/value/tanuki_valuation/pipeline.py:1030`<br>`src/value/tanuki_valuation/pipeline.py:1031`<br>`src/value/tanuki_valuation/pipeline.py:1032`<br>`src/value/tanuki_valuation/pipeline.py:1442`<br>`src/value/tanuki_valuation/pipeline.py:1469`<br>`src/value/tanuki_valuation/pipeline.py:1474`<br>`src/value/tanuki_valuation/pipeline.py:1520`<br>`src/value/tanuki_valuation/pipeline.py:1825`<br>`src/value/tanuki_valuation/pipeline.py:2003` | いいえ |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1119` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1103` | いいえ |
-| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1443`<br>`docs/market-monitor/macro-pulse/index.html:2389`<br>`src/market/macro_pulse/05_main.py:1579`<br>`src/market/macro_pulse/05_main.py:1699` | いいえ |
-| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1410`<br>`src/market/macro_pulse/05_main.py:1562`<br>`src/market/macro_pulse/05_main.py:1575` | いいえ |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1153` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1137` | いいえ |
+| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1443`<br>`docs/market-monitor/macro-pulse/index.html:2389`<br>`src/market/macro_pulse/05_main.py:1570`<br>`src/market/macro_pulse/05_main.py:1690` | いいえ |
+| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1410`<br>`src/market/macro_pulse/05_main.py:1553`<br>`src/market/macro_pulse/05_main.py:1566` | いいえ |
 | JSONの書き込み（一時ファイル→置き換え）の実装 | 2 | `common/macro_data/fetcher.py:71`<br>`common/market_data/fetcher.py:175` | はい |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）・FREDのAPIを直接呼ぶ所（系列の値・公表日）（1）・AI（Grok）のAPIの宛先の直書き（1）
