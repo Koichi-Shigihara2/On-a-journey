@@ -16,6 +16,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+if _REPO_ROOT not in sys.path:   # ワークフローは python src/market/market_pulse/headlines_fetch.py で直接動かし、
+    sys.path.insert(1, _REPO_ROOT)  # news_headlines が関数の中で common.external_api を読む（2026-11-04、COMMON-PATH-GUARD-1の後の退行）
 
 import headlines_store as hs  # noqa: E402
 import news_headlines as nh  # noqa: E402

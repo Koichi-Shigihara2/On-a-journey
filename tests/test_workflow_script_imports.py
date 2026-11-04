@@ -7,7 +7,8 @@ FREDの25系列が6日間取れなかった。pytestは根をパスに入れて�
 
 確かめ方（スクリプトの本体は動かさない。通信・書き込みをしないため）:
   1. ワークフローの各stepの `run` から `python <path>.py` を拾う（`working-directory` を足す）
-  2. スクリプトのASTの全体（関数の中も含む）から、`common`・`src` で始まるimportを拾う
+  2. スクリプトのASTの全体（関数の中も含む）から、`common`・`src` で始まるimportを拾う。スクリプトのフォルダの隣のモジュールを
+     読んでいれば、その中のimportもたどる（2026-11-04、Market_Pulse_Headlines.yml の headlines_fetch.py → news_headlines.py）
   3. 子プロセス（cwd=根、PYTHONPATHなし）で `sys.path[0]` をスクリプトのフォルダにする（`python <path>` と同じ。`python -c` のままだと
      sys.path[0] が '' ＝cwd＝根になり、根が入っていないことを見逃す）。モジュールの最上位の文のうち、パスを決める文
      （os・sys・pathlibのimport、代入、sys.pathを触るif・try・式）だけを順に実行し、2で拾ったモジュールがすべて根の下に見つかるか
@@ -92,19 +93,38 @@ def _workflow_scripts():
     return sorted(scripts)
 
 
-def _project_imports(path):
-    """ASTの全体（関数の中も含む）から、common・srcで始まるimportのモジュール名を拾う。"""
+def _imported_names(path):
+    """ASTの全体（関数の中も含む）の、絶対importのモジュール名。"""
     with open(path, encoding="utf-8") as f:
         tree = ast.parse(f.read())
-    mods = set()
+    names = set()
     for n in ast.walk(tree):
         if isinstance(n, ast.ImportFrom) and n.level == 0 and n.module:
-            names = [n.module]
+            names.add(n.module)
         elif isinstance(n, ast.Import):
-            names = [a.name for a in n.names]
-        else:
+            names |= {a.name for a in n.names}
+    return names
+
+
+def _project_imports(path, _seen=None):
+    """common・srcで始まるimportのモジュール名を拾う。スクリプトのフォルダの隣のモジュール（`import news_headlines`）も
+    たどる（2026-11-04、Market_Pulse_Headlines.yml: headlines_fetch.py は common を読まず、隣の news_headlines.py が
+    関数の中で common を読んでいて、スクリプト自身のASTだけを見る検査では見つからなかった）。"""
+    seen = _seen if _seen is not None else set()
+    path = os.path.abspath(path)
+    if path in seen:
+        return []
+    seen.add(path)
+    here = os.path.dirname(path)
+    mods = set()
+    for name in _imported_names(path):
+        top = name.split(".")[0]
+        if top in ("common", "src"):
+            mods.add(name)
             continue
-        mods |= {m for m in names if m.split(".")[0] in ("common", "src")}
+        local = os.path.join(here, *name.split(".")) + ".py"
+        if os.path.isfile(local):
+            mods |= set(_project_imports(local, seen))
     return sorted(mods)
 
 
@@ -134,6 +154,17 @@ def test_workflow_script_can_import_project_modules(script):
     r = _probe(path, _ROOT, mods)
     assert r["root_on_path"], f"{script}: python {script} で動かすとリポジトリの根がsys.pathに入らない（{mods}）"
     assert not r["missing"], f"{script}: 見つからないモジュール {r['missing']}"
+
+
+def test_sibling_module_imports_followed(tmp_path):
+    """スクリプトが隣のモジュールを読み、その関数の中で common を読む形（headlines_fetch.py → news_headlines.py）も拾う。"""
+    d = tmp_path / "src" / "x"
+    d.mkdir(parents=True)
+    (d / "lib.py").write_text("def f():\n    from common.external_api import web_get\n    return web_get\n", encoding="utf-8")
+    (d / "main.py").write_text("import os\nimport sys\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n"
+                               "import lib\n", encoding="utf-8")
+    assert _project_imports(str(d / "main.py")) == ["common.external_api"]
+    assert "common.external_api" in _project_imports(os.path.join(_ROOT, "src/market/market_pulse/headlines_fetch.py"))
 
 
 def test_probe_detects_missing_root_path(tmp_path):
