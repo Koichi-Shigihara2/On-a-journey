@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -40.6,
-  "calculation_date": "2026-11-04T13:34:40+09:00",
+  "calculation_date": "2026-11-04T19:39:32+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -201,7 +201,7 @@
     "estimated_fcf": 873540000.0,
     "raw_fcf": 873540000.0,
     "capex": 133000000.0,
-    "sbc": null,
+    "sbc": 40600000.0,
     "ocf": 1280700000.0,
     "da": 342200000.0,
     "note": "OCF$1.28B - CapEx$0.13B（TTM 2026-09-27。5yr/2yr平均・外れ値除外後の採用値は$0.87B）"
@@ -264,7 +264,7 @@
   },
   "rice": {
     "available": true,
-    "q": 1.244,
+    "q": 1.1932,
     "cf_conversion": 0.7351,
     "cf_adj": 2.9493,
     "wacc": 0.1,
@@ -272,26 +272,26 @@
     "cf_years": 3,
     "avg_intensity": 0.0485,
     "warnings": true,
-    "note": "RICE-1価値創造係数=0.72(ROIC/WACC=0.72) / R&D未取得（FYTTM@2023-10-01）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-09-28, TTM@2024-09-29, TTM@2023-10-01）: 投資強度が過小になる可能性",
+    "note": "SBC補正済み（純利益+SBCを分母に使用） / RICE-1価値創造係数=0.72(ROIC/WACC=0.72) / R&D未取得（FYTTM@2023-10-01）: parser.pyにResearchAndDevelopmentExpenseタグ追加を検討 / 販売・マーケティング費未取得（FYTTM@2025-09-28, TTM@2024-09-29, TTM@2023-10-01）: 投資強度が過小になる可能性",
     "vc_factor": 0.719,
     "roic_wacc_ratio": 0.719,
     "bear": {
       "growth_rate": 0.097,
-      "rice": 0.638,
-      "rice_per_ratio": 0.0212,
-      "rice_adj": 2.558
+      "rice": 0.612,
+      "rice_per_ratio": 0.0203,
+      "rice_adj": 2.454
     },
     "base": {
       "growth_rate": 0.138,
-      "rice": 0.907,
-      "rice_per_ratio": 0.0301,
-      "rice_adj": 3.639
+      "rice": 0.87,
+      "rice_per_ratio": 0.0289,
+      "rice_adj": 3.491
     },
     "bull": {
       "growth_rate": 0.166,
-      "rice": 1.091,
-      "rice_per_ratio": 0.0362,
-      "rice_adj": 4.378
+      "rice": 1.047,
+      "rice_per_ratio": 0.0347,
+      "rice_adj": 4.199
     }
   },
   "fcf_source": "ttm_series",
@@ -371,9 +371,9 @@
     "revenue_ttm": 6519800000,
     "revenue_ttm_end": "2026-09-27",
     "analyst_vs_iv": 97.4,
-    "max_eps": 21.8489,
-    "max_eps_per": 30.4,
-    "max_eps_reliability": "MED",
+    "max_eps": 22.7128,
+    "max_eps_per": 29.2,
+    "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-27",
     "max_eps_shares": 47000000.0,
     "max_eps_shares_basis": "ttm_weighted_avg"
@@ -419,16 +419,18 @@
     "matrix": "①投資効率系",
     "quadrant": "左下",
     "label": "割高×低効率",
-    "key_metric_y": "RICE = 0.907",
+    "key_metric_y": "RICE = 0.870",
     "qx": false,
     "qy": false
   },
+  "method_change": "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-5"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-5",
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
   ],
   "fcf_history": [
     {
@@ -464,7 +466,7 @@
     "long_term_debt": 2027700000.0,
     "short_term_debt": 100000.0,
     "net_debt": 1465400000.0,
-    "sbc_ttm": null,
+    "sbc_ttm": 39600000,
     "net_debt_period": "2026Q3",
     "cash_missing": false,
     "sti_approximated": false,

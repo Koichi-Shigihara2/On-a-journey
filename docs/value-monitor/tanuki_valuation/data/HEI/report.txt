@@ -1,5 +1,5 @@
 HEI INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-04T13:34:32+09:00
+Generated: 2026-11-04T19:39:23+09:00
 Price: $337.72
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -32,7 +32,7 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 左上
 Label: 割高×高効率
-Key_Metric_Y: RICE = 7.138
+Key_Metric_Y: RICE = 6.830
 Deviation_Rate: -77.0%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -85,7 +85,7 @@ Valuation_Gap_Analysis:
   Required_Growth:  40%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-07-31 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $635.28M (5yr平均) [ボトムアップ: OCF-CapEx]
-FCF_Breakdown（TTM 2026-07-31）: OCF=$1,111M / CapEx=$81M / SBC(非現金)=N/A / D&A=$218M
+FCF_Breakdown（TTM 2026-07-31）: OCF=$1,111M / CapEx=$81M / SBC(非現金)=$50M / D&A=$218M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
@@ -109,7 +109,7 @@ Financial_Health:
   Total_Debt: $2.54B  Cash: $0.24B
   Net_Debt_Period: 2026Q3
   Finance_Lease: 負債のタグに含まれる（LongTermDebtAndCapitalLeaseObligationsと一致、2026-07-31）
-  SBC_TTM: N/A
+  SBC_TTM: $34M
   Dilution_3yr_Annual: +0.66%/yr  許容範囲内 ✅
   Dilution_Comment: 希薄化はほぼ無視できるレベル。
   Next_Earnings_Date: 2026-12-18
@@ -202,17 +202,17 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=4.996
-BASE: RICE=7.138
-BULL: RICE=8.565
+BEAR: RICE=4.781
+BASE: RICE=6.83
+BULL: RICE=8.196
 Components (BASE scenario):
 G  = 10.0%  [TANUKI forward growth rate]
-Q  = 1.3047   [OCF / (NetIncome + SBC), 3yr avg]
+Q  = 1.2484   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 5.4706  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 9.6199  [R&D除外・CapExのみ投資強度]
-RICE_adj = 12.551  [参考：R&D資本化想定]
+RICE_adj = 12.010  [参考：R&D資本化想定]
 WACC = 10.0%
-SBC_Adjusted: false
+SBC_Adjusted: true
 Definition:
 
 RICE measures reinvestment efficiency and compounding power

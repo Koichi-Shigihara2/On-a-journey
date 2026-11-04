@@ -1,5 +1,5 @@
 TDY INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-04T13:34:40+09:00
+Generated: 2026-11-04T19:39:32+09:00
 Price: $663.63
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -32,7 +32,7 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×低効率
-Key_Metric_Y: RICE = 0.907
+Key_Metric_Y: RICE = 0.870
 Deviation_Rate: -40.6%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -79,7 +79,7 @@ Terminal_Growth_Rate: 3.0%
 Beta: 0.895
 FCF_TTM_End: 2026-09-27 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $857.14M (5yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
-FCF_Breakdown（TTM 2026-09-27）: OCF=$1,281M / CapEx=$133M / SBC(非現金)=N/A / D&A=$342M
+FCF_Breakdown（TTM 2026-09-27）: OCF=$1,281M / CapEx=$133M / SBC(非現金)=$41M / D&A=$342M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
@@ -102,7 +102,7 @@ Financial_Health:
   Net_Debt: $+1.47B (negative=net cash)
   Total_Debt: $2.03B  Cash: $0.56B
   Net_Debt_Period: 2026Q3
-  SBC_TTM: N/A
+  SBC_TTM: $40M
   Dilution_3yr_Annual: -0.21%/yr  自社株買いによる株主還元 ✅
   Dilution_Comment: 株式数が減少し1株あたり価値が向上している。
   Next_Earnings_Date: 2027-01-20
@@ -194,19 +194,19 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=0.638
-BASE: RICE=0.907
-BULL: RICE=1.091
+BEAR: RICE=0.612
+BASE: RICE=0.87
+BULL: RICE=1.047
 Components (BASE scenario):
 G  = 13.8%  [TANUKI forward growth rate]
-Q  = 1.244   [OCF / (NetIncome + SBC), 3yr avg]
+Q  = 1.1932   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 0.7351  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 2.9493  [R&D除外・CapExのみ投資強度]
-RICE_adj = 3.639  [参考：R&D資本化想定]
+RICE_adj = 3.491  [参考：R&D資本化想定]
 WACC = 10.0%
 VC_Factor = 0.72  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
 ROIC_WACC_Ratio = 0.72  [NOPAT/InvestedCapital / 0.10]
-SBC_Adjusted: false
+SBC_Adjusted: true
 Definition:
 
 RICE measures reinvestment efficiency and compounding power

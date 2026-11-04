@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -73.7,
-  "calculation_date": "2026-11-04T13:38:56+09:00",
+  "calculation_date": "2026-11-04T19:44:09+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -239,7 +239,7 @@
       "total_transient_amount": 62500000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由欄に「一過性」と明記されており、事業運営上の一時的な在庫・再編費用と判断される。"
+        "reasoning": "すべての項目の理由欄に「一過性の在庫評価損」「一過性の事業再編費用」と明記されており、性質上事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -303,8 +303,8 @@
     "sti_last_confirmed_zero_year": 2016,
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
-    "stdebt_estimated_zero": true,
-    "stdebt_last_confirmed_zero_year": 2024,
+    "stdebt_estimated_zero": false,
+    "stdebt_last_confirmed_zero_year": null,
     "finance_lease": {
       "value": 16000000.0,
       "end": "2026-06-27",
@@ -456,12 +456,14 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
-    "FCF-DEFINITION-SINGLE-SOURCE-1-5"
+    "FCF-DEFINITION-SINGLE-SOURCE-1-5",
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
   ],
   "fcf_history": [
     {
@@ -507,8 +509,8 @@
     "sti_last_confirmed_zero_year": 2016,
     "ltdebt_estimated_zero": false,
     "ltdebt_last_confirmed_zero_year": null,
-    "stdebt_estimated_zero": true,
-    "stdebt_last_confirmed_zero_year": 2024,
+    "stdebt_estimated_zero": false,
+    "stdebt_last_confirmed_zero_year": null,
     "finance_lease": {
       "value": 16000000.0,
       "end": "2026-06-27",
