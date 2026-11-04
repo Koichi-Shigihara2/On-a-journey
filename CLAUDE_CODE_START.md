@@ -53,6 +53,15 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 ⑤ 起きた回・いつでも … 手順9（RSS 取得エラーの回）
 （2026-11-01 終業の確かめる順〈手順16・13・5・束ね・17〜20・21〉は、手順16・13・21・2と束ねが済。残りは上に並べ直した）
 
+27. **貸借対照表の行の補いのROTCEの最初の本番と[P]**（`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]` ②、2026-11-04 実装 `ceef4f66fd`・`ea87e909fe`、method_change -1-1）
+   - 日時: 2026-11-04（水）夜〜11-05 朝のMarket Data Daily（ROTCEの作り直し）と、11-05 08:30 JST のSystem Health
+   - 期限: 2026-11-06
+   - 確認の手順:
+     - ROTCE（`docs/common/sec_data/rotce/{T}.json`）: GOOGLのP/TBVが約3%上がる（優先株18.0Bを引く）、KO・PLTR・ASTS・AVAVのTCE・ROTCE・P/TBVが出る、WMT・AMZN・FCXは変わらない、
+       AAPL・ONDS・CPRTは試算どおりの小さな変化（BACKLOGの「② 2回目」）。scopeの銘柄にだけ`method_change: EXTERNAL-SOURCE-CHANGE-WATCH-1-1`の印、次の回で印0
+     - System Health の [P]: 「12件検知（確認済み8・新しい件4）」の⚠️（残る4件はLLYの短期投資・METAの無形資産・TSLAののれん・無形資産）。4件を台帳に入れた後の回で✅になれば移設
+   - 合格なら、BACKLOGの`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`の「② 2回目」に書き足す
+
 26. **外の変化の欄 [P] ExternalChange と予備のFOMCのキャッシュの最初の本番**（`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]` A、2026-11-04 実装 `16e969f384`・`c6333c6dd4`）
    - 日時: 2026-11-05（木）のMACRO PULSEの毎日の実行（01:50 UTC頃）と、08:30 JST のSystem Health（手順23の残りと同じ回）
    - 期限: 2026-11-06
@@ -60,7 +69,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
      - 全ワークフローのログの Runner Image が ubuntu-26.04（`runs-on: ubuntu-26.04`）で、ランナーの割り当ての失敗が無い
      - MACRO PULSEの回: 予定のページが取れ、commitに`common/macro_data/fomc_calendar_cache.json`が入る（`last_success_utc`が11-05。中身が同じ日は書かない）。
        「キャッシュ（予備）の声明を使う」の行がログに無い（取れた回）。`git add`のパスの誤りで失敗していない
-     - System Health: 16欄（[P]が増えた）。[P] は台帳（`config/external_change_acknowledged.json`）に26件を入れるまでは「⚠️ 26件検知（確認済み0・新しい件26） / タグの途切れ 13件…」（B1〜B3、2026-11-04 夕）。FOMCの予定のキャッシュの古さの⚠️が無いこと（あれば理由に「最後に取れてから」）。Discordの1行に`ExtChange⚠️`。台帳に入れた後の回で`ExtChange✅`・「確認済み26・新しい件0」になれば`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`を移設
+     - System Health: 16欄（[P]が増えた）。[P] は11-04夜の時点で「⚠️ 12件検知（確認済み8・新しい件4）」（手順27。以前の見込み「26件検知（確認済み0・新しい件26）」は①の台帳・②の補いで変わった）（B1〜B3、2026-11-04 夕）。FOMCの予定のキャッシュの古さの⚠️が無いこと（あれば理由に「最後に取れてから」）。Discordの1行に`ExtChange⚠️`。台帳に入れた後の回で`ExtChange✅`・「確認済み26・新しい件0」になれば`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`を移設
    - 合格なら、BACKLOGの`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`の「A」に書き足す（Bが残るので項目はBACKLOGに残す）
 
 25. **申告のCF計算書の行（cf_lines）の最初のCIの取得**（`[[FCF-DEFINITION-SINGLE-SOURCE-1]]` 段5a・段5b、2026-11-04 実装 `f56a1a10fd`・`6230e12749`）
