@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 156.77002880753895,
   "intrinsic_value_beta": 65.16,
-  "upside_percent_beta": -70.8,
-  "intrinsic_value_rf": 759.78,
-  "upside_percent_rf": 240.3,
-  "intrinsic_value_rf_rate": 0.048940000534057615,
+  "upside_percent_beta": -63.7,
+  "intrinsic_value_rf": 792.57,
+  "upside_percent_rf": 341.6,
+  "intrinsic_value_rf_rate": 0.04836999893188477,
   "v0": 10050798083.53238,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.15589119704080995,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 242.69,
       "value_growth_pct": 54.8,
-      "expected_return_pct": 8.7
+      "expected_return_pct": 35.2
     },
     "2年後": {
       "future_value": 375.69,
       "value_growth_pct": 139.6,
-      "expected_return_pct": 68.3
+      "expected_return_pct": 109.3
     },
     "3年後": {
       "future_value": 581.58,
       "value_growth_pct": 271.0,
-      "expected_return_pct": 160.5
+      "expected_return_pct": 224.1
     },
     "4年後": {
       "future_value": 900.3,
       "value_growth_pct": 474.3,
-      "expected_return_pct": 303.2
+      "expected_return_pct": 401.6
     },
     "5年後": {
       "future_value": 1393.7,
       "value_growth_pct": 789.0,
-      "expected_return_pct": 524.2
+      "expected_return_pct": 676.6
     }
   },
-  "upside_percent": -29.8,
-  "calculation_date": "2026-11-05T06:34:22+09:00",
+  "upside_percent": -12.6,
+  "calculation_date": "2026-11-06T06:34:19+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -327,7 +327,7 @@
     "roe_10yr_avg": 0.03711695167638333,
     "roe_years_used": 2,
     "roe_outlier_adj": false,
-    "current_price": 223.27000427246094,
+    "current_price": 179.47000122070312,
     "latest_revenue": 852525000.0,
     "rpo": 0.0,
     "beta": 2.5,
@@ -359,11 +359,11 @@
     "alpha_uncapped": 0.15589119704080995,
     "per": 127.43843,
     "per_is_forward": false,
-    "per_adjusted": 79.02,
+    "per_adjusted": 63.52,
     "peg": null,
     "ps": 37.340786,
     "ev_ebitda": 153.023,
-    "ma200": 255.96779956817628,
+    "ma200": 255.98512454986573,
     "forward_eps": 6.408,
     "next_quarter_eps": 1.19,
     "analyst_target_median": 425.0,
@@ -382,7 +382,7 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 171.1,
     "max_eps": 3.1159,
-    "max_eps_per": 71.7,
+    "max_eps_per": 57.6,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-06-30",
     "max_eps_shares": 181169750.0,
@@ -412,14 +412,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.5480362628467157,
-  "required_growth_rf_base": -0.07051119540971484,
-  "risk_free_rate_live": 0.048940000534057615,
-  "risk_free_rate_live_date": "2026-11-04",
+  "required_growth_rf_base": -0.11023266037639334,
+  "risk_free_rate_live": 0.04836999893188477,
+  "risk_free_rate_live_date": "2026-11-05",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.03867271651113402,
+  "required_growth_rf_live": -0.013982240299763804,
   "tanuki_score": "HOLD",
   "funda_score": 75,
-  "score_comment": "割高(-30%超)、FCF黒字、売上成長加速",
+  "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -499,7 +499,7 @@
     "shares_yr_now": 179551000,
     "shares_yr_3ago": 34171000
   },
-  "net_current_assets_ratio": 0.0384,
+  "net_current_assets_ratio": 0.0478,
   "dupont": {
     "ni_ttm": 369494000,
     "revenue_ttm": 1201919000,
@@ -553,7 +553,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0202,
+  "erp": -0.0127,
   "dilution_severity": "critical",
   "dilution_comment": "極度の希薄化 🚨 IPO直後か継続増資か要確認"
 }
