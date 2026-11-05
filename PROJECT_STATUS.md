@@ -14,9 +14,11 @@
 **次の作業（2026-11-06 終業 更新〈それまでは2026-11-03 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」の「確かめる順」が正）**:
 1. 11-07（土）: 手順26の残り（MACRO PULSEの週1回の回の`05_fed_context.csv`の`fomc_date_source`）
 2. 11-08（日）: SEC_Data_Updateの後に手順5（V）・手順25（cf_lines）・手順28（業種のマスターのSIC・各部品の作り直し）。続いて束ね（FINDINGS.mdの11-03〜11-05の15行）
-3. `[[HYPECORE-STAGE-TIMESCALE-1]]` の段C（本番の部品での再検証。修正eの代わりの「収益の段階で倍率の種類を決める」・残る穴5つ・日足の過去分の判断を含む）
-4. 段Cの後に寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）→ `[[STAGE-V2-ROLLOUT-1]]`
+3. `[[STAGE-V2-ROLLOUT-1]]` の並行計算（定義v2は2026-11-06に確定。定義v2のstageを今の定義と並べて毎月記録、公開の値は変えない。寄せる件を待たずに始める。12か月の並びの評価は2027-11ごろ）
+4. 寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+
+**2026-11-06 の追記（アクティブ9件）**: 段C（本番の部品での再検証）で定義v2を確定（4回目の改訂）、`[[HYPECORE-STAGE-TIMESCALE-1]]`を移設。日足の過去分の取り込みは、Layer3の四半期の期の数が足りず（保持期間7年）しなかった。次は`[[STAGE-V2-ROLLOUT-1]]`の並行計算
 
 **2026-11-05〜11-06 の作業（終業 2026-11-06、アクティブ10件）**: CHECK-REFERENCE-DEFINITION-1・EXTERNAL-SOURCE-CHANGE-WATCH-1を移設。定義v2の段A（移行中 32.2%→9.4%、修正a〜d・fを文書に、eは採らない）と段B（業種のマスター・収益の段階・配当と増資・倍率の履歴の4つの部品、読み手は今のまま、公開の値の変化0）。寄せる件4つ（SECTOR-MASTER-ADOPT-1・DEFICIT-QUALITY-ADOPT-1・DILUTION-DEFINITION-UNIFY-1・MULTIPLES-ADOPT-1）を登録。黒字化の見込みの規則（最新の実際の率から回帰の傾き、R²≥0.5）、Q4の逆算の非負の規則（新しい5項目だけ）。詳細はCLAUDE_CODE_START.mdの引き継ぎサマリー
 
