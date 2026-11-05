@@ -11,7 +11,16 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-03 終業 更新〈それまでは2026-11-02 夜〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」の「確かめる順」が正）**:
+**次の作業（2026-11-06 終業 更新〈それまでは2026-11-03 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」の「確かめる順」が正）**:
+1. 11-07（土）: 手順26の残り（MACRO PULSEの週1回の回の`05_fed_context.csv`の`fomc_date_source`）
+2. 11-08（日）: SEC_Data_Updateの後に手順5（V）・手順25（cf_lines）・手順28（業種のマスターのSIC・各部品の作り直し）。続いて束ね（FINDINGS.mdの11-03〜11-05の15行）
+3. `[[HYPECORE-STAGE-TIMESCALE-1]]` の段C（本番の部品での再検証。修正eの代わりの「収益の段階で倍率の種類を決める」・残る穴5つ・日足の過去分の判断を含む）
+4. 段Cの後に寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）→ `[[STAGE-V2-ROLLOUT-1]]`
+5. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+
+**2026-11-05〜11-06 の作業（終業 2026-11-06、アクティブ10件）**: CHECK-REFERENCE-DEFINITION-1・EXTERNAL-SOURCE-CHANGE-WATCH-1を移設。定義v2の段A（移行中 32.2%→9.4%、修正a〜d・fを文書に、eは採らない）と段B（業種のマスター・収益の段階・配当と増資・倍率の履歴の4つの部品、読み手は今のまま、公開の値の変化0）。寄せる件4つ（SECTOR-MASTER-ADOPT-1・DEFICIT-QUALITY-ADOPT-1・DILUTION-DEFINITION-UNIFY-1・MULTIPLES-ADOPT-1）を登録。黒字化の見込みの規則（最新の実際の率から回帰の傾き、R²≥0.5）、Q4の逆算の非負の規則（新しい5項目だけ）。詳細はCLAUDE_CODE_START.mdの引き継ぎサマリー
+
+**（旧）次の作業（2026-11-03 終業 更新〈それまでは2026-11-02 夜〉。2026-11-06 終業に上へ置き換えた。記録として残す）**:
 1. 11-04（水）朝の確認: 手順24（日足の行の書き込みの1つの関数の最初の本番、`[[MARKETDATA-DAILY-ROW-WRITE-1]]`）→ 手順17の追加（`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`、期限11-04）・
    手順18〜20（Market Pulseの見出しの配信元3本・見出しの積み足し・5分足の保存）→ 手順22のStonksの分 → 手順23（08:30 JSTのSystem Health、`[[CHECK-REFERENCE-DEFINITION-1]]`）。合格したものから移設
 2. 11-08（日）: SEC_Data_Updateの後に手順5（V）・手順22のROTCEの分、続いて束ね（FINDINGS.mdの11-01の束ねの後の6行〈2026-11-03〉。CHAT_RULES.md「発見の溜め方と根治の判断」）

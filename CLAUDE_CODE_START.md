@@ -36,24 +36,22 @@ BACKLOG.mdのアクティブは**10件**（2026-11-05 夜の5回目、`^### [`�
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
-**確かめる順（日時の順。2026-11-03 終業の更新。GitHubのscheduleは遅れることがあるので、各回は`gh run list`で先に実行の有無を確かめる）**:
-① 11-04（水）朝 JST（11-03 夜〜11-04 朝の定時の後）
-   - （**2026-11-05 夜: 手順22・23・27は済、手順26は`fomc_date_source`だけ残す〈11-07（土）のMACRO PULSEの週1回の回〉。`[[CHECK-REFERENCE-DEFINITION-1]]`・`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`を移設**）
-   - （2026-11-04 朝: 手順24・手順17の追加は済、手順22はStonks・ROTCEの1回目が合格、残りは11-05 朝の2回目で印が付かないこと。手順23は11-04 10:31 JSTの時点で11-04の回のSystem Healthがまだ動いていない〈前日は12:57 JSTに動いた〉ので残る。11-04に`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`段5a・段5bを公開〈`6230e12749`、method_change -1-4〉→手順25。11-04 昼に段5cを公開〈`9571bc483d`、method_change -1-5〉して`[[FCF-DEFINITION-SINGLE-SOURCE-1]]`を移設。手順23は11-04 03:03 UTCの回〈run 41764667527〉で[J] CronRunsだけが✅→🔴〈`Market_Pulse_Headlines.yml`の失敗、`ModuleNotFoundError: No module named 'common'`〉。ほかの14欄は11-03の回と同じ。[J]の変化は取得の失敗の表の範囲外〈ワークフローの失敗〉。チャット側の判定で重大度の表の確認としては合格、見出しの取得は`3e8ca9609d`で直した〈run 41777315836 成功〉。`[[CHECK-REFERENCE-DEFINITION-1]]`は11-05 08:30 JSTのSystem Healthで[J]が✅に戻るのを見てから移設。段5d〈`bbe89bd9d3`〉でWARN-47のCapExが消え、rcc WARN 208）
-   - Market Data Daily（11-03のNYSEの引けの後、`Market_Data_Daily_Update.yml`）の後 … 手順24（拒んだ上書きの記録・既存の確定の行・NIY=Fの777行とGC=Fの2行）
-   - Market Pulse（11-03 21:25 UTC頃＝11-04 06:30 JSTの回）の後 … 手順17の追加（`[[EXTERNAL-API-NONJSON-2XX-RETRY-1]]`、期限11-04）・手順18（見出しの配信元3本）・
-     手順19（見出しの日ごとの積み足し）・手順20（5分足の日ごとの保存）。**まず夜のMarket Pulseが成功してpushまで済んだか**（Commit and pushの段のログも）を見る
-   - Stonks Siloの定時の後 … 手順22のStonksの分（`FCF-DEFINITION-SINGLE-SOURCE-1-2`の印。11-03 夜に`-3`を出したので、先頭の`method_change`に`-2`・`-3`のどちらが付くかも記録する）
-   - 08:30 JST（23:30 UTC）のSystem Health … 手順23（全15欄の重大度。[N]は手順19、[O]は手順20と一緒に見る）。**11-04の回は重大度の表の確認として合格、残りは11-05 08:30 JSTの回で[J]が✅に戻ること**（見出しの取得の直し `3e8ca9609d` の後）。同じ回で手順26（[P] ExternalChange・ubuntu-26.04）
-①' 11-07（土）のMACRO PULSEの週1回の回の後 … 手順26の残り（`05_fed_context.csv`の`fomc_date_source`）
-② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）・手順25（cf_linesの最初のCIの取得）・手順28（業種のマスターのSIC）、その後のMarket Data Dailyで手順22のROTCEの分。続いて「11-08（日）の束ね」
-   （CHAT_RULES.md「発見の溜め方と根治の判断」。入力はFINDINGS.mdの11-01の束ねの後の6行〈2026-11-03: 実データを読むテスト・固定データのテスト17本・古い形の印・TANUKIの画面の7キー・
-   日足の分割の経路・手元のEPSの試算とscope〉。状態は「未」5行・「未登録（束ねる前）」1行）
-③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15（期限11-30）
-④ BACKLOGの順（チャット側が決める）: `[[FCF-DEFINITION-SINGLE-SOURCE-1]]`段4・段5、`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`、
-   `[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤。判断待ち: `[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`
-⑤ 起きた回・いつでも … 手順9（RSS 取得エラーの回）
-（2026-11-01 終業の確かめる順〈手順16・13・5・束ね・17〜20・21〉は、手順16・13・21・2と束ねが済。残りは上に並べ直した）
+**2026-11-05〜11-06 の作業（終業 2026-11-06）**:
+- 移設2件: `[[CHECK-REFERENCE-DEFINITION-1]]`（手順23の2回目、11-05のSystem Healthで[J]✅）・`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`（手順26・27、[P]✅・ROTCE・ubuntu-26.04。`60693f91b3`）
+- `[[HYPECORE-STAGE-TIMESCALE-1]]` 段A（仮の部品で規則の確かめ）: 移行中 32.2%→9.4%（2024-12〜）・11.1%（2022-01〜）。修正a〜d・fを定義v2の文書に（3回目の改訂 `64f9748154`）、eは採らない（代わりに収益の段階で倍率の種類を決める案を段Cで）。(b)(c)のstageの並びは保たれた。残る穴5つ・日足の過去分は段Cで
+- 段B（共通の部品、どれも作るだけで読み手は今のまま、公開の値の変化0）: B-1 業種のマスター `config/sector_master.json`（`9dbb2fa974`・`3af324356d`）、B-2 収益の段階 `docs/common/profitability.json`（`7cfc4966b0`。黒字化の見込みは最新の実際のTTM営業利益率から直近8点の回帰の傾きで8四半期以内に0、R²≥0.5〈`7a8218987f`〉）、B-3 Layer3の配当・増資の5項目（`d2af11fd42`。性質上負にならない項目は逆算したQ4が負なら欠けにして印 `q4_implied_negative`〈`c0edd2f968`、今は5項目だけ〉）、B-4 倍率の履歴 `docs/common/multiples/{T}.json`（`b0545b3d97`・`d20a222880`。HON型の分割の食い違いの台帳 `config/split_price_ledger.json`、P/TBVも時点の値、フォワードPERの週1回の保存を開始）
+- 登録した寄せる件4つ（どれも段Cの後）: `[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`。経緯は10-19の束ねで「統合」として閉じた共通の部品4件が作られていなかったこと（FINDINGS 2026-11-05）
+- 登録の手順にStep 1.6（業種のマスター）・1.7（収益の段階）・1.8（倍率の履歴）。テストは`_run`を差し替え、差し替えていない段が外部のコマンドを動かしたら失敗にする
+- 次回の確認手順28（11-08、SICの保存と各部品の作り直しの段）を追加。ゲート: pytest 2890 passed / 4 skipped、audit 0、rcc NG 0 / WARN 209
+
+**確かめる順（日時の順。2026-11-06 終業の更新。GitHubのscheduleは遅れることがあるので、各回は`gh run list`で先に実行の有無を確かめる）**:
+① 11-07（土）のMACRO PULSEの週1回の回の後 … 手順26の残り（`05_fed_context.csv`の`fomc_date_source`）
+② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）・手順25（cf_linesの最初のCIの取得）・手順28（業種のマスターのSIC・Vが金融から外れる・各部品の作り直しの段）。続いて束ね（CHAT_RULES.md「発見の溜め方と根治の判断」。入力はFINDINGS.mdの11-01の束ねの後の15行〈2026-11-03〜11-05、未登録13・未2〉）
+③ `[[HYPECORE-STAGE-TIMESCALE-1]]` の段C（本番の部品での再検証）: §7の(a)〜(d)を段Bの部品で。修正eの代わりの「収益の段階で倍率の種類を決める」、残る穴5つ（覚醒の継続・直前S3からのΔ<−0.15・g_F横ばいのb・S0と安定の値幅の条件）、日足の過去分の取り込みの判断を含む
+④ 段Cの後に寄せる件4つ: `[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`（順はチャット側）、その後 `[[STAGE-V2-ROLLOUT-1]]`
+⑤ BACKLOGのそのほか（順はチャット側）: `[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤、`[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]`、`[[SEC-COMPANYFACTS-API-LAG-1]]`（手順5）
+⑥ 保有銘柄の次のTAILのレビューの生成の後 … 手順15（期限11-30）。起きた回・いつでも … 手順9（RSS 取得エラーの回）
+（2026-11-03 終業の確かめる順〈11-04朝の手順24・17追加・18〜20・22・23、11-08の手順5・25・束ね〉は、手順24・17・22・23・26〈fomc_date_source以外〉・27が済。残りは上に並べ直した）
 
 28. **業種のマスターのSICの最初の保存**（`[[HYPECORE-STAGE-TIMESCALE-1]]` 段B-1、2026-11-05 実装 `9dbb2fa974`、SEC_Data_Updateの後の作り直しは2026-11-05 夜の2回目）
    - 日時: 2026-11-08（日）のSEC_Data_Update（12:00 UTC）と Market Data Weekly（13:20 UTC）の後。`gh run list --workflow SEC_Data_Update.yml`・`--workflow Market_Data_Weekly_Update.yml`で先に確かめる
