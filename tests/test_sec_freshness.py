@@ -280,6 +280,17 @@ def test_submissions_saves_filingdate_and_keeps_reportdate(tmp_path, monkeypatch
     assert saved["accn_to_reportdate"] == {OLD_Q[1]: OLD_Q[3], NEW_Q[1]: NEW_Q[3]}
     assert saved["accn_to_filingdate"] == {OLD_Q[1]: OLD_Q[2], NEW_Q[1]: NEW_Q[2]}
     assert {"ticker", "cik", "legacy_ciks_merged", "former_names"} <= set(saved)
+    assert saved["sic"] is None and saved["entity_name"] is None   # 応答に無ければ None
+
+
+def test_submissions_saves_sic_and_name_without_extra_request(tmp_path, monkeypatch):
+    """業種のマスターの控え（SIC・SICの説明・社名）を同じ応答から保存する（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-1）"""
+    body = dict(_submissions([OLD_Q]), sic="7372", sicDescription="Services-Prepackaged Software", name="TEST CORP")
+    f = _make_fetcher(tmp_path, monkeypatch, {_sub_url(): (200, body)})
+    f.fetch_submissions("TEST", force_refresh=True)
+    saved = json.loads((tmp_path / "TEST" / "submissions.json").read_text(encoding="utf-8"))
+    assert (saved["sic"], saved["sic_description"], saved["entity_name"]) == ("7372", "Services-Prepackaged Software", "TEST CORP")
+    assert len(f.calls) == 1   # リクエストは増えない
 
 
 def test_legacy_cik_submissions_merged_and_refreshed(tmp_path, monkeypatch):

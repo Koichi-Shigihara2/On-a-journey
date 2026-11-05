@@ -47,6 +47,11 @@ jobs:
             python common/market_data/fetcher.py --layer analyst
           fi
 
+      - name: Rebuild sector master
+        # 業種のマスター（config/sector_master.json）を属性の取得の後に作り直す（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-1、2026-11-05）。
+        # yfinanceの業種が変わった銘柄は changes に残り、System Health の [P] ExternalChange に出る
+        run: python common/sector_master.py --all
+
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
@@ -55,6 +60,7 @@ jobs:
           git add common/market_data/attributes/ || true
           git add common/market_data/analyst_history/ || true
           git add common/market_data/_sp500_constituents_cache.json || true
+          git add config/sector_master.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

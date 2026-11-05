@@ -70,7 +70,8 @@ def test_system_health_p_uses_the_table(tmp_path):
     (tmp_path / "daily").mkdir()
     led = tmp_path / "led.json"
     led.write_text('{"acknowledged": []}', encoding="utf-8")
-    kw = {"source_watch_path": str(empty), "daily_dir": str(tmp_path / "daily"), "ledger_path": str(led)}
+    kw = {"source_watch_path": str(empty), "daily_dir": str(tmp_path / "daily"), "ledger_path": str(led),
+          "sector_master_path": str(tmp_path / "sm.json")}
     ok = sh._check_p(date(2026, 11, 5), p, **kw)
     assert ok["ok"] and ok["severity"] == 0 and "次の会合 2026-12-09" in ok["label"]
     ng = sh._check_p(date(2026, 11, 20), p, **kw)

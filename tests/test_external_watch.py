@@ -56,8 +56,8 @@ def test_check_p_new_items_warn_and_ledger_clears(tmp_path):
     daily.mkdir()
     led = tmp_path / "led.json"
     led.write_text(json.dumps({"acknowledged": []}), encoding="utf-8")
-    r = sh._check_p(date(2026, 11, 5), _cache(tmp_path), swp, str(daily), str(led))
+    r = sh._check_p(date(2026, 11, 5), _cache(tmp_path), swp, str(daily), str(led), str(tmp_path / "sm.json"))
     assert r["severity"] == 1 and not r["ok"] and fetch_failure.EXTERNAL_NEW_ROW[1] in r["label"] and "タグの途切れ 1件" in r["label"]
     led.write_text(json.dumps({"acknowledged": [{"kind": "tag_gap", "ticker": "A", "match": "rpo"}]}), encoding="utf-8")
-    r = sh._check_p(date(2026, 11, 5), _cache(tmp_path), swp, str(daily), str(led))
+    r = sh._check_p(date(2026, 11, 5), _cache(tmp_path), swp, str(daily), str(led), str(tmp_path / "sm.json"))
     assert r["ok"] and r["severity"] == 0 and "確認済み1・新しい件0" in r["label"]

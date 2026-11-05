@@ -2346,6 +2346,13 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 - **段B 共通の部品**（順に）: ① 業種のマスター（景気循環株の区分を含む。元[[SECTOR-MASTER-UNIFY-1]]）→ ② 赤字の質・構造的な赤字・黒字化の見込み（元[[DEFICIT-QUALITY-COMMON-1]]）→
   ③ Layer3の配当・増資（元[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]）→ ④ 倍率の履歴（元[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]。①〜③と日足・Layer3の最初の提出日が揃ってから）。
   各部品は1銘柄を追加する経路を持ち、登録の手順から呼ぶ（定義v2 §5・§6）
+  - **段B-1 業種のマスター 済（2026-11-05）**: `common/sector_master.py` → `config/sector_master.json`（機械で作る。銘柄→yfinanceのsector・industry、
+    SIC・SICの説明・社名〈控え〉、景気循環株・金融〈資産の重い業種、SICがあれば6000〜6799も条件〉・区分なし〈判定不能〉、EPS ANALYZERの9区分・Damodaranの業種・
+    Market PulseのETFへの写像）。区分と写像は業種の名前の規則として同じモジュールの1か所（銘柄の一覧を書かない。景気循環株は画面のCYCLICAL_KEYWORDSと段Aの4業種の和集合）。
+    SICはSEC_Data_Updateがsubmissionsの同じ応答から保存（`submissions.json`の`sic`・`sic_description`・`entity_name`、リクエストは増えない。最初の保存は次の日曜の回）。
+    作り直しはMarket Data Weeklyの後（`--all`）、新しい銘柄はregister_tickerのStep 1.6（属性を1銘柄取る→`--ticker`）。yfinanceの業種が変わった銘柄は
+    `changes`に残し、System Healthの[P] ExternalChange（kind `sector_change`、台帳つき）。読み手は今のまま（[[SECTOR-MASTER-ADOPT-1]]で寄せる）。
+    最初の結果: 98銘柄、景気循環株10（AMAT・CAT・ENTG・FCX・KLAC・LRCX・SCCO・TER・TSLA・XOM）、区分なし1（RXRX）、金融2（SOFI・V。SICが入るまでsectorだけ。VはSIC 7389で外れる見込み）
 - **段C 本番の部品での再検証**: §7の(a)〜(d)を段Bの部品で試算し直す（閾値は§4の初期値から。際どければ§8の日足の過去分の取り込みを判断）
 - その後 [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）
 
@@ -2538,6 +2545,52 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 ---
 
 （[[STAGE-LIFECYCLE-LABEL-MIXUP-1]]は2026-10-19、[[OUTPUT-INVENTORY-CHECK-1]]に統合、BACKLOG_DONE.md「2026-10-19（初回の束ね）」参照）
+
+---
+
+### [SECTOR-MASTER-ADOPT-1] 業種の決め方が8か所に分かれ、5か所は銘柄を手で書いた一覧。読み手をsector_master.jsonに寄せる
+**型・処置:** 型B（同じ規則の二重実装）・根治策
+**優先度:** 中
+**分類:** 共通の設定 / `config/sector_master.json`（`common/sector_master.py`）とその読み手（TANUKI VALUATION・EPS ANALYZER・STONKS SILO・Market Pulse・画面）
+**登録日:** 2026-11-05
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-1のSTEP 0（2026-11-05）
+**経緯:** 2026-10-19の初回の束ねで[[SECTOR-MASTER-UNIFY-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行）。段B-1でマスターだけを作った（読み手は今のまま）
+
+#### 今ある業種の定義の場所（2026-11-05、段B-1のSTEP 0）
+| # | 場所 | 中身 | 読み手 |
+|---|---|---|---|
+| 1 | `common/market_data/attributes/{T}.json`のyfinanceのsector・industry | 98銘柄すべて（11 sector・38 industry、うち19は1銘柄だけ） | TANUKI（αとPhase2の上限・WACCの既定のβ・保険と金融の判定→純現金・RICEの除外）、STONKSとSECのreader（`get_net_cash`の金融ガード）、rcc、Market Pulse（ETF）、画面（TANUKI SCOREのサイクリカルの罠・stock.htmlのFCFの信頼性） |
+| 2 | `config/sectors.yaml`（EPS ANALYZERの9区分） | SICコードの一覧と、ティッカーを書いたキーワード | EPS ANALYZERの業種別の除外・成熟度の監視 |
+| 3 | `config/cik_lookup.csv`の`eps_sector` | 手で設定（3銘柄） | 2より優先 |
+| 4 | `config/beta_config.json`の`overrides[T].sector` | 手で書いたDamodaranの業種のキー（35銘柄） | TANUKIの成長率の確かめ（`check_growth_sanity`→推奨成長率→理論株価） |
+| 5 | `growth_sanity.py`の`TICKER_INDUSTRY_OVERRIDES` | 手で書いた26銘柄（うち9銘柄は登録に無い） | Damodaranのベンチマーク・永久成長率 |
+| 6 | `maturity_config.py`の`_TICKER_TV_G`・`maturity_config.json`の`_mega_tech_tickers` | 手で書いた63銘柄・数銘柄 | 永久成長率・Phase2の上限 |
+| 7 | `config/financial_institution_config.json` | 手で書いた金融機関の一覧（SOFIだけ） | TANUKIのFCFEの経路 |
+| 8 | TANUKI SCOREの画面の`CYCLICAL_KEYWORDS` | yfinanceのindustryのキーワード | 画面のサイクリカルピークトラップ |
+
+#### 食い違い（2026-11-05）
+- EPS ANALYZERで業種が出ていない銘柄が41（EPSの対象95のうち。AMZN・WMT・XOM・V・CAT・KLAC・LRCX・HON・PM等）。SICが`sectors.yaml`の一覧に無く、業種別の除外・成熟度の監視が効いていない
+- Damodaranの業種が無い（4にも5にも無い）銘柄が43（TANUKIの対象では42）。成長率の確かめが業種のベンチマーク無しで動いている
+- 同じyfinanceの業種でDamodaranの業種が違う: ABBVはDrugs_Biotech、LLY・JNJはDrugs_Pharma（どれもDrug Manufacturers - General）
+- EPSの区分とyfinanceのsectorが合わない: RCAT・SPIR・VRT（yfinanceはIndustrials、EPSはTechnology。SPIR・VRTは`eps_sector`の手設定）
+- 景気循環株の判定が2通り（画面のキーワードはTSLA〈Auto〉を含みCATを含まない、定義v2の段Aの4業種はその逆）。マスターは和集合
+- SECのSICは手元に保存されていなかった（EPS ANALYZERは実行のたびにSECから取る）。段B-1で`submissions.json`に保存するようにした
+
+#### 決定（チャット側、2026-11-05）
+1. 主はyfinanceのindustry、SECのSICは控え
+2. 手書きの一覧（`beta_config.overrides.sector`・`growth_sanity`の`TICKER_INDUSTRY_OVERRIDES`・`maturity_config`の`_TICKER_TV_G`／`_mega_tech_tickers`・`financial_institution_config`・`sectors.yaml`のティッカー）は、写像で決まるものを外し、残りを理由つきの例外の台帳へ（寄せる段で）
+3. 景気循環株は画面の`CYCLICAL_KEYWORDS`と段Aの4業種の和集合を、業種の名前の規則として1か所に（`common/sector_master.py`）
+4. 段B-1ではマスターを作るだけ（読み手は今のまま）
+
+#### 進め方
+寄せるのはTANUKI・EPS ANALYZERを1つずつ。全銘柄の試算（理論株価・判定・調整後EPS・STONKS）と、計算方法の変更の手順（`CLAUDE_CODE_START.md`「計算方法の変更の手順」）で公開する。見込み: TANUKIは4・5のDamodaranの業種（手で書いた業種が写像の結果に変わる銘柄と、業種が新しく付く43銘柄）で推奨成長率→理論株価・判定が変わりうる。EPS ANALYZERは業種の出ない41銘柄に区分が付き、業種別の除外が効き始める（調整後EPS→TANUKIの最大EPSに波及しうる）。STONKSの金融ガード・Market PulseのETFは同じ見込み
+
+#### 投資判断への影響
+今あり（成長率の確かめに業種のベンチマークが無い銘柄、EPSの業種別の除外が効かない銘柄がある）。寄せると理論株価・判定が変わりうる
+
+#### 規模の見込み
+中〜大（読み手が多い）
 
 ---
 

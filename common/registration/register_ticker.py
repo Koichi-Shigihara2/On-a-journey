@@ -159,6 +159,20 @@ def step1_5_daily_history(ticker: str) -> None:
               "（取れないままだと毎日の取得の日からの日足しか無い）")
 
 
+# ─── Step 1.6: 属性（業種）の取得と業種のマスターへの追加 ──────────────────
+# [[HYPECORE-STAGE-TIMESCALE-1]] 段B-1（2026-11-05）: 属性は週次（Market Data Weekly）でしか取らず、新しい銘柄の業種は
+# 次の日曜まで無かった（TANUKIのsectorが"default"）。1銘柄だけ属性を取り、業種のマスター（config/sector_master.json）に足す
+
+def step1_6_sector_master(ticker: str) -> None:
+    rc = _run([PYTHON, "common/market_data/fetcher.py", ticker, "--layer", "attributes"],
+              "Step 1.6: 属性（業種）の取得")
+    if rc != 0:
+        print(f"  ⚠️  Step 1.6 の属性の取得は非ブロッキング（exit={rc}）。次の Market Data Weekly で取れる")
+    rc = _run([PYTHON, "common/sector_master.py", "--ticker", ticker], "Step 1.6: 業種のマスターへの追加")
+    if rc != 0:
+        print(f"  ⚠️  Step 1.6 の業種のマスターは非ブロッキング（exit={rc}）。次の Market Data Weekly の後に作り直される")
+
+
 # ─── Step 2: β取得 ───────────────────────────────────────────────────────
 
 def step2_beta(ticker: str, dry_run: bool) -> None:
@@ -391,6 +405,7 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
         return False
 
     step1_5_daily_history(ticker)
+    step1_6_sector_master(ticker)
 
     step2_beta(ticker, dry_run)
 

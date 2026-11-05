@@ -1097,17 +1097,18 @@ def check_o_intraday() -> tuple[str, bool, str]:
 
 # ── P. 外の変化・ばらつき（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]、2026-11-04） ──
 # 取得元の変化を直さずに検知して知らせる欄。件は common/external_watch.py が集める（SECのCIK・タグの途切れ・切り替え・候補外・
-# 期末の数日違い、先物の限月の欄の異常）。台帳（config/external_change_acknowledged.json）に無い新しい件があれば⚠️
+# 期末の数日違い、先物の限月の欄の異常、yfinanceの業種の変化〈業種のマスター〉）。台帳（config/external_change_acknowledged.json）に無い新しい件があれば⚠️
 # （common/fetch_failure.py::judge_external）。MACRO PULSEのFOMCの予定のキャッシュが古ければ⚠️（judge_stale）。🔴にはしない
 def _check_p(today: Optional[date] = None, fomc_cache_path: Optional[str] = None, source_watch_path: Optional[str] = None,
-             daily_dir: Optional[str] = None, ledger_path: Optional[str] = None) -> dict:
+             daily_dir: Optional[str] = None, ledger_path: Optional[str] = None,
+             sector_master_path: Optional[str] = None) -> dict:
     from common import external_watch
     from common.fetch_failure import judge_external, judge_stale
     from common.macro_data import fomc_calendar
     kw = {"path": fomc_cache_path} if fomc_cache_path else {}
     reasons = fomc_calendar.staleness(today, **kw)
     sev_f, row_f = judge_stale(reasons)
-    items = external_watch.collect(source_watch_path, daily_dir)
+    items = external_watch.collect(source_watch_path, daily_dir, sector_master_path)
     ledger = external_watch.load_ledger(ledger_path) if ledger_path else external_watch.load_ledger()
     new, ack = external_watch.split(items, ledger)
     sev_e, row_e = judge_external(len(new))

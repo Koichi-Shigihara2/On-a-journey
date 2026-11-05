@@ -1,0 +1,1795 @@
+{
+ "_schema_version": "1.0",
+ "_description": "業種のマスター（common/sector_master.py が機械で作る。手で書かない）。主は yfinance の sector・industry、SIC・社名は控え。区分と写像は rules の業種の名前の規則で決める。読み手は [[SECTOR-MASTER-ADOPT-1]] で寄せる",
+ "generated_at": "2026-11-05T10:50:23+00:00",
+ "rules": {
+  "cyclical_keywords": [
+   "Agricultural",
+   "Airlines",
+   "Aluminum",
+   "Auto",
+   "Automobile",
+   "Chemicals",
+   "Coal",
+   "Copper",
+   "Gas",
+   "Gold",
+   "Lumber",
+   "Marine",
+   "Metals",
+   "Mining",
+   "Oil",
+   "Paper",
+   "Semiconductor Equipment",
+   "Shipping",
+   "Silver",
+   "Steel",
+   "Timber"
+  ],
+  "cyclical_industries_stage_a": [
+   "Semiconductor Equipment & Materials",
+   "Copper",
+   "Oil & Gas Integrated",
+   "Farm & Heavy Construction Machinery"
+  ],
+  "unclassified_industry_prefixes": [
+   "Banks",
+   "Insurance",
+   "REIT"
+  ],
+  "unclassified_industries": [
+   "Biotechnology"
+  ],
+  "financial_sectors": [
+   "Financial Services"
+  ],
+  "financial_excluded_industries": [
+   "Financial Data & Stock Exchanges"
+  ],
+  "financial_sic_range": [
+   6000,
+   6799
+  ],
+  "eps_category_by_industry": {
+   "Aerospace & Defense": "宇宙・航空",
+   "Airports & Air Services": "宇宙・航空",
+   "Communication Equipment": "通信・インフラ",
+   "Telecom Services": "通信・インフラ"
+  },
+  "eps_category_by_sector": {
+   "Technology": "Technology",
+   "Communication Services": "Technology",
+   "Financial Services": "フィンテック / 銀行",
+   "Healthcare": "ヘルスケア / バイオ",
+   "Consumer Cyclical": "一般消費財 / 製造 / EV",
+   "Consumer Defensive": "一般消費財 / 製造 / EV",
+   "Industrials": "一般消費財 / 製造 / EV",
+   "Basic Materials": "一般消費財 / 製造 / EV",
+   "Energy": "一般消費財 / 製造 / EV",
+   "Utilities": "通信・インフラ",
+   "Real Estate": "不動産 (REITs)"
+  },
+  "damodaran_by_industry": {
+   "Advertising Agencies": "Advertising",
+   "Aerospace & Defense": "Aerospace/Defense",
+   "Airports & Air Services": "Air Transport",
+   "Auto Manufacturers": "Auto & Truck",
+   "Beverages - Non-Alcoholic": "Beverage (Soft)",
+   "Biotechnology": "Drugs (Biotechnology)",
+   "Communication Equipment": "Telecom. Equipment",
+   "Computer Hardware": "Computers/Peripherals",
+   "Conglomerates": "Diversified",
+   "Consumer Electronics": "Computers/Peripherals",
+   "Copper": "Metals & Mining",
+   "Credit Services": "Financial Svcs. (Non-bank & Insurance)",
+   "Discount Stores": "Retail (General)",
+   "Drug Manufacturers - General": "Drugs (Pharmaceutical)",
+   "Electrical Equipment & Parts": "Electrical Equipment",
+   "Electronic Components": "Electronics (General)",
+   "Farm & Heavy Construction Machinery": "Machinery",
+   "Financial Data & Stock Exchanges": "Information Services",
+   "Health Information Services": "Heathcare Information and Technology",
+   "Household & Personal Products": "Household Products",
+   "Information Technology Services": "Computer Services",
+   "Internet Content & Information": "Software (Internet)",
+   "Internet Retail": "Retail (General)",
+   "Oil & Gas Integrated": "Oil/Gas (Integrated)",
+   "Real Estate Services": "Real Estate (Operations & Services)",
+   "Restaurants": "Restaurant/Dining",
+   "Scientific & Technical Instruments": "Electronics (General)",
+   "Security & Protection Services": "Business & Consumer Services",
+   "Semiconductor Equipment & Materials": "Semiconductor Equip",
+   "Semiconductors": "Semiconductor",
+   "Software - Application": "Software (System & Application)",
+   "Software - Infrastructure": "Software (System & Application)",
+   "Specialty Business Services": "Business & Consumer Services",
+   "Specialty Industrial Machinery": "Machinery",
+   "Telecom Services": "Telecom. Services",
+   "Tobacco": "Tobacco",
+   "Travel Services": "Hotel/Gaming",
+   "Utilities - Independent Power Producers": "Power"
+  },
+  "etf_by_sector": {
+   "Technology": "XLK",
+   "Communication Services": "XLC",
+   "Consumer Cyclical": "XLY",
+   "Consumer Defensive": "XLP",
+   "Financial Services": "XLF",
+   "Healthcare": "XLV",
+   "Industrials": "XLI",
+   "Energy": "XLE",
+   "Basic Materials": "XLB",
+   "Real Estate": "XLRE",
+   "Utilities": "XLU"
+  }
+ },
+ "tickers": {
+  "AAPL": {
+   "sector": "Technology",
+   "industry": "Consumer Electronics",
+   "attributes_fetched_at": "2026-11-01T18:29:07.395834+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Computers/Peripherals",
+   "etf": "XLK"
+  },
+  "ABBV": {
+   "sector": "Healthcare",
+   "industry": "Drug Manufacturers - General",
+   "attributes_fetched_at": "2026-11-01T18:28:47.121398+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "ヘルスケア / バイオ",
+   "damodaran_industry": "Drugs (Pharmaceutical)",
+   "etf": "XLV"
+  },
+  "ADBE": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:28:48.203412+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "ADSK": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:29:14.088019+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "ALAB": {
+   "sector": "Technology",
+   "industry": "Semiconductors",
+   "attributes_fetched_at": "2026-11-01T18:33:31.834149+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor",
+   "etf": "XLK"
+  },
+  "AMAT": {
+   "sector": "Technology",
+   "industry": "Semiconductor Equipment & Materials",
+   "attributes_fetched_at": "2026-11-01T18:29:07.905268+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor Equip",
+   "etf": "XLK"
+  },
+  "AMD": {
+   "sector": "Technology",
+   "industry": "Semiconductors",
+   "attributes_fetched_at": "2026-11-01T18:28:48.728520+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor",
+   "etf": "XLK"
+  },
+  "AMZN": {
+   "sector": "Consumer Cyclical",
+   "industry": "Internet Retail",
+   "attributes_fetched_at": "2026-11-01T18:28:58.033199+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Retail (General)",
+   "etf": "XLY"
+  },
+  "APP": {
+   "sector": "Communication Services",
+   "industry": "Advertising Agencies",
+   "attributes_fetched_at": "2026-11-01T18:29:08.418893+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Advertising",
+   "etf": "XLC"
+  },
+  "ASTS": {
+   "sector": "Technology",
+   "industry": "Communication Equipment",
+   "attributes_fetched_at": "2026-11-01T18:33:32.328569+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "通信・インフラ",
+   "damodaran_industry": "Telecom. Equipment",
+   "etf": "XLK"
+  },
+  "AVAV": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:33:32.830905+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "BBAI": {
+   "sector": "Technology",
+   "industry": "Information Technology Services",
+   "attributes_fetched_at": "2026-11-01T18:33:33.331738+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Computer Services",
+   "etf": "XLK"
+  },
+  "BKNG": {
+   "sector": "Consumer Cyclical",
+   "industry": "Travel Services",
+   "attributes_fetched_at": "2026-11-01T18:29:25.189044+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Hotel/Gaming",
+   "etf": "XLY"
+  },
+  "BROS": {
+   "sector": "Consumer Cyclical",
+   "industry": "Restaurants",
+   "attributes_fetched_at": "2026-11-01T18:33:52.477367+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Restaurant/Dining",
+   "etf": "XLY"
+  },
+  "BSY": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:33:33.825768+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "CAKE": {
+   "sector": "Consumer Cyclical",
+   "industry": "Restaurants",
+   "attributes_fetched_at": "2026-11-01T18:33:34.319569+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Restaurant/Dining",
+   "etf": "XLY"
+  },
+  "CART": {
+   "sector": "Consumer Cyclical",
+   "industry": "Internet Retail",
+   "attributes_fetched_at": "2026-11-01T18:33:34.884481+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Retail (General)",
+   "etf": "XLY"
+  },
+  "CAT": {
+   "sector": "Industrials",
+   "industry": "Farm & Heavy Construction Machinery",
+   "attributes_fetched_at": "2026-11-01T18:29:35.680055+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Machinery",
+   "etf": "XLI"
+  },
+  "CDNS": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:29:31.263522+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "CEG": {
+   "sector": "Utilities",
+   "industry": "Utilities - Independent Power Producers",
+   "attributes_fetched_at": "2026-11-01T18:29:55.184011+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "通信・インフラ",
+   "damodaran_industry": "Power",
+   "etf": "XLU"
+  },
+  "CELH": {
+   "sector": "Consumer Defensive",
+   "industry": "Beverages - Non-Alcoholic",
+   "attributes_fetched_at": "2026-11-01T18:33:35.381243+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Beverage (Soft)",
+   "etf": "XLP"
+  },
+  "CIX": {
+   "sector": "Industrials",
+   "industry": "Security & Protection Services",
+   "attributes_fetched_at": "2026-11-01T18:33:47.591062+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Business & Consumer Services",
+   "etf": "XLI"
+  },
+  "COHR": {
+   "sector": "Technology",
+   "industry": "Scientific & Technical Instruments",
+   "attributes_fetched_at": "2026-11-01T18:29:50.761145+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Electronics (General)",
+   "etf": "XLK"
+  },
+  "CPRT": {
+   "sector": "Industrials",
+   "industry": "Specialty Business Services",
+   "attributes_fetched_at": "2026-11-01T18:29:56.207495+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Business & Consumer Services",
+   "etf": "XLI"
+  },
+  "CRM": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:32:34.221942+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "CRWV": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:35.896988+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "CSGP": {
+   "sector": "Real Estate",
+   "industry": "Real Estate Services",
+   "attributes_fetched_at": "2026-11-01T18:29:57.851119+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "不動産 (REITs)",
+   "damodaran_industry": "Real Estate (Operations & Services)",
+   "etf": "XLRE"
+  },
+  "DDOG": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:30:03.483713+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "DELL": {
+   "sector": "Technology",
+   "industry": "Computer Hardware",
+   "attributes_fetched_at": "2026-11-01T18:30:05.784213+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Computers/Peripherals",
+   "etf": "XLK"
+  },
+  "DOCN": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:48.143351+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "ELF": {
+   "sector": "Consumer Defensive",
+   "industry": "Household & Personal Products",
+   "attributes_fetched_at": "2026-11-01T18:33:36.434579+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Household Products",
+   "etf": "XLP"
+  },
+  "ENTG": {
+   "sector": "Technology",
+   "industry": "Semiconductor Equipment & Materials",
+   "attributes_fetched_at": "2026-11-01T18:33:55.519837+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor Equip",
+   "etf": "XLK"
+  },
+  "ESTC": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:33:36.948020+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "FCX": {
+   "sector": "Basic Materials",
+   "industry": "Copper",
+   "attributes_fetched_at": "2026-11-01T18:30:41.645662+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Metals & Mining",
+   "etf": "XLB"
+  },
+  "FICO": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:30:31.756823+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "FLYW": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:52.965332+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "FROG": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:33:53.458420+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "FRSH": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:33:48.683649+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "GEV": {
+   "sector": "Industrials",
+   "industry": "Specialty Industrial Machinery",
+   "attributes_fetched_at": "2026-11-01T18:30:44.327950+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Machinery",
+   "etf": "XLI"
+  },
+  "GOOGL": {
+   "sector": "Communication Services",
+   "industry": "Internet Content & Information",
+   "attributes_fetched_at": "2026-11-01T18:28:56.382363+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (Internet)",
+   "etf": "XLC"
+  },
+  "GTLB": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:37.470663+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "HEI": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:33:49.282390+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "HON": {
+   "sector": "Industrials",
+   "industry": "Conglomerates",
+   "attributes_fetched_at": "2026-11-01T18:30:57.525415+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Diversified",
+   "etf": "XLI"
+  },
+  "HQY": {
+   "sector": "Healthcare",
+   "industry": "Health Information Services",
+   "attributes_fetched_at": "2026-11-01T18:33:49.849253+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "ヘルスケア / バイオ",
+   "damodaran_industry": "Heathcare Information and Technology",
+   "etf": "XLV"
+  },
+  "HWM": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:30:59.196185+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "INTU": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:31:09.641886+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "IONQ": {
+   "sector": "Technology",
+   "industry": "Computer Hardware",
+   "attributes_fetched_at": "2026-11-01T18:33:37.953102+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Computers/Peripherals",
+   "etf": "XLK"
+  },
+  "IOT": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:38.619985+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "JNJ": {
+   "sector": "Healthcare",
+   "industry": "Drug Manufacturers - General",
+   "attributes_fetched_at": "2026-11-01T18:31:15.242505+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "ヘルスケア / バイオ",
+   "damodaran_industry": "Drugs (Pharmaceutical)",
+   "etf": "XLV"
+  },
+  "JOBY": {
+   "sector": "Industrials",
+   "industry": "Airports & Air Services",
+   "attributes_fetched_at": "2026-11-01T18:33:39.125274+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Air Transport",
+   "etf": "XLI"
+  },
+  "KLAC": {
+   "sector": "Technology",
+   "industry": "Semiconductor Equipment & Materials",
+   "attributes_fetched_at": "2026-11-01T18:31:21.367642+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor Equip",
+   "etf": "XLK"
+  },
+  "KO": {
+   "sector": "Consumer Defensive",
+   "industry": "Beverages - Non-Alcoholic",
+   "attributes_fetched_at": "2026-11-01T18:29:49.678236+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Beverage (Soft)",
+   "etf": "XLP"
+  },
+  "KULR": {
+   "sector": "Technology",
+   "industry": "Electronic Components",
+   "attributes_fetched_at": "2026-11-01T18:33:50.360248+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Electronics (General)",
+   "etf": "XLK"
+  },
+  "LITE": {
+   "sector": "Technology",
+   "industry": "Communication Equipment",
+   "attributes_fetched_at": "2026-11-01T18:31:31.762377+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "通信・インフラ",
+   "damodaran_industry": "Telecom. Equipment",
+   "etf": "XLK"
+  },
+  "LLY": {
+   "sector": "Healthcare",
+   "industry": "Drug Manufacturers - General",
+   "attributes_fetched_at": "2026-11-01T18:31:27.303717+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "ヘルスケア / バイオ",
+   "damodaran_industry": "Drugs (Pharmaceutical)",
+   "etf": "XLV"
+  },
+  "LMT": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:31:29.120191+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "LOAR": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:33:53.939736+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "LRCX": {
+   "sector": "Technology",
+   "industry": "Semiconductor Equipment & Materials",
+   "attributes_fetched_at": "2026-11-01T18:31:24.574904+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor Equip",
+   "etf": "XLK"
+  },
+  "LYFT": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:33:54.451796+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "META": {
+   "sector": "Communication Services",
+   "industry": "Internet Content & Information",
+   "attributes_fetched_at": "2026-11-01T18:31:40.449978+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (Internet)",
+   "etf": "XLC"
+  },
+  "MO": {
+   "sector": "Consumer Defensive",
+   "industry": "Tobacco",
+   "attributes_fetched_at": "2026-11-01T18:28:57.428617+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Tobacco",
+   "etf": "XLP"
+  },
+  "MRVL": {
+   "sector": "Technology",
+   "industry": "Semiconductors",
+   "attributes_fetched_at": "2026-11-01T18:31:35.792485+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor",
+   "etf": "XLK"
+  },
+  "MSCI": {
+   "sector": "Financial Services",
+   "industry": "Financial Data & Stock Exchanges",
+   "attributes_fetched_at": "2026-11-01T18:31:49.896726+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "フィンテック / 銀行",
+   "damodaran_industry": "Information Services",
+   "etf": "XLF"
+  },
+  "MSFT": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:31:43.949914+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "NET": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:39.618259+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "NOW": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:32:37.638128+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "NVDA": {
+   "sector": "Technology",
+   "industry": "Semiconductors",
+   "attributes_fetched_at": "2026-11-01T18:31:59.362766+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor",
+   "etf": "XLK"
+  },
+  "ONDS": {
+   "sector": "Technology",
+   "industry": "Communication Equipment",
+   "attributes_fetched_at": "2026-11-01T18:33:40.097479+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "通信・インフラ",
+   "damodaran_industry": "Telecom. Equipment",
+   "etf": "XLK"
+  },
+  "PAYS": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:50.862146+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "PEP": {
+   "sector": "Consumer Defensive",
+   "industry": "Beverages - Non-Alcoholic",
+   "attributes_fetched_at": "2026-11-01T18:32:10.193031+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Beverage (Soft)",
+   "etf": "XLP"
+  },
+  "PLTR": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:32:06.716398+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "PM": {
+   "sector": "Consumer Defensive",
+   "industry": "Tobacco",
+   "attributes_fetched_at": "2026-11-01T18:32:11.897034+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Tobacco",
+   "etf": "XLP"
+  },
+  "QBTS": {
+   "sector": "Technology",
+   "industry": "Computer Hardware",
+   "attributes_fetched_at": "2026-11-01T18:33:40.591695+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Computers/Peripherals",
+   "etf": "XLK"
+  },
+  "RBRK": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:41.153407+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "RCAT": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:33:41.682646+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "RDW": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:33:42.255325+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "RKLB": {
+   "sector": "Industrials",
+   "industry": "Aerospace & Defense",
+   "attributes_fetched_at": "2026-11-01T18:33:42.748164+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "宇宙・航空",
+   "damodaran_industry": "Aerospace/Defense",
+   "etf": "XLI"
+  },
+  "RMBS": {
+   "sector": "Technology",
+   "industry": "Semiconductors",
+   "attributes_fetched_at": "2026-11-01T18:33:54.950262+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor",
+   "etf": "XLK"
+  },
+  "RXRX": {
+   "sector": "Healthcare",
+   "industry": "Biotechnology",
+   "attributes_fetched_at": "2026-11-01T18:33:43.277577+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": "区分なし（Biotechnology: 定義v2 §6 の銀行・保険・REIT・バイオ）",
+   "eps_category": "ヘルスケア / バイオ",
+   "damodaran_industry": "Drugs (Biotechnology)",
+   "etf": "XLV"
+  },
+  "S": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:43.807633+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "SCCO": {
+   "sector": "Basic Materials",
+   "industry": "Copper",
+   "attributes_fetched_at": "2026-11-01T18:33:51.413210+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Metals & Mining",
+   "etf": "XLB"
+  },
+  "SITM": {
+   "sector": "Technology",
+   "industry": "Semiconductors",
+   "attributes_fetched_at": "2026-11-01T18:33:44.342529+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor",
+   "etf": "XLK"
+  },
+  "SNPS": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:32:48.420122+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "SOFI": {
+   "sector": "Financial Services",
+   "industry": "Credit Services",
+   "attributes_fetched_at": "2026-11-01T18:33:44.899391+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": true,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "フィンテック / 銀行",
+   "damodaran_industry": "Financial Svcs. (Non-bank & Insurance)",
+   "etf": "XLF"
+  },
+  "SOUN": {
+   "sector": "Technology",
+   "industry": "Software - Application",
+   "attributes_fetched_at": "2026-11-01T18:33:45.499826+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "SPIR": {
+   "sector": "Industrials",
+   "industry": "Specialty Business Services",
+   "attributes_fetched_at": "2026-11-01T18:33:46.031397+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Business & Consumer Services",
+   "etf": "XLI"
+  },
+  "TASK": {
+   "sector": "Technology",
+   "industry": "Information Technology Services",
+   "attributes_fetched_at": "2026-11-01T18:33:51.912712+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Computer Services",
+   "etf": "XLK"
+  },
+  "TDY": {
+   "sector": "Technology",
+   "industry": "Scientific & Technical Instruments",
+   "attributes_fetched_at": "2026-11-01T18:32:53.584156+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Electronics (General)",
+   "etf": "XLK"
+  },
+  "TER": {
+   "sector": "Technology",
+   "industry": "Semiconductor Equipment & Materials",
+   "attributes_fetched_at": "2026-11-01T18:32:54.090975+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Semiconductor Equip",
+   "etf": "XLK"
+  },
+  "TSLA": {
+   "sector": "Consumer Cyclical",
+   "industry": "Auto Manufacturers",
+   "attributes_fetched_at": "2026-11-01T18:32:54.677772+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Auto & Truck",
+   "etf": "XLY"
+  },
+  "V": {
+   "sector": "Financial Services",
+   "industry": "Credit Services",
+   "attributes_fetched_at": "2026-11-01T18:33:15.012193+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": true,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "フィンテック / 銀行",
+   "damodaran_industry": "Financial Svcs. (Non-bank & Insurance)",
+   "etf": "XLF"
+  },
+  "VRT": {
+   "sector": "Industrials",
+   "industry": "Electrical Equipment & Parts",
+   "attributes_fetched_at": "2026-11-01T18:33:13.479881+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Electrical Equipment",
+   "etf": "XLI"
+  },
+  "VST": {
+   "sector": "Utilities",
+   "industry": "Utilities - Independent Power Producers",
+   "attributes_fetched_at": "2026-11-01T18:33:15.556945+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "通信・インフラ",
+   "damodaran_industry": "Power",
+   "etf": "XLU"
+  },
+  "VZ": {
+   "sector": "Communication Services",
+   "industry": "Telecom Services",
+   "attributes_fetched_at": "2026-11-01T18:33:12.268298+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "通信・インフラ",
+   "damodaran_industry": "Telecom. Services",
+   "etf": "XLC"
+  },
+  "WMT": {
+   "sector": "Consumer Defensive",
+   "industry": "Discount Stores",
+   "attributes_fetched_at": "2026-11-01T18:33:19.515666+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Retail (General)",
+   "etf": "XLP"
+  },
+  "XOM": {
+   "sector": "Energy",
+   "industry": "Oil & Gas Integrated",
+   "attributes_fetched_at": "2026-11-01T18:30:29.983827+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": true,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "一般消費財 / 製造 / EV",
+   "damodaran_industry": "Oil/Gas (Integrated)",
+   "etf": "XLE"
+  },
+  "ZETA": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:46.564440+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  },
+  "ZS": {
+   "sector": "Technology",
+   "industry": "Software - Infrastructure",
+   "attributes_fetched_at": "2026-11-01T18:33:47.081774+00:00",
+   "sic": null,
+   "sic_description": null,
+   "entity_name": null,
+   "cyclical": false,
+   "financial": {
+    "value": false,
+    "basis": "sector_only"
+   },
+   "unclassified": null,
+   "eps_category": "Technology",
+   "damodaran_industry": "Software (System & Application)",
+   "etf": "XLK"
+  }
+ },
+ "changes": []
+}

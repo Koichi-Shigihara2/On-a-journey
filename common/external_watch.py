@@ -7,6 +7,7 @@
   - SECの取得元（common/sec_data/source_watch.py の結果 common/sec_data/data/_source_watch.json。SEC_Data_Update が書く）:
     cik・tag_gap・tag_switch・tag_outside・dup_period
   - 先物の限月の欄の異常（common/market_data/futures_roll.py の contract_anomalies、日足から読むたびに作る）: contract
+  - yfinance の sector・industry の変化（common/sector_master.py の結果 config/sector_master.json の changes。Market Data Weekly の後に作る）: sector_change
   - MACRO PULSEのFOMCの予定のキャッシュの古さ（common/macro_data/fomc_calendar.py）は台帳を使わない（古さは直れば消える）
 台帳の形は config/warn_acknowledged.json と同じ: {"acknowledged": [{"kind", "ticker", "match", "acknowledged_date", "comment"}]}。
 (kind, ticker, match) が一致した件を確認済みとする
@@ -27,6 +28,7 @@ KIND_LABELS = {
     "tag_outside": "候補外のタグ",
     "dup_period": "期末の数日違いの重複",
     "contract": "先物の限月の欄の異常",
+    "sector_change": "業種の変化（yfinance）",
 }
 
 
@@ -38,7 +40,8 @@ def load_ledger(path: str = LEDGER_PATH) -> List[Dict[str, Any]]:
         return []
 
 
-def collect(source_watch_path: Optional[str] = None, daily_dir: Optional[str] = None) -> List[Dict[str, str]]:
+def collect(source_watch_path: Optional[str] = None, daily_dir: Optional[str] = None,
+            sector_master_path: Optional[str] = None) -> List[Dict[str, str]]:
     """全部の件（台帳で分ける前）"""
     from common.sec_data import source_watch
     items = source_watch.all_items(source_watch_path or source_watch.RESULT_FILE)
@@ -47,6 +50,8 @@ def collect(source_watch_path: Optional[str] = None, daily_dir: Optional[str] = 
         items += futures_roll.contract_anomalies(daily_dir=daily_dir)
     except ImportError:
         pass
+    from common import sector_master
+    items += sector_master.change_items(sector_master_path or sector_master.MASTER_PATH)
     return items
 
 

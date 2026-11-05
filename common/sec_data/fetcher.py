@@ -303,9 +303,10 @@ class SECFetcher:
         former_names: list = []
         errors: list = []
         accn_to_filingdate: Dict[str, str] = {}
+        entity: Dict[str, Any] = {}
         accn_to_reportdate = self._fetch_submissions_for_cik(
             ticker, cik, former_names_out=former_names,
-            filingdate_out=accn_to_filingdate, errors_out=errors)
+            filingdate_out=accn_to_filingdate, errors_out=errors, entity_out=entity)
         if accn_to_reportdate is None:
             return None
 
@@ -330,7 +331,11 @@ class SECFetcher:
         payload = {"ticker": ticker, "cik": cik, "legacy_ciks_merged": legacy_ciks,
                    "accn_to_reportdate": accn_to_reportdate,
                    "former_names": former_names,
-                   "accn_to_filingdate": accn_to_filingdate}
+                   "accn_to_filingdate": accn_to_filingdate,
+                   # 業種のマスター（common/sector_master.py）の控え。同じ応答の値（リクエストを増やさない、2026-11-05）
+                   "sic": entity.get("sic"),
+                   "sic_description": entity.get("sic_description"),
+                   "entity_name": entity.get("entity_name")}
         if save:
             with open(out_path, "w", encoding="utf-8") as f:
                 json.dump(payload, f, ensure_ascii=False, indent=2)
@@ -341,7 +346,8 @@ class SECFetcher:
     def _fetch_submissions_for_cik(self, ticker: str, cik: str,
                                     former_names_out: Optional[list] = None,
                                     filingdate_out: Optional[Dict[str, str]] = None,
-                                    errors_out: Optional[list] = None) -> Optional[Dict[str, str]]:
+                                    errors_out: Optional[list] = None,
+                                    entity_out: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, str]]:
         """指定CIKのsubmissions API（recent + 過去分アーカイブ）から
         {accn: reportDate} マッピングを取得する（キャッシュ・保存は行わない）。
 
@@ -370,6 +376,10 @@ class SECFetcher:
         data = resp.json()
         if former_names_out is not None:
             former_names_out.extend(data.get("formerNames", []))
+        if entity_out is not None:
+            # 業種のマスターの控え（SICコード・SICの説明・社名）。同じレスポンスの値で追加のAPIコールは無い
+            entity_out.update({"sic": data.get("sic") or None, "sic_description": data.get("sicDescription") or None,
+                               "entity_name": data.get("name") or None})
         self._extract_accn_reportdate(data.get("filings", {}).get("recent", {}), relevant_forms,
                                       accn_to_reportdate, filingdate_out)
 
