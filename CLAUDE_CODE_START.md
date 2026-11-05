@@ -46,7 +46,7 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    - Stonks Siloの定時の後 … 手順22のStonksの分（`FCF-DEFINITION-SINGLE-SOURCE-1-2`の印。11-03 夜に`-3`を出したので、先頭の`method_change`に`-2`・`-3`のどちらが付くかも記録する）
    - 08:30 JST（23:30 UTC）のSystem Health … 手順23（全15欄の重大度。[N]は手順19、[O]は手順20と一緒に見る）。**11-04の回は重大度の表の確認として合格、残りは11-05 08:30 JSTの回で[J]が✅に戻ること**（見出しの取得の直し `3e8ca9609d` の後）。同じ回で手順26（[P] ExternalChange・ubuntu-26.04）
 ①' 11-07（土）のMACRO PULSEの週1回の回の後 … 手順26の残り（`05_fed_context.csv`の`fomc_date_source`）
-② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）・手順25（cf_linesの最初のCIの取得）、その後のMarket Data Dailyで手順22のROTCEの分。続いて「11-08（日）の束ね」
+② 11-08（日）のSEC_Data_Updateと連鎖の後 … 手順5（V）・手順25（cf_linesの最初のCIの取得）・手順28（業種のマスターのSIC）、その後のMarket Data Dailyで手順22のROTCEの分。続いて「11-08（日）の束ね」
    （CHAT_RULES.md「発見の溜め方と根治の判断」。入力はFINDINGS.mdの11-01の束ねの後の6行〈2026-11-03: 実データを読むテスト・固定データのテスト17本・古い形の印・TANUKIの画面の7キー・
    日足の分割の経路・手元のEPSの試算とscope〉。状態は「未」5行・「未登録（束ねる前）」1行）
 ③ 保有銘柄の次のTAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み）の後 … 手順15（期限11-30）
@@ -54,6 +54,16 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
    `[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の 5/8 `[[MARKETPULSE-DAILY-ENTRY-GAP-1]]` → 6/8 ③ → 7/8 ④ → 8/8 ⑤。判断待ち: `[[HYPECORE-STAGE-TIMESCALE-1]]`・`[[STAGE-V2-ROLLOUT-1]]`
 ⑤ 起きた回・いつでも … 手順9（RSS 取得エラーの回）
 （2026-11-01 終業の確かめる順〈手順16・13・5・束ね・17〜20・21〉は、手順16・13・21・2と束ねが済。残りは上に並べ直した）
+
+28. **業種のマスターのSICの最初の保存**（`[[HYPECORE-STAGE-TIMESCALE-1]]` 段B-1、2026-11-05 実装 `9dbb2fa974`、SEC_Data_Updateの後の作り直しは2026-11-05 夜の2回目）
+   - 日時: 2026-11-08（日）のSEC_Data_Update（12:00 UTC）と Market Data Weekly（13:20 UTC）の後。`gh run list --workflow SEC_Data_Update.yml`・`--workflow Market_Data_Weekly_Update.yml`で先に確かめる
+   - 期限: 2026-11-09
+   - 確認の手順:
+     - `common/sec_data/data/{T}/submissions.json`に`sic`・`sic_description`・`entity_name`が入る（submissionsを取り直した銘柄。リクエストの数が増えていない）
+     - SEC_Data_Updateの段「Rebuild sector master」が成功し、commitに`config/sector_master.json`が入る。マスターの各銘柄の`sic`が埋まり、`financial.basis`が`sector+sic`になる
+     - Vが金融から外れる（SIC 7389、`financial.value` false）。SOFIは金融のまま（SIC 6xxx の見込み）。ほかに区分（景気循環株・金融・区分なし）が変わった銘柄があれば一覧にする
+     - Market Data Weeklyの段「Rebuild sector master」も成功し、`changes`（yfinanceの業種の変化）があれば System Health の[P]に`sector_change`が出る。どちらが先に終わっても最新のSIC・業種がそろっている
+   - 合格なら、BACKLOGの`[[HYPECORE-STAGE-TIMESCALE-1]]`の段B-1に確認を書き足す
 
 27. **貸借対照表の行の補いのROTCEの最初の本番と[P]**（`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]` ②、2026-11-04 実装 `ceef4f66fd`・`ea87e909fe`、method_change -1-1）**済 2026-11-05 夜（移設済み）**: ROTCE（Market Data Daily `b3e78e2b3e`、チャット側の下見）でGOOGLのTCE 610.6B→592.6B（P/TBV 5.67→6.03）、KO・PLTR・ASTS・AVAVに値、WMT・AMZN・FCXは不変、`{T}.json`の印 ESCW-1-1 37銘柄でscope外0。System Health run `41962421074`の[P]「✅ 8件検知（確認済み8・新しい件0）」。詳細はBACKLOG_DONE.md「2026-11-05（完了）」
    - 日時: 2026-11-04（水）夜〜11-05 朝のMarket Data Daily（ROTCEの作り直し）と、11-05 08:30 JST のSystem Health

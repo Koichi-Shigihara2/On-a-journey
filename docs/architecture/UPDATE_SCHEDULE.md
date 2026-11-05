@@ -34,7 +34,7 @@
 | `Market_Pulse_Headlines.yml`<br>Market Pulse Headlines | 毎日 00:40・06:40・12:40・18:40 | 毎日 09:40・15:40・21:40 ／ 毎日（翌日） 03:40 | — | あり（入力なし） | market-pulse-headlines | — | `docs/market-monitor/market-pulse/data/headlines/`<br>`は` | — |
 | `Market_Pulse_Update.yml`<br>Market_Pulse_Update | — | — | Market_Data_Daily_Update.yml | あり（入力なし） | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/market-monitor/market-pulse/data/`<br>`は` | — |
 | `SEC_Data_Audit.yml`<br>SEC Data Quality Audit | — | — | SEC_Data_Update.yml | tickers | — | — | （commitしない） | — |
-| `SEC_Data_Update.yml`<br>SEC Data Update | 日 12:00 | 日 21:00 | — | tickers | — | — | `common/sec_data/data/`<br>`common/sec_data/normalized/`<br>`common/sec_data/ttm/`<br>`docs/common/sec_data/normalized/` | Adjusted_Eps_Analyzer_update.yml<br>HypeCore_Update.yml<br>SEC_Data_Audit.yml<br>Stonks_Silo_Update.yml |
+| `SEC_Data_Update.yml`<br>SEC Data Update | 日 12:00 | 日 21:00 | — | tickers | — | — | `common/sec_data/data/`<br>`common/sec_data/normalized/`<br>`common/sec_data/ttm/`<br>`config/sector_master.json`<br>`docs/common/sec_data/normalized/` | Adjusted_Eps_Analyzer_update.yml<br>HypeCore_Update.yml<br>SEC_Data_Audit.yml<br>Stonks_Silo_Update.yml |
 | `Score_Verifier.yml`<br>Score Verifier | 毎日 00:00 | 毎日 09:00 | — | あり（入力なし） | — | — | `docs/value-monitor/tanuki_valuation/data/*/score_history.json` | — |
 | `Stonks_Silo_Update.yml`<br>Stonks Silo Update | — | — | SEC_Data_Update.yml<br>Market_Data_Daily_Update.yml | tickers | — | 起動元が成功したときだけ動く（手動・cronは常に動く） | `docs/value-monitor/stonks-silo/data/` | TANUKI_VALUATION_Update.yml |
 | `System_Health.yml`<br>System Health Check | 毎日 23:30 | 毎日（翌日） 08:30 | — | あり（入力なし） | — | — | （commitしない） | — |

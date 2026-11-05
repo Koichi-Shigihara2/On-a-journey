@@ -80,6 +80,13 @@ jobs:
           mkdir -p docs/common/sec_data/normalized
           rsync -a --delete common/sec_data/normalized/ docs/common/sec_data/normalized/
 
+      - name: Rebuild sector master
+        # 業種のマスター（config/sector_master.json）を作り直し、この回で保存したSIC・社名（submissions.json）を入れる
+        # （[[HYPECORE-STAGE-TIMESCALE-1]] 段B-1、2026-11-05）。Market Data Weekly の後にも作り直すので、どちらが先に終わっても
+        # 最新のSIC・業種がそろう（作り直しは冪等）。失敗してもSECのデータのcommitは止めない
+        continue-on-error: true
+        run: python common/sector_master.py --all
+
       - name: Commit and push changes
         id: commit
         run: |
@@ -90,6 +97,7 @@ jobs:
           git add common/sec_data/normalized/ || true
           git add common/sec_data/ttm/ || true
           git add docs/common/sec_data/normalized/ || true
+          git add config/sector_master.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
