@@ -1405,7 +1405,8 @@ def build_ticker_store(ticker: str) -> dict | None:
             e for e in normalized_entries
             if not e.get("is_annual") and not e.get("is_ytd")
         ]
-        q4_list = build_q4_implied_entries(annual_for_q4, quarterly_for_q4, field_name)
+        q4_negative_marks: list = []   # 性質上負にならない項目の負のQ4（作らずに印だけ。q4_implied.py の non_negative の規則）
+        q4_list = build_q4_implied_entries(annual_for_q4, quarterly_for_q4, field_name, marks_out=q4_negative_marks)
         if q4_list:
             existing_ends = {e["end"] for e in normalized_entries if not e.get("is_annual")}
             added = [e for e in q4_list if e["end"] not in existing_ends]
@@ -1431,6 +1432,10 @@ def build_ticker_store(ticker: str) -> dict | None:
             "category": field_def.get("category"),
             "entries": normalized_entries,
         }
+        if q4_negative_marks:
+            # 逆算したQ4が負で欠けにした期の印（q4_implied.Q4_NEGATIVE_MARK、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3の後）
+            have = {e["end"] for e in normalized_entries if not e.get("is_annual")}
+            fields_out[field_name]["q4_implied_negative"] = [m for m in q4_negative_marks if m["end"] not in have]
 
     # GrossProfitバックフィル（[[LAYER3-GROSSPROFIT-BACKFILL-MISSING-1]]対応）。
     # 全フィールドループ完了後の後処理。revenue・cost_of_revenue双方の

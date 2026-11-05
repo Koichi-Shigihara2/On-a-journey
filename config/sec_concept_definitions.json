@@ -228,6 +228,7 @@
     },
     "dividends_paid": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "PaymentsOfDividendsCommonStock",
@@ -238,15 +239,17 @@
     },
     "dividends_per_share": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD/shares",
       "candidates": [
         "CommonStockDividendsPerShareDeclared",
         "CommonStockDividendsPerShareCashPaid"
       ],
-      "_note": "[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。定義はここの1か所（parserには書かない）。普通株の1株配当（宣言額が先）。無配でも0を申告する会社がある（CRWV・FROG・JOBY・SOFI、2026-11-05に確認）。Q4の逆算はしない（年間の欄に1四半期分の額を申告する会社があり負になる。common/sec_data/q4_implied.py）"
+      "_note": "[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。定義はここの1か所（parserには書かない）。普通株の1株配当（宣言額が先）。無配でも0を申告する会社がある（CRWV・FROG・JOBY・SOFI、2026-11-05に確認）。逆算したQ4が負なら欠け（non_negative、common/sec_data/q4_implied.py。年間の欄に1四半期分の額を申告する会社があるため）"
     },
     "equity_issuance_proceeds": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "ProceedsFromIssuanceOfCommonStock",
@@ -258,6 +261,7 @@
     },
     "option_exercise_proceeds": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "ProceedsFromStockOptionsExercised",
@@ -267,6 +271,7 @@
     },
     "stock_issued_acquisitions": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "StockIssuedDuringPeriodValueAcquisitions"

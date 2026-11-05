@@ -1,8 +1,8 @@
 """Layer3の資本の使い方の5項目（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3、2026-11-05）
 
 - 定義は config/sec_concept_definitions.json の1か所（parserのタグの表には書かない）。タグの候補の順
-- フローの項目は TTM の FLOW_FIELDS と Q4 の逆算（q4_implied の写像）に入る。1株配当は Q4 の逆算をしない
-  （10-Kの年間の欄に1四半期分の額を申告する会社があり、年次−Q1〜Q3 が負になる。CEG FY2025）
+- フローの項目は TTM の FLOW_FIELDS と Q4 の逆算（q4_implied の写像）に入る。性質上負にならない項目（non_negative）は、
+  逆算したQ4が負なら欠けにして印（q4_implied_negative）。10-Kの年間の欄に1四半期分の額を申告する会社がある（CEG FY2025）
 テストは作った company_facts だけを使う（本物のファイル・外部の取得に触れない）
 """
 import os
@@ -36,10 +36,23 @@ def test_definitions_in_one_place():
     assert not parser_tags & {t for tags in FIELDS.values() for t in tags}
 
 
-def test_q4_implied_fields():
-    for f in ("dividends_paid", "equity_issuance_proceeds", "option_exercise_proceeds", "stock_issued_acquisitions"):
+def test_q4_implied_fields_and_non_negative():
+    for f in FIELDS:
         assert q4_implied._SNAKE_TO_PASCAL[f] in q4_implied.Q4_IMPLIED_FIELDS
-    assert q4_implied._SNAKE_TO_PASCAL["dividends_per_share"] not in q4_implied.Q4_IMPLIED_FIELDS
+    # 非負の欄は今は段B-3の5項目だけ（既存の項目に当てると公開の値が変わるため当てていない）。CapExは対象外
+    assert q4_implied.non_negative_fields() == frozenset(q4_implied._SNAKE_TO_PASCAL[f] for f in FIELDS)
+
+
+def test_negative_q4_of_non_negative_field_is_missing_with_mark():
+    def e(start, end, val, annual=False):
+        return {"start": start, "end": end, "val": val, "is_annual": annual, "accn": "A", "filed": "2026-02-20"}
+    annual = [e("2025-01-01", "2025-12-31", 0.5, annual=True)]
+    qs = [e("2025-01-01", "2025-03-31", 0.5), e("2025-04-01", "2025-06-30", 0.5), e("2025-07-01", "2025-09-30", 0.5)]
+    marks = []
+    assert q4_implied.build_q4_implied_entries(annual, qs, "dividends_per_share", marks_out=marks) == []
+    assert marks and marks[0]["mark"] == q4_implied.Q4_NEGATIVE_MARK and marks[0]["implied_val"] == -1.0
+    # 非負でない項目（buyback）は今までどおり負のQ4も作る
+    assert q4_implied.build_q4_implied_entries(annual, qs, "buyback")[0]["val"] == -1.0
 
 
 ACC = {"Q1": "0000000001-25-000001", "Q2": "0000000001-25-000002", "Q3": "0000000001-25-000003", "FY": "0000000001-26-000001"}
@@ -77,7 +90,15 @@ def test_dividends_quarters_from_ytd_and_q4_implied(monkeypatch):
     q = _quarters(s, "dividends_paid")
     assert q == {"2025-03-31": 100, "2025-06-30": 110, "2025-09-30": 120, "2025-12-31": 130}   # Q4＝年次−9か月
     dps = _quarters(s, "dividends_per_share")
-    assert "2025-12-31" not in dps          # 年間の欄に1四半期分（0.5）の会社でも負のQ4を作らない
+    assert "2025-12-31" not in dps          # 年間の欄に1四半期分（0.5）の会社でも負のQ4を作らない（欠け）
+    marks = s["fields"]["dividends_per_share"]["q4_implied_negative"]
+    assert [(m["end"], m["implied_val"]) for m in marks] == [("2025-12-31", -1.0)]
+    assert "q4_implied_negative" not in s["fields"]["dividends_paid"]
+
+
+def test_positive_q4_of_dividends_per_share_is_made(monkeypatch):
+    s = _store(monkeypatch, {"CommonStockDividendsPerShareDeclared": _ytd((0.5, 1.0, 1.5, 2.1), unit="USD/shares")})
+    assert abs(_quarters(s, "dividends_per_share")["2025-12-31"] - 0.6) < 1e-9
 
 
 def test_candidate_order_common_stock_first(monkeypatch):

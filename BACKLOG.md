@@ -2361,8 +2361,7 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
     最初の結果（98銘柄）: 黒字71・赤字16・黒字化目前7（ESTC・GTLB・JOBY・ONDS・RBRK・SITM・SOUN）・区分なし4（RXRX・SOFI・V・XOM〈営業利益のタグが無くTTMを作れない〉）。
     構造的赤字19、TANUKIの今の印と全96銘柄で一致
   - **段B-3 Layer3の配当・増資 済（2026-11-05）**: `config/sec_concept_definitions.json`（定義の1か所、parserのタグの表には書かない）に5項目（`dividends_paid`・`dividends_per_share`・`equity_issuance_proceeds`・`option_exercise_proceeds`・`stock_issued_acquisitions`）。
-    TTMの`FLOW_FIELDS`とQ4の逆算（`q4_implied`の写像）にも入れた。ただし1株配当はQ4の逆算をしない（10-Kの年間の欄に1四半期分の額を申告する会社があり、
-    全銘柄で15か所が負〈CEG・V・AAPL・NVDA・SCCO・HEI等〉。Q4は10-Kに第4四半期の額がある期だけ）。タグがある銘柄: 配当の支払い46・1株配当45・増資64・オプションの行使57・買収の対価の株51。
+    TTMの`FLOW_FIELDS`とQ4の逆算（`q4_implied`の写像）にも入れた。性質上負にならない項目（設定の`non_negative`欄、今は5項目だけ）は、逆算したQ4が負なら欠けにしてLayer3の項目に印`q4_implied_negative`（規則は`common/sec_data/q4_implied.py`の1か所、2026-11-05 夜の直し。1株配当のQ4の除外はこの規則に置き換えた）。印は26か所（1株配当15〈CEG・V・AAPL・NVDA・SCCO・HEI・WMT・KLAC〉・増資6・オプションの行使4〈PLTRの2020・2021年を含む〉・買収の対価の株1）。既存の項目（buyback・SBC・販売費・粗利等）は、今のTTMの窓に負のQ4（TASK・FRSH・APP・KULRの2025-12-31等）があり当てると公開の値が変わるため当てていない。累計の差し引きで作る四半期の負の値（約30か所）はこの規則の対象外。タグがある銘柄: 配当の支払い46・1株配当45・増資64・オプションの行使57・買収の対価の株51。
     1株配当のタグだけの4銘柄（CRWV・FROG・JOBY・SOFI）は、普通株の1株配当の宣言額＝0の申告（無配。優先株の配当ではない）。配当の支払いは欠けのまま（0とみなさない）。
     TTMの系列は90ファイルで新しいキーだけが増え（633か所）、既存のキーの差0（浮動小数の丸めだけの差は前の値に戻した）。出力の一覧（sec）を作り直し、5キーを「誰も読まないキー」の理由つきに。
     定義v2の希薄化は株数の変化（`shares_outstanding_period_end_sec`、分割換算）を主、増資の収入÷時価総額を裏づけに（決定2）。財務CFの行の取り直しはしない。CHECKは段Cの後

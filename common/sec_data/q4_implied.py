@@ -71,9 +71,8 @@ Q4_IMPLIED_FIELDS = frozenset({
     "NetIncome", "OperatingIncome", "GrossProfit",
     "Buyback",
     # [[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 資本の使い方。どれも期間で足せるフロー。
-    # 1株配当（DividendsPerShare）は入れない: 10-Kの年間の欄に1四半期分の額を申告する会社があり（CEGのFY2025は0.3878＝Q1〜Q3と同じ額）、
-    # 「年次−Q1〜Q3」が負になる（2026-11-05の全銘柄で15か所: CEG・V・AAPL・NVDA・SCCO・HEI等）。Q4は10-Kに第4四半期の額がある期だけ
-    "DividendsPaid", "EquityIssuance", "OptionExercise", "StockIssuedAcquisitions",
+    # 性質上負にならない項目（Layer2 の non_negative 欄）は、逆算したQ4が負なら欠け（下の NON_NEGATIVE の規則）
+    "DividendsPaid", "DividendsPerShare", "EquityIssuance", "OptionExercise", "StockIssuedAcquisitions",
 })
 
 # [[LAYER3-Q4-IMPLIED-NOT-MIGRATED-1]]対応: layer3_builder.py（Layer3、
@@ -108,6 +107,34 @@ _SNAKE_TO_PASCAL = {
     "option_exercise_proceeds": "OptionExercise",
     "stock_issued_acquisitions": "StockIssuedAcquisitions",
 }
+
+
+# 性質上負にならないフローの項目（2026-11-05、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3の後）:
+# 逆算したQ4が負なら、そのQ4は作らない（欠け）。呼び出し元が marks_out を渡せば印（Q4_NEGATIVE_MARK と元の値）を残す。
+# 項目の性質は config/sec_concept_definitions.json の各項目の "non_negative": true の1つの欄（PascalCase に直して持つ）。
+# 理由: 10-Kの年間の欄に1四半期分の額を申告する会社がある（CEGの1株配当 FY2025 は0.3878＝Q1〜Q3と同じ額で、年次−Q1〜Q3＝−0.78）。
+# 今の対象は段B-3の5項目だけ。既存の項目（buyback・SBC等）に当てると、今のTTMの窓に入る負のQ4（TASKのbuyback・FRSHのSBC・
+# APPの販売費 2025-12-31 等）が欠けになり公開の値が変わるため、当てていない（2026-11-05の全銘柄の試算）。
+# CapEx は段2の規則（四半期は符号つき・TTMが負なら欠け）のままで対象外
+Q4_NEGATIVE_MARK = "q4_implied_negative"
+_NON_NEGATIVE = None
+
+
+def non_negative_fields() -> frozenset:
+    """Layer2（config/sec_concept_definitions.json）で "non_negative": true の項目（PascalCase）"""
+    global _NON_NEGATIVE
+    if _NON_NEGATIVE is None:
+        import json as _json
+        import os as _os
+        path = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))),
+                             "config", "sec_concept_definitions.json")
+        try:
+            with open(path, encoding="utf-8") as f:
+                fields = (_json.load(f) or {}).get("fields") or {}
+        except (OSError, ValueError):
+            fields = {}
+        _NON_NEGATIVE = frozenset(_SNAKE_TO_PASCAL.get(k, k) for k, d in fields.items() if (d or {}).get("non_negative"))
+    return _NON_NEGATIVE
 
 
 # [[LAYER3-FIRST-FILED-DATE-1]]（2026-10-21）: Q4 の逆算は「年次と同じ時点の値どうし」にする。
@@ -145,6 +172,7 @@ def build_q4_implied_entries(
     annual_entries: list,
     quarterly_entries: list,
     field_name: str,
+    marks_out: list | None = None,
 ) -> list:
     """
     年次エントリ（is_annual=True）とQ1〜Q3の四半期エントリから、
@@ -217,6 +245,12 @@ def build_q4_implied_entries(
 
         q3_end = sorted(top3, key=lambda x: x["end"], reverse=True)[0]["end"]
         q4_val, extra = implied_q4_value(annual, top3, canonical_field_name)
+        if q4_val is not None and q4_val < 0 and canonical_field_name in non_negative_fields():
+            # 性質上負にならない項目の負のQ4は作らない（欠け）。印は呼び出し元が残す（上の NON_NEGATIVE の規則）
+            if marks_out is not None:
+                marks_out.append({"end": fy_end, "mark": Q4_NEGATIVE_MARK, "implied_val": q4_val,
+                                  "annual_accn": annual.get("accn", ""), "source_tag": annual.get("source_tag")})
+            continue
 
         try:
             period_days = (date.fromisoformat(fy_end) - date.fromisoformat(q3_end)).days
