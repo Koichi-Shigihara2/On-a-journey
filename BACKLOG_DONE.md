@@ -2,6 +2,205 @@
 
 ---
 
+## 2026-11-05（完了）
+
+### ✅ [EXTERNAL-SOURCE-CHANGE-WATCH-1] 取得元の変化・ばらつき（ランナーの版・SECのAPIの遅れ・CIKの切り替え・タグの移行・申告のばらつき・Yahooの限月）を検知して知らせる（型Xの根治策）
+**完了（2026-11-05）:** A・B（B1〜B3）・①台帳・②貸借対照表の行の補いを公開し、本番の確認で合格（下の「確認」）。B1・B2のSEC_Data_Updateでの最初の取得（CIKの照合・タグの検知）は2026-11-08の次回の確認手順25で、`05_fed_context.csv`の`fomc_date_source`は2026-11-07（土）の回で見て、下の「確認」に書き足す
+**型・処置（2026-10-19 束ね）:** 型X・根治策（R-X）
+**優先度:** 中
+**分類:** 根治策 / common/sec_data（候補タグ・`fetcher.py`・`freshness.py`）・common/market_data・`.github/workflows/`・System Health
+**登録日:** 2026-10-19
+**発見:** 初回の束ね（`docs/architecture/BUNDLING_2026-10-19.md`）
+
+#### 内容
+- 取得元の変化やばらつきを、決め打ちの候補・前提で受けていて、変わっても知らせる仕組みが無い（型X: 外部の変化・ばらつき）
+- 銘柄ごとの事情（タグのばらつき等）は直さず、[[OUTPUT-INVENTORY-CHECK-1]]の一覧に記録する（[[TICKER-EXCEPTION-LEDGER-1]]の考え方）。外の変化そのものを検知して知らせる
+
+#### 束ねた件
+- FINDINGS: 2026-10-18（ubuntu-latestのUbuntu 26への移行）は確認待ちのため残し、この根治策の対象とする
+- BACKLOG（統合してBACKLOG_DONE.mdへ）: [[MARKETDATA-FUTURES-ROLL-1]]・[[CIK-REORG-DETECTION-1]]・[[SBC-TAG-STOCKOPTIONPLAN-1]]・[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]・[[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]・[[LAYER3-DUPLICATE-QUARTER-ONE-DAY-1]]・[[LAYER3-CUSTOM-TAG-MIGRATION-1]]
+- 残す件との関係: [[SEC-COMPANYFACTS-API-LAG-1]]・[[MARKETDATA-FUTURES-BACKFILL-ROWS-1]]は確認待ちのため残す
+- 2026-11-01の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）で統合: FINDINGS 2026-10-26のMACRO PULSEの予備のFOMCの日付の一覧（`05_main.py::fetch_latest_fomc_statement`、実際の声明の日と合わず2026-05-07より後が無い）。同じ行のstooqの取得2か所は[[COMMON-PATH-GUARD-1]]
+
+#### 始める段（CHAT_RULES 4）
+取得の確認
+
+#### 投資判断への影響
+将来ありうる（止まる・欠ける）。今は[[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]のGOOGLのP/TBV約3%（表示の値。推定）
+
+#### 規模の見込み
+中
+
+#### 原則（チャット側、2026-11-04）
+外の変化は直さずに検知して知らせる。検知はSystem Healthの1欄（[P] ExternalChange）かrccの1本に集め、重大度は共通の表（`common/fetch_failure.py`）に乗せる。
+銘柄ごとの事情は台帳（出力の一覧・warn_acknowledged）に記録
+
+#### A（2026-11-04 実装・push）
+- A1 `16e969f384`: 全21本の`runs-on`を**ubuntu-26.04**に固定（`ubuntu-latest`は2026-10-25頃に24.04→26.04へ移っていて、11-02以降に見た回はすべて26.04で成功。
+  チャット側の指示で、その版に固定）。`tests/test_workflow_runner_pinned.py`（版は`RUNNER`の1か所、`*-latest`を禁止）。FINDINGS 2026-10-18を済に
+- A2 `c6333c6dd4`: 予備のFOMCの日付の決め打ちの一覧を削除。`common/macro_data/fomc_calendar.py`（予定のページの読み取り・取れた回のキャッシュ
+  `common/macro_data/fomc_calendar_cache.json`）、取れない日はキャッシュの声明を使い、`05_fed_context.csv`の新しい列`fomc_date_source`に`cache`。
+  キャッシュが古い（最後に取れてから7日超、または会合の予定がすべて過去）とSystem Healthの新しい欄**[P] ExternalChange**が⚠️（表の行「予備のキャッシュが古い」
+  `judge_stale`、🔴にはしない）。初めのキャッシュは11-04 06:06 UTC（声明95件・会合56件、次の会合 2026-12-09）。確認は次回の確認手順26
+
+#### B STEP 0（2026-11-04、読み取りと手元の試算）
+- 3. CIKの切り替え: 今の食い違いは**0件**（`config/cik_lookup.csv`の98銘柄〈dormant 1〉・`_cik_cache.json`の106件と、SECの`company_tickers.json`〈11-04に1回取得〉）。
+  案: SEC_Data_Updateの最初に`company_tickers.json`を1回取り（1リクエスト）、登録銘柄のCIKと照合し、食い違い・ティッカーが無い銘柄を[P]に出す。
+  `cik_history.json`への旧CIKの登録・`cik_lookup.csv`の変更は人が判断。submissionsの社名の履歴（former_names）は合図にしない
+  （今の社名の「最後の日」が直近の申告の日になっている銘柄が6件〈WMT・LMT・CSGP・ASTS・RBRK・FROG〉あり、表記の変更でも出る。食い違いのときの補足の表示だけ）
+- 4. タグの移行（Layer3の36項目、最新の10-K・10-Qの当期）:
+  (a) 途切れ（前の年の同じ四半期に値があり、最新の期に値も候補のタグも無い。出力に効く21項目） **13件**（CRWVの借入金2〈既知 [[LAYER3-CUSTOM-TAG-MIGRATION-1]]〉・
+  CAKE・RKLBの短期借入金・FLYWの長期借入金・META・PLTR・TSLAの無形資産・TSLAののれん・LLYの短期投資・非支配持分・HWMの優先株・MRVLのRPO）。
+  前の版の数え方（前の1年に値があれば）は48件で、10-Kにしか出ない項目を10-Qの期で数えていた
+  (b) 切り替え（最新の期のタグが前の4期の多数と違う）18件、うち値が±50%を超えて飛んだもの **5件**（HONのCapEx 0.24倍〈分社の組み替え〉・HONのSBC 2.04倍・
+  LITEの売上 1.83倍・ONDSの短期借入金 0.36倍・RCATのD&A 1.81倍）
+  (c) 候補外（最新の申告に、項目に当たる候補外のタグの値がある。項目ごとのタグの完全な名前の表）86件、うち前受収益を除き値が無いもの **6件**
+  （GOOGLの転換優先株・Vの`PreferredStockValueOutstanding`〈既知 [[ROTCE-PREFERRED-CONVERTIBLE-TAG-1]]〉、HEIの`StockOptionPlanExpense`〈既知 [[SBC-TAG-STOCKOPTIONPLAN-1]]〉、
+  KOの`IndefiniteLivedTrademarks`〈既知 [[ROTCE-TCE-COMPONENT-TAG-GAPS-1]]〉、CPRT・TERの償還可能な非支配持分）。前受収益（72件）はLayer3の読み手が無いので対象外。
+  名前の規則を広くした版（部分一致）は368件で使えない
+  CapEx・CF: 段5cでcf_linesの行が正なので、Layer3との差は出ない。分類の表の外（other_acq）の行のタグは22種（記録だけ）。
+  SBC・ROTCEの優先株・TCEの部品は(c)の表で拾える（統合済みの既知の件はすべて出た）。AVAVの非支配持分の途絶・PLTRののれん（2022年末だけ）は(a)の条件では出ない（前の年の同じ四半期にも値が無い）
+- 5. 同じ四半期の期末の数日違い（2〜6日）の重複: 全部で25件（14銘柄。AVAV・VZのRPO等）、**すべて2019〜2024年**で、直近2年（TTMの窓）は0件。
+  案: Layer3を作るときにTTMの窓の中だけを数えて[P]に出す（今は0件）
+- 6. 先物の限月の切り替え: 2026-09-29以降は行の`contract`で確定できる。変化は3件で、本当の切り替えはCL=Fの2026-10-14（CLX26→CLZ26）だけ。
+  ES=F・NQ=Fの10-29→10-30は`ESZ26.CME→ES.CME→ESZ26.CME`（Yahooが1日だけ月の記号の無い名前を返した。切り替えではない）。
+  過去（09-28以前）は値の飛びで探すしかない: ES=F・NQ=Fは前日比と^GSPC・^NDXの前日比の差が0.6%・0.8%を超える日のうち、**満期の日（3・6・9・12月の第3金曜）に当たるもの10件ずつ**
+  （23四半期のうち10。Yahooの連続系列は満期の日に乗り換える）。GC=F（GLD）・NIY=F（^N225）は相手と引けの時刻が違い誤報が多い（9件・47件）、CL=FはETFが無く、4σの飛びは相場の急変（2025-04等）
+  案: ①`contract`が変わった日は「限月の切り替え」（Market Pulseは同じ限月の前日比にする既存の処理）②月の記号の無い`contract`・`contract`の欠けは[P]に⚠️
+  ③過去のES=F・NQ=Fの満期の日の20行に「限月の切り替えの可能性」の印（日足の書き込みの1つの関数の印だけの経路 MARK_ONLY）
+- 7. 今の状態で出るWARN: CIK 0・(a) 13・(b) 5・(c) 6・重複 0・限月 2（ES=F・NQ=Fの月の記号の無い名前、10-29の1日）＝**26件**。
+  案: [P]は「台帳に無い新しい件」だけ⚠️にする。最初の26件はチャット側が確かめて台帳（`config/warn_acknowledged.json`と同じ形の`match`つき）に入れる。
+  既知の件（GOOGL・V・HEI・KO・CRWV）は統合済みの7件の記録をそのまま理由にできる
+- 実装の分け方の案: B1 [P]の枠（台帳つき）＋CIKの照合（SEC_Data_Updateが結果のファイルを書き、[P]が読む。小）→
+  B2 タグの(a)(b)(c)と重複（Layer3を作るときに結果のファイル、(c)の名前の表は1か所）→ B3 先物の限月（日足の`contract`の異常と過去20行の印）。
+  B2の後に、最初の件をチャット側が台帳に入れる
+- 試算の道具: scratchpad `b/`（tagwatch.py・tagwatch2.py・roll.py、company_tickers.json）
+
+#### B1〜B3の実装（2026-11-04 夕、チャット側の指示）
+- B1 `90cdee92eb`: `common/external_watch.py`（件を集め、台帳`config/external_change_acknowledged.json`〈warn_acknowledgedと同じ形、(kind, ticker, match)、空で始める〉に無い
+  新しい件だけを分ける）、`common/fetch_failure.py`に表の行「台帳に無い外の変化（新しい件）」⚠️（`judge_external`、🔴にはしない）、System Healthの[P]が件数（確認済み・新しい件）と種類ごとの要約。
+  `common/sec_data/source_watch.py`のCIKの照合（`tickers.get_all_rows`〈retired以外〉とSECの`company_tickers.json`）。SEC_Data_Update（update.py）が実行の最後に
+  `company_tickers.json`を1回だけ取り、`common/sec_data/data/_source_watch.json`に書く（銘柄を絞った実行はその銘柄の件だけ置き換え）
+- B2 `2e77f94875`: `source_watch.tag_items`（update.pyの手順6、Layer3を作った直後）: tag_gap（4a、出力に効く21項目）・tag_switch（4b、±50%の値の飛び）・
+  tag_outside（4c、項目ごとの完全な名前の表〈SBC・優先株・無形資産・非支配持分〉、前受収益は入れない）・dup_period（TTMの窓730日の中）。最初の結果は手元で作った（SECは呼ばない）
+- B3 `c591ec0e26`: `common/market_data/futures_roll.py`: 限月の欄の異常（銘柄ごとに最初に限月を記録した日より後の欠け・月の記号の無い限月）を[P]に、印`_contract_roll`
+  （"confirmed"＝限月が前の行から変わった日、"possible"＝限月を記録する前のES=F・NQ=Fの満期の日〈3・6・9・12月の第3金曜〉で^GSPC・^NDXとの前日比の差が0.6%・0.8%超）。
+  印は`write_daily_rows`の印だけの経路（`fetcher.py`の印の欄に`_contract_roll`、値〈文字列〉を残す）。付けた21行（CL=F 2026-10-15、ES=F・NQ=F 各10行）の値は変わらない。
+  **訂正**: STEP 0の報告の「CL=Fの10-14の切り替え」は、新しい限月の最初の行が**10-15**（10-14はその前の行）、「ES=F・NQ=Fの10-29」は**10-30**の行。Market_Data_Daily_Updateに印の段（continue-on-error）
+- 一覧 `a39be77ac9`（テストのファイルを分けた後の読み手で作り直し、pushの前のrccのNG-INV-2を直した）。ゲート: pytest 2827件成功・4件スキップ、audit 0、rcc NG 0・WARN 208
+- 最初の26件（[P]は台帳が空なので「26件検知（確認済み0・新しい件26）」の⚠️）: tag_gap 13・tag_outside 6・tag_switch 5・contract 2・CIK 0・dup_period 0。
+  1件ごとの今の公開の値への影響は2026-11-04のチャットの報告。影響あり（直す候補）: **CRWV（保有）の借入金**（独自タグへの移行で、TANUKIはFY2025の年次の借入金21.6Bを使い、
+  2026-06-30の`DebtInstrumentCarryingAmount`は35.6B。純有利子負債が約13.9B小さく、理論株価 83.81→約58.6〈−30%、純キャッシュ÷株数の線形の試算〉、乖離率 +56%→約+9%）ほか
+- **移設の条件**: 26件の扱いを決めて台帳に入れ、System Healthの次の回で[P]が✅になるのを見てから
+
+#### ① 台帳と ② 貸借対照表の行の補い（2026-11-04 夕〜夜、チャット側の指示）
+- ① `751f4d7cb9`: 台帳に12件（13行、ES=F・NQ=Fは2行）を理由つきで入れた
+- ② 1回目（夕）は試算が見込みと違い止めた: 「行が無ければ0」で、行はあるが軸つきの値だけ（CAT）・借入金とリースの合計の標準タグ（PEP）を0にして
+  PEP +52%・CAT +33%、10-Qで「その他の資産」にまとめる無形資産（WMT・AMZN・FCX）を0にしていた。CAKEの四半期のファイルの短期借入金は前年度末の列の値（FINDINGS 2026-11-04、`2fd791df1f`）
+- ② 2回目（夜、決定: 0は借入金・優先株・非支配持分だけ、無形資産・のれん・短期投資は直近の10-Kにも行が無いときだけ〈PLTR型〉、KULR・NOW・CDNSは見込みに入れる）:
+  - データ `ceef4f66fd`: `common/sec_data/data/{T}/bs_lines/{accn}.json` 2,229申告（ok 2,177・no_bs_statement 28・not_found 24、手元の保存から作った）
+  - コード `ea87e909fe`（method_change `EXTERNAL-SOURCE-CHANGE-WATCH-1-1`）: `common/sec_data/bs_lines.py`（行の分類の表・補いの規則の1か所）、Layer3の補い（ROTCE）、
+    `reader.get_net_cash`の補い（TANUKIの純有利子負債、四半期の現金と同じ時点のときだけ、`bs_lines_filled`）、新しい申告は`cf_lines.fetch_filing`と同じファイルから。
+    0の規則: 借入金・優先株・非支配持分は行が無く近い名前の行も無ければ0（当期の欄が空で前の期の列にだけ値〈CAKE〉も0、どの時点にも軸の無い値が無い〈CAT〉は不明）。
+    無形資産・のれん・短期投資は直近の10-Kの表にも行が無く、年度末の値（fp=FY か form=10-K、注記を含む）も400日以内に無いときだけ0。一度も申告の無い項目には0を足さない
+    （XOMの優先株の過去の期が欠けになったため）。TANUKIの短期投資は0にしない（今のまま）。SBCの候補に`StockOptionPlanExpense`（HEI 34期・TDY 22期の欠けだけ埋まる）。
+    試算の途中で直した誤り: WMT・AMZN・FCXの無形資産の0（注記の値の確認をform→年度末に）、XOMの過去の期の欠け、AAPLの注記の値の見落とし、CAKEの空の欄
+  - ASTS・AVAVはこの規則で: ASTSは無形資産・のれん（行も10-Kの値も無い）が0、AVAVは非支配持分（行なし）が0になり、どちらもTCE・ROTCE・P/TBVが出るようになる
+  - 試算（手元、TANUKI→HypeCore→TANUKI→Stonks→ROTCE、株価固定の前後）: 理論株価 **CRWV 83.81→59.04（−29.6%、純有利子負債 16.09B→29.75B、乖離率 +56.0%→+9.9%、判定はWATCHのまま）**・
+    KULR −7.9%・NOW −3.3%・CDNS −0.8%・FLYW +0.3%、ほかは変化0。判定・funda・stageの変化0。ROTCE・P/TBV: GOOGL P/TBV 5.67→5.84（+3%）、KO・PLTR・ASTS・AVAVが出るようになる、
+    WMT・AMZN・FCXは変化0。規則どおりの小さな変化: AAPLのROTCE TTM 173.0%→170.9%（2021〜2025年の無形資産がPLTR型で0）・ONDS 65.1%→55.6%（2025-09-30の優先株の空の欄が0）・
+    CPRT +0.04pt（償還可能な非支配持分）・V（TCEは負のまま）。最大EPS: HEI 6.01→6.37・TDY 21.85→22.71（信頼度 MED→HIGH）
+  - ゲート: pytest 2847件成功・4件スキップ、audit 0、rcc NG 0・WARN 209（+1は WARN-49 CDNS: 四半期の値の経路になり四半期に無い短期投資を0として扱う〈今までの決まり〉）
+  - 公開: TANUKI（run 41814489735、`ae13f6aa38`）→ HypeCore（41816608227、`7c976a3eb2`）→ TANUKI（41816896054、workflow_runで自動、`0e60c17451`）。
+    1回目・2回目とも理論株価・判定が試算と96銘柄一致、印はTANUKI・HypeCoreとも37銘柄でscope内だけ（多くは net_debt_period の表示だけ）、2回目は0。
+    Discordの🛠（1回目、手元で作り直し）はCRWV（乖離率 +56.0%→+9.9%）・KULR（+234.9%→+208.5%）の2銘柄、どちらも「計算方法の分／残り +0.0pt」。ROTCEはMarket Data Dailyの次の回（手順27）
+  - [P]: 「12件検知（確認済み8・新しい件4）」。新しい件13件のうち9件（CAKE・CRWV 2件・FLYW・GOOGL・HEI・KO・PLTR・TER）が消えた。**残る4件**（LLYの短期投資・METAの無形資産・
+    TSLAののれん・無形資産）は決定の規則で0にしない分類で、10-Kの注記に値があり年次の値で補われている。[P]を✅にするには、この4件を台帳に入れるかの判断が要る
+
+#### ③ [P]の残り4件（2026-11-04 夜）
+- `88f0ae3cd2`: 4a（タグの途切れ）を、決めた補いの規則（`bs_lines.covered_by_rules`・`annual_note_value`）でも埋まらない件だけに。METAの無形資産・TSLAののれん・無形資産は
+  直近の10-Kの年度末の値で埋まるので出ない。手元の[P]は「9件検知（確認済み8・新しい件1〈LLYの短期投資〉）」
+- `b3c9799706`: `bs_lines.py`の`NEAR_EXCLUDE_BY_FIELD`で「近い名前」から期間の違う行を外す（短期投資に長期の行、短期の借入金に長期の行、長期の借入金に短期の行）。
+  「行なしの0」の判定が変わる申告169件（17銘柄）、試算で公開の値の変化0・scope 0。手元の[P]は「✅ 8件検知（確認済み8・新しい件0）」
+
+#### 確認（2026-11-05、次回の確認手順22・23・26・27）
+- ROTCE（手順27、Market Data Daily `b3e78e2b3e`、チャット側の下見 2026-11-05 14:00）: GOOGLのTCE 610.6B→592.6B（P/TBV 5.67→6.03、計算方法の分約+3%と株価）、
+  KO・PLTR・ASTS・AVAVにTCE・ROTCE・P/TBVが出る、WMT・AMZN・FCXのTCE・ROTCEは不変。`{T}.json`の印は`EXTERNAL-SOURCE-CHANGE-WATCH-1-1` 37銘柄でscope外0。
+  `_summary.json`の先頭の`method_change`は`FCF-DEFINITION-SINGLE-SOURCE-1-4,FCF-DEFINITION-SINGLE-SOURCE-1-5,EXTERNAL-SOURCE-CHANGE-WATCH-1-1`、`method_change_prev_missing`なし（Stonks `940c586dc4`も同じ）
+- System Health（手順23・26、run `41962421074`、2026-11-05 03:34 UTC）: 16欄、[P]「✅ 8件検知（確認済み8・新しい件0） / FOMCの予定 最後に取れた 2026-11-05・次の会合 2026-12-09」、
+  Overall ✅ HEALTHY、Discord通知: 送信完了（1行は`common/system_health.py::build_one_line`で`ExtChange✅`）
+- A1（手順26）: 2026-11-05 JSTの実行30本（skippedを除く、pages-build-deploymentを含む）のRunner Imageはすべてubuntu-26.04、ランナーの割り当ての失敗なし
+  （cancelledはMarket Data Dailyのガード〈前日の終値がそろっている〉とpages-build-deploymentの重なり）
+- A2（手順26）: MACRO PULSE run `41955454716`（`7decfcc81b`）でcommitに`common/macro_data/fomc_calendar_cache.json`（`last_success_utc` 2026-11-05T02:30:53Z）。
+  ログに「キャッシュ（予備）の声明を使う」は無い（「新しいFOMC声明なし（最新の行の声明 2026-10-28）」）。
+  **残り**: `05_fed_context.csv`の`fomc_date_source`の列は週1回（土曜）の回で書かれるので、2026-11-07（土）の回で確かめる（次回の確認手順26）
+- チャット側の指示（2026-11-05 夜）で移設
+
+---
+
+### ✅ [CHECK-REFERENCE-DEFINITION-1] 検査・一覧・説明文を、書き手のコードと実際に使った入力と照合する（実行の時刻・データの有無・過去のファイルで結果が変わらない）
+**完了（2026-11-05）:** 本番の確認で合格（下の「確認」）
+**型・処置（2026-11-01 束ね）:** 型E（中心）・A・C・根治策。**実装済み 2026-11-03（`38e475edb7`・`3683083bfc`）、次回の確認手順23の後に移設**
+**優先度:** 中
+**分類:** 根治策 / `common/system_health.py`・`scripts/inventory/`（`inventory_analysis.py::check_inventory`・`build_output_inventory.py --check`）・`browser_checks/check_macro_pulse.py`・各モジュールの説明文・`docs/architecture/`の文書・`.github/workflows/`・`config/workflow_dependencies.json`
+**登録日:** 2026-11-02
+**発見:** 11-01（日）の束ね（`docs/architecture/BUNDLING_2026-11-01.md`）
+
+#### 内容（チャット側の案の要旨、2026-11-02）
+- 検査・一覧・説明文は、書き手のコードと実際に使った入力と照合する。実行の時刻・データの有無・過去のファイルで結果が変わらないようにする
+- System Healthの重大度を、割合・続いた日数で決める表を1か所に（全系列の停止・N日の継続は🔴）
+- 文書・説明文に書いたパスが存在するか、「消費者なし」と書いた説明文と一覧の読み手、ワークフローの名前と中身、CHECK-INVと`build_output_inventory.py --check`のずれ
+
+#### 束ねた件
+- FINDINGS: 2026-10-30の2行（出力の一覧〈TAIL〉の`prediction_history.json`のキー・System Healthの`[L] MacroData`の重大度）・2026-10-23 `check_macro_pulse.py`の不一致（実行の時刻）・2026-10-21 一覧の「誰も読まないキー」の数・2026-10-20 `TANUKI_Score_Update.yml`の名前・2026-10-20 削除した文書の参照・2026-10-22・10-23の説明文（market_data・macro_data）・2026-11-01 CHECK-INVと`--check`（9行）
+- 束ねの後の発見: FINDINGS 2026-11-02（rccのCHECK-66がTTMの系列に無い四半期末まで印を求める）は済（`20ef290ee5`）として、本項目の束ねた件に足す（2026-11-03 チャット側の指示）
+
+#### 始める段（CHAT_RULES 4）
+定義（検査・一覧・説明文が照合する相手の決まり）
+
+#### 投資判断への影響
+今あり（FREDの全25系列の停止が6日続いても⚠️どまりで、MACRO PULSE・Market PulseのFREDの値が古いまま公開された）
+
+#### 規模の見込み
+中
+
+#### 実装（2026-11-03 `38e475edb7` コード・テスト、`3683083bfc` 文書・一覧。確認は次回の確認手順23、その後に移設）
+- **原則**: `CHAT_RULES.md`「発見の溜め方と根治の判断」7（照合する相手は書き手のコードと実際に読んだ入力。時刻・データの有無・過去のファイルで結果が変わる検査は誤り）
+- **A. System Healthの重大度**: 取得の失敗を数える欄（[L] MacroData・[M] FETCH_FAILED・[O] 5分足の欠け）の重大度を`common/fetch_failure.py::judge`の1つの表で決める
+  （🔴＝全件の失敗・同じ項目の失敗が2日以上、⚠️＝一部で1日目、✅＝失敗なし）。続いた日数は書き手が残す`failed_since`（`macro_data_violations_log.json`・
+  `_freshness.json`、前回も失敗なら引き継ぐ。[O]は前の取引日のファイル）。[L]は取得する系列（`series_meta.json`）だけを数え、ログに残る昔の系列（CFNAI・FTSD）は数えない。
+  通知の1行は切らずに「取得失敗 25/25系列（BAMLH0A0HYM2ほか24件）・全件が失敗」の形。[M]のFETCH_FAILEDは以前の「全銘柄の10%以上で🔴」をやめて表に合わせた
+  （一部で1日目は⚠️）。過去の再現: 10-25〜10-30の毎朝（gitのその時点のログ）は🔴（以前は⚠️）、10-31は✅。今のデータでは全15欄の重大度が前のコードと同じ
+- **B. 出力の一覧**: キーは書き手のコードが書くキー（書き手の.py・それをimportする呼び出し元・それらがimportする.pyの、dictのキー・dataclassの欄・
+  AIへの指示のJSONの型）を正にする。データにあっても書き手のコードに無いキーは「今の書き手のコードに無いキー」の欄に分け、誰も読まないキーに数えない
+  （TANUKI 51→13、10-21の9キーを含む。TAILの`predicted`・`actual`・`accuracy`は「この段階の書き手あり」）。`build_output_inventory.py --check`と
+  CHECK-INVは同じ`compare_saved_inventory`を呼び、`--check`の終了コードはNGだけで決める（細部の違いは出力に出すだけ）。11段階を作り直した。
+  TANUKIの画面が古い履歴にだけ残る7キーを読む件はFINDINGS 2026-11-03（一覧には「書き手なし」として載せた）
+- **C. check_macro_pulse.py**: MAC-09・10は画面が読む`05_events.csv`の`sp500_t0_asof`ごとの終値と比べ、D-01・03・05・07はそのCSVを書いた実行が読めた
+  系列ストアの版（CSVを書いた時刻〈updated_atの最大・ファイルを最後に変えたcommit〉の時点のgitの版）と比べる。`--now`で時計を固定。
+  10-23 07:56 JSTのcommit（`6088b8636f`）の状態をgit worktreeで再現: 古い比べ方 一致67・不一致5（MAC-09・10、D-01・03・07）、新しい比べ方 一致72・不一致0。今の状態も一致72・不一致0
+- **D. 説明文・文書・名前**: `common/market_data/__init__.py`・`reader.py`、`common/macro_data/__init__.py`・`fetcher.py`・`reader.py`の「消費者なし」を、出力の一覧の読み手を正とする書き方に。
+  文書のパス84か所（`docs/architecture/`・`SYSTEM_MAP.md`・`CHAT_RULES.md`・`CLAUDE_CODE_START.md`の手順の部分・説明文2件）を、gitで消したものは
+  「（commit〈日付〉で削除）」、台帳の設計の未作成のファイルは「（予定）」、書き方の誤りは今のパスに（TICKER_EXCEPTION_LEDGER.mdのspac_shell_detection_log・
+  share_unit_fix_log、INPUT_DATA_TOBE.mdのstore_v2を含む）。`TANUKI_Score_Update.yml`の表示名を「Portfolio Snapshot Update」に、`workflow_dependencies.json`の
+  キーを`Portfolio_Snapshot_Update`に（ファイル名はSystem Health [J]の監視と実行の履歴を保つため据え置き。表示名でつながる連鎖は無い）。
+  再発の検知はrccのCHECK-68（WARN、`common/reference_check.py`）: 文書・説明文のパスの存在、説明文の「消費者なし」と出力の一覧の読み手、
+  ワークフローの表示名・動かすスクリプトと`workflow_dependencies.json`の`name`・`scripts`（名前と中身の対応の1か所）。入れた時点でWARN 0。
+  PROJECT_STATUS.md・CLAUDE_CODE_START.mdの引き継ぎサマリー・BACKLOG_DONE・FINDINGS・BUNDLING・archiveは日付の記録として対象外
+- **E.** FINDINGS 2026-11-02（CHECK-66）は済（`20ef290ee5`）として束ねた件に足した
+- 確認: テスト（`test_system_health_macro_data.py`・`test_sec_freshness.py`・`test_market_pulse_intraday_store.py`・`test_output_inventory_check.py`・
+  `test_check_macro_pulse_reference.py`・`test_reference_check.py`）、ゲート3種、手元のSystem Health（前後で全欄同じ）・rcc（NG 0・WARN 222→219、WARN-68 0）・
+  一覧（11段階、前の一覧との比べ方 NGはTANUKIの上の7件だけで、作り直して0）。STEP 0で`pyproject.toml`の開発用の依存に`ruff==0.17.3`
+
+#### 確認（2026-11-05、次回の確認手順23）
+- 1回目（2026-11-04 03:03 UTC、run `41764667527`）: 重大度の表の確認としては合格（チャット側の判定 2026-11-04 昼）。[J] CronRunsだけが✅→🔴で、`Market_Pulse_Headlines.yml`の失敗
+  （`ModuleNotFoundError: No module named 'common'`、`3e8ca9609d`で直した）による表の規則どおりの重大度。ほかの14欄は11-03の回と同じ
+- 2回目（2026-11-05 03:34 UTC、run `41962421074`、success、ubuntu-26.04）: [J] CronRuns「✅ 19件監視 / すべて正常」に戻った。全16欄が✅（[L]「全25系列取得成功」・
+  [M] FETCH_FAILED 0・[O]「2026-11-04: 10本」・[P]は[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）、Overall ✅ HEALTHY、Discord通知: 送信完了
+- チャット側の指示（2026-11-05 夜）で移設
+
+---
+
 ## 2026-11-04（完了）
 
 ### ✅ [FCF-DEFINITION-SINGLE-SOURCE-1] FCFとその入力（CapEx・リース・符号）の定義を1か所にし、欠けを0とみなさない（型Bを中心にした根治策）
