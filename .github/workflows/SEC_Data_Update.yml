@@ -87,6 +87,12 @@ jobs:
         continue-on-error: true
         run: python common/sector_master.py --all
 
+      - name: Rebuild profitability
+        # 収益の段階・黒字化の見込み・構造的赤字（docs/common/profitability.json、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-2、2026-11-05）。
+        # この回のSECのデータと業種のマスターで作り直す。失敗してもSECのデータのcommitは止めない
+        continue-on-error: true
+        run: python common/profitability.py --all
+
       - name: Commit and push changes
         id: commit
         run: |
@@ -98,6 +104,7 @@ jobs:
           git add common/sec_data/ttm/ || true
           git add docs/common/sec_data/normalized/ || true
           git add config/sector_master.json || true
+          git add docs/common/profitability.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

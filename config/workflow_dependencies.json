@@ -8,10 +8,12 @@
         "common/sec_data/normalized/",
         "common/sec_data/ttm/",
         "config/sector_master.json",
+        "docs/common/profitability.json",
         "docs/common/sec_data/normalized/"
       ],
       "name": "SEC Data Update",
       "scripts": [
+        "common/profitability.py",
         "common/sec_data/report_consistency_check.py",
         "common/sec_data/rollback_failed.py",
         "common/sec_data/update.py",

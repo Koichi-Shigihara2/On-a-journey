@@ -137,7 +137,8 @@ def test_register_one_does_not_promote_when_step7_5_fails(monkeypatch):
     calls = []
     for name in ("step1_sec_data", "step3_pipeline"):
         monkeypatch.setattr(rt, name, lambda *a, **k: True)
-    for name in ("step1_5_daily_history", "step1_6_sector_master",   # 外の取得・書き込みを動かさない
+    monkeypatch.setattr(rt, "_run", lambda cmd, label: (_ for _ in ()).throw(AssertionError(f"差し替えていない段が動いた: {label}")))
+    for name in ("step1_5_daily_history", "step1_6_sector_master", "step1_7_profitability",   # 外の取得・書き込みを動かさない
                  "step2_beta", "step3_5_segment_config_gate", "step4_audit", "step5_hypecore",
                  "step5b_eps_analyzer", "step7_monitor_register"):
         monkeypatch.setattr(rt, name, lambda *a, **k: None)

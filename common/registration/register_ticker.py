@@ -173,6 +173,16 @@ def step1_6_sector_master(ticker: str) -> None:
         print(f"  ⚠️  Step 1.6 の業種のマスターは非ブロッキング（exit={rc}）。次の Market Data Weekly の後に作り直される")
 
 
+# ─── Step 1.7: 収益の段階（黒字・黒字化目前・赤字・区分なし）の追加 ─────────────────
+# [[HYPECORE-STAGE-TIMESCALE-1]] 段B-2（2026-11-05）: Step 1（SEC）と Step 1.6（業種のマスター）の後に、1銘柄だけ
+# docs/common/profitability.json に足す（次の SEC_Data_Update・Market Data Weekly を待たない）
+
+def step1_7_profitability(ticker: str) -> None:
+    rc = _run([PYTHON, "common/profitability.py", "--ticker", ticker], "Step 1.7: 収益の段階の追加")
+    if rc != 0:
+        print(f"  ⚠️  Step 1.7 は非ブロッキング（exit={rc}）。次の SEC_Data_Update・Market Data Weekly の後に作り直される")
+
+
 # ─── Step 2: β取得 ───────────────────────────────────────────────────────
 
 def step2_beta(ticker: str, dry_run: bool) -> None:
@@ -406,6 +416,7 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
 
     step1_5_daily_history(ticker)
     step1_6_sector_master(ticker)
+    step1_7_profitability(ticker)
 
     step2_beta(ticker, dry_run)
 

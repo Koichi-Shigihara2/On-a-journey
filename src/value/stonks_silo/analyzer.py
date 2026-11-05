@@ -27,6 +27,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 from common.sec_data.reader import get_runway_cash  # noqa: E402
+from common.profitability import deficit_quality_verdict  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -402,82 +403,9 @@ class StonksAnalyzer:
         sm_ratio: Optional[float],
         gross_margin: Optional[float],
     ) -> tuple[str, str, float]:
-        """
-        総合判定。スコアリング方式で0-100点を算出。
-
-        スコア構成:
-          売上成長  (40pt): CAGR >50%=40, >30%=30, >20%=20, >10%=10, else=0
-          投資姿勢  (30pt): R&D+SM >60%=30, >40%=20, >20%=10, else=5
-          粗利率    (20pt): >70%=20, >50%=15, >30%=8,  else=0
-          赤字状況  (10pt): 純赤字=5 (赤字でも投資中), 純黒字=10
-        """
-        is_profitable = net_income is not None and net_income > 0
-
-        score = 0.0
-        reasons = []
-
-        # 売上成長 (40pt)
-        if cagr_3yr is not None:
-            if cagr_3yr >= 50:
-                score += 40; reasons.append(f"売上CAGR +{cagr_3yr:.0f}% (超高成長)")
-            elif cagr_3yr >= 30:
-                score += 30; reasons.append(f"売上CAGR +{cagr_3yr:.0f}% (高成長)")
-            elif cagr_3yr >= 20:
-                score += 20; reasons.append(f"売上CAGR +{cagr_3yr:.0f}% (成長中)")
-            elif cagr_3yr >= 10:
-                score += 10; reasons.append(f"売上CAGR +{cagr_3yr:.0f}% (緩成長)")
-            else:
-                reasons.append(f"売上CAGR {cagr_3yr:.0f}% (成長鈍化)")
-        else:
-            reasons.append("成長率計算不可")
-
-        # 投資姿勢 (30pt) — R&D + S&M 合計対Revenue
-        invest_ratio = 0.0
-        if rnd_ratio is not None:
-            invest_ratio += rnd_ratio
-        if sm_ratio is not None:
-            invest_ratio += sm_ratio
-        if invest_ratio >= 60:
-            score += 30; reasons.append(f"R&D+SM {invest_ratio:.0f}% (積極投資)")
-        elif invest_ratio >= 40:
-            score += 20; reasons.append(f"R&D+SM {invest_ratio:.0f}% (投資中)")
-        elif invest_ratio >= 20:
-            score += 10; reasons.append(f"R&D+SM {invest_ratio:.0f}% (標準)")
-        elif invest_ratio > 0:
-            score += 5; reasons.append(f"R&D+SM {invest_ratio:.0f}% (低投資)")
-        else:
-            reasons.append("投資比率計算不可")
-
-        # 粗利率 (20pt)
-        if gross_margin is not None:
-            if gross_margin >= 70:
-                score += 20; reasons.append(f"粗利率 {gross_margin:.0f}% (高収益構造)")
-            elif gross_margin >= 50:
-                score += 15; reasons.append(f"粗利率 {gross_margin:.0f}% (良好)")
-            elif gross_margin >= 30:
-                score += 8;  reasons.append(f"粗利率 {gross_margin:.0f}% (普通)")
-            else:
-                reasons.append(f"粗利率 {gross_margin:.0f}% (低い)")
-        else:
-            reasons.append("粗利率計算不可")
-
-        # 黒字状況 (10pt)
-        if is_profitable:
-            score += 10; reasons.append("純利益黒字")
-        elif net_income is not None:
-            score += 5
-
-        # 最終判定
-        if is_profitable:
-            verdict = "PROFITABLE"
-        elif score >= 65:
-            verdict = "GOOD_DEFICIT"
-        elif score >= 35:
-            verdict = "WATCH"
-        else:
-            verdict = "BAD_DEFICIT"
-
-        return verdict, " / ".join(reasons), round(score, 1)
+        """総合判定（0-100点）。計算は common/profitability.py::deficit_quality_verdict の1か所
+        （[[HYPECORE-STAGE-TIMESCALE-1]] 段B-2、2026-11-05に移した。点数の構成・閾値はそちらの説明文）"""
+        return deficit_quality_verdict(net_income, cagr_3yr, rev_growth, rnd_ratio, sm_ratio, gross_margin)
 
     # ------------------------------------------------------------------
     def _calc_deficit_fixed_risk(self, dq: DeficitQuality, pp: ProfitabilityPath) -> str:

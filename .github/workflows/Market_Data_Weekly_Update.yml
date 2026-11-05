@@ -52,6 +52,11 @@ jobs:
         # yfinanceの業種が変わった銘柄は changes に残り、System Health の [P] ExternalChange に出る
         run: python common/sector_master.py --all
 
+      - name: Rebuild profitability
+        # 業種のマスターの作り直しの後に、収益の段階（区分なし・金融はマスターで決まる）を作り直す（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-2）
+        continue-on-error: true
+        run: python common/profitability.py --all
+
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
@@ -61,6 +66,7 @@ jobs:
           git add common/market_data/analyst_history/ || true
           git add common/market_data/_sp500_constituents_cache.json || true
           git add config/sector_master.json || true
+          git add docs/common/profitability.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

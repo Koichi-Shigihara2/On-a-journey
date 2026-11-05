@@ -38,6 +38,9 @@ def _patch_all_steps_success(monkeypatch, call_log):
     monkeypatch.setattr(rt, "step1_sec_data", lambda t: call_log.append("step1") or True)
     monkeypatch.setattr(rt, "step1_5_daily_history", lambda t: call_log.append("step1_5"))
     monkeypatch.setattr(rt, "step1_6_sector_master", lambda t: call_log.append("step1_6"))
+    monkeypatch.setattr(rt, "step1_7_profitability", lambda t: call_log.append("step1_7"))
+    # 差し替えていない段が外部のコマンドを動かしたら失敗にする（新しい段を足したときの差し替えの漏れの検知、FINDINGS 2026-11-05）
+    monkeypatch.setattr(rt, "_run", lambda cmd, label: (_ for _ in ()).throw(AssertionError(f"差し替えていない段が動いた: {label}")))
     monkeypatch.setattr(rt, "step2_beta", lambda t, dry_run: call_log.append("step2"))
     monkeypatch.setattr(rt, "step4_audit", lambda t: call_log.append("step4"))
     monkeypatch.setattr(rt, "step7_monitor_register", lambda t, dry_run: call_log.append("step7"))
@@ -134,7 +137,7 @@ class TestDailyHistoryStep:
         _patch_all_steps_success(monkeypatch, call_log)
 
         assert rt.register_one("AAA", "candidate", dry_run=True) is True
-        assert call_log.index("step1") < call_log.index("step1_5") < call_log.index("step1_6") < call_log.index("step2")
+        assert call_log.index("step1") < call_log.index("step1_5") < call_log.index("step1_6")             < call_log.index("step1_7") < call_log.index("step2")
 
     def test_backfills_only_the_ticker_from_2021(self, monkeypatch):
         cmds = []
@@ -152,3 +155,13 @@ class TestSectorMasterStep:
         rt.step1_6_sector_master("AAA")      # 失敗（exit 1）でも例外にしない（非ブロッキング）
         assert cmds == [[rt.PYTHON, "common/market_data/fetcher.py", "AAA", "--layer", "attributes"],
                         [rt.PYTHON, "common/sector_master.py", "--ticker", "AAA"]]
+
+
+class TestProfitabilityStep:
+    """[[HYPECORE-STAGE-TIMESCALE-1]] 段B-2: Step 1.7で、その銘柄だけ収益の段階を足す"""
+
+    def test_adds_only_the_ticker(self, monkeypatch):
+        cmds = []
+        monkeypatch.setattr(rt, "_run", lambda cmd, label: cmds.append(cmd) or 1)
+        rt.step1_7_profitability("AAA")      # 失敗（exit 1）でも例外にしない（非ブロッキング）
+        assert cmds == [[rt.PYTHON, "common/profitability.py", "--ticker", "AAA"]]

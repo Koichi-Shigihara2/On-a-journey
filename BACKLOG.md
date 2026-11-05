@@ -2353,6 +2353,13 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
     作り直しはMarket Data Weeklyの後（`--all`）、新しい銘柄はregister_tickerのStep 1.6（属性を1銘柄取る→`--ticker`）。yfinanceの業種が変わった銘柄は
     `changes`に残し、System Healthの[P] ExternalChange（kind `sector_change`、台帳つき）。読み手は今のまま（[[SECTOR-MASTER-ADOPT-1]]で寄せる）。
     最初の結果: 98銘柄、景気循環株10（AMAT・CAT・ENTG・FCX・KLAC・LRCX・SCCO・TER・TSLA・XOM）、区分なし1（RXRX）、金融2（SOFI・V。SICが入るまでsectorだけ。VはSIC 7389で外れる見込み）
+  - **段B-2 赤字の質・収益の段階 済（2026-11-05）**: `common/profitability.py` → `docs/common/profitability.json`（機械で作る）。時点を指定して計算できる（Layer3の`first_filed`がその時点以前の値を`first_val`で）。銘柄ごとに収益の段階（TTMの営業利益〈GAAP〉がプラスなら黒字、
+    赤字ならTTMの営業利益率の直近8点の回帰で2年以内に0に届けば黒字化目前、届かない・上向きでない・点が足りなければ赤字。業種のマスターで区分なし・金融は区分なし）と根拠、
+    黒字化の見込み（年・方法・根拠の期・傾き）、構造的赤字（TTMのFCFの毎年同じ期末の5点・2点の平均で、TANUKIの`is_structural_deficit`を呼ぶだけ）、
+    赤字の質の点数（STONKSの関数を`deficit_quality_verdict`に移し、STONKSはそれを呼ぶ。24銘柄の出力は時刻の欄を除き差0）。
+    作り直しはSEC_Data_Updateの後と業種のマスターの作り直しの後（Market Data Weekly）、新しい銘柄はregister_tickerのStep 1.7。読み手は今のまま（[[DEFICIT-QUALITY-ADOPT-1]]で寄せる）。
+    最初の結果（98銘柄）: 黒字71・赤字16・黒字化目前7（ESTC・GTLB・JOBY・ONDS・RBRK・SITM・SOUN）・区分なし4（RXRX・SOFI・V・XOM〈営業利益のタグが無くTTMを作れない〉）。
+    構造的赤字19、TANUKIの今の印と全96銘柄で一致
 - **段C 本番の部品での再検証**: §7の(a)〜(d)を段Bの部品で試算し直す（閾値は§4の初期値から。際どければ§8の日足の過去分の取り込みを判断）
 - その後 [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）
 
@@ -2591,6 +2598,51 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 #### 規模の見込み
 中〜大（読み手が多い）
+
+---
+
+### [DEFICIT-QUALITY-ADOPT-1] 「赤字か」の判定が4つの値（営業利益・純利益・OCF・FCF）に分かれ20銘柄で結論が割れ、黒字化の予測もSTONKS（年次GAAP）とTANUKI（四半期の調整後EPS）で食い違う。読み手をprofitabilityの部品に寄せる
+**型・処置:** 型B（同じ規則の二重実装）・根治策
+**優先度:** 中
+**分類:** 共通の部品 / `docs/common/profitability.json`（`common/profitability.py`）とその読み手（TANUKI VALUATION・STONKS SILO・rcc・登録の検証）
+**登録日:** 2026-11-05
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-2のSTEP 0（2026-11-05）
+**経緯:** 2026-10-19の初回の束ねで[[DEFICIT-QUALITY-COMMON-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行）。段B-2で部品だけを作った（読み手は今のまま）
+
+#### 今ある赤字の判定の場所（2026-11-05、段B-2のSTEP 0）
+| # | 場所 | 定義（値・期間・閾値） | 読み手・対象 |
+|---|---|---|---|
+| 1 | STONKSの`DeficitQuality`（`src/value/stonks_silo/analyzer.py`、点数は段B-2で`common/profitability.py::deficit_quality_verdict`へ） | 直近の年次。純利益>0なら黒字、それ以外は点数（3年の売上の伸び40・研究開発費と販売費の比率30・粗利率20・黒字10）で65以上 良い赤字・35以上 要観察・未満 悪い赤字 | STONKSの画面、TANUKIのreport。STONKSの24銘柄だけ |
+| 2 | STONKSの`ProfitabilityPath` | 直近4年の年次の純利益率・OCF率の回帰で黒字化の年（5年まで）、黒字化パスの点数 | 同上 |
+| 3 | STONKSの対象のルール（`common/sec_data/stonks_flag_rule.py`） | TTMの営業利益<0か売上0 | rccのCHECK-51、登録の検証P7 |
+| 4 | TANUKIの`is_structural_deficit`（`calculator/adjustments.py`） | FCFの5点・2点の平均がともに0以下 → 売上×8%の下限 → Policy A（下限を基準に使ったらWATCH） | TANUKIの理論株価・判定・report・画面の印（96銘柄） |
+| 5 | TANUKIの`compute_eps_breakeven`（`pipeline.py`） | EPS ANALYZERの調整後EPS（非GAAP）の直近4四半期の回帰（20四半期まで） | `latest.json`の`breakeven_estimate`、画面 |
+| 6 | TANUKIのマトリクス③「深い赤字」 | RICEのQ（OCF÷(純利益＋SBC)）の異常値 | report・画面のマトリクス |
+| 7 | 段Aの試算の仮の部品 | 営業利益率の前年からの改善ペースで2年以内に0 | 試算だけ |
+
+#### 食い違い（2026-11-05、98銘柄）
+- 値ごとの赤字: TTMの営業利益<0 23（判定不能3）・純利益≦0 22・OCF≦0 13・構造的赤字（FCF）18。20銘柄で結論が割れる
+- AMZN・CEG・COHRは営業利益・純利益・OCFとも黒字だがFCFだけ構造的赤字（設備投資）で、TANUKIの下限・Policy Aが効く
+- ESTC・SITM・LYFTは営業赤字だが純利益は黒字。LITE・ZETAは純損失だが営業黒字。NET・S・ZS・FROG・GTLB・RBRKは営業赤字・純損失だがOCFは黒字
+- 黒字化の予測の食い違い: 保有のSOUN（STONKS 2026・TANUKI 予測不可）・CRWV（STONKS 純利益で2026・TANUKI 予測不可）、BBAI・RDW・JOBY（STONKS 予測不可・TANUKI 2026〜2027）、NET・S・GTLB・FROG（TANUKIは調整後EPSが黒字で達成済み・STONKSはGAAPで2026〜2028）、SPIR（STONKSは年次の純利益が黒字〈一過性〉・OCFは悪化）
+- STONKSの対象外の赤字銘柄（赤字の質・黒字化の予測が無い）: AMZN・CEG・COHR・LITE・SOFI・ZETA
+
+#### 決定（チャット側、2026-11-05）
+1. 収益の段階はTTMの営業利益（GAAP）
+2. 黒字化の見込みはTTMの営業利益率の直近8四半期の回帰で2年以内に0に届くか
+3. 部品は構造的赤字（FCF、今の`is_structural_deficit`を呼ぶだけ）と収益の段階を別の項目で出し、TANUKIの下限・Policy Aは今のまま
+4. 本項目を登録（寄せるのは段Cの後）
+
+#### 進め方
+寄せるのはTANUKI・STONKSを1つずつ。全銘柄の試算と計算方法の変更の手順で公開する。設備投資の重い黒字の会社（AMZN・CEG・COHR型）を構造的赤字・下限・Policy Aから外すかはここで決める（外せば理論株価・判定が変わる）。黒字化の予測を1つにすると画面の予測の年が変わる（保有のSOUN・CRWVを含む）。
+部品の段B-2の最初の結果の注意: 営業利益率が極端に低い銘柄（JOBY −759%・ONDS −140%）でも、率の上向きが急なら回帰で黒字化目前になる。RBRKは回帰の線が最後の点で0を超えている（実際の値はまだ負）
+
+#### 投資判断への影響
+今あり（設備投資の重い黒字の会社に下限・Policy Aが効く、保有銘柄の黒字化の予測が画面ごとに違う）。寄せると理論株価・判定が変わりうる
+
+#### 規模の見込み
+中〜大
 
 ---
 
