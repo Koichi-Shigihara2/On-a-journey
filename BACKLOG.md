@@ -2327,8 +2327,20 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 **優先度:** 中
 **分類:** 判定の設計 / HypeCore（`src/value/hypecore/hypecore.py`の`fetch_price_data()`・`determine_stage()`）とstageを読む全処理
 **登録日:** 2026-10-14
-**着手条件（2026-10-14 終業）:** データ基盤の2件（[[LAYER3-FIRST-FILED-DATE-1]]・[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）の完了の後に定義v2の検証を再開（2026-10-14から一時停止中）
+**着手条件（2026-10-14 終業）:** データ基盤の2件（[[LAYER3-FIRST-FILED-DATE-1]]・[[MARKETDATA-DAILY-HISTORY-POLICY-1]]）の完了の後に定義v2の検証を再開（2026-10-14から一時停止中）。**2026-11-05**: データ基盤の3件（[[LAYER3-FIRST-FILED-DATE-1]] 10-21・[[MARKETDATA-DAILY-HISTORY-POLICY-1]] 10-26・[[LAYER3-RETENTION-PERIOD-1]] 10-19）は完了。共通の部品4件は作られていない（下の「段」）
 **発見:** ABBV・PMのHOLD→TRIM（2026-10-12、HypeCoreの週次の再生成でstage 2→3、RSI 53→73）の分解（BACKLOG_DONE.mdの[[LAYER2-SHARES-UNIT-THOUSANDS-1]]の訂正）
+
+#### 段（2026-11-05、チャット側の指示）
+定義v2の共通の部品4件は、初回の束ね（2026-10-19）で「統合」として閉じた（[[SECTOR-MASTER-UNIFY-1]]・[[DEFICIT-QUALITY-COMMON-1]]・[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]は
+[[OUTPUT-INVENTORY-CHECK-1]]へ、[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]は[[STAGE-V2-ROLLOUT-1]]へ）が、統合先でも作られておらず、どこにも未着手として残っていなかった
+（2026-11-05 STEP 0で確認: 共通の倍率の履歴・景気循環株の区分を持つ業種のマスター・赤字の質の共通の部品は無く、Layer3の`fields`に配当・増資が無い。FINDINGS 2026-11-05）。その中身をこの項目の段B に置く。
+- **段A 規則の確かめ（仮の部品）**: 10-14と同じ仮の部品（業種はyfinance、景気循環株は4業種の決め打ち、黒字化の見込みは営業利益率の改善のペース、資本の使い方は試算の中だけでタグを足す）で、
+  §7の(a)（生の判定の分布・移行中の割合〈目標10%未満〉・g_F・g_M・Lの27通りのうちどの段階にも当たらない組み合わせ）を主に見る。(b)〜(d)は参考値。読み取りと手元の試算だけ
+- **段B 共通の部品**（順に）: ① 業種のマスター（景気循環株の区分を含む。元[[SECTOR-MASTER-UNIFY-1]]）→ ② 赤字の質・構造的な赤字・黒字化の見込み（元[[DEFICIT-QUALITY-COMMON-1]]）→
+  ③ Layer3の配当・増資（元[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]）→ ④ 倍率の履歴（元[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]。①〜③と日足・Layer3の最初の提出日が揃ってから）。
+  各部品は1銘柄を追加する経路を持ち、登録の手順から呼ぶ（定義v2 §5・§6）
+- **段C 本番の部品での再検証**: §7の(a)〜(d)を段Bの部品で試算し直す（閾値は§4の初期値から。際どければ§8の日足の過去分の取り込みを判断）
+- その後 [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）
 
 #### 内容（チャット側の確認、2026-10-14）
 - stageは月次の時系列で、テクニカルの値は日次で計算して月末の値（`resample("ME").last()`）を使う。月の途中では「今月の末日の値」としてその日の値が入るため、今月のstageは計算した日で変わる
@@ -2527,7 +2539,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **優先度:** 中
 **分類:** 切り替え / HypeCore（`hypecore.py`・`_poc.json`）とstageを読む全処理（[[HYPECORE-STAGE-TIMESCALE-1]]のB-1の表）
 **登録日:** 2026-10-14
-**着手条件（2026-10-14 終業）:** 定義v2の確定と共通の部品4件の完了の後
+**着手条件（2026-11-05 改）:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後。（2026-10-14 終業の記載: 定義v2の確定と共通の部品4件の完了の後。共通の部品は[[HYPECORE-STAGE-TIMESCALE-1]]の段Bに移した）
 **発見:** HypeCoreのstageの定義v2（`docs/architecture/HYPECORE_STAGE_DEFINITION_V2.md` §6）
 
 #### 内容
