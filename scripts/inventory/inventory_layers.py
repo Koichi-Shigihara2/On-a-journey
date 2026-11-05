@@ -139,6 +139,10 @@ SCREEN_SECTION_DECISIONS: List[Tuple[str, str, str, str]] = []   # (ページ, �
 UNREAD_KEY_NOTES: Dict[str, str] = {      # 誰も読まないキーを残した理由（段階2の判断）。SEC層（_SEC）の分
     "mark": "残す: 年次の cf_provenance.capital_expenditure の印「CF計算書にCapExの行なし」（cf_lines.py、"
             "[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b、2026-11-04）。0が欠けでなく申告の行の無いことを人が確かめるための出所の記録",
+    # [[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。読み手は段C（本番の部品での再検証）とSTAGE-V2-ROLLOUT-1で作る
+    **{k: "残す: 定義v2の資本の使い方（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3、2026-11-05）。読み手は段Cと[[STAGE-V2-ROLLOUT-1]]で作る"
+       for k in ("dividends_paid", "dividends_per_share", "equity_issuance_proceeds", "option_exercise_proceeds",
+                 "stock_issued_acquisitions")},
 }
 HTML_COPIES: List[Tuple[str, List[str]]] = []   # 本番外の HTML の複製の候補と、比べる docs/ のページ
 PAGE_CHECKS: List[str] = []    # 範囲外の確認をするページ（何のページか・書き手・読み手・ナビ）

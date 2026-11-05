@@ -226,6 +226,53 @@
         "PaymentsForRepurchaseOfCommonStock"
       ]
     },
+    "dividends_paid": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "PaymentsOfDividendsCommonStock",
+        "PaymentsOfDividends",
+        "PaymentsOfOrdinaryDividends"
+      ],
+      "_note": "[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。定義はここの1か所（parserには書かない）。普通株の配当の支払い（CF計算書）。無配の会社はタグが無く欠け（0とみなさない）"
+    },
+    "dividends_per_share": {
+      "category": "flow",
+      "unit": "USD/shares",
+      "candidates": [
+        "CommonStockDividendsPerShareDeclared",
+        "CommonStockDividendsPerShareCashPaid"
+      ],
+      "_note": "[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。定義はここの1か所（parserには書かない）。普通株の1株配当（宣言額が先）。無配でも0を申告する会社がある（CRWV・FROG・JOBY・SOFI、2026-11-05に確認）。Q4の逆算はしない（年間の欄に1四半期分の額を申告する会社があり負になる。common/sec_data/q4_implied.py）"
+    },
+    "equity_issuance_proceeds": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "ProceedsFromIssuanceOfCommonStock",
+        "ProceedsFromIssuanceOrSaleOfEquity",
+        "ProceedsFromIssuanceOfCommonStockNetOfIssuanceCosts",
+        "ProceedsFromIssuanceInitialPublicOffering"
+      ],
+      "_note": "[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。定義はここの1か所（parserには書かない）。お金を受け取る株の発行（公募・ATM・IPO）の収入（CF計算書）"
+    },
+    "option_exercise_proceeds": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "ProceedsFromStockOptionsExercised",
+        "ProceedsFromIssuanceOfSharesUnderIncentiveAndShareBasedCompensationPlans"
+      ],
+      "_note": "[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。定義はここの1か所（parserには書かない）。ストックオプションの行使・従業員の株式購入の収入（CF計算書）"
+    },
+    "stock_issued_acquisitions": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "StockIssuedDuringPeriodValueAcquisitions"
+      ],
+      "_note": "[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。定義はここの1か所（parserには書かない）。買収の対価として発行した株の価額（持分変動計算書。お金を受け取らない発行）"
+    },
     "shares_basic_weighted_avg": {
       "category": "shares",
       "unit": "shares",

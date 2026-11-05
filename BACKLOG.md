@@ -2360,6 +2360,12 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
     作り直しはSEC_Data_Updateの後と業種のマスターの作り直しの後（Market Data Weekly）、新しい銘柄はregister_tickerのStep 1.7。読み手は今のまま（[[DEFICIT-QUALITY-ADOPT-1]]で寄せる）。
     最初の結果（98銘柄）: 黒字71・赤字16・黒字化目前7（ESTC・GTLB・JOBY・ONDS・RBRK・SITM・SOUN）・区分なし4（RXRX・SOFI・V・XOM〈営業利益のタグが無くTTMを作れない〉）。
     構造的赤字19、TANUKIの今の印と全96銘柄で一致
+  - **段B-3 Layer3の配当・増資 済（2026-11-05）**: `config/sec_concept_definitions.json`（定義の1か所、parserのタグの表には書かない）に5項目（`dividends_paid`・`dividends_per_share`・`equity_issuance_proceeds`・`option_exercise_proceeds`・`stock_issued_acquisitions`）。
+    TTMの`FLOW_FIELDS`とQ4の逆算（`q4_implied`の写像）にも入れた。ただし1株配当はQ4の逆算をしない（10-Kの年間の欄に1四半期分の額を申告する会社があり、
+    全銘柄で15か所が負〈CEG・V・AAPL・NVDA・SCCO・HEI等〉。Q4は10-Kに第4四半期の額がある期だけ）。タグがある銘柄: 配当の支払い46・1株配当45・増資64・オプションの行使57・買収の対価の株51。
+    1株配当のタグだけの4銘柄（CRWV・FROG・JOBY・SOFI）は、普通株の1株配当の宣言額＝0の申告（無配。優先株の配当ではない）。配当の支払いは欠けのまま（0とみなさない）。
+    TTMの系列は90ファイルで新しいキーだけが増え（633か所）、既存のキーの差0（浮動小数の丸めだけの差は前の値に戻した）。出力の一覧（sec）を作り直し、5キーを「誰も読まないキー」の理由つきに。
+    定義v2の希薄化は株数の変化（`shares_outstanding_period_end_sec`、分割換算）を主、増資の収入÷時価総額を裏づけに（決定2）。財務CFの行の取り直しはしない。CHECKは段Cの後
 - **段C 本番の部品での再検証**: §7の(a)〜(d)を段Bの部品で試算し直す（閾値は§4の初期値から。際どければ§8の日足の過去分の取り込みを判断）
 - その後 [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）
 
@@ -2645,6 +2651,44 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 #### 規模の見込み
 中〜大
+
+---
+
+### [DILUTION-DEFINITION-UNIFY-1] 希薄化の定義が3通り（TANUKIの年次の希薄化後株式数の3年・STONKSのSBC÷売上・定義v2の増資÷時価総額）で、TANUKIの希薄化率が実際の株数の変化とずれる（TSLA +0.51%/年 対 2年で+23%、LITE +2.98%/年 対 +31%、CEG −1.54%/年 対 +13%）
+**型・処置:** 型B（同じ規則の二重実装）・根治策
+**優先度:** 中
+**分類:** 共通の定義 / TANUKI VALUATION（`financial_health.dilution_3yr_annual_pct`、report・画面の重大度）・STONKS SILO（`dilution_risk`）・定義v2
+**登録日:** 2026-11-05
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-3のSTEP 0（2026-11-05）
+**経緯:** 2026-10-19の初回の束ねで[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]を[[STAGE-V2-ROLLOUT-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行と同じ形）。段B-3でLayer3に配当・増資の5項目を足した
+
+#### 今の取り方の場所（2026-11-05、段B-3のSTEP 0）
+| 項目 | 場所 | 定義 | 読み手 |
+|---|---|---|---|
+| 自社株買い | Layer3の`buyback`・parserの`buyback` | `PaymentsForRepurchaseOfCommonStock`だけ | TTMの系列（TANUKIの`buyback_ttm`） |
+| 配当 | market_dataの属性（yfinance） | 今の配当利回り・配当性向 | TANUKIの配当の罠の判定 |
+| 希薄化 | TANUKIの`financial_health.dilution_3yr_annual_pct` | SECの年次の希薄化後株式数の3年の変化（年率） | TANUKIのreport・画面の重大度 |
+| 希薄化 | STONKSの`dilution_risk` | SBC÷売上（15%以上 HIGH・8%以上 MEDIUM） | STONKSの画面 |
+| 希薄化 | 定義v2（段Aの試算） | 増資÷時価総額 | 試算だけ |
+| 配当・増資（2026-11-05から） | Layer3の5項目（段B-3） | 上の段B-3の記録 | まだ無い（段C） |
+
+#### 食い違い（2026-11-05）
+- 希薄化の定義が3通り（株数の変化・SBCの比率・増資÷時価総額）
+- TANUKIの希薄化率（年次の加重平均で遅れ、期間も違う）と実際の株数（deiの発行済株式数、分割を除く2年）: TSLA +0.51%/年 対 +23%、LITE +2.98%/年 対 +31%、CEG −1.54%/年 対 +13%（買収の対価の株）
+- 株数が2年で10%以上増えた20銘柄のうち、増資の収入のタグが無いのは4銘柄（LITE〈転換等の新株〉・TSLA〈報酬の株〉・CEG・FROG〈買収の対価の株〉）。ATMの取りこぼしは見つからず（独自タグも0件）。取りこぼすのは「お金を受け取らない株の発行」（買収・転換・報酬）で、増資の収入のタグでは測れない
+
+#### 決定（チャット側、2026-11-05）
+- 定義v2の希薄化は株数の変化（`shares_outstanding_period_end_sec`、分割換算）を主、増資の収入÷時価総額を裏づけに。3通りの定義の統一は本項目で
+
+#### ここで決めること
+TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・画面の重大度）を株数の変化（分割を除く、時点つき）に寄せるか。お金を受け取らない発行（買収・転換・報酬）の扱い。STONKSの`dilution_risk`（SBC÷売上）を希薄化と呼ぶか（名前と中身）。寄せるときは全銘柄の試算と計算方法の変更の手順で
+
+#### 投資判断への影響
+今あり（TANUKIの希薄化の重大度が実際の株数の変化より小さく出る銘柄がある）
+
+#### 規模の見込み
+中
 
 ---
 

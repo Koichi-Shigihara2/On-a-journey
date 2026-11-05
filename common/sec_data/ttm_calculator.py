@@ -42,6 +42,9 @@ FLOW_FIELDS = (
     "revenue", "gross_profit", "operating_income", "net_income",
     "research_and_development", "selling_and_marketing", "buyback",
     "eps_basic", "eps_diluted", "selling_general_and_administrative",
+    # [[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 資本の使い方（定義v2）。1株配当は四半期の宣言額の合計
+    "dividends_paid", "dividends_per_share", "equity_issuance_proceeds",
+    "option_exercise_proceeds", "stock_issued_acquisitions",
 )
 
 # ストック系フィールド（最新Q末の値）。Layer3のcategory="stock"（14件）。

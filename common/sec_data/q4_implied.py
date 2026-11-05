@@ -70,6 +70,10 @@ Q4_IMPLIED_FIELDS = frozenset({
     "RD", "SM", "SBC", "DA", "SGA",
     "NetIncome", "OperatingIncome", "GrossProfit",
     "Buyback",
+    # [[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 資本の使い方。どれも期間で足せるフロー。
+    # 1株配当（DividendsPerShare）は入れない: 10-Kの年間の欄に1四半期分の額を申告する会社があり（CEGのFY2025は0.3878＝Q1〜Q3と同じ額）、
+    # 「年次−Q1〜Q3」が負になる（2026-11-05の全銘柄で15か所: CEG・V・AAPL・NVDA・SCCO・HEI等）。Q4は10-Kに第4四半期の額がある期だけ
+    "DividendsPaid", "EquityIssuance", "OptionExercise", "StockIssuedAcquisitions",
 })
 
 # [[LAYER3-Q4-IMPLIED-NOT-MIGRATED-1]]対応: layer3_builder.py（Layer3、
@@ -98,6 +102,11 @@ _SNAKE_TO_PASCAL = {
     "gross_profit": "GrossProfit",
     "buyback": "Buyback",
     "selling_general_and_administrative": "SGA",
+    "dividends_paid": "DividendsPaid",
+    "dividends_per_share": "DividendsPerShare",
+    "equity_issuance_proceeds": "EquityIssuance",
+    "option_exercise_proceeds": "OptionExercise",
+    "stock_issued_acquisitions": "StockIssuedAcquisitions",
 }
 
 
