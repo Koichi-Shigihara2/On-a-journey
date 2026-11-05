@@ -1,12 +1,14 @@
 {
  "_schema_version": "1.0",
  "_description": "収益の段階・黒字化の見込み・構造的赤字・赤字の質の点数（common/profitability.py が機械で作る）。読み手は [[DEFICIT-QUALITY-ADOPT-1]] で寄せる（今は読む処理なし）",
- "generated_at": "2026-11-05T11:31:31+00:00",
+ "generated_at": "2026-11-05T12:10:41+00:00",
  "rules": {
   "revenue_stage": "TTMの営業利益（GAAP）",
   "breakeven_method": "ttm_operating_margin_ols_8q",
   "breakeven_points": 8,
   "near_horizon_quarters": 8,
+  "breakeven_start": "最新の実際のTTMの営業利益率",
+  "breakeven_min_r2": 0.5,
   "structural_deficit": "TTMのFCFの毎年同じ期末の5点の平均と直近2点の平均（is_structural_deficit）",
   "time_basis": "Layer3 の first_filed がその時点以前の値（first_val）"
  },
@@ -411,6 +413,7 @@
      -0.3864
     ],
     "slope_per_quarter": null,
+    "r2": null,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_DATA"
@@ -481,6 +484,7 @@
      -0.1261
     ],
     "slope_per_quarter": -0.03588,
+    "r2": 0.859,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -551,6 +555,7 @@
      -1.6422
     ],
     "slope_per_quarter": -0.15434,
+    "r2": 0.599,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -1183,6 +1188,7 @@
      -0.0304
     ],
     "slope_per_quarter": null,
+    "r2": null,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_DATA"
@@ -1481,7 +1487,7 @@
    "operating_margin": -0.0264,
    "revenue_stage": "near_profit",
    "revenue_stage_label": "黒字化目前",
-   "stage_reason": "TTMの営業利益率の直近8点の回帰で1.09四半期後に0（2026年）",
+   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで3.43四半期後に0（2027年、R² 0.652）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -1505,8 +1511,9 @@
      -0.0264
     ],
     "slope_per_quarter": 0.00771,
-    "quarters_to_zero": 1.09,
-    "year": 2026,
+    "r2": 0.652,
+    "quarters_to_zero": 3.43,
+    "year": 2027,
     "reason": "PREDICTED"
    },
    "structural_deficit": {
@@ -1683,7 +1690,7 @@
    "operating_margin": -0.1152,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（10.86四半期後）",
+   "stage_reason": "0に届くのが2年より先（9.0四半期後）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -1707,8 +1714,9 @@
      -0.1152
     ],
     "slope_per_quarter": 0.0128,
-    "quarters_to_zero": 10.86,
-    "year": 2029,
+    "r2": 0.707,
+    "quarters_to_zero": 9.0,
+    "year": 2028,
     "reason": "TOO_FAR"
    },
    "structural_deficit": {
@@ -1877,7 +1885,7 @@
    "operating_margin": -0.0855,
    "revenue_stage": "near_profit",
    "revenue_stage_label": "黒字化目前",
-   "stage_reason": "TTMの営業利益率の直近8点の回帰で1.93四半期後に0（2027年）",
+   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで3.77四半期後に0（2027年、R² 0.868）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -1901,7 +1909,8 @@
      -0.0855
     ],
     "slope_per_quarter": 0.02269,
-    "quarters_to_zero": 1.93,
+    "r2": 0.868,
+    "quarters_to_zero": 3.77,
     "year": 2027,
     "reason": "PREDICTED"
    },
@@ -2167,7 +2176,7 @@
    "operating_margin": -4.0824,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（19.86四半期後）",
+   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.361 < 0.5）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -2191,9 +2200,10 @@
      -4.0824
     ],
     "slope_per_quarter": 0.23197,
-    "quarters_to_zero": 19.86,
-    "year": 2031,
-    "reason": "TOO_FAR"
+    "r2": 0.361,
+    "quarters_to_zero": null,
+    "year": null,
+    "reason": "LOW_FIT"
    },
    "structural_deficit": {
     "value": true,
@@ -2323,9 +2333,9 @@
    "ttm_operating_income": -882906000.0,
    "ttm_revenue": 116295000.0,
    "operating_margin": -7.592,
-   "revenue_stage": "near_profit",
-   "revenue_stage_label": "黒字化目前",
-   "stage_reason": "TTMの営業利益率の直近8点の回帰で0.18四半期後に0（2026年）",
+   "revenue_stage": "loss",
+   "revenue_stage_label": "赤字",
+   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.248 < 0.5）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -2349,9 +2359,10 @@
      -7.592
     ],
     "slope_per_quarter": 577.24602,
-    "quarters_to_zero": 0.18,
-    "year": 2026,
-    "reason": "PREDICTED"
+    "r2": 0.248,
+    "quarters_to_zero": null,
+    "year": null,
+    "reason": "LOW_FIT"
    },
    "structural_deficit": {
     "value": true,
@@ -2507,6 +2518,7 @@
      -2.5604
     ],
     "slope_per_quarter": -0.15291,
+    "r2": 0.718,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -2765,7 +2777,7 @@
    "operating_margin": -0.0177,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（15.31四半期後）",
+   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.036 < 0.5）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -2789,9 +2801,10 @@
      -0.0177
     ],
     "slope_per_quarter": 0.001,
-    "quarters_to_zero": 15.31,
-    "year": 2030,
-    "reason": "TOO_FAR"
+    "r2": 0.036,
+    "quarters_to_zero": null,
+    "year": null,
+    "reason": "LOW_FIT"
    },
    "structural_deficit": {
     "value": false,
@@ -3079,6 +3092,7 @@
      -0.1411
     ],
     "slope_per_quarter": -0.0034,
+    "r2": 0.242,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -3213,7 +3227,7 @@
    "operating_margin": -1.404,
    "revenue_stage": "near_profit",
    "revenue_stage_label": "黒字化目前",
-   "stage_reason": "TTMの営業利益率の直近8点の回帰で0.77四半期後に0（2026年）",
+   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで2.34四半期後に0（2027年、R² 0.864）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -3237,8 +3251,9 @@
      -1.404
     ],
     "slope_per_quarter": 0.599,
-    "quarters_to_zero": 0.77,
-    "year": 2026,
+    "r2": 0.864,
+    "quarters_to_zero": 2.34,
+    "year": 2027,
     "reason": "PREDICTED"
    },
    "structural_deficit": {
@@ -3467,6 +3482,7 @@
      -13.7288
     ],
     "slope_per_quarter": -0.6883,
+    "r2": 0.172,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -3509,7 +3525,7 @@
    "operating_margin": -0.1831,
    "revenue_stage": "near_profit",
    "revenue_stage_label": "黒字化目前",
-   "stage_reason": "TTMの営業利益率の直近8点の回帰で0.0四半期後に0（2026年）",
+   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで1.06四半期後に0（2026年、R² 0.773）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -3533,7 +3549,8 @@
      -0.1831
     ],
     "slope_per_quarter": 0.17225,
-    "quarters_to_zero": 0.0,
+    "r2": 0.773,
+    "quarters_to_zero": 1.06,
     "year": 2026,
     "reason": "PREDICTED"
    },
@@ -3571,7 +3588,7 @@
    "operating_margin": -1.4589,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（92.81四半期後）",
+   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.014 < 0.5）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -3595,9 +3612,10 @@
      -1.4589
     ],
     "slope_per_quarter": 0.01731,
-    "quarters_to_zero": 92.81,
-    "year": 2049,
-    "reason": "TOO_FAR"
+    "r2": 0.014,
+    "quarters_to_zero": null,
+    "year": null,
+    "reason": "LOW_FIT"
    },
    "structural_deficit": {
     "value": true,
@@ -3649,6 +3667,7 @@
      -0.505
     ],
     "slope_per_quarter": -0.08927,
+    "r2": 0.723,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -3695,7 +3714,7 @@
    "operating_margin": -0.2906,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（11.48四半期後）",
+   "stage_reason": "0に届くのが2年より先（10.73四半期後）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -3719,7 +3738,8 @@
      -0.2906
     ],
     "slope_per_quarter": 0.02708,
-    "quarters_to_zero": 11.48,
+    "r2": 0.906,
+    "quarters_to_zero": 10.73,
     "year": 2029,
     "reason": "TOO_FAR"
    },
@@ -3853,7 +3873,7 @@
    "operating_margin": -0.2946,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（14.15四半期後）",
+   "stage_reason": "0に届くのが2年より先（14.64四半期後）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -3877,7 +3897,8 @@
      -0.2946
     ],
     "slope_per_quarter": 0.02012,
-    "quarters_to_zero": 14.15,
+    "r2": 0.982,
+    "quarters_to_zero": 14.64,
     "year": 2030,
     "reason": "TOO_FAR"
    },
@@ -3967,7 +3988,7 @@
    "operating_margin": -0.0393,
    "revenue_stage": "near_profit",
    "revenue_stage_label": "黒字化目前",
-   "stage_reason": "TTMの営業利益率の直近8点の回帰で0.44四半期後に0（2026年）",
+   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで0.44四半期後に0（2026年、R² 0.997）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -3991,6 +4012,7 @@
      -0.0393
     ],
     "slope_per_quarter": 0.0892,
+    "r2": 0.997,
     "quarters_to_zero": 0.44,
     "year": 2026,
     "reason": "PREDICTED"
@@ -4123,9 +4145,9 @@
    "ttm_operating_income": -139287000.0,
    "ttm_revenue": 203200000.0,
    "operating_margin": -0.6855,
-   "revenue_stage": "near_profit",
-   "revenue_stage_label": "黒字化目前",
-   "stage_reason": "TTMの営業利益率の直近8点の回帰で1.9四半期後に0（2026年）",
+   "revenue_stage": "loss",
+   "revenue_stage_label": "赤字",
+   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.393 < 0.5）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -4149,9 +4171,10 @@
      -0.6855
     ],
     "slope_per_quarter": 0.30197,
-    "quarters_to_zero": 1.9,
-    "year": 2026,
-    "reason": "PREDICTED"
+    "r2": 0.393,
+    "quarters_to_zero": null,
+    "year": null,
+    "reason": "LOW_FIT"
    },
    "structural_deficit": {
     "value": true,
@@ -4219,6 +4242,7 @@
      -1.4668
     ],
     "slope_per_quarter": -0.16328,
+    "r2": 0.945,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -4749,7 +4773,7 @@
    "operating_margin": -0.0398,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（230.18四半期後）",
+   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.021 < 0.5）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
@@ -4773,9 +4797,10 @@
      -0.0398
     ],
     "slope_per_quarter": 0.0002,
-    "quarters_to_zero": 230.18,
-    "year": 2084,
-    "reason": "TOO_FAR"
+    "r2": 0.021,
+    "quarters_to_zero": null,
+    "year": null,
+    "reason": "LOW_FIT"
    },
    "structural_deficit": {
     "value": false,

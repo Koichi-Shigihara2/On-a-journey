@@ -59,6 +59,30 @@ def test_near_profit_when_margin_reaches_zero_within_two_years():
     assert 0 <= be["quarters_to_zero"] <= 8 and be["slope_per_quarter"] > 0
 
 
+def test_breakeven_starts_from_actual_latest_margin_not_fitted_line():
+    """回帰の線が最後の点で0を超えていても、実際の率が負なら、実際の率から傾きで伸ばす（RBRK型）"""
+    margins = [(f"2025-{m:02d}-30", v) for m, v in zip(range(1, 9), [-0.9, -0.7, -0.5, -0.3, -0.1, 0.0, 0.05, -0.05])]
+    slope, intercept, r2 = pf._ols([v for _, v in margins])
+    assert intercept + slope * 7 > 0                       # 線の上の最後の点は0超
+    be = pf.breakeven(margins)
+    assert be["reason"] == "PREDICTED" and be["quarters_to_zero"] > 0
+    assert abs(be["quarters_to_zero"] - 0.05 / slope) < 0.01
+
+
+def test_low_fit_is_loss_with_unknown_outlook():
+    zigzag = [-0.9, -0.1, -0.8, -0.05, -0.7, -0.02, -0.6, -0.5]  # 上向きだが直線に乗らない
+    be = pf.breakeven([(f"2025-{m:02d}-30", v) for m, v in zip(range(1, 9), zigzag)])
+    assert be["slope_per_quarter"] > 0 and be["r2"] < pf.MIN_R2 and be["reason"] == "LOW_FIT"
+
+
+
+def test_low_fit_stage_is_loss_with_reason(monkeypatch):
+    """見込み不明（LOW_FIT）の銘柄は収益の段階が「赤字」で、理由に見込み不明と出る"""
+    monkeypatch.setattr(pf, "breakeven", lambda m: {"reason": "LOW_FIT", "r2": 0.2, "quarters_to_zero": None, "year": None})
+    r = pf.compute("A", "2026-12-31", _store([100] * 14, [-20 + k for k in range(14)]))
+    assert r["revenue_stage"] == "loss" and "見込み不明" in r["stage_reason"]
+
+
 def test_loss_when_flat_far_or_short():
     flat = pf.compute("A", "2026-12-31", _store([100] * 14, [-20] * 14))
     assert flat["revenue_stage"] == "loss" and flat["breakeven"]["reason"] == "NO_TREND"

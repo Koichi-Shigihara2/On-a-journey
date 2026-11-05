@@ -2,8 +2,8 @@
 
 決まり（チャット側の決定 2026-11-05）:
   1. 収益の段階は TTM の営業利益（GAAP）。プラスなら「黒字」
-  2. 黒字化の見込みは、TTM の営業利益率の直近8四半期（8点）の回帰で、2年（8四半期）以内に0に届くか。届けば「黒字化目前」、
-     届かない・上向きでない・点が足りないときは「赤字」
+  2. 黒字化の見込みは、TTM の営業利益率の直近8四半期（8点）の回帰の傾きで、最新の実際の率から2年（8四半期）以内に0に届くか。
+     届けば「黒字化目前」、届かない・上向きでない・点が足りない・当てはまり（R²）が MIN_R2 未満（見込み不明）なら「赤字」
   3. 構造的赤字（FCF の5点・2点の平均がともに0以下）は収益の段階と別の項目。判定は TANUKI の
      src/value/tanuki_valuation/calculator/adjustments.py::is_structural_deficit を呼ぶだけ（定義は1つ）。
      TANUKI の下限・Policy A は今のまま（この部品を読まない）
@@ -42,6 +42,11 @@ QUARTER_DAYS = (60, 125)          # 1四半期の長さ（52・53週の16週の�
 STEP_DAYS = (70, 125)             # 続く四半期の期末の間隔
 BREAKEVEN_POINTS = 8              # 黒字化の見込みの回帰に使う TTM の点（直近8四半期）
 NEAR_HORIZON_QUARTERS = 8         # 2年以内に0に届けば「黒字化目前」
+# 回帰の当てはまり（決定係数R²）の下限。これ未満は「赤字（見込み不明）」（2026-11-05、チャット側の指示で導入）。
+# 理由: 2026-11-05の全銘柄（赤字で8点がそろう21銘柄）のR²は 0.997〜0.599 の群（SITM・S・SPIR・RKLB・GTLB・ONDS・AVAV・RBRK・RDW・
+# KULR・FROG・ESTC・BBAI）と 0.393 以下の群（SOUN・IONQ・JOBY・NET・QBTS・LYFT・ZS・RCAT）に分かれ、間（0.4〜0.6）に銘柄が無い。
+# 0.5 はその切れ目。R²が低いのは率が直線に乗らない（売上がほぼ0の期を含みJOBYの率が数千%から動く等）ときで、傾きで伸ばした時期に意味が無い
+MIN_R2 = 0.5
 BREAKEVEN_METHOD = "ttm_operating_margin_ols_8q"
 FCF_POINTS = 5                    # 構造的赤字の5点の平均（TANUKI の TTM の系列と同じく、毎年同じ期末の点）
 
@@ -202,31 +207,41 @@ def ttm_series(quarters: Dict[str, float]) -> Dict[str, float]:
     return out
 
 
-def _ols(ys: List[float]) -> Tuple[float, float]:
+def _ols(ys: List[float]) -> Tuple[float, float, float]:
+    """(傾き, 切片, 決定係数R²)"""
     n = len(ys)
     xs = list(range(n))
     mx, my = sum(xs) / n, sum(ys) / n
     sxx = sum((x - mx) ** 2 for x in xs)
-    slope = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx
-    return slope, my - slope * mx
+    sxy = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    syy = sum((y - my) ** 2 for y in ys)
+    slope = sxy / sxx
+    r2 = (sxy * sxy) / (sxx * syy) if syy > 0 else 0.0
+    return slope, my - slope * mx, r2
 
 
 def breakeven(margins: List[Tuple[str, float]]) -> Dict[str, Any]:
-    """TTM の営業利益率（古い順、直近 BREAKEVEN_POINTS 点）の回帰で、0に届く時期"""
+    """TTM の営業利益率（古い順、直近 BREAKEVEN_POINTS 点）の回帰の傾きで、最新の実際の率から0に届く時期。
+    起点は回帰の線の上の点ではなく最新の実際の値（線は0超・実際は負、をなくす。2026-11-05）。
+    当てはまり（R²）が MIN_R2 未満なら見込み不明（LOW_FIT）"""
     pts = margins[-BREAKEVEN_POINTS:]
     out: Dict[str, Any] = {"method": BREAKEVEN_METHOD, "basis_ends": [e for e, _ in pts],
-                           "margins": [round(m, 4) for _, m in pts], "slope_per_quarter": None,
+                           "margins": [round(m, 4) for _, m in pts], "slope_per_quarter": None, "r2": None,
                            "quarters_to_zero": None, "year": None, "reason": None}
     if len(pts) < BREAKEVEN_POINTS:
         out["reason"] = "NO_DATA"
         return out
-    slope, intercept = _ols([m for _, m in pts])
+    slope, _intercept, r2 = _ols([m for _, m in pts])
     out["slope_per_quarter"] = round(slope, 5)
+    out["r2"] = round(r2, 3)
     if slope <= 0:
         out["reason"] = "NO_TREND"
         return out
-    q = (-intercept / slope) - (len(pts) - 1)          # 回帰の線が0に届くまでの四半期（最後の点から）
-    q = max(q, 0.0)
+    if r2 < MIN_R2:
+        out["reason"] = "LOW_FIT"
+        return out
+    last = pts[-1][1]
+    q = max(-last / slope, 0.0)                         # 最新の実際の率から傾きで伸ばして0に届くまでの四半期
     out["quarters_to_zero"] = round(q, 2)
     out["year"] = (_d(pts[-1][0]) + timedelta(days=round(q * 91.3))).year
     out["reason"] = "PREDICTED" if q <= NEAR_HORIZON_QUARTERS else "TOO_FAR"
@@ -279,9 +294,11 @@ def compute(ticker: str, as_of: str, store: Dict[str, Any], sector_entry: Option
         be = breakeven(margins)
         res["breakeven"] = be
         if be["reason"] == "PREDICTED":
-            stage, why = STAGE_NEAR, f"TTMの営業利益率の直近8点の回帰で{be['quarters_to_zero']}四半期後に0（{be['year']}年）"
+            stage, why = STAGE_NEAR, (f"最新のTTMの営業利益率から直近8点の回帰の傾きで{be['quarters_to_zero']}四半期後に0"
+                                      f"（{be['year']}年、R² {be['r2']}）")
         else:
             stage, why = STAGE_LOSS, {"NO_DATA": "TTMの営業利益率の点が8点に足りない", "NO_TREND": "TTMの営業利益率が上向きでない",
+                                      "LOW_FIT": f"見込み不明（TTMの営業利益率が直線に乗らない、R² {be['r2']} < {MIN_R2}）",
                                       "TOO_FAR": f"0に届くのが2年より先（{be['quarters_to_zero']}四半期後）"}[be["reason"]]
     res.update(revenue_stage=stage, revenue_stage_label=STAGE_LABELS[stage], stage_reason=why)
 
@@ -360,6 +377,7 @@ def build(tickers: Optional[List[str]] = None, as_of: Optional[str] = None, path
         "generated_at": now,
         "rules": {"revenue_stage": "TTMの営業利益（GAAP）", "breakeven_method": BREAKEVEN_METHOD,
                   "breakeven_points": BREAKEVEN_POINTS, "near_horizon_quarters": NEAR_HORIZON_QUARTERS,
+                  "breakeven_start": "最新の実際のTTMの営業利益率", "breakeven_min_r2": MIN_R2,
                   "structural_deficit": "TTMのFCFの毎年同じ期末の5点の平均と直近2点の平均（is_structural_deficit）",
                   "time_basis": "Layer3 の first_filed がその時点以前の値（first_val）"},
         "tickers": {t: entries[t] for t in sorted(entries)},
