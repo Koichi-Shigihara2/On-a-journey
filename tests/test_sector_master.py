@@ -132,3 +132,22 @@ def test_saved_master_covers_registered_tickers():
     """config/sector_master.json に登録簿（retired 以外）の全銘柄がある（作り直し忘れの検知）"""
     m = sm.load()
     assert set(m.get("tickers") or {}) == set(sm.registered_tickers())
+
+
+def test_public_view_for_screen(tmp_path):
+    """画面が読む区分（docs/common/sector_class.json）は同じ書き手がマスターから書く。中身が同じなら書かない。[[SECTOR-MASTER-ADOPT-1]] 段5"""
+    kw = _setup(tmp_path, {"AAA": ("Industrials", "Farm & Heavy Construction Machinery"), "BBB": ("Technology", "Software - Application")})
+    m = sm.build(**kw)
+    out = str(tmp_path / "docs" / "sector_class.json")
+    assert sm.write_public(m, out) is True
+    assert json.load(open(out, encoding="utf-8"))["tickers"] == {"AAA": {"cyclical": True}, "BBB": {"cyclical": False}}
+    assert sm.write_public(m, out) is False
+
+
+def test_screen_reads_master_not_keyword_list():
+    """TANUKI SCOREの画面は景気循環株の語の一覧を持たず、業種のマスターの区分を読む"""
+    html = open(os.path.join(REPO, "docs", "value-monitor", "tanuki_score", "index.html"), encoding="utf-8").read()
+    assert "CYCLICAL_KEYWORDS" not in html
+    assert "../../common/sector_class.json" in html
+    pub = json.load(open(sm.PUBLIC_PATH, encoding="utf-8"))
+    assert pub == sm.public_view(sm.load())

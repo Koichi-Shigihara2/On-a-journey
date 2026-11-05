@@ -2388,6 +2388,13 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 #### 進め方
 寄せるのはTANUKI・EPS ANALYZERを1つずつ。全銘柄の試算（理論株価・判定・調整後EPS・STONKS）と、計算方法の変更の手順（`CLAUDE_CODE_START.md`「計算方法の変更の手順」）で公開する。見込み: TANUKIは4・5のDamodaranの業種（手で書いた業種が写像の結果に変わる銘柄と、業種が新しく付く43銘柄）で推奨成長率→理論株価・判定が変わりうる。EPS ANALYZERは業種の出ない41銘柄に区分が付き、業種別の除外が効き始める（調整後EPS→TANUKIの最大EPSに波及しうる）。STONKSの金融ガード・Market PulseのETFは同じ見込み
 
+#### 寄せる段（STEP 0 2026-11-06、手元の試算。段ごとに公開する）
+- 段1（TANUKIのDamodaranの業種→写像、例外の台帳）: 未。例外の台帳に残すのはAPP・META・NET・CIX・KULR・PAYS（チャット側の決定 2026-11-06）、ABBV・ASTS・CRWV・HQYは写像に寄せる、`TICKER_INDUSTRY_OVERRIDES`の登録に無い9銘柄は消す。公開の前に成長率の確かめ（LOAR −90%等）を確かめる
+- 段2（永久成長率の直引き`_TICKER_TV_G`・Phase2の上限`_mega_tech_tickers`→業種の規則）: 未。段1の後
+- 段3（`financial_institution_config`→マスターの金融）: 未。11-08のSICの保存の後なら変化0の見込み
+- 段4（EPS ANALYZERの区分→9区分の写像）: 未。EPS ANALYZERの計算方法の変更として別に
+- 段5（TANUKI SCOREの画面の`CYCLICAL_KEYWORDS`→マスターの景気循環株）: **済 2026-11-06**。`common/sector_master.py`が区分だけを`docs/common/sector_class.json`に書き（公開はdocs/の下だけのため。同じ書き手・手で書かない）、画面はその`cyclical`を読む。表示だけ、CATが景気敏感に入る（TSLAは前から入っている）
+
 #### 投資判断への影響
 今あり（成長率の確かめに業種のベンチマークが無い銘柄、EPSの業種別の除外が効かない銘柄がある）。寄せると理論株価・判定が変わりうる
 

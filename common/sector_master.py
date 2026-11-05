@@ -5,7 +5,8 @@
      SECの SIC・社名（common/sec_data/data/{T}/submissions.json、SEC_Data_Update が保存）は控えとして持つ
   2. 銘柄の一覧は書かない。区分（景気循環株・金融・区分なし）と他の分類への写像（EPS ANALYZERの9区分・Damodaranの業種・
      Market PulseのETF）は、業種の名前の規則として本モジュールの1か所に持ち、マスターにも写しを書く
-  3. 景気循環株は、TANUKI SCOREの画面の CYCLICAL_KEYWORDS と定義v2の段Aの4業種の和集合を、業種の名前の規則として持つ
+  3. 景気循環株は、TANUKI SCOREの画面にあった語の一覧と定義v2の段Aの4業種の和集合を、業種の名前の規則として持つ
+     （画面は 2026-11-06 から語の一覧を持たず、docs/common/sector_class.json の cyclical を読む。[[SECTOR-MASTER-ADOPT-1]] 段5）
   4. 今はマスターを作るだけ。読み手（TANUKI・EPS ANALYZER・STONKS・Market Pulse・画面）は今のまま（[[SECTOR-MASTER-ADOPT-1]] で寄せる）
 
 作り直し: Market Data Weekly（属性の週次の取得）の後に全銘柄（--all）。新しい銘柄の登録（register_ticker の Step 1.6）は
@@ -30,12 +31,14 @@ if _REPO not in sys.path:
     sys.path.insert(0, _REPO)
 
 MASTER_PATH = os.path.join(_REPO, "config", "sector_master.json")
+# 画面が読む区分（公開は docs/ の下だけなので、マスターから区分だけを同じ書き手が書く。手で書かない）。[[SECTOR-MASTER-ADOPT-1]] 段5（2026-11-06）
+PUBLIC_PATH = os.path.join(_REPO, "docs", "common", "sector_class.json")
 ATTR_DIR = os.path.join(_REPO, "common", "market_data", "attributes")
 SEC_DIR = os.path.join(_REPO, "common", "sec_data", "data")
 SCHEMA_VERSION = "1.0"
 
 # ── 業種の名前の規則（1か所） ──────────────────────────────────────────────
-# 景気循環株: industry にこの語を含む（TANUKI SCOREの画面 docs/value-monitor/tanuki_score/index.html の CYCLICAL_KEYWORDS と同じ語）
+# 景気循環株: industry にこの語を含む（もとは TANUKI SCOREの画面の語の一覧。画面は 2026-11-06 からこの区分を読む）
 CYCLICAL_KEYWORDS_SCREEN = [
     "Steel", "Aluminum", "Copper", "Gold", "Silver", "Metals", "Mining",
     "Oil", "Gas", "Coal", "Chemicals", "Agricultural",
@@ -281,6 +284,26 @@ def write(master: Dict[str, Any], path: str = MASTER_PATH) -> bool:
     return True
 
 
+def public_view(master: Dict[str, Any]) -> Dict[str, Any]:
+    """画面が読む区分だけ（今は景気循環株。TANUKI SCOREのサイクリカルピークトラップ）"""
+    return {
+        "_description": "業種のマスター（config/sector_master.json）の区分のうち画面が読むもの。common/sector_master.py が書く（手で書かない）",
+        "tickers": {t: {"cyclical": bool(e.get("cyclical"))} for t, e in sorted((master.get("tickers") or {}).items())},
+    }
+
+
+def write_public(master: Dict[str, Any], path: str = PUBLIC_PATH) -> bool:
+    """中身が前回と同じなら書かない。書いたら True"""
+    view = public_view(master)
+    if _load_json(path) == view:
+        return False
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(view, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    return True
+
+
 def change_items(path: str = MASTER_PATH) -> List[Dict[str, str]]:
     """[P] ExternalChange の件（common/external_watch.py の形）"""
     return [{k: c[k] for k in ("kind", "ticker", "match", "detail")} for c in (load(path).get("changes") or [])]
@@ -294,6 +317,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     args = ap.parse_args(argv)
     master = build(None if args.all else args.ticker)
     wrote = write(master)
+    write_public(master)
     ents = master["tickers"]
     n_attr = sum(1 for e in ents.values() if e["sector"])
     n_sic = sum(1 for e in ents.values() if e["sic"] is not None)

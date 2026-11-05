@@ -239,6 +239,7 @@ const E_PATH = '../adjusted_eps_analyzer/data/summary.json';
 const M_PATH = '../../market-monitor/market-pulse/data/market_data.json';
 const S_PATH = '../stonks-silo/data/results.json';
 const R_PATH = '../../common/sec_data/rotce/_summary.json';  // [[ROTCE-PTBV-1]] 参考表示
+const SC_PATH = '../../common/sector_class.json';  // 業種のマスターの区分（景気循環株）[[SECTOR-MASTER-ADOPT-1]] 段5
 
 // ─── Display helpers ─────────────────────────────────────────
 // ARCH-SCORE-SYNC-1: funda/timing/分類はすべてpipeline.py(latest.json)が
@@ -419,7 +420,7 @@ function renderDetailTable() {
   } catch (_) {}
 
   // 3. Per-ticker data (parallel)
-  const [tanukiMap, hypeMap, epsMap, stonksMap] = await Promise.all([
+  const [tanukiMap, hypeMap, epsMap, stonksMap, sectorClass] = await Promise.all([
 
     Promise.allSettled(tickers.map(async tk => {
       try {
@@ -443,6 +444,11 @@ function renderDetailTable() {
       .catch(()=>({})),
 
     fetch(S_PATH + TS)
+      .then(r => r.ok ? r.json() : {tickers:{}})
+      .then(d => d.tickers || {})
+      .catch(()=>({})),
+
+    fetch(SC_PATH + TS)
       .then(r => r.ok ? r.json() : {tickers:{}})
       .then(d => d.tickers || {})
       .catch(()=>({}))
@@ -506,6 +512,8 @@ function renderDetailTable() {
     const dilutionPct = tk?.financial_health?.dilution_3yr_annual_pct ?? null;
     const roicWacc    = tk?.rice?.roic_wacc_ratio ?? null;
     const industry    = tk?.components?.industry ?? '';
+    // 景気循環株は業種のマスターの区分（[[SECTOR-MASTER-ADOPT-1]] 段5。画面に語の一覧を持たない）
+    const cyclical    = sectorClass[ticker]?.cyclical === true;
     const fcfHistory    = tk?.fcf_history ?? [];
     const fcfOutlier    = tk?.fcf_outlier?.detected ?? false;
     // 最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）: TANUKI VALUATIONの個別ページと同じ注記
@@ -519,7 +527,7 @@ function renderDetailTable() {
     return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase, fcfDeficit, fcfFloor,
              upside: rawUp, stage, stageL: stageLabel, substage, stageLabel, sellReason,
              matrixInfo, riceVal, riceAvailable, roe, per, perIsFwd, peg, ps, maxEpsPer, maxEpsRel, maxEpsFallback, maxEpsSharesInfo, perGap, dupont,
-             growthRate, dilutionPct, roicWacc, industry, fcfHistory, fcfOutlier, latestMissing,
+             growthRate, dilutionPct, roicWacc, industry, cyclical, fcfHistory, fcfOutlier, latestMissing,
              dividendYield, payoutRatio, netCurrentAssetsRatio, buybackTtm, netDebt };
   });
 
@@ -1113,13 +1121,8 @@ function computeTraps(s) {
   };
 
   // 5. サイクリカルピークトラップ: 景気敏感業種 × 低PER × FCF急増
-  const CYCLICAL_KEYWORDS = [
-    'Steel', 'Aluminum', 'Copper', 'Gold', 'Silver', 'Metals', 'Mining',
-    'Oil', 'Gas', 'Coal', 'Chemicals', 'Agricultural',
-    'Auto', 'Automobile', 'Airlines', 'Shipping', 'Marine',
-    'Semiconductor Equipment', 'Paper', 'Lumber', 'Timber',
-  ];
-  const cy_cyclical  = CYCLICAL_KEYWORDS.some(k => s.industry.includes(k));
+  //    景気敏感業種は業種のマスター（config/sector_master.json の cyclical → docs/common/sector_class.json）
+  const cy_cyclical  = s.cyclical === true;
   const cy_low_per   = s.per != null && s.per > 0 && s.per < 12;
   const cy_fcf_spike = (() => {
     if (fcfSorted.length < 3) return false;
