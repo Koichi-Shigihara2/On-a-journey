@@ -53,6 +53,12 @@ TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0�
 ⑥ 保有銘柄の次のTAILのレビューの生成の後 … 手順15（期限11-30）。起きた回・いつでも … 手順9（RSS 取得エラーの回）
 （2026-11-03 終業の確かめる順〈11-04朝の手順24・17追加・18〜20・22・23、11-08の手順5・25・束ね〉は、手順24・17・22・23・26〈fomc_date_source以外〉・27が済。残りは上に並べ直した）
 
+29. **定義v2の後の段階（S3・S4）の12か月の並びの評価**（`[[STAGE-V2-ROLLOUT-1]]` ②、2026-11-06 記録開始 `common/stage_v2.py`）
+   - 日時: 2027-11ごろ（並行計算の記録が12か月たまった後）
+   - 期限: 2027-12-31
+   - 確認の手順: `docs/common/stage_v2/{T}.json`の2026-11以降の月末の`stage`ごとに、その後12か月のS&P500に対する超過リターン（中央値）を出し、S3・S4が前の段階（S1・S0・消化）より下に来るかを見る（段Cは2022-01〜でS3・S4が0付近、2024-12〜で−0.214・−0.184）。件数も並べる。切り替えの条件にはしない（決定 2026-11-06）
+   - 結果は`[[STAGE-V2-ROLLOUT-1]]`の②に書き、§0でS3・S4を売りの判断に使うかの材料にする
+
 28. **業種のマスターのSICの最初の保存**（`[[HYPECORE-STAGE-TIMESCALE-1]]` 段B-1、2026-11-05 実装 `9dbb2fa974`、SEC_Data_Updateの後の作り直しは2026-11-05 夜の2回目）
    - 日時: 2026-11-08（日）のSEC_Data_Update（12:00 UTC）と Market Data Weekly（13:20 UTC）の後。`gh run list --workflow SEC_Data_Update.yml`・`--workflow Market_Data_Weekly_Update.yml`で先に確かめる
    - 期限: 2026-11-09
@@ -4143,7 +4149,7 @@ python common/registration/register_ticker.py [TICKER] --target-status active
 このスクリプトはStep 1（SEC取得）・Step 1.5（日足の過去分の取り込み。2026-10-26追加、[[MARKETDATA-DAILY-HISTORY-POLICY-1]]。
 決まり「日足は2021-01-01か上場日の遅い方から」〈`docs/architecture/UPDATE_SCHEDULE.md`の「日足の履歴の取り方」〉により、
 `python common/market_data/fetcher.py [TICKER] --backfill --start 2021-01-01`をその銘柄だけに実行する。非ブロッキングで、失敗したら登録の後に同じコマンドで取り直す。
-銘柄を省くと全銘柄の過去分を取り直すので、手で実行するときも必ず銘柄を指定する）・Step 1.6（属性〈業種〉の1銘柄の取得と業種のマスター`config/sector_master.json`への追加。2026-11-05追加、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-1。`python common/market_data/fetcher.py [TICKER] --layer attributes`→`python common/sector_master.py --ticker [TICKER]`、非ブロッキング）・Step 1.7（収益の段階の追加。2026-11-05追加、段B-2。`python common/profitability.py --ticker [TICKER]`、非ブロッキング）・Step 1.8（倍率の履歴の追加。2026-11-05追加、段B-4。`python common/multiples.py --ticker [TICKER]`、非ブロッキング）・Step 2（β取得）・Step 3（TANUKI
+銘柄を省くと全銘柄の過去分を取り直すので、手で実行するときも必ず銘柄を指定する）・Step 1.6（属性〈業種〉の1銘柄の取得と業種のマスター`config/sector_master.json`への追加。2026-11-05追加、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-1。`python common/market_data/fetcher.py [TICKER] --layer attributes`→`python common/sector_master.py --ticker [TICKER]`、非ブロッキング）・Step 1.7（収益の段階の追加。2026-11-05追加、段B-2。`python common/profitability.py --ticker [TICKER]`、非ブロッキング）・Step 1.8（倍率の履歴の追加。2026-11-05追加、段B-4。`python common/multiples.py --ticker [TICKER]`、非ブロッキング）・Step 1.9（定義v2のstageの並行計算の追加。2026-11-06追加。`python common/stage_v2.py --ticker [TICKER]`、非ブロッキング）・Step 2（β取得）・Step 3（TANUKI
 VALUATIONパイプライン実行）・Step 4（audit.py --check-beta）・Step 5
 （HypeCore、hypecore=trueのみ）・Step 5b（EPS Analyzer、eps=trueのみ）・
 Step 7（monitor_tickers.yaml追加。Step 6〈Discover登録〉は2026-10-23に削除）・Step 7.5

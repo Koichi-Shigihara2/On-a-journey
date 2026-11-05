@@ -99,6 +99,12 @@ jobs:
         continue-on-error: true
         run: python common/multiples.py --all
 
+      - name: Rebuild stage v2 (parallel)
+        # HypeCoreのstageの定義v2（確定）の並行計算（docs/common/stage_v2/{T}.json）。公開の値・今のHypeCoreの出力は変えない
+        # （[[STAGE-V2-ROLLOUT-1]] ①、2026-11-06）。失敗してもSECのデータのcommitは止めない
+        continue-on-error: true
+        run: python common/stage_v2.py --all
+
       - name: Commit and push changes
         id: commit
         run: |
@@ -112,6 +118,7 @@ jobs:
           git add config/sector_master.json || true
           git add docs/common/profitability.json || true
           git add docs/common/multiples/ config/split_price_ledger.json || true
+          git add docs/common/stage_v2/ || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

@@ -192,6 +192,16 @@ def step1_8_multiples(ticker: str) -> None:
         print(f"  ⚠️  Step 1.8 は非ブロッキング（exit={rc}）。次の SEC_Data_Update・Market Data Weekly の後に作り直される")
 
 
+# ─── Step 1.9: 定義v2のstageの並行計算の追加 ──────────────────────────────
+# [[STAGE-V2-ROLLOUT-1]] ①（2026-11-06）: 倍率の履歴の後に、その銘柄の定義v2のstage（2022-01〜前の月末）を作る。
+# 業種の中の位置のために全銘柄の材料を読む（書くのはその銘柄だけ）
+
+def step1_9_stage_v2(ticker: str) -> None:
+    rc = _run([PYTHON, "common/stage_v2.py", "--ticker", ticker], "Step 1.9: 定義v2のstageの並行計算の追加")
+    if rc != 0:
+        print(f"  ⚠️  Step 1.9 は非ブロッキング（exit={rc}）。次の SEC_Data_Update・Market Data Weekly の後に作り直される")
+
+
 # ─── Step 2: β取得 ───────────────────────────────────────────────────────
 
 def step2_beta(ticker: str, dry_run: bool) -> None:
@@ -427,6 +437,7 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
     step1_6_sector_master(ticker)
     step1_7_profitability(ticker)
     step1_8_multiples(ticker)
+    step1_9_stage_v2(ticker)
 
     step2_beta(ticker, dry_run)
 

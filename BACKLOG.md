@@ -2533,7 +2533,7 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 
 #### 内容
 - **進める順（2026-11-06、定義v2の確定の後）**:
-  ① 並行計算: 定義v2のstageを今の定義と並べて毎月（月末）記録する（`stage_v2`として保存、公開の値・各機能が読むstageは変えない）。寄せる件4つ（[[SECTOR-MASTER-ADOPT-1]]・[[DEFICIT-QUALITY-ADOPT-1]]・[[DILUTION-DEFINITION-UNIFY-1]]・[[MULTIPLES-ADOPT-1]]）を待たずに始める（定義v2は共通の部品を直接読む）
+  ① **実装済み（記録開始 2026-11-06）** `common/stage_v2.py` → `docs/common/stage_v2/{T}.json`（2022-01〜前の月末、生の判定・持続の条件の後のstage・根拠・判定不能の理由・同じ月の今の定義）。段Cの試算の最終の形と全98銘柄・5,684か月で一致。作り直しはSEC_Data_UpdateとMarket Data Weeklyの倍率の履歴の後、新しい銘柄はregister_tickerのStep 1.9。並行計算: 定義v2のstageを今の定義と並べて毎月（月末）記録する（`stage_v2`として保存、公開の値・各機能が読むstageは変えない）。寄せる件4つ（[[SECTOR-MASTER-ADOPT-1]]・[[DEFICIT-QUALITY-ADOPT-1]]・[[DILUTION-DEFINITION-UNIFY-1]]・[[MULTIPLES-ADOPT-1]]）を待たずに始める（定義v2は共通の部品を直接読む）
   ② 12か月の並びの評価: 後の段階（S3・S4）の12か月の超過リターンの並びを、並行計算を始めた月からの記録で2027-11ごろに評価する（切り替えの条件にはしない。§0でS3・S4を売りの判断に使うなら根拠は6か月の並び）
   ③ 切り替えで決めるもの: §0の判断での使い道、消化と安定のTANUKI SCOREでの点数、TRIM・SELLの条件（定義v2 §6の表。番号の比較をやめ名前で書く）
   ④ Vの株数（Layer3に株数が無く倍率が作れず全月判定不能）
