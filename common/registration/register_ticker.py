@@ -183,6 +183,15 @@ def step1_7_profitability(ticker: str) -> None:
         print(f"  ⚠️  Step 1.7 は非ブロッキング（exit={rc}）。次の SEC_Data_Update・Market Data Weekly の後に作り直される")
 
 
+# ─── Step 1.8: 倍率の履歴の追加 ─────────────────────────────────────────
+# [[HYPECORE-STAGE-TIMESCALE-1]] 段B-4（2026-11-05）: 取れる範囲の過去の月末の倍率を1銘柄だけ作る（日足・SEC・業種がそろってから）
+
+def step1_8_multiples(ticker: str) -> None:
+    rc = _run([PYTHON, "common/multiples.py", "--ticker", ticker], "Step 1.8: 倍率の履歴の追加")
+    if rc != 0:
+        print(f"  ⚠️  Step 1.8 は非ブロッキング（exit={rc}）。次の SEC_Data_Update・Market Data Weekly の後に作り直される")
+
+
 # ─── Step 2: β取得 ───────────────────────────────────────────────────────
 
 def step2_beta(ticker: str, dry_run: bool) -> None:
@@ -417,6 +426,7 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
     step1_5_daily_history(ticker)
     step1_6_sector_master(ticker)
     step1_7_profitability(ticker)
+    step1_8_multiples(ticker)
 
     step2_beta(ticker, dry_run)
 

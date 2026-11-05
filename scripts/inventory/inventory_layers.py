@@ -436,6 +436,8 @@ _MARKET.update(
     ANNOTATIONS={
         "common/market_data/daily/{T}.json":
             "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
+        "common/market_data/valuation_history/{T}.json":
+            "yfinanceの倍率（forward_pe等）の週1回の値を日付つきで積む履歴（追記だけ、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4）。読み手は倍率の部品（common/multiples.py）",
         "common/market_data/attributes/{T}.json":
             "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算のEPSの予想等）",
         "common/market_data/analyst_history/{T}.json":

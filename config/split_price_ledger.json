@@ -1,0 +1,146 @@
+{
+ "_description": "株価の系列の分割の調整と config/split_history.yaml の比の食い違い（common/multiples.py が機械で作る）。status mismatch の銘柄は、その分割の日より前の月の倍率を判定不能にする",
+ "entries": [
+  {
+   "ticker": "AMZN",
+   "split_date": "2022-06-06",
+   "ratio": 20.0,
+   "expected_factor": 0.05,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "BKNG",
+   "split_date": "2026-04-06",
+   "ratio": 25.0,
+   "expected_factor": 0.04,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "CELH",
+   "split_date": "2023-11-15",
+   "ratio": 3.0,
+   "expected_factor": 0.333333,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "CPRT",
+   "split_date": "2022-11-04",
+   "ratio": 2.0,
+   "expected_factor": 0.5,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "CPRT",
+   "split_date": "2023-08-22",
+   "ratio": 2.0,
+   "expected_factor": 0.5,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "CSGP",
+   "split_date": "2021-06-28",
+   "ratio": 10.0,
+   "expected_factor": 0.1,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "GOOGL",
+   "split_date": "2022-07-18",
+   "ratio": 20.0,
+   "expected_factor": 0.05,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "HON",
+   "split_date": "2026-06-29",
+   "ratio": 0.5,
+   "expected_factor": 2.0,
+   "status": "mismatch",
+   "recorded_at": "2026-06-27T01:40:05+09:00",
+   "recorded_price": 228.57,
+   "daily_date": "2026-06-26",
+   "daily_close": 243.5343475341797,
+   "observed_factor": 1.065469,
+   "reason": "今の日足の終値がその時点の株価の1.065倍で、分割の比から期待される2.000倍と違う（株価の系列の調整と split_history の比が合わない。分社と同時の併合等）"
+  },
+  {
+   "ticker": "KLAC",
+   "split_date": "2026-06-12",
+   "ratio": 10.0,
+   "expected_factor": 0.1,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "KULR",
+   "split_date": "2025-06-23",
+   "ratio": 0.125,
+   "expected_factor": 8.0,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "LRCX",
+   "split_date": "2024-10-03",
+   "ratio": 10.0,
+   "expected_factor": 0.1,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "NOW",
+   "split_date": "2025-12-18",
+   "ratio": 5.0,
+   "expected_factor": 0.2,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "NVDA",
+   "split_date": "2021-07-20",
+   "ratio": 4.0,
+   "expected_factor": 0.25,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "NVDA",
+   "split_date": "2024-06-10",
+   "ratio": 10.0,
+   "expected_factor": 0.1,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "SPIR",
+   "split_date": "2023-08-31",
+   "ratio": 0.125,
+   "expected_factor": 8.0,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "TSLA",
+   "split_date": "2022-08-25",
+   "ratio": 3.0,
+   "expected_factor": 0.333333,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  },
+  {
+   "ticker": "WMT",
+   "split_date": "2024-02-26",
+   "ratio": 3.0,
+   "expected_factor": 0.333333,
+   "status": "unverifiable",
+   "reason": "分割より前にその時点の株価の記録が無い"
+  }
+ ]
+}

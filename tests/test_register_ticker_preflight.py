@@ -39,6 +39,7 @@ def _patch_all_steps_success(monkeypatch, call_log):
     monkeypatch.setattr(rt, "step1_5_daily_history", lambda t: call_log.append("step1_5"))
     monkeypatch.setattr(rt, "step1_6_sector_master", lambda t: call_log.append("step1_6"))
     monkeypatch.setattr(rt, "step1_7_profitability", lambda t: call_log.append("step1_7"))
+    monkeypatch.setattr(rt, "step1_8_multiples", lambda t: call_log.append("step1_8"))
     # 差し替えていない段が外部のコマンドを動かしたら失敗にする（新しい段を足したときの差し替えの漏れの検知、FINDINGS 2026-11-05）
     monkeypatch.setattr(rt, "_run", lambda cmd, label: (_ for _ in ()).throw(AssertionError(f"差し替えていない段が動いた: {label}")))
     monkeypatch.setattr(rt, "step2_beta", lambda t, dry_run: call_log.append("step2"))
@@ -137,7 +138,7 @@ class TestDailyHistoryStep:
         _patch_all_steps_success(monkeypatch, call_log)
 
         assert rt.register_one("AAA", "candidate", dry_run=True) is True
-        assert call_log.index("step1") < call_log.index("step1_5") < call_log.index("step1_6")             < call_log.index("step1_7") < call_log.index("step2")
+        assert call_log.index("step1") < call_log.index("step1_5") < call_log.index("step1_6")             < call_log.index("step1_7") < call_log.index("step1_8") < call_log.index("step2")
 
     def test_backfills_only_the_ticker_from_2021(self, monkeypatch):
         cmds = []
@@ -165,3 +166,13 @@ class TestProfitabilityStep:
         monkeypatch.setattr(rt, "_run", lambda cmd, label: cmds.append(cmd) or 1)
         rt.step1_7_profitability("AAA")      # 失敗（exit 1）でも例外にしない（非ブロッキング）
         assert cmds == [[rt.PYTHON, "common/profitability.py", "--ticker", "AAA"]]
+
+
+class TestMultiplesStep:
+    """[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4: Step 1.8で、その銘柄だけ倍率の履歴を作る"""
+
+    def test_builds_only_the_ticker(self, monkeypatch):
+        cmds = []
+        monkeypatch.setattr(rt, "_run", lambda cmd, label: cmds.append(cmd) or 1)
+        rt.step1_8_multiples("AAA")      # 失敗（exit 1）でも例外にしない（非ブロッキング）
+        assert cmds == [[rt.PYTHON, "common/multiples.py", "--ticker", "AAA"]]

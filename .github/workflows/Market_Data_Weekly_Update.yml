@@ -47,6 +47,12 @@ jobs:
             python common/market_data/fetcher.py --layer analyst
           fi
 
+      - name: Append valuation snapshots
+        # forward_pe・trailing_pe・price_to_sales・ev_to_ebitda を取得の日付つきで積む（追記だけ。common/market_data/valuation_history/）。
+        # フォワードPERは過去の値が取れないため、週1回の値を今から保存する（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4、2026-11-05）
+        continue-on-error: true
+        run: python common/market_data/valuation_history.py
+
       - name: Rebuild sector master
         # 業種のマスター（config/sector_master.json）を属性の取得の後に作り直す（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-1、2026-11-05）。
         # yfinanceの業種が変わった銘柄は changes に残り、System Health の [P] ExternalChange に出る
@@ -56,6 +62,11 @@ jobs:
         # 業種のマスターの作り直しの後に、収益の段階（区分なし・金融はマスターで決まる）を作り直す（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-2）
         continue-on-error: true
         run: python common/profitability.py --all
+
+      - name: Rebuild multiples
+        # 倍率の履歴（前の月末まで）と分割の食い違いの台帳（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4）
+        continue-on-error: true
+        run: python common/multiples.py --all
 
       - name: Commit and push changes
         run: |
@@ -67,6 +78,7 @@ jobs:
           git add common/market_data/_sp500_constituents_cache.json || true
           git add config/sector_master.json || true
           git add docs/common/profitability.json || true
+          git add common/market_data/valuation_history/ docs/common/multiples/ config/split_price_ledger.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

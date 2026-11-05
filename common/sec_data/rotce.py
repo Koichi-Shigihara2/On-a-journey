@@ -57,7 +57,11 @@ from common.sec_data.layer3_builder import (
 )
 from common import method_change as _method_change  # 計算方法の変更の印（[[METHOD-CHANGE-PUBLISH-TIMING-1]]）
 from common.sec_data.q4_implied import build_q4_implied_entries
-from common.sec_data.split_adjust import adjust_share_points, load_split_history
+from common.sec_data.split_adjust import adjust_share_points, load_split_history  # noqa: F401
+# 期末日ごとの株数（分割換算）は倍率の部品（common/multiples.py）と共通（2026-11-05、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4）
+from common.sec_data.split_adjust import (  # noqa: E402
+    SHARES_OUTLIER_RATIO, WEIGHTED_DILUTED_TAG, shares_by_end as _shares_by_end,
+)
 from common.sec_data.tag_definitions import (
     INTANGIBLE_EXCL_TAG, INTANGIBLE_FINITE_TAG, INTANGIBLE_INCL_GOODWILL_TAG, INTANGIBLE_INDEFINITE_TAG,
     derive_intangible_resolved_facts,
@@ -85,13 +89,9 @@ ANNUAL_FILL_MAX_DAYS = 365
 QUARTER_GAP_DAYS = (70, 120)   # 上限120日: PEPの第4四半期は16週（112日）
 # 期末日の終値として使える直前の取引日の古さ（日）
 PRICE_MAX_STALE_DAYS = 7
-# 株式数の外れ値: 分割換算後の中央値からこの倍率以上離れた値は使わない
-# （CIX 2026-06-30: 12,329株〈前後の期は約1,232万株、千株単位での申告ミスとみられる〉）
-SHARES_OUTLIER_RATIO = 20.0
 
 SE_TAG = "StockholdersEquity"
 SE_NCI_TAG = "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"
-WEIGHTED_DILUTED_TAG = "WeightedAverageNumberOfDilutedSharesOutstanding"
 # ROTCEの分子（普通株主帰属純利益）。希薄化後を優先（会社発表のROTCEは希薄化後の調整後純利益）
 COMMON_NI_DILUTED_TAG = "NetIncomeLossAvailableToCommonStockholdersDiluted"
 COMMON_NI_BASIC_TAG = "NetIncomeLossAvailableToCommonStockholdersBasic"
@@ -325,48 +325,6 @@ def _has_only_including_goodwill_tag(company_facts: Optional[dict]) -> bool:
     us_gaap = ((company_facts or {}).get("facts") or {}).get("us-gaap") or {}
     return INTANGIBLE_INCL_GOODWILL_TAG in us_gaap and not any(
         t in us_gaap for t in (INTANGIBLE_EXCL_TAG, INTANGIBLE_FINITE_TAG, INTANGIBLE_INDEFINITE_TAG))
-
-
-def _shares_by_end(store: dict, ends: List[str], splits: List[dict]) -> Dict[str, Dict[str, Any]]:
-    """各期末日の希薄化後株式数（分割の未調整分を換算済み）と出所
-
-    優先: ①その四半期の加重平均（10-Q）②年次の加重平均（年度末の四半期、10-K）
-          ③その期末日の発行済株式数（CommonStockSharesOutstanding、Layer3のフォールバック）
-    分割換算後の中央値からSHARES_OUTLIER_RATIO倍以上離れた値（千株単位での申告ミス等）は使わず、
-    同じ期末日の次の候補を試す（ONDS 2025-12-31: 年次の加重平均221,769→発行済380,763,481）。
-    """
-    entries = [e for e in get_field_entries(store, "shares_diluted") if e.get("val")]
-    cands_by_end: Dict[str, List[tuple]] = {}
-    for q in ends:
-        at = [e for e in entries if e["end"] == q]
-        groups = [
-            ("quarterly_weighted", [e for e in at if not e.get("is_annual") and e.get("source_tag") == WEIGHTED_DILUTED_TAG]),
-            ("annual_weighted", [e for e in at if e.get("is_annual")]),
-            ("period_end_outstanding", [e for e in at if not e.get("is_annual") and e.get("source_tag") != WEIGHTED_DILUTED_TAG]),
-        ]
-        cands = [(src, float(max(es, key=lambda e: e.get("filed") or "")["val"])) for src, es in groups if es]
-        if cands:
-            cands_by_end[q] = cands
-    if not cands_by_end:
-        return {}
-    qs = list(cands_by_end)
-    primary = [cands_by_end[q][0][1] for q in qs]
-    adjusted = adjust_share_points(list(zip(qs, primary)), splits) if splits else list(primary)
-    med = sorted(adjusted)[len(adjusted) // 2]
-
-    def _ok(v: float) -> bool:
-        return med > 0 and 1 / SHARES_OUTLIER_RATIO < v / med < SHARES_OUTLIER_RATIO
-
-    out: Dict[str, Dict[str, Any]] = {}
-    for q, raw, adj in zip(qs, primary, adjusted):
-        if _ok(adj):
-            out[q] = {"shares": adj, "source": cands_by_end[q][0][0], "split_adjusted": abs(adj - raw) > 0.5}
-            continue
-        alt = next(((src, v) for src, v in cands_by_end[q][1:] if _ok(v)), None)
-        if alt:
-            out[q] = {"shares": alt[1], "source": alt[0], "split_adjusted": False,
-                      "replaced_outlier": cands_by_end[q][0][1]}
-    return out
 
 
 def _load_prices(repo_root: str, ticker: str) -> List[dict]:

@@ -3623,7 +3623,7 @@
    "top_keys": [
     {
      "key": "accn",
-     "reader_files": 11
+     "reader_files": 12
     },
     {
      "key": "concepts",
@@ -3631,11 +3631,11 @@
     },
     {
      "key": "filed",
-     "reader_files": 13
+     "reader_files": 15
     },
     {
      "key": "form",
-     "reader_files": 13
+     "reader_files": 14
     },
     {
      "key": "lines",
@@ -3643,7 +3643,7 @@
     },
     {
      "key": "reason",
-     "reader_files": 12
+     "reader_files": 13
     },
     {
      "key": "role",
@@ -3655,10 +3655,18 @@
     },
     {
      "key": "status",
-     "reader_files": 8
+     "reader_files": 9
     }
    ],
    "readers": [
+    {
+     "file": "common/multiples.py",
+     "line": 273,
+     "func": "_default_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/bs_lines.py::load_records",
+     "type": "Python"
+    },
     {
      "file": "common/profitability.py",
      "line": 349,
@@ -3709,7 +3717,7 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1456,
+     "line": 1461,
      "func": "build_ticker_store",
      "how": "保存済みファイル",
      "via": "common/sec_data/bs_lines.py::load_records",
@@ -3749,7 +3757,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 417,
+     "line": 375,
      "func": "compute_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/bs_lines.py::load_records",
@@ -3980,6 +3988,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_layer3_capital_allocation.py",
+     "line": 80,
+     "func": "_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/bs_lines.py::load_records",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_pipeline_logic.py",
      "line": 2069,
      "func": "TestFadeoutZeroFallback.test_pltr_type_clean_fadeout_gets_estimated_zero",
@@ -4110,8 +4126,8 @@
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 20,
-   "reader_count_test": 5,
+   "reader_count": 21,
+   "reader_count_test": 6,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "申告ごとの貸借対照表の行（借入金・短期投資・優先株・のれん・無形資産・非支配持分、独自タグを含む）。Layer3の欠けの補いとTANUKIの純有利子負債の補いで使う（bs_lines.py）",
@@ -4136,15 +4152,15 @@
    "top_keys": [
     {
      "key": "accn",
-     "reader_files": 9
+     "reader_files": 10
     },
     {
      "key": "filed",
-     "reader_files": 11
+     "reader_files": 13
     },
     {
      "key": "form",
-     "reader_files": 10
+     "reader_files": 11
     },
     {
      "key": "lines",
@@ -4152,7 +4168,7 @@
     },
     {
      "key": "reason",
-     "reader_files": 8
+     "reader_files": 9
     },
     {
      "key": "role",
@@ -4164,10 +4180,18 @@
     },
     {
      "key": "status",
-     "reader_files": 5
+     "reader_files": 6
     }
    ],
    "readers": [
+    {
+     "file": "common/multiples.py",
+     "line": 273,
+     "func": "_default_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
     {
      "file": "common/profitability.py",
      "line": 349,
@@ -4218,7 +4242,7 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1451,
+     "line": 1456,
      "func": "build_ticker_store",
      "how": "保存済みファイル",
      "via": "common/sec_data/cf_lines.py::load_records",
@@ -4258,7 +4282,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 417,
+     "line": 375,
      "func": "compute_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/cf_lines.py::load_records",
@@ -4527,6 +4551,14 @@
      "how": "保存済みファイル",
      "via": "common/sec_data/cf_lines.py::load_records",
      "type": "テスト"
+    },
+    {
+     "file": "tests/test_layer3_capital_allocation.py",
+     "line": 80,
+     "func": "_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "テスト"
     }
    ],
    "readers_compute": [],
@@ -4589,8 +4621,8 @@
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 18,
-   "reader_count_test": 2,
+   "reader_count": 19,
+   "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "申告ごとのCF計算書の投資CFの区分の行（2021年以降の10-K・10-Q。CapExの欠けの規則・独自タグの行で使う、cf_lines.py）",
@@ -4615,18 +4647,34 @@
    "top_keys": [
     {
      "key": "cik",
-     "reader_files": 5
+     "reader_files": 6
     },
     {
      "key": "entityName",
-     "reader_files": 2
+     "reader_files": 3
     },
     {
      "key": "facts",
-     "reader_files": 14
+     "reader_files": 15
     }
    ],
    "readers": [
+    {
+     "file": "common/multiples.py",
+     "line": 262,
+     "func": "_tce_by_end",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 273,
+     "func": "_default_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
     {
      "file": "common/profitability.py",
      "line": 349,
@@ -5013,7 +5061,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 417,
+     "line": 375,
      "func": "compute_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -5021,7 +5069,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 423,
+     "line": 381,
      "func": "compute_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -5029,7 +5077,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 687,
+     "line": 645,
      "func": "build_all",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -5037,7 +5085,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 727,
+     "line": 685,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -5737,6 +5785,38 @@
      "func": "_run_audit_main",
      "how": "保存済みファイル",
      "via": "common/sec_data/audit.py::audit_ticker",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_layer3_capital_allocation.py",
+     "line": 80,
+     "func": "_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_layer3_capital_allocation.py",
+     "line": 88,
+     "func": "test_dividends_quarters_from_ytd_and_q4_implied",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_layer3_capital_allocation.py",
+     "line": 100,
+     "func": "test_positive_q4_of_dividends_per_share_is_made",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_layer3_capital_allocation.py",
+     "line": 105,
+     "func": "test_candidate_order_common_stock_first",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
      "type": "テスト"
     },
     {
@@ -6622,8 +6702,8 @@
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 25,
-   "reader_count_test": 20,
+   "reader_count": 26,
+   "reader_count_test": 21,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "SECから取った、その銘柄の全XBRLの申告の生データ",
@@ -9454,7 +9534,7 @@
    "readers": [
     {
      "file": ".github/workflows/SEC_Data_Update.yml",
-     "line": 127,
+     "line": 134,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -10802,6 +10882,30 @@
      "type": "Python"
     },
     {
+     "file": "common/market_data/valuation_history.py",
+     "line": 63,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/tickers.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/valuation_history.py",
+     "line": 70,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/tickers.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 286,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/tickers.py::_load",
+     "type": "Python"
+    },
+    {
      "file": "common/profitability.py",
      "line": 363,
      "func": "build",
@@ -10843,7 +10947,7 @@
     },
     {
      "file": "common/registration/register_ticker.py",
-     "line": 394,
+     "line": 403,
      "func": "register_one",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -10851,7 +10955,7 @@
     },
     {
      "file": "common/registration/register_ticker.py",
-     "line": 407,
+     "line": 416,
      "func": "register_one",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -10859,7 +10963,7 @@
     },
     {
      "file": "common/registration/register_ticker.py",
-     "line": 480,
+     "line": 490,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -10867,7 +10971,7 @@
     },
     {
      "file": "common/registration/register_ticker.py",
-     "line": 491,
+     "line": 501,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -11075,7 +11179,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 726,
+     "line": 684,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/tickers.py::_load",
@@ -11851,7 +11955,7 @@
     },
     {
      "file": "tests/test_register_ticker_preflight.py",
-     "line": 66,
+     "line": 67,
      "func": "TestPreflightIntegration.test_preflight_runs_after_row_load_before_step1",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -11859,7 +11963,7 @@
     },
     {
      "file": "tests/test_register_ticker_preflight.py",
-     "line": 88,
+     "line": 89,
      "func": "TestPreflightIntegration.test_preflight_flags_do_not_block_registration",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -11867,7 +11971,7 @@
     },
     {
      "file": "tests/test_register_ticker_preflight.py",
-     "line": 104,
+     "line": 105,
      "func": "TestPreflightIntegration.test_missing_cik_row_returns_false_without_running_preflight",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -11875,7 +11979,7 @@
     },
     {
      "file": "tests/test_register_ticker_preflight.py",
-     "line": 122,
+     "line": 123,
      "func": "TestPreflightIntegration.test_step1_failure_still_aborts_after_preflight",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -11883,7 +11987,7 @@
     },
     {
      "file": "tests/test_register_ticker_preflight.py",
-     "line": 139,
+     "line": 140,
      "func": "TestDailyHistoryStep.test_runs_after_step1_before_step2",
      "how": "保存済みファイル",
      "via": "common/registration/register_ticker.py::_load_cik_row",
@@ -12242,7 +12346,7 @@
     "理論株価・判定（TANUKI VALUATION）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 31,
+   "reader_count": 33,
    "reader_count_test": 18,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -12256,7 +12360,7 @@
     {
      "file": "common/sec_data/rotce.py",
      "func": "build_all",
-     "line": 719
+     "line": 677
     }
    ],
    "writers_outside_layer": [],
@@ -12294,7 +12398,7 @@
    "readers": [
     {
      "file": "common/sec_data/rotce.py",
-     "line": 669,
+     "line": 627,
      "func": "_previous_summary",
      "how": "保存済みファイル",
      "via": "AST",
@@ -12337,7 +12441,7 @@
     {
      "file": "common/sec_data/rotce.py",
      "func": "build_all",
-     "line": 698
+     "line": 656
     }
    ],
    "writers_outside_layer": [],
@@ -12419,7 +12523,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 637,
+     "line": 595,
      "func": "unregistered_latest_quarters",
      "how": "保存済みファイル",
      "via": "grep",
@@ -12427,7 +12531,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 641,
+     "line": 599,
      "func": "unregistered_latest_quarters",
      "how": "保存済みファイル",
      "via": "AST",
@@ -12629,12 +12733,12 @@
     },
     {
      "file": "common/sec_data/q4_implied.py",
-     "line": 135,
+     "line": 162,
      "text": "q4_val = fy_val - sum(q[\"val\"] or 0 for q in quarters)"
     },
     {
      "file": "common/sec_data/q4_implied.py",
-     "line": 144,
+     "line": 171,
      "text": "def build_q4_implied_entries("
     },
     {
@@ -12722,14 +12826,14 @@
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
-     "file": "common/sec_data/rotce.py",
-     "line": 347,
-     "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
-    },
-    {
      "file": "common/sec_data/share_unit_fix.py",
      "line": 104,
      "text": "adopted = max(same, key=lambda f: (f.get(\"filed\") or \"\", f.get(\"accn\") or \"\"))"
+    },
+    {
+     "file": "common/sec_data/split_adjust.py",
+     "line": 125,
+     "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
@@ -12753,8 +12857,8 @@
     "common/sec_data/fact_selection.py",
     "common/sec_data/layer3_builder.py",
     "common/sec_data/normalizer.py",
-    "common/sec_data/rotce.py",
     "common/sec_data/share_unit_fix.py",
+    "common/sec_data/split_adjust.py",
     "src/tail/edgar_rss_monitor.py",
     "src/value/adjusted_eps_analyzer/extract_key_facts.py"
    ],
@@ -13392,9 +13496,10 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/layer3_builder.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1640,
+   "lines": 1645,
    "workflows": [],
    "code": [
+    "common/multiples.py",
     "common/profitability.py",
     "src/tail/kpi_proposer.py",
     "src/tail/quarterly_review_generator.py",
@@ -13412,6 +13517,7 @@
     "common/sec_data/reader.py",
     "common/sec_data/rotce.py",
     "common/sec_data/source_watch.py",
+    "common/sec_data/split_adjust.py",
     "common/sec_data/ttm_calculator.py",
     "common/sec_data/update.py"
    ],
@@ -13425,6 +13531,7 @@
     "tests/test_gate2_phase3b1_reader_integration.py",
     "tests/test_layer3_accessor_wrappers.py",
     "tests/test_layer3_annual_misclassification.py",
+    "tests/test_layer3_capital_allocation.py",
     "tests/test_layer3_no_merge_window_independent.py",
     "tests/test_layer3_operating_income_backfill.py",
     "tests/test_layer3_shares_non_additive.py",
@@ -13508,7 +13615,7 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/q4_implied.py",
    "decision": "残す（2026-10-20）",
-   "lines": 242,
+   "lines": 276,
    "workflows": [],
    "code": [
     "src/value/stonks_silo/financial_trend_calculator.py"
@@ -13522,6 +13629,7 @@
    ],
    "tests": [
     "tests/test_first_filed.py",
+    "tests/test_layer3_capital_allocation.py",
     "tests/test_normalizer.py",
     "tests/test_ttm_calculator.py",
     "tests/test_ttm_flow_key_names.py"
@@ -13685,11 +13793,13 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/rotce.py",
    "decision": "残す（2026-10-20）",
-   "lines": 736,
+   "lines": 694,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml"
    ],
-   "code": [],
+   "code": [
+    "common/multiples.py"
+   ],
    "same_dir": [
     "common/sec_data/report_consistency_check.py"
    ],
@@ -13738,9 +13848,10 @@
    "dir": "common/sec_data",
    "file": "common/sec_data/split_adjust.py",
    "decision": "残す（2026-10-20）",
-   "lines": 97,
+   "lines": 147,
    "workflows": [],
    "code": [
+    "common/multiples.py",
     "src/value/adjusted_eps_analyzer/pipeline.py",
     "src/value/tanuki_valuation/pipeline.py"
    ],
@@ -13788,6 +13899,7 @@
     "tests/test_cash_tag_missing.py",
     "tests/test_extract_key_facts_net_income_selection.py",
     "tests/test_fcf_bottom_up_capex_concept.py",
+    "tests/test_layer3_capital_allocation.py",
     "tests/test_net_income_parent_attribution.py",
     "tests/test_tag_fallback_selection.py",
     "tests/test_tangible_equity_tags.py"
@@ -13802,6 +13914,7 @@
    "code": [
     "browser_checks/check_signal_consistency_section.py",
     "browser_checks/check_valuation_chart_basis.py",
+    "common/market_data/valuation_history.py",
     "common/registration/preflight_check.py",
     "common/screening/dcf_validity_checker.py",
     "common/screening/report_txt_parser.py",
@@ -13857,6 +13970,7 @@
     "tests/test_close_missing_price.py",
     "tests/test_contracts.py",
     "tests/test_fcf_definition_single_source.py",
+    "tests/test_layer3_capital_allocation.py",
     "tests/test_output_inventory_check.py",
     "tests/test_retention_and_fcf_points.py",
     "tests/test_stonks_silo_financial_as_of.py",
@@ -14019,7 +14133,7 @@
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",
-    "line": 126,
+    "line": 133,
     "output": "common/sec_data/data/{T}/annual_{YYYY}.json",
     "text": "annual_count=$(ls -1 $dir/annual_*.json 2>/dev/null | wc -l)"
    },
@@ -14056,11 +14170,11 @@
   {
    "workflow": ".github/workflows/SEC_Data_Update.yml",
    "lines": [
-    119,
-    120,
-    121,
-    122,
-    128
+    126,
+    127,
+    128,
+    129,
+    135
    ],
    "keys": []
   },
@@ -14544,6 +14658,13 @@
     "note": ""
    },
    {
+    "key": "shares_source",
+    "sources": [
+     "docs/common/sec_data/rotce/{T}.json"
+    ],
+    "note": ""
+   },
+   {
     "key": "source_files",
     "sources": [
      "common/sec_data/data/{T}/bs_lines/{accn}.json",
@@ -14573,7 +14694,7 @@
     "note": ""
    }
   ],
-  "written_key_count": 476,
+  "written_key_count": 478,
   "stale_keys": [
    {
     "key": "acquisition",
@@ -14888,12 +15009,6 @@
     ]
    },
    {
-    "key": "price",
-    "sources": [
-     "docs/common/sec_data/rotce/{T}.json"
-    ]
-   },
-   {
     "key": "project",
     "sources": [
      "common/sec_data/data/{T}/company_facts.json",
@@ -15013,12 +15128,6 @@
    },
    {
     "key": "shares_quarter_end",
-    "sources": [
-     "docs/common/sec_data/rotce/{T}.json"
-    ]
-   },
-   {
-    "key": "shares_source",
     "sources": [
      "docs/common/sec_data/rotce/{T}.json"
     ]

@@ -60,6 +60,70 @@
    "decision": "残す（2026-10-22）"
   },
   {
+   "path": "common/market_data/valuation_history/{T}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/valuation_history.py",
+     "func": "append",
+     "line": 51
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 98,
+   "top_keys_sampled_files": 98,
+   "top_keys": [
+    {
+     "key": "records",
+     "reader_files": 1
+    },
+    {
+     "key": "symbol",
+     "reader_files": 0
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/multiples.py",
+     "line": 320,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 347,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::build",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 355,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::build",
+     "type": "Python"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 1,
+   "reader_count_test": 0,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "yfinanceの倍率（forward_pe等）の週1回の値を日付つきで積む履歴（追記だけ、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4）。読み手は倍率の部品（common/multiples.py）",
+   "decision": "残す（2026-10-22）"
+  },
+  {
    "path": "common/market_data/_daily_rejected_overwrites.json",
    "kind": "ファイル",
    "writers": [
@@ -249,7 +313,7 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Weekly_Update.yml",
-     "line": 70,
+     "line": 94,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -563,15 +627,15 @@
     },
     {
      "key": "enterprise_value",
-     "reader_files": 3
+     "reader_files": 4
     },
     {
      "key": "ev_to_ebitda",
-     "reader_files": 3
+     "reader_files": 4
     },
     {
      "key": "fetched_at",
-     "reader_files": 5
+     "reader_files": 9
     },
     {
      "key": "forward_eps",
@@ -579,7 +643,7 @@
     },
     {
      "key": "forward_pe",
-     "reader_files": 4
+     "reader_files": 6
     },
     {
      "key": "gross_margins",
@@ -591,11 +655,11 @@
     },
     {
      "key": "industry",
-     "reader_files": 7
+     "reader_files": 9
     },
     {
      "key": "market_cap",
-     "reader_files": 4
+     "reader_files": 5
     },
     {
      "key": "next_quarter_eps_date",
@@ -615,7 +679,7 @@
     },
     {
      "key": "price_to_sales",
-     "reader_files": 3
+     "reader_files": 4
     },
     {
      "key": "recommendation_mean",
@@ -627,7 +691,7 @@
     },
     {
      "key": "sector",
-     "reader_files": 10
+     "reader_files": 12
     },
     {
      "key": "shares_outstanding",
@@ -643,7 +707,7 @@
     },
     {
      "key": "symbol",
-     "reader_files": 4
+     "reader_files": 6
     },
     {
      "key": "target_high_price",
@@ -667,13 +731,13 @@
     },
     {
      "key": "trailing_pe",
-     "reader_files": 4
+     "reader_files": 6
     }
    ],
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Weekly_Update.yml",
-     "line": 69,
+     "line": 93,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -701,6 +765,30 @@
      "func": "get_calendar",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/valuation_history.py",
+     "line": 38,
+     "func": "append",
+     "how": "保存済みファイル",
+     "via": "common/market_data/valuation_history.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/valuation_history.py",
+     "line": 64,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/valuation_history.py::append",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/valuation_history.py",
+     "line": 70,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/valuation_history.py::append",
      "type": "Python"
     },
     {
@@ -749,6 +837,38 @@
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/sector_master.py",
+     "line": 199,
+     "func": "build_entry",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/sector_master.py",
+     "line": 255,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "Python"
+    },
+    {
+     "file": "common/sector_master.py",
+     "line": 295,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "Python"
+    },
+    {
+     "file": "common/sector_master.py",
+     "line": 307,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
      "type": "Python"
     },
     {
@@ -1376,6 +1496,30 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_multiples.py",
+     "line": 110,
+     "func": "test_valuation_history_is_append_only",
+     "how": "保存済みファイル",
+     "via": "common/market_data/valuation_history.py::append",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_multiples.py",
+     "line": 111,
+     "func": "test_valuation_history_is_append_only",
+     "how": "保存済みファイル",
+     "via": "common/market_data/valuation_history.py::append",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_multiples.py",
+     "line": 113,
+     "func": "test_valuation_history_is_append_only",
+     "how": "保存済みファイル",
+     "via": "common/market_data/valuation_history.py::append",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_pipeline_logic.py",
      "line": 461,
      "func": "TestBsAdjustmentCashMissingPropagation.test_cprt_type_financial_health_flag_and_no_runway",
@@ -1568,6 +1712,78 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_sector_master.py",
+     "line": 49,
+     "func": "test_classification_by_industry_rules",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 67,
+     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 68,
+     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 69,
+     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 75,
+     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 81,
+     "func": "test_industry_change_goes_to_external_change",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 84,
+     "func": "test_industry_change_goes_to_external_change",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 88,
+     "func": "test_industry_change_goes_to_external_change",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 95,
+     "func": "test_industry_change_goes_to_external_change",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_split_adjust.py",
      "line": 137,
      "func": "TestTanukiDilutionUsesRegisteredSplits._run",
@@ -1693,8 +1909,8 @@
     "理論株価・判定（TANUKI VALUATION）",
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
-   "reader_count": 13,
-   "reader_count_test": 14,
+   "reader_count": 15,
+   "reader_count_test": 16,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算のEPSの予想等）",
@@ -1720,11 +1936,11 @@
    "top_keys": [
     {
      "key": "records",
-     "reader_files": 12
+     "reader_files": 13
     },
     {
      "key": "symbol",
-     "reader_files": 10
+     "reader_files": 11
     }
    ],
    "readers": [
@@ -1794,7 +2010,7 @@
     },
     {
      "file": "common/external_watch.py",
-     "line": 47,
+     "line": 50,
      "func": "collect",
      "how": "保存済みファイル",
      "via": "common/market_data/futures_roll.py::_load",
@@ -2201,6 +2417,86 @@
      "type": "Python"
     },
     {
+     "file": "common/multiples.py",
+     "line": 75,
+     "func": "_daily_rows",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 147,
+     "func": "build_ledger",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 278,
+     "func": "_tce_by_end",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/rotce.py::_load_prices",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 305,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 310,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 312,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 315,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 321,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 347,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 355,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_daily_rows",
+     "type": "Python"
+    },
+    {
      "file": "common/sec_data/report_consistency_check.py",
      "line": 1579,
      "func": "_check_daily_missing_trading_days",
@@ -2226,7 +2522,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 373,
+     "line": 331,
      "func": "_load_prices",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2234,7 +2530,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 376,
+     "line": 334,
      "func": "_load_prices",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2242,7 +2538,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 425,
+     "line": 383,
      "func": "compute_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::_load_prices",
@@ -2250,7 +2546,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 687,
+     "line": 645,
      "func": "build_all",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::_load_prices",
@@ -2258,7 +2554,7 @@
     },
     {
      "file": "common/sec_data/rotce.py",
-     "line": 727,
+     "line": 685,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/rotce.py::_load_prices",
@@ -2266,7 +2562,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1110,
+     "line": 1111,
      "func": "_check_p",
      "how": "保存済みファイル",
      "via": "common/market_data/futures_roll.py::_load",
@@ -3777,6 +4073,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_sector_master.py",
+     "line": 105,
+     "func": "test_external_watch_collects_sector_changes",
+     "how": "保存済みファイル",
+     "via": "common/market_data/futures_roll.py::_load",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_valuation_fetcher_market_data_switch.py",
      "line": 57,
      "func": "TestFetchValuationNormalCase.test_all_fields_correctly_mapped",
@@ -3904,8 +4208,8 @@
     "理論株価・判定（TANUKI VALUATION）",
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
-   "reader_count": 18,
-   "reader_count_test": 13,
+   "reader_count": 19,
+   "reader_count_test": 14,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
@@ -4370,6 +4674,20 @@
     "tests/test_market_data_stale_provisional.py",
     "tests/test_reference_check.py"
    ]
+  },
+  {
+   "dir": "common/market_data",
+   "file": "common/market_data/valuation_history.py",
+   "decision": "残す（2026-10-22）",
+   "lines": 70,
+   "workflows": [
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_multiples.py"
+   ]
   }
  ],
  "f3_zero_reader": [
@@ -4439,10 +4757,10 @@
   }
  ],
  "stop_condition": {
-  "outputs": 8,
+  "outputs": 9,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 14,
+  "python_read_sites_into_layer_resolved": 19,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/market_data/fetcher.py",
@@ -4451,7 +4769,7 @@
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 30,
+  "name_hit_sites_resolved": 34,
   "name_hit_sites_undetermined": [
    {
     "file": "scripts/analysis/market_pulse_redesign.py",
@@ -4461,7 +4779,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.043,
+  "ratio_reader": 0.036,
   "threshold": 0.1,
   "hit": false
  },
@@ -4486,10 +4804,10 @@
   {
    "workflow": ".github/workflows/Market_Data_Weekly_Update.yml",
    "lines": [
-    67,
-    68,
-    71,
-    72
+    91,
+    92,
+    95,
+    96
    ],
    "keys": []
   },

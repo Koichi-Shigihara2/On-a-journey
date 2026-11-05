@@ -93,6 +93,12 @@ jobs:
         continue-on-error: true
         run: python common/profitability.py --all
 
+      - name: Rebuild multiples
+        # 倍率の履歴（docs/common/multiples/{T}.json、前の月末まで）と分割の食い違いの台帳（config/split_price_ledger.json）。
+        # [[HYPECORE-STAGE-TIMESCALE-1]] 段B-4（2026-11-05）。過去の月は作った後に変わらない。失敗してもSECのデータのcommitは止めない
+        continue-on-error: true
+        run: python common/multiples.py --all
+
       - name: Commit and push changes
         id: commit
         run: |
@@ -105,6 +111,7 @@ jobs:
           git add docs/common/sec_data/normalized/ || true
           git add config/sector_master.json || true
           git add docs/common/profitability.json || true
+          git add docs/common/multiples/ config/split_price_ledger.json || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

@@ -2365,6 +2365,13 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
     1株配当のタグだけの4銘柄（CRWV・FROG・JOBY・SOFI）は、普通株の1株配当の宣言額＝0の申告（無配。優先株の配当ではない）。配当の支払いは欠けのまま（0とみなさない）。
     TTMの系列は90ファイルで新しいキーだけが増え（633か所）、既存のキーの差0（浮動小数の丸めだけの差は前の値に戻した）。出力の一覧（sec）を作り直し、5キーを「誰も読まないキー」の理由つきに。
     定義v2の希薄化は株数の変化（`shares_outstanding_period_end_sec`、分割換算）を主、増資の収入÷時価総額を裏づけに（決定2）。財務CFの行の取り直しはしない。CHECKは段Cの後
+  - **段B-4 倍率の履歴 済（2026-11-05）**: `common/multiples.py` → `docs/common/multiples/{T}.json`（銘柄×月末、2021-01〜前の月末、今月は作らない）。全種類（PER・EV/売上・EV/粗利・5年平均の利益の倍率・P/TBV）を根拠（株価の日・株数の期末と出所・TTMの期・TCEの期末）つきで持ち、選ぶのは定義v2。
+    株価はdailyの終値、株数はその月末までに申告された最新の期末を分割換算（ROTCEの`_shares_by_end`を`common/sec_data/split_adjust.py::shares_by_end`に移して共通に。ROTCE全98銘柄の出力は移す前と同じ）、損益の財務はLayer3の`first_filed`がその月末以前の`first_val`（収益の段階の部品と同じ関数）。P/TBVのTCEはROTCEの四半期末の値（最新の申告の値で、時点の値ではない）。
+    業種の中の位置（L）は部品に持たず、定義v2の側で`peer_percentile()`（業種のマスターのsector、5銘柄未満は全銘柄）で作る（順位は全銘柄に依存し、1銘柄の作り直しでほかのファイルまで変わるため）。
+    HON型の検知: その時点に記録した株価（TANUKIの`history.json`の`current_price`、2026-05-30から）と今の日足の終値の比が、分割の比から期待される比から1.3倍以上外れたら`config/split_price_ledger.json`に mismatch、その分割の日より前の月は判定不能。HON（2026-06-29、比0.5）は1.065倍で検知、65か月が判定不能。ほかの16の分割は分割より前の記録が無く unverifiable（日足のgitの履歴は2026-08-11の一括の取り込みから）。
+    判定不能の月: 株価なし329（上場の前）・株数なし260・分割の食い違い65（98銘柄×70か月）。作り直しはSEC_Data_UpdateとMarket Data Weeklyの後、新しい銘柄はregister_tickerのStep 1.8。2回目の作り直しで書くファイル0（過去の月は変わらない）。5.0MB。
+    フォワードPER: Market Data Weeklyの属性の取得の後に`common/market_data/valuation_history.py`がforward_pe・trailing_pe・price_to_sales・ev_to_ebitdaを日付つきで積む（追記だけ、2026-11-01の値から）
+  - **段B 全体 済（2026-11-05）**: B-1業種のマスター・B-2収益の段階・B-3配当と増資・B-4倍率の履歴。次は段C（本番の部品での再検証）。寄せる件は[[SECTOR-MASTER-ADOPT-1]]・[[DEFICIT-QUALITY-ADOPT-1]]・[[DILUTION-DEFINITION-UNIFY-1]]・[[MULTIPLES-ADOPT-1]]（どれも段Cの後）
 - **段C 本番の部品での再検証**: §7の(a)〜(d)を段Bの部品で試算し直す（閾値は§4の初期値から。際どければ§8の日足の過去分の取り込みを判断）
 - その後 [[STAGE-V2-ROLLOUT-1]]（並行計算・切り替え）
 
@@ -2688,6 +2695,48 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 
 #### 規模の見込み
 中
+
+---
+
+### [MULTIPLES-ADOPT-1] 倍率の計算が9か所でほぼ今のスナップショットだけ、「PER」の名前で中身の違う値が3つ（15銘柄で50%以上の差）、TANUKIの画面のPSRが年次の売上、時価総額の作り方が2通り。今の読み手を倍率の部品に寄せ、名前を付け直す
+**型・処置:** 型B（同じ規則の二重実装）・型E（名前と中身のずれ）・根治策
+**優先度:** 中
+**分類:** 共通の導出データ / `docs/common/multiples/{T}.json`（`common/multiples.py`）とその読み手（TANUKI VALUATION・TANUKI SCORE・ROTCE・HypeCore・STONKS・画面）
+**登録日:** 2026-11-05
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-4のSTEP 0（2026-11-05）
+**経緯:** 2026-10-19の初回の束ねで[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行と同じ形）。段B-4で部品を作った
+
+#### 今ある倍率の計算の場所（2026-11-05、段B-4のSTEP 0）
+| 場所 | 倍率 | 分子 | 分母 | 履歴 |
+|---|---|---|---|---|
+| market_dataの属性（yfinance） | trailing_pe・forward_pe・price_to_sales・ev_to_ebitda | yfinance | yfinance | なし（2026-11-05から`valuation_history`に週1回の値を積む） |
+| TANUKI `data_fetcher.py` | `per`（TANUKI SCOREの「GAAP PER」） | 上のtrailing_pe、無ければforward_pe | 同 | なし |
+| TANUKI `core_calculator.py` | `per_adjusted` | 今の株価 | 調整後EPS（EPS ANALYZER） | なし |
+| TANUKI `pipeline.py::compute_max_eps` | 最大EPSのPER | 今の株価 | (TTM純利益＋SBC)÷今の希薄化後株数 | なし |
+| TANUKI `stock.html`（JS） | PSR・フェアPER・PEG | 株価×希薄化後株数 | 最新の年次の売上 | なし |
+| HypeCore `hypecore.py`・`detail.html` | forward_pe・trailing_pe・psr・ev_ebitda | yfinanceの属性 | 同 | `_poc.json`の最新月だけ |
+| STONKS `pipeline.py` | PSR・EV/売上 | yfinanceの時価総額・EV | Layer3のTTM売上 | なし |
+| ROTCE `rotce.py` | P/TBV（自社比のパーセンタイル） | 四半期末の終値×その期の希薄化後株数 | TCE | 四半期の履歴あり |
+| `dcf_validity_checker.py`・EPS ANALYZERの画面 | GAAP PERと調整後PERの差 | TANUKIの`per`・`per_adjusted` | 同 | なし |
+
+#### 食い違い（2026-11-05）
+- 「PER」の名前で中身の違う値が3つ（yfinanceのtrailing・調整後EPS・純利益＋SBC）。TANUKIの対象の15銘柄でGAAP PERと最大EPSのPERが50%以上違う（DDOG 470対69・IOT 300対59・CELH 127対48等）
+- PSRは3通り（yfinanceとSTONKSの差は全24銘柄で2%未満、TANUKIの画面は分母が最新の年次の売上）
+- 時価総額の作り方が2通り（yfinanceの値と株価×SECの株数）。HON型の併合と分社で過去の株価×併合後の株数が約半分（FINDINGS 2026-11-05、部品は台帳で判定不能に）
+- 履歴があるのはROTCEのP/TBV（四半期）だけ
+
+#### 決定（チャット側、2026-11-05）
+1. 部品は銘柄ごとのファイル 2. 全種類を根拠つきで持ち、選ぶのは定義v2 3. HON型は検知→台帳→その前は判定不能 4. フォワードPERの週1回の値の保存を始める 5. 本項目を登録
+
+#### ここで決めること
+今の読み手（TANUKIのPERの列・最大EPSのPER・ROTCEのパーセンタイル・画面のPSR）を部品に寄せる順と、「PER」の名前の付け直し（GAAP・調整後・最大EPS）。寄せるときは全銘柄の試算と計算方法の変更の手順で。P/TBVのTCEを時点の値（first_val）にするか
+
+#### 投資判断への影響
+今あり（同じ「PER」の名前で中身の違う値が並ぶ、画面のPSRが年次の売上で古い）
+
+#### 規模の見込み
+中〜大
 
 ---
 
