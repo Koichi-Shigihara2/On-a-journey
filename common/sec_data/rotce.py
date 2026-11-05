@@ -139,10 +139,19 @@ def _days(a: str, b: str) -> int:
     return (_d(b) - _d(a)).days
 
 
-def _stock_by_end(store: dict, field: str) -> Dict[str, dict]:
-    """Layer3のstockフィールドを期末日→エントリにする（同じ期末日は最新filed）"""
+def _stock_by_end(store: dict, field: str, as_of: Optional[str] = None) -> Dict[str, dict]:
+    """Layer3のstockフィールドを期末日→エントリにする（同じ期末日は最新filed）
+
+    as_of（YYYY-MM-DD）を渡すと、その日までに最初に申告された値だけを、その時点の値（first_val）で使う
+    （倍率の部品の時点のP/TBV、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4、2026-11-06）。渡さなければ今までどおり"""
     out: Dict[str, dict] = {}
     for e in get_field_entries(store, field):
+        if as_of is not None:
+            ff = e.get("first_filed") or e.get("filed")
+            v = e.get("first_val") if e.get("first_val") is not None else e.get("val")
+            if not ff or ff[:10] > as_of or v is None:
+                continue
+            e = {**e, "val": v, "filed": ff}
         if e.get("val") is None:
             continue
         cur = out.get(e["end"])
@@ -364,6 +373,44 @@ def signal_for(ptbv_pctl: float, rotce_pctl: float) -> str:
     return SIGNAL_NEUTRAL
 
 
+def tce_inputs(store: dict, company_facts: Optional[dict], as_of: Optional[str] = None) -> tuple:
+    """TCE（tce_at）に渡す材料の1か所: (成分の系列, 無形資産のタグ, 使えない成分, 年度末の期末日, 成分ごとの初申告, 注記)。
+    as_of を渡すと成分の系列をその日までに申告された値（first_val）だけにする（ROTCEの出力は as_of なし）"""
+    notes: List[str] = []
+    series = {f: _stock_by_end(store, f, as_of) for f in
+              ("stockholders_equity", "goodwill", "intangible_assets_excl_goodwill",
+               "preferred_stock", "minority_interest")}
+    intangible_tags = _intangible_tags_by_end(company_facts)
+    unavailable: frozenset = frozenset()
+    if _has_only_including_goodwill_tag(company_facts):
+        # ASTS型: IntangibleAssetsNetIncludingGoodwillしか無い（銘柄で意味が違うため使わず、
+        # 無形資産が不明＝TCEを計算しない）
+        notes.append(R_INTANGIBLE_ONLY_INCL)
+        unavailable = frozenset({"intangible_assets_excl_goodwill"})
+    temp_eq_ends = _temporary_equity_preferred_ends(company_facts)
+    if temp_eq_ends:
+        # 優先株がメザニンに分類されている期末日は控除しない（0として扱う）
+        notes.append(R_PREFERRED_TEMPORARY_EQUITY)
+        series["preferred_stock"] = {
+            end: ({**e, "val": 0} if end in temp_eq_ends else e) for end, e in series["preferred_stock"].items()}
+    first_reported = _first_reported(company_facts)
+    # 年度末の期末日（Layer3の年次の純利益・株式数の期末日）
+    fy_ends = frozenset(e["end"] for f in ("net_income", "shares_diluted")
+                        for e in get_field_entries(store, f) if e.get("is_annual"))
+    return series, intangible_tags, unavailable, fy_ends, first_reported, notes
+
+
+def tce_as_of(store: dict, company_facts: Optional[dict], as_of: str) -> Dict[str, Any]:
+    """その日までに申告された値だけで作った、最新の期末のTCE（倍率の部品の時点のP/TBV）。{"end", "tce", "reason"}"""
+    series, tags, unavailable, fy_ends, first_reported, _ = tce_inputs(store, company_facts, as_of)
+    eq = series["stockholders_equity"]
+    if not eq:
+        return {"end": None, "tce": None, "reason": R_EQUITY_MISSING}
+    q = max(eq)
+    t = tce_at(series, q, tags, unavailable, fy_ends, first_reported)
+    return {"end": q, "tce": t.get("tce"), "reason": t.get("reason")}
+
+
 def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict] = None,
                    prices: Optional[List[dict]] = None, splits: Optional[List[dict]] = None,
                    company_facts: Optional[dict] = None) -> Dict[str, Any]:
@@ -384,29 +431,11 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
     if splits is None:
         splits = load_split_history().get(ticker, [])
 
-    series = {f: _stock_by_end(store, f) for f in
-              ("stockholders_equity", "goodwill", "intangible_assets_excl_goodwill",
-               "preferred_stock", "minority_interest")}
-    intangible_tags = _intangible_tags_by_end(company_facts)
-    unavailable: frozenset = frozenset()
-    if _has_only_including_goodwill_tag(company_facts):
-        # ASTS型: IntangibleAssetsNetIncludingGoodwillしか無い（銘柄で意味が違うため使わず、
-        # 無形資産が不明＝TCEを計算しない）
-        out["notes"].append(R_INTANGIBLE_ONLY_INCL)
-        unavailable = frozenset({"intangible_assets_excl_goodwill"})
-    temp_eq_ends = _temporary_equity_preferred_ends(company_facts)
-    if temp_eq_ends:
-        # 優先株がメザニンに分類されている期末日は控除しない（0として扱う）
-        out["notes"].append(R_PREFERRED_TEMPORARY_EQUITY)
-        series["preferred_stock"] = {
-            end: ({**e, "val": 0} if end in temp_eq_ends else e) for end, e in series["preferred_stock"].items()}
-    first_reported = _first_reported(company_facts)
+    series, intangible_tags, unavailable, fy_ends, first_reported, notes = tce_inputs(store, company_facts)
+    out["notes"].extend(notes)
 
     ni = _quarterly_flow(store, "net_income")
     ends = list(ni)
-    # 年度末の期末日（Layer3の年次の純利益・株式数の期末日）
-    fy_ends = frozenset(e["end"] for f in ("net_income", "shares_diluted")
-                        for e in get_field_entries(store, f) if e.get("is_annual"))
     shares = _shares_by_end(store, ends, splits)
     tce_cache: Dict[str, Dict[str, Any]] = {}
 

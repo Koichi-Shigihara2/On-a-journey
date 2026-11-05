@@ -55,7 +55,7 @@ def test_compute_point_in_time_multiples():
     store, q_ends = _store()
     prices = [{"date": "2026-06-30", "close": 200.0}, {"date": "2026-07-31", "close": 210.0}]
     months = [("2026-06", "2026-06-30"), ("2026-07", "2026-07-31")]
-    tce = {e: 400.0 for e in q_ends}
+    tce = lambda d: {"end": q_ends[4], "tce": 400.0}
     out = mp.compute("X", store, prices, months, [], tce, [])
     jun, jul = out["months"]
     # 6月末: 最新で申告済みの四半期は 2026-03-30（申告 05-09）。TTM純利益100・売上400・粗利240、株数10
@@ -71,11 +71,11 @@ def test_split_mismatch_blocks_months_before_split_and_past_months_stable():
     prices = [{"date": "2026-06-30", "close": 200.0}, {"date": "2026-07-31", "close": 210.0}, {"date": "2026-08-31", "close": 220.0}]
     ledger = [{"ticker": "X", "split_date": "2026-07-15", "status": "mismatch"}]
     m2 = [("2026-06", "2026-06-30"), ("2026-07", "2026-07-31")]
-    out = mp.compute("X", store, prices, m2, [], {}, ledger)
+    out = mp.compute("X", store, prices, m2, [], lambda d: {}, ledger)
     assert out["months"][0]["undetermined"] == "split_price_mismatch" and out["months"][0]["per"] is None
     assert out["months"][1]["undetermined"] is None
     # 月が増えても過去の月の値は変わらない
-    out3 = mp.compute("X", store, prices, m2 + [("2026-08", "2026-08-31")], [], {}, ledger)
+    out3 = mp.compute("X", store, prices, m2 + [("2026-08", "2026-08-31")], [], lambda d: {}, ledger)
     assert out3["months"][:2] == out["months"]
 
 
@@ -84,7 +84,7 @@ def test_forward_pe_snapshot_at_month_end():
     prices = [{"date": "2026-11-30", "close": 200.0}, {"date": "2026-12-31", "close": 210.0}, {"date": "2027-02-26", "close": 220.0}]
     snaps = [{"date": "2026-11-01", "forward_pe": 12.0}, {"date": "2026-12-27", "forward_pe": 13.0}]
     rows = mp.compute("X", store, prices, [("2026-11", "2026-11-30"), ("2026-12", "2026-12-31"), ("2027-02", "2027-02-26")],
-                      [], {}, [], snaps)["months"]
+                      [], lambda d: {}, [], snaps)["months"]
     assert [(r["forward_pe_snapshot"], r["forward_pe_snapshot_date"]) for r in rows] ==         [(12.0, "2026-11-01"), (13.0, "2026-12-27"), (None, None)]          # 31日より古い値は使わない
 
 
@@ -113,3 +113,17 @@ def test_valuation_history_is_append_only(tmp_path):
     assert vh.append("X", str(attr), str(out)) is True
     recs = json.loads((out / "X.json").read_text(encoding="utf-8"))["records"]
     assert [(r["date"], r["forward_pe"]) for r in recs] == [("2026-11-01", 12.0), ("2026-11-08", 13.0)]
+
+
+def test_tce_as_of_uses_values_filed_by_then():
+    """ROTCE の TCE の規則を、その日までに申告された値（first_val）だけで（rotce.tce_as_of）"""
+    from common.sec_data import rotce
+    def eq(end, val, first, filed):
+        return {"end": end, "val": val, "first_val": first, "first_filed": filed, "filed": "2026-08-01", "period_days": 0}
+    store = {"fields": {"stockholders_equity": {"entries": [eq("2026-03-31", 900.0, 800.0, "2026-05-01"),
+                                                            eq("2026-06-30", 1000.0, 1000.0, "2026-08-01")]},
+                        "goodwill": {"entries": [eq("2026-03-31", 100.0, 100.0, "2026-05-01"),
+                                                 eq("2026-06-30", 100.0, 100.0, "2026-08-01")]}}}
+    t = rotce.tce_as_of(store, None, "2026-06-30")
+    assert (t["end"], t["tce"]) == ("2026-03-31", 700.0)                  # 6月末: 3月末の最初の申告の値（800−100）
+    assert rotce.tce_as_of(store, None, "2026-08-31")["end"] == "2026-06-30"

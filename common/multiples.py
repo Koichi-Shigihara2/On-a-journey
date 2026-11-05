@@ -13,8 +13,8 @@
     common/sec_data/split_adjust.py::shares_by_end）。申告日は Layer3 の first_filed
   - 損益・CF・BSの財務: Layer3 の first_filed がその月末以前の値（first_val）。TTM・年次は収益の段階の部品
     （common/profitability.py）と同じ関数
-  - P/TBV の TCE（有形自己資本）は ROTCE（common/sec_data/rotce.py::compute_ticker）の四半期末の値をそのまま使う
-    （TCEの規則を二重にしない）。ROTCE の TCE は最新の申告の値で、その時点の値（first_val）ではない（貸借対照表は組み替えが少ない）
+  - P/TBV の TCE（有形自己資本）は ROTCE の規則（common/sec_data/rotce.py::tce_as_of、TCEの規則を二重にしない）で、
+    その月末までに申告された値（first_val）だけから作る（2026-11-06。それまでは ROTCE の最新の申告の値だった）
 業種の中の位置（L）: 部品には持たない（定義v2の側で、毎月の全銘柄の値から peer_percentile() で作る。業種のマスターの写像で比べる相手を決める）。
 理由: 順位は全銘柄に依存するので、1銘柄の作り直しでほかの銘柄のファイルまで変わる。部品は銘柄ごとの値だけにし、軽くする
 
@@ -188,8 +188,9 @@ def snapshot_at(records: List[dict], d: str) -> Optional[dict]:
 
 
 def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List[tuple],
-            splits: List[dict], tce_by_end: Dict[str, Optional[float]], ledger: List[Dict[str, Any]],
+            splits: List[dict], tce_at_date: Callable[[str], Dict[str, Any]], ledger: List[Dict[str, Any]],
             snapshots: Optional[List[dict]] = None) -> Dict[str, Any]:
+    """tce_at_date(月末) → {"end", "tce"}（その月末までに申告された値のTCE、rotce.tce_as_of）"""
     from common.sec_data.split_adjust import shares_by_end
     fields = (store or {}).get("fields") or {}
     ent = lambda f: (fields.get(f) or {}).get("entries") or []
@@ -229,15 +230,15 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
         gp = _latest_ttm(ttm_series(quarterly_points(ent("gross_profit"), d)))
         a_ni = list(annual_points(ent("net_income"), d).items())[-NI_AVG_YEARS:]
         ni5 = (sum(v for _, v in a_ni) / len(a_ni)) if len(a_ni) >= NI_AVG_MIN_YEARS else None
-        eq_end = _stock_at(ent("stockholders_equity"), d)
-        tce = tce_by_end.get(eq_end[0]) if eq_end else None
+        t = tce_at_date(d) or {}
+        tce = t.get("tce")
         pos = lambda num, den: (num / den) if (den is not None and den > 0 and num is not None and num > 0) else None
         r.update({
             "price": px["close"], "price_date": px["date"], "shares": shares[se]["shares"], "shares_end": se,
             "shares_source": shares[se].get("source"), "market_cap": mcap, "enterprise_value": ev,
             "ttm_end": ni[0] if ni else None, "ttm_net_income": ni[1] if ni else None,
             "ttm_revenue": rev[1] if rev else None, "ttm_gross_profit": gp[1] if gp else None,
-            "net_income_5y_avg": ni5, "net_income_5y_years": len(a_ni), "tce": tce, "tce_end": eq_end[0] if eq_end else None,
+            "net_income_5y_avg": ni5, "net_income_5y_years": len(a_ni), "tce": tce, "tce_end": t.get("end"),
             "per": pos(mcap, ni[1] if ni else None),
             "ev_sales": pos(ev, rev[1] if rev else None),
             "ev_gross_profit": pos(ev, gp[1] if gp else None),
@@ -270,15 +271,18 @@ def peer_percentile(values: Dict[str, Optional[float]], ticker: str, sector_of: 
 
 
 # ── 全銘柄・保存 ─────────────────────────────────────────────────────
-def _tce_by_end(ticker: str, store: Dict[str, Any]) -> Dict[str, Optional[float]]:
+def _tce_fn(ticker: str, store: Dict[str, Any]) -> Callable[[str], Dict[str, Any]]:
+    """月末 → その月末までに申告された値のTCE（ROTCE の規則、rotce.tce_as_of）。会社のfactsは1回だけ読む"""
     from common.sec_data import rotce
-    from common.sec_data.split_adjust import load_split_history
-    with contextlib.redirect_stdout(io.StringIO()):
+    from common.sec_data.layer3_builder import load_company_facts
+    cf = load_company_facts(ticker)
+
+    def at(d: str) -> Dict[str, Any]:
         try:
-            r = rotce.compute_ticker(ticker, _REPO, store=store, splits=load_split_history().get(ticker.upper(), []))
-        except Exception:  # noqa: BLE001  ROTCEが作れない銘柄は P/TBV を出さない
+            return rotce.tce_as_of(store, cf, d)
+        except Exception:  # noqa: BLE001  TCEが作れない月は P/TBV を出さない
             return {}
-    return {h["end"]: h.get("tce") for h in (r or {}).get("history") or []}
+    return at
 
 
 def _default_store(ticker: str) -> Optional[Dict[str, Any]]:
@@ -292,7 +296,7 @@ def _default_store(ticker: str) -> Optional[Dict[str, Any]]:
 
 
 def build(tickers: Optional[List[str]] = None, out_dir: str = OUT_DIR, ledger_path: str = LEDGER_PATH,
-          today: Optional[str] = None, store_fn: Callable = _default_store, tce_fn: Callable = _tce_by_end,
+          today: Optional[str] = None, store_fn: Callable = _default_store, tce_fn: Callable = _tce_fn,
           daily_dir: str = DAILY_DIR, tanuki_dir: str = TANUKI_DIR, lookup_path: Optional[str] = None,
           splits_all: Optional[Dict[str, list]] = None) -> Dict[str, Any]:
     """作り直してファイルに書く。tickers=None は全銘柄（と台帳）。戻り値は件数の要約"""
