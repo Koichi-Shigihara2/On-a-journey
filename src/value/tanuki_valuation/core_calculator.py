@@ -98,8 +98,8 @@ def resolve_alpha_cap(
     """α（成長期待プレミアム）のセクター別・業種別上限を、
     `config/maturity_config.json`から解決する。
 
-    優先順位: mega_tech（tickerが`_sector_caps._mega_tech_tickers`に
-    一致）→ 業種別（`_industry_alpha_caps`）→ セクター別（`_alpha_caps`）
+    優先順位: mega_tech（業種のマスターの mega_tech 区分。以前は `_sector_caps._mega_tech_tickers` の手書きの6銘柄。
+    SECTOR-MASTER-ADOPT-1 段2）→ 業種別（`_industry_alpha_caps`）→ セクター別（`_alpha_caps`）
     → `default_alpha_cap`。
 
     **[[VALIDATOR-ALPHA-CAP-STALE-1]]対応（2026-08-20）**: 元々
@@ -121,8 +121,8 @@ def resolve_alpha_cap(
         _cfg_all  = _json.loads(_cfg_path.read_text(encoding="utf-8"))
         _alpha_caps = _cfg_all.get("_alpha_caps", {})
         _industry_alpha_caps = _cfg_all.get("_industry_alpha_caps", {})
-        _mega = _cfg_all.get("_sector_caps", {}).get("_mega_tech_tickers", [])
-        if ticker in _mega:
+        from maturity_config import is_mega_tech_ticker   # SECTOR-MASTER-ADOPT-1 段2: 業種のマスターの区分
+        if is_mega_tech_ticker(ticker):
             alpha_cap = _alpha_caps.get("mega_tech", default_alpha_cap)
         elif industry and industry in _industry_alpha_caps:
             alpha_cap = _industry_alpha_caps[industry]
@@ -392,9 +392,9 @@ class KoichiValuationCalculator:
                 _cfg_path = _pl.Path(__file__).parent.parent.parent.parent / "config" / "maturity_config.json"
                 _cfg_all  = _json.loads(_cfg_path.read_text(encoding="utf-8"))
                 _caps     = _cfg_all.get("_sector_caps", {})
-                _mega     = _caps.get("_mega_tech_tickers", [])
+                from maturity_config import is_mega_tech_ticker   # SECTOR-MASTER-ADOPT-1 段2: 業種のマスターの区分
                 _mega_cap = _caps.get("_mega_tech_cap")
-                if ticker in _mega and _mega_cap is not None:
+                if is_mega_tech_ticker(ticker) and _mega_cap is not None:
                     _cap = _mega_cap
                 elif sector and sector in _caps:
                     _cap = _caps[sector]

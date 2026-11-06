@@ -123,6 +123,14 @@ DAMODARAN_BY_INDUSTRY = {
     "Utilities - Independent Power Producers": "Power",
 }
 
+# メガテック（Phase2の成長率の上限・αの上限を緩める銘柄）: 時価総額が1兆ドル以上、かつ yfinance の industry が
+# ソフトウェア（Software - *）・インターネット（Internet *）・半導体（Semiconductors）・家電（Consumer Electronics）。
+# [[SECTOR-MASTER-ADOPT-1]] 段2（2026-11-06）。以前は config/maturity_config.json の `_mega_tech_tickers`（手書きの6銘柄 MSFT・AMZN・GOOGL・AAPL・META・NVDA）。
+# 規則にしても今の登録銘柄では同じ6銘柄になる（LLY〈医薬〉・TSLA〈自動車〉は業種で外れる）。時価総額は週次の属性の取得で更新される
+MEGA_TECH_MIN_MARKET_CAP = 1.0e12
+MEGA_TECH_INDUSTRY_PREFIXES = ("Software - ", "Internet ")
+MEGA_TECH_INDUSTRIES = ("Semiconductors", "Consumer Electronics")
+
 # Market Pulse のセクターのETF（src/market/market_pulse/sector_rotation.py の SECTOR_MAP と同じ。テストで一致を確かめる）
 ETF_BY_SECTOR = {
     "Technology": "XLK", "Communication Services": "XLC", "Consumer Cyclical": "XLY",
@@ -146,6 +154,9 @@ def rules() -> Dict[str, Any]:
         "eps_category_by_sector": EPS_CATEGORY_BY_SECTOR,
         "damodaran_by_industry": DAMODARAN_BY_INDUSTRY,
         "etf_by_sector": ETF_BY_SECTOR,
+        "mega_tech_min_market_cap": MEGA_TECH_MIN_MARKET_CAP,
+        "mega_tech_industry_prefixes": list(MEGA_TECH_INDUSTRY_PREFIXES),
+        "mega_tech_industries": list(MEGA_TECH_INDUSTRIES),
     }
 
 
@@ -154,6 +165,13 @@ def is_cyclical(industry: Optional[str]) -> bool:
     if not industry:
         return False
     return industry in CYCLICAL_INDUSTRIES_STAGE_A or any(k in industry for k in CYCLICAL_KEYWORDS_SCREEN)
+
+
+def is_mega_tech(industry: Optional[str], market_cap: Optional[float]) -> bool:
+    """時価総額1兆ドル以上、かつ業種がソフトウェア・インターネット・半導体・家電"""
+    if not industry or not isinstance(market_cap, (int, float)) or market_cap < MEGA_TECH_MIN_MARKET_CAP:
+        return False
+    return industry in MEGA_TECH_INDUSTRIES or any(industry.startswith(p) for p in MEGA_TECH_INDUSTRY_PREFIXES)
 
 
 def unclassified_reason(sector: Optional[str], industry: Optional[str]) -> Optional[str]:
@@ -211,6 +229,7 @@ def build_entry(ticker: str, attr_dir: str = ATTR_DIR, sec_dir: str = SEC_DIR) -
         "sic_description": subs.get("sic_description") or None,
         "entity_name": subs.get("entity_name") or None,
         "cyclical": is_cyclical(industry),
+        "mega_tech": is_mega_tech(industry, attrs.get("market_cap")),
         "financial": financial(sector, industry, sic),
         "unclassified": unclassified_reason(sector, industry),
         "eps_category": eps_category(sector, industry),

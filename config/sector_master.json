@@ -1,7 +1,7 @@
 {
  "_schema_version": "1.0",
  "_description": "業種のマスター（common/sector_master.py が機械で作る。手で書かない）。主は yfinance の sector・industry、SIC・社名は控え。区分と写像は rules の業種の名前の規則で決める。読み手は [[SECTOR-MASTER-ADOPT-1]] で寄せる",
- "generated_at": "2026-11-05T10:50:23+00:00",
+ "generated_at": "2026-11-06T04:43:25+00:00",
  "rules": {
   "cyclical_keywords": [
    "Agricultural",
@@ -121,7 +121,16 @@
    "Basic Materials": "XLB",
    "Real Estate": "XLRE",
    "Utilities": "XLU"
-  }
+  },
+  "mega_tech_min_market_cap": 1000000000000.0,
+  "mega_tech_industry_prefixes": [
+   "Software - ",
+   "Internet "
+  ],
+  "mega_tech_industries": [
+   "Semiconductors",
+   "Consumer Electronics"
+  ]
  },
  "tickers": {
   "AAPL": {
@@ -132,6 +141,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": true,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -149,6 +159,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -166,6 +177,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -183,6 +195,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -200,6 +213,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -217,6 +231,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -234,6 +249,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -251,6 +267,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": true,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -268,6 +285,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -285,6 +303,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -302,6 +321,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -319,6 +339,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -336,6 +357,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -353,6 +375,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -370,6 +393,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -387,6 +411,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -404,6 +429,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -421,6 +447,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -438,6 +465,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -455,6 +483,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -472,6 +501,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -489,6 +519,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -506,6 +537,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -523,6 +555,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -540,6 +573,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -557,6 +591,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -574,6 +609,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -591,6 +627,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -608,6 +645,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -625,6 +663,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -642,6 +681,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -659,6 +699,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -676,6 +717,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -693,6 +735,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -710,6 +753,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -727,6 +771,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -744,6 +789,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -761,6 +807,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -778,6 +825,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -795,6 +843,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": true,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -812,6 +861,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -829,6 +879,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -846,6 +897,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -863,6 +915,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -880,6 +933,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -897,6 +951,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -914,6 +969,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -931,6 +987,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -948,6 +1005,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -965,6 +1023,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -982,6 +1041,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -999,6 +1059,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1016,6 +1077,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1033,6 +1095,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1050,6 +1113,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1067,6 +1131,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1084,6 +1149,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1101,6 +1167,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1118,6 +1185,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1135,6 +1203,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": true,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1152,6 +1221,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1169,6 +1239,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1186,6 +1257,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1203,6 +1275,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": true,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1220,6 +1293,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1237,6 +1311,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1254,6 +1329,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": true,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1271,6 +1347,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1288,6 +1365,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1305,6 +1383,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1322,6 +1401,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1339,6 +1419,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1356,6 +1437,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1373,6 +1455,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1390,6 +1473,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1407,6 +1491,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1424,6 +1509,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1441,6 +1527,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1458,6 +1545,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1475,6 +1563,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1492,6 +1581,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1509,6 +1599,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1526,6 +1617,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1543,6 +1635,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": true,
     "basis": "sector_only"
@@ -1560,6 +1653,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1577,6 +1671,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1594,6 +1689,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1611,6 +1707,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1628,6 +1725,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1645,6 +1743,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1662,6 +1761,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": true,
     "basis": "sector_only"
@@ -1679,6 +1779,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1696,6 +1797,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1713,6 +1815,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1730,6 +1833,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1747,6 +1851,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": true,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1764,6 +1869,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"
@@ -1781,6 +1887,7 @@
    "sic_description": null,
    "entity_name": null,
    "cyclical": false,
+   "mega_tech": false,
    "financial": {
     "value": false,
     "basis": "sector_only"

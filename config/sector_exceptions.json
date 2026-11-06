@@ -1,5 +1,5 @@
 {
-  "_description": "Damodaranの業種の例外の台帳（[[SECTOR-MASTER-ADOPT-1]] 段1、2026-11-06）。通常は config/sector_master.json の damodaran_industry（yfinanceのsector・industryからの写像）を使い、ここに書いた銘柄だけ写像と違う業種を使う。理由の無い例外は残さない（チャット側の決定: ABBV・ASTS・CRWV・HQYは理由の記録が無く写像に寄せた）。手で書く入力（common/sector_master.py は書かない）",
+  "_description": "Damodaranの業種の例外の台帳（[[SECTOR-MASTER-ADOPT-1]] 段1、2026-11-06）。通常は config/sector_master.json の damodaran_industry（yfinanceのsector・industryからの写像）を使い、ここに書いた銘柄だけ写像と違う業種を使う。理由の無い例外は残さない（チャット側の決定: ABBV・ASTS・CRWV・HQYは理由の記録が無く写像に寄せた）。手で書く入力（common/sector_master.py は書かない）。永久成長率の欄 terminal_growth は、業種の規則（maturity_config._DAMODARAN_TV_G）と違う値を残す銘柄だけ（理由つき、[[SECTOR-MASTER-ADOPT-1]] 段2・2026-11-06）。今までの直引きの63銘柄は WACC-1（2026-05-31）で『業種の規則を当てた結果のキャッシュ』として入れたもので、銘柄ごとの理由の記録が無く、規則に寄せたため空",
   "damodaran_industry": {
     "APP": {
       "industry": "Software (System & Application)",
@@ -25,5 +25,6 @@
       "industry": "Financial Svcs. (Non-bank & Insurance)",
       "reason": "小型FinTech・プリペイドカード"
     }
-  }
+  },
+  "terminal_growth": {}
 }

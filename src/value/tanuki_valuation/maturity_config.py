@@ -100,50 +100,28 @@ _DAMODARAN_TV_G: Dict[str, float] = {
 }
 
 # ============================================================
-# WACC-1: ポートフォリオ銘柄別ターミナル成長率（直引きテーブル）
-# _DAMODARAN_TV_G の業種マッピングを適用した結果をキャッシュ。
-# 新規銘柄追加時はここに追記する。
+# [[SECTOR-MASTER-ADOPT-1]] 段2（2026-11-06）: 銘柄別の直引きテーブル _TICKER_TV_G（63銘柄）をやめた。
+# 永久成長率は 例外の台帳（config/sector_exceptions.json の terminal_growth、理由つき、今は空）→ 業種
+# （growth_sanity.industry_for_ticker ＝ 例外の台帳 → 業種のマスター）の _DAMODARAN_TV_G → 既定 3.0%。
+# 直引きは WACC-1（2026-05-31）で『_DAMODARAN_TV_G の業種マッピングを適用した結果のキャッシュ』として入れたもので、
+# 銘柄ごとの理由の記録が無く、業種が変わっても古い値のまま残っていた。
+# 業種の表に無い業種（Hotel/Gaming・Metals & Mining・Tobacco 等）は既定 3.0% のまま。Damodaranの表の値（g_ebit・roc・rr）から
+# 表の値を機械的に決められるかを調べたが、表の中でも g_ebit と段階が対応しない
+# （Information Services g_ebit −5.9% が 3.5%、Aerospace/Defense +10.9% が 3.0%）ので、足さない
 # ============================================================
-_TICKER_TV_G: Dict[str, float] = {
-    # ── 電力（2.0%）。段1（SECTOR-MASTER-ADOPT-1）で TICKER_INDUSTRY_OVERRIDES の経路から移した。段2で業種の規則に寄せる ──
-    "VST": 0.02,
-    # ── 半導体・フォトニクス（3.5%）──
-    "NVDA": 0.035, "AMD": 0.035, "AMAT": 0.035,
-    "MRVL": 0.035, "COHR": 0.035, "LITE": 0.035, "SITM": 0.035,
-    "ALAB": 0.035,
-    # ── ビッグテック（3.5%）──
-    "MSFT": 0.035, "AMZN": 0.035, "GOOGL": 0.035, "AAPL": 0.035,
-    "TSLA": 0.035,
-    # ── 広告プラットフォーム（3.0%）──
-    "META": 0.030,
-    # ── エンタープライズ・SaaS（3.5%）──
-    "NOW": 0.035, "CRM": 0.035, "ADBE": 0.035, "ADSK": 0.035,
-    "INTU": 0.035, "CDNS": 0.035, "BSY": 0.035, "CSGP": 0.035,
-    # ── サイバーセキュリティ・SaaS（3.5%）──
-    "DDOG": 0.035, "ZS": 0.035, "NET": 0.035, "S": 0.035,
-    "GTLB": 0.035, "ESTC": 0.035, "RBRK": 0.035, "IOT": 0.035,
-    # ── インターネット・プラットフォーム（3.5%）──
-    "BKNG": 0.035, "CART": 0.035,
-    # ── AI・アナリティクス（3.5%）──
-    "PLTR": 0.035, "APP": 0.035, "ZETA": 0.035, "CRWV": 0.035,
-    # ── FinTech（金融寄り 3.0%）──
-    "PAYS": 0.030, "SOFI": 0.030,
-    # ── 防衛・航空宇宙（3.0%）──
-    "LMT": 0.030, "HEI": 0.030, "HWM": 0.030, "TDY": 0.030,
-    "KULR": 0.030, "AVAV": 0.030,
-    # ── 産業機械（2.5%）──
-    "HON": 0.025,
-    # ── 電力インフラ（3.0%）──
-    "VRT": 0.030, "CEG": 0.030,
-    # ── ヘルスケア・製薬（3.0%）──
-    "LLY": 0.030, "RXRX": 0.030,
-    # ── 消費者・飲食料（2.5%）──
-    "CAKE": 0.025, "KO": 0.025, "CELH": 0.025, "ELF": 0.025,
-    # ── 宇宙・投機的テック（3.5% or 3.0%）──
-    "RKLB": 0.035, "ASTS": 0.035, "SPIR": 0.030,
-    "IONQ": 0.030, "JOBY": 0.030, "QBTS": 0.030,
-    "SOUN": 0.030, "BBAI": 0.030, "RCAT": 0.030, "ONDS": 0.030,
-}
+
+
+def is_mega_tech_ticker(ticker: str) -> bool:
+    """メガテックか（Phase2の成長率の上限・αの上限を緩める銘柄）。config/sector_master.json の mega_tech
+    （時価総額1兆ドル以上かつ業種がソフトウェア・インターネット・半導体・家電、規則は common/sector_master.py の1か所）。
+    以前は maturity_config.json の `_sector_caps._mega_tech_tickers`（手書きの6銘柄）"""
+    try:
+        path = os.path.join(_find_config_dir(), "sector_master.json")
+        with open(path, encoding="utf-8") as f:
+            return bool(((json.load(f).get("tickers") or {}).get(ticker) or {}).get("mega_tech"))
+    except (OSError, ValueError):
+        return False
+
 
 _DEFAULT_PROFILE: Dict[str, Any] = {
     "type": "two_stage",
@@ -224,19 +202,22 @@ def is_three_stage(ticker: str) -> bool:
 
 def _lookup_tv_g_by_industry(ticker: str) -> Optional[float]:
     """
-    ターミナル成長率をセクター別テーブルから解決する。
+    ターミナル成長率を、例外の台帳 → 業種の規則（_DAMODARAN_TV_G）の順で解決する。
 
-    優先順位:
-    1. _TICKER_TV_G（ポートフォリオ銘柄直引きテーブル）
-    2. （段2で業種の規則に寄せる。段1では直引きに無い銘柄は None → 3.0%）
+    1. config/sector_exceptions.json の terminal_growth（業種の規則と違う値を残す銘柄。理由つき）
+    2. 業種（growth_sanity.industry_for_ticker ＝ 例外の台帳 → 業種のマスターの写像）の _DAMODARAN_TV_G
+    業種が無い・表に無い業種は None（既定 3.0%）。growth_sanity がテストでモック済みの場合は gracefully に None を返す。
     """
-    # 直引きテーブルを優先
-    tv_g = _TICKER_TV_G.get(ticker)
-    if tv_g is not None:
-        return tv_g
-    # [[SECTOR-MASTER-ADOPT-1]] 段1（2026-11-06）: 以前はここで growth_sanity.TICKER_INDUSTRY_OVERRIDES（手書きの辞書）から業種を引いていたが、
-    # 辞書は台帳＋業種のマスターに置き換わった。永久成長率を業種の規則で決めるのは段2（_TICKER_TV_Gの直引きをやめる）なので、
-    # 段1では値を変えない（以前この経路で値が出ていたのは VST の2.0%だけ → _TICKER_TV_G に移した。CIX・FCX・MO・SCCOは業種の表に無く3.0%のまま）
+    try:
+        import growth_sanity as _gs
+        exc = _gs.terminal_growth_exception(ticker)
+        if isinstance(exc, float):
+            return exc
+        industry = _gs.industry_for_ticker(ticker)
+        if industry and isinstance(industry, str):
+            return _DAMODARAN_TV_G.get(industry)
+    except Exception:
+        pass
     return None
 
 
@@ -253,7 +234,7 @@ def get_terminal_growth(ticker: str) -> float:
        - 上記フラグがない場合は従来通り、3.0% 以外に明示設定された場合のみ
          採用する（後方互換。既存のmaturity_config.jsonエントリは全て
          このフラグを持たないため、本変更による既存挙動への影響はない）
-    2. （段2で業種の規則に寄せる。以前は growth_sanity.TICKER_INDUSTRY_OVERRIDES → _DAMODARAN_TV_G）
+    2. 例外の台帳の terminal_growth → 業種（例外の台帳→業種のマスター）の _DAMODARAN_TV_G（セクター別）
     3. デフォルト 3.0%
     """
     _DEFAULT_TV_G = 0.03

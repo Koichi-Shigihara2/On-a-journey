@@ -185,10 +185,13 @@ def _load_sector_tables() -> dict:
     """{"exceptions": {T: 業種}, "master": {T: 業種}}（初回に読んで保持。読めなければ空）"""
     if _sector_tables:
         return _sector_tables
-    tables = {"exceptions": {}, "master": {}}
+    tables = {"exceptions": {}, "master": {}, "terminal_growth": {}}
     try:
         with open(_EXCEPTIONS_PATH, encoding="utf-8") as f:
-            tables["exceptions"] = {t: e["industry"] for t, e in (json.load(f).get("damodaran_industry") or {}).items()}
+            _led = json.load(f)
+            tables["exceptions"] = {t: e["industry"] for t, e in (_led.get("damodaran_industry") or {}).items()}
+            # 永久成長率の例外（業種の規則と違う値を残す銘柄。理由つき）。maturity_config が読む
+            tables["terminal_growth"] = {t: float(e["value"]) for t, e in (_led.get("terminal_growth") or {}).items()}
     except (OSError, ValueError, KeyError, TypeError) as e:
         logger.warning("sector_exceptions.json を読めません: %s", e)
     try:
@@ -199,6 +202,11 @@ def _load_sector_tables() -> dict:
         logger.warning("sector_master.json を読めません: %s", e)
     _sector_tables.update(tables)
     return _sector_tables
+
+
+def terminal_growth_exception(ticker: str) -> float | None:
+    """例外の台帳の永久成長率（無ければ None＝業種の規則）"""
+    return _load_sector_tables()["terminal_growth"].get(ticker)
 
 
 def industry_for_ticker(ticker: str) -> str | None:
