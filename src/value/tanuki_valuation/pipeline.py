@@ -2600,6 +2600,16 @@ class TanukiValuationPipeline:
                     if _gs_growth_model == "median" and _gs_rec_median is not None:
                         L.append(f"  中央値ベース:          {_gs_rec_median*100:.1f}%")
                     L.append(f"  最終推奨値:            {_gs_rec_g*100:.1f}%")
+            # 段2（GROWTH-SANITY-CONTINUITY-1）: 推奨成長率の候補に入れた会社の今の伸びと2年CAGR
+            _gs_ttm_yoy = growth_sanity.get("ttm_rev_yoy")
+            _gs_cagr2 = growth_sanity.get("rev_cagr_2yr")
+            if _gs_ttm_yoy is not None or _gs_cagr2 is not None:
+                _cand_txt = []
+                if _gs_ttm_yoy is not None:
+                    _cand_txt.append(f"今の伸び(TTM売上の前年比) {_gs_ttm_yoy * 100:.1f}%")
+                if _gs_cagr2 is not None:
+                    _cand_txt.append(f"2年CAGR {_gs_cagr2 * 100:.1f}%")
+                L.append("推奨成長率の候補: " + " / ".join(_cand_txt))
             L.append(f"判定         : {gs_verdict}")
             if gs_ind and gs_bench is not None:
                 damo_tag = f" (Damodaran {gs_year})" if gs_year else ""
