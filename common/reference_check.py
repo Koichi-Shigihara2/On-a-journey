@@ -10,7 +10,7 @@
    - 調べない: 「data/」で始まるもの（各サブシステムの data/ からの相対の書き方で、どこからの相対か決められない）、
      .gitignore で除外されるもの（手元にしか無い）、SKIP_LINE_RE の言葉（削除・廃止・予定 等）がある行・打ち消し線（~~…~~）の中
      （消したもの・これから作るものを書いた行）
-   - 過去の記録（BACKLOG_DONE.md・FINDINGS.md・日付の記録の PROJECT_STATUS.md・CLAUDE_CODE_START.md の引き継ぎサマリー・
+   - 過去の記録（BACKLOG_DONE.md・FINDINGS.md・日付の記録の PROJECT_STATUS.md・docs/history/CLAUDE_CODE_START_HISTORY.md・
      docs/architecture/ の archive・BUNDLING_*・output_inventory）は対象外
 2. consumer_claims: モジュールの説明文が「消費者（読み手）がいない」と書くのに、出力の一覧（docs/architecture/output_inventory/*_layer.json）
    ではそのフォルダの出力をフォルダの外の本番のコード・画面が読んでいるもの
@@ -30,11 +30,12 @@ from typing import Dict, List, Optional, Set, Tuple
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DOC_FILES = ["SYSTEM_MAP.md", "CHAT_RULES.md", "CLAUDE_CODE_START.md"]
+DOC_FILES = ["SYSTEM_MAP.md", "CHAT_RULES.md", "CLAUDE_CODE_START.md", "CLAUDE_CODE_PROCEDURES.md"]
 DOC_GLOBS = ["docs/architecture/*.md", "docs/architecture/*/*.md"]
 DOC_EXCLUDE_RE = re.compile(r"(^|/)(archive|output_inventory)/|BUNDLING_")
-# CLAUDE_CODE_START.md は引き継ぎサマリー（日付の記録）の後の、手順・ルールの部分だけ
-DOC_START_HEADING = {"CLAUDE_CODE_START.md": "## 毎回の作業開始時に必ず実行すること"}
+# 2026-11-06 に CLAUDE_CODE_START.md を細くした（日付の記録は docs/history/CLAUDE_CODE_START_HISTORY.md、手順・ルールは CLAUDE_CODE_PROCEDURES.md）。
+# 今の2ファイルは全体が現在の状態・手順なので、途中から調べる指定は無い（以前は START の『## 毎回の作業開始時に…』より前＝日付の記録を外していた）
+DOC_START_HEADING: Dict[str, str] = {}
 SKIP_LINE_RE = re.compile(r"削除|廃止|消した|やめた|移した|移設|無くなった|なくなった|予定|未実装|名前を変えた|置き換え|旧|まだ無い|例[:：]|（例")
 STRIKE_RE = re.compile(r"~~.*?~~")
 CLAIM_RE = re.compile(r"消費者(?:は|が)?(?:まだ)?(?:存在しない|いない|なし)|消費者なし|本番消費者は存在しない")

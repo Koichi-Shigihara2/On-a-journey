@@ -11,7 +11,7 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-06 終業の2回目 更新〈それまでは2026-11-06 終業の1回目〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」の「確かめる順」が正）**:
+**次の作業（2026-11-06 終業の2回目 更新〈それまでは2026-11-06 終業の1回目〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。2026-11-06からCLAUDE_CODE_START.mdは細くし、履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
 1. 11-07（土）: 手順26の残り（MACRO PULSEの週1回の回の`05_fed_context.csv`の`fomc_date_source`）【Sonnet】
 2. 11-08（日）: SEC_Data_Updateの後に手順5（V）・手順25（cf_lines）・手順28（業種のマスターのSIC・各部品の作り直し）【Sonnet】
 3. 束ね【Opus】（FINDINGS.mdの未登録の行、`docs/common/`の出力が出力の一覧のどの段階にも入らない件を優先）
