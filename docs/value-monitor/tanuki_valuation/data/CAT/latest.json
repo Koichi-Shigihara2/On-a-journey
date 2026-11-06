@@ -1,50 +1,50 @@
 {
-  "intrinsic_value_per_share": 329.75446801805145,
-  "intrinsic_value_beta": 198.09,
-  "upside_percent_beta": -64.2,
-  "intrinsic_value_rf": 1492.61,
-  "upside_percent_rf": 169.6,
+  "intrinsic_value_per_share": 309.85802620882635,
+  "intrinsic_value_beta": 190.0,
+  "upside_percent_beta": -65.7,
+  "intrinsic_value_rf": 1183.19,
+  "upside_percent_rf": 113.7,
   "intrinsic_value_rf_rate": 0.04836999893188477,
-  "v0": 120554370290.90129,
+  "v0": 116836199940.19965,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
   "alpha_was_capped": true,
   "future_values": {
-    "1年後": 362.07,
-    "2年後": 397.56,
-    "3年後": 436.52,
-    "4年後": 479.31,
-    "5年後": 526.29
+    "1年後": 340.23,
+    "2年後": 373.58,
+    "3年後": 410.19,
+    "4年後": 450.4,
+    "5年後": 494.54
   },
   "return_metrics": {
     "1年後": {
-      "future_value": 362.07,
+      "future_value": 340.23,
       "value_growth_pct": 9.8,
-      "expected_return_pct": -34.6
+      "expected_return_pct": -38.5
     },
     "2年後": {
-      "future_value": 397.56,
+      "future_value": 373.58,
       "value_growth_pct": 20.6,
-      "expected_return_pct": -28.2
+      "expected_return_pct": -32.5
     },
     "3年後": {
-      "future_value": 436.52,
+      "future_value": 410.19,
       "value_growth_pct": 32.4,
-      "expected_return_pct": -21.2
+      "expected_return_pct": -25.9
     },
     "4年後": {
-      "future_value": 479.31,
+      "future_value": 450.4,
       "value_growth_pct": 45.4,
-      "expected_return_pct": -13.4
+      "expected_return_pct": -18.6
     },
     "5年後": {
-      "future_value": 526.29,
+      "future_value": 494.54,
       "value_growth_pct": 59.6,
-      "expected_return_pct": -4.9
+      "expected_return_pct": -10.7
     }
   },
-  "upside_percent": -40.4,
-  "calculation_date": "2026-11-06T13:11:30+09:00",
+  "upside_percent": -44.0,
+  "calculation_date": "2026-11-06T14:05:14+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -62,19 +62,19 @@
   "sensitivity": {
     "matrix": [
       [
-        331.19,
-        398.42,
-        467.15
+        303.76,
+        370.39,
+        438.49
       ],
       [
-        274.2,
-        329.75,
-        385.01
+        254.19,
+        309.86,
+        365.22
       ],
       [
-        231.46,
-        278.35,
-        323.73
+        216.29,
+        263.67,
+        309.52
       ]
     ],
     "wacc_values": [
@@ -105,15 +105,15 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.069,
-      "intrinsic_value_per_share": 277.51
+      "intrinsic_value_per_share": 260.6
     },
     "base": {
       "growth_rate": 0.098,
-      "intrinsic_value_per_share": 329.75
+      "intrinsic_value_per_share": 309.86
     },
     "bull": {
       "growth_rate": 0.118,
-      "intrinsic_value_per_share": 368.41
+      "intrinsic_value_per_share": 346.29
     }
   },
   "growth_options": {
@@ -124,9 +124,9 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 120554370290.90129,
+    "v0": 116836199940.19965,
     "pv_high_growth": 47506331751.06683,
-    "pv_terminal": 73048038539.83446,
+    "pv_terminal": 69329868189.13281,
     "high_growth_detail": [
       {
         "year": 1,
@@ -165,11 +165,11 @@
         "pv": 7309059079.529456
       }
     ],
-    "terminal_fcf": 15930013560.89751,
-    "terminal_value": 154570284891.30127,
-    "v0_rm": 181076848483.45184,
+    "terminal_fcf": 15852683397.980532,
+    "terminal_value": 146702604090.14,
+    "v0_rm": 171930953803.30133,
     "pv_fcf_rm": 52618600475.883514,
-    "pv_tv_rm": 128458248007.56833
+    "pv_tv_rm": 119312353327.41782
   },
   "fcf_base": {
     "base_fcf": 8825400000.0,
@@ -221,7 +221,7 @@
       "total_transient_amount": 599000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業再編に伴う典型的な一時的費用であるため、transientと判断。"
+        "reasoning": "すべての項目の理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。"
       }
     },
     "action": "flagged",
@@ -364,13 +364,13 @@
     "_beta_source": "beta_config()",
     "high_growth_rate_used": 0.09801284427146514,
     "high_growth_years": 6,
-    "terminal_growth_used": 0.03,
+    "terminal_growth_used": 0.025,
     "moat_score": 0.359,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 6,
     "pv_high": 47506331751.06683,
-    "pv_terminal": 73048038539.83446,
+    "pv_terminal": 69329868189.13281,
     "roe_used": 0.3412824297368841,
     "fcf_floor_applied": 0.0,
     "fcf_floor_used_in_base": false,
@@ -404,7 +404,7 @@
     "insider_latest_date": "2026-11-03",
     "revenue_ttm": 74729000000,
     "revenue_ttm_end": "2026-06-30",
-    "analyst_vs_iv": 163.7,
+    "analyst_vs_iv": 180.6,
     "max_eps": 23.7277,
     "max_eps_per": 23.3,
     "max_eps_reliability": "HIGH",
@@ -417,11 +417,11 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "(V₀ $181.08B + RPO $0.00B + GO $0.00B) / 0.460B + BS $-64.17/株 = $329.75 (差異0.00%、α=0.700は参考値・P_t未乗算)"
+        "detail": "(V₀ $171.93B + RPO $0.00B + GO $0.00B) / 0.460B + BS $-64.17/株 = $309.86 (差異0.00%、α=0.700は参考値・P_t未乗算)"
       },
       "dcf_components": {
         "pass": true,
-        "detail": "2段階: pv_high $47.51B + pv_terminal $73.05B = $120.55B (差異0.00%)"
+        "detail": "2段階: pv_high $47.51B + pv_terminal $69.33B = $116.84B (差異0.00%)"
       },
       "formula_verification": {
         "pass": true,
@@ -436,14 +436,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.09801284427146514,
-  "required_growth_rf_base": -0.1830226878816742,
+  "required_growth_rf_base": -0.12723263492871706,
   "risk_free_rate_live": 0.04836999893188477,
   "risk_free_rate_live_date": "2026-11-05",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.12452620356126598,
+  "required_growth_rf_live": -0.08044917995268108,
   "tanuki_score": "TRIM",
   "funda_score": 80,
-  "score_comment": "割高(-40%超)、FCF黒字、売上安定成長",
+  "score_comment": "割高(-44%超)、FCF黒字、売上安定成長",
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -457,6 +457,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-2",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -466,7 +467,8 @@
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
     "GROWTH-SANITY-CONTINUITY-1-2",
-    "SECTOR-MASTER-ADOPT-1-1"
+    "SECTOR-MASTER-ADOPT-1-1",
+    "SECTOR-MASTER-ADOPT-1-2"
   ],
   "fcf_history": [
     {

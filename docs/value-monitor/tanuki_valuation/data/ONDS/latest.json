@@ -1,50 +1,50 @@
 {
-  "intrinsic_value_per_share": 2.7919071172087304,
-  "intrinsic_value_beta": 2.55,
+  "intrinsic_value_per_share": 2.767168203017133,
+  "intrinsic_value_beta": 2.54,
   "upside_percent_beta": -43.7,
-  "intrinsic_value_rf": 4.06,
-  "upside_percent_rf": -10.2,
+  "intrinsic_value_rf": 3.71,
+  "upside_percent_rf": -17.9,
   "intrinsic_value_rf_rate": 0.04836999893188477,
-  "v0": 103208327.2739851,
+  "v0": 100787539.64587025,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 3.63,
-    "2年後": 4.72,
-    "3年後": 6.13,
-    "4年後": 7.97,
-    "5年後": 8.21
+    "1年後": 3.6,
+    "2年後": 4.68,
+    "3年後": 6.09,
+    "4年後": 7.91,
+    "5年後": 8.11
   },
   "return_metrics": {
     "1年後": {
-      "future_value": 3.63,
-      "value_growth_pct": 30.1,
-      "expected_return_pct": -19.7
+      "future_value": 3.6,
+      "value_growth_pct": 30.0,
+      "expected_return_pct": -20.4
     },
     "2年後": {
-      "future_value": 4.72,
-      "value_growth_pct": 69.2,
-      "expected_return_pct": 4.4
+      "future_value": 4.68,
+      "value_growth_pct": 69.0,
+      "expected_return_pct": 3.5
     },
     "3年後": {
-      "future_value": 6.13,
-      "value_growth_pct": 119.7,
-      "expected_return_pct": 35.6
+      "future_value": 6.09,
+      "value_growth_pct": 119.9,
+      "expected_return_pct": 34.7
     },
     "4年後": {
-      "future_value": 7.97,
-      "value_growth_pct": 185.7,
-      "expected_return_pct": 76.3
+      "future_value": 7.91,
+      "value_growth_pct": 185.6,
+      "expected_return_pct": 75.0
     },
     "5年後": {
-      "future_value": 8.21,
-      "value_growth_pct": 194.3,
-      "expected_return_pct": 81.6
+      "future_value": 8.11,
+      "value_growth_pct": 192.8,
+      "expected_return_pct": 79.4
     }
   },
-  "upside_percent": -38.2,
-  "calculation_date": "2026-11-06T13:07:11+09:00",
+  "upside_percent": -38.8,
+  "calculation_date": "2026-11-06T13:58:28+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -62,19 +62,19 @@
   "sensitivity": {
     "matrix": [
       [
-        2.7,
-        2.87,
-        3.11
+        2.67,
+        2.83,
+        3.06
       ],
       [
-        2.65,
-        2.79,
-        2.99
+        2.63,
+        2.77,
+        2.96
       ],
       [
-        2.61,
-        2.74,
-        2.9
+        2.6,
+        2.72,
+        2.88
       ]
     ],
     "wacc_values": [
@@ -105,15 +105,15 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.21,
-      "intrinsic_value_per_share": 2.69
+      "intrinsic_value_per_share": 2.67
     },
     "base": {
       "growth_rate": 0.3,
-      "intrinsic_value_per_share": 2.79
+      "intrinsic_value_per_share": 2.77
     },
     "bull": {
       "growth_rate": 0.36,
-      "intrinsic_value_per_share": 2.87
+      "intrinsic_value_per_share": 2.84
     }
   },
   "growth_options": {
@@ -124,9 +124,9 @@
   },
   "maturity_profile": null,
   "dcf_components": {
-    "v0": 103208327.2739851,
+    "v0": 100787539.64587025,
     "pv_high_growth": 35693775.31416994,
-    "pv_terminal": 67514551.95981516,
+    "pv_terminal": 65093764.33170031,
     "high_growth_detail": [
       {
         "year": 1,
@@ -153,11 +153,11 @@
         "pv": 10192730.902671123
       }
     ],
-    "terminal_fcf": 20736431.267539002,
-    "terminal_value": 133353255.73980066,
-    "v0_rm": 245894049.70795313,
+    "terminal_fcf": 20635768.9798325,
+    "terminal_value": 128571769.34475078,
+    "v0_rm": 231488513.20385668,
     "pv_fcf_rm": 43561741.53678027,
-    "pv_tv_rm": 202332308.17117286
+    "pv_tv_rm": 187926771.6670764
   },
   "fcf_base": {
     "base_fcf": 4058480.0,
@@ -191,7 +191,7 @@
       "total_transient_amount": 15300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "市場金利変動によるローン公正価値の評価損益で、事業運営とは無関係な一時的な金融要因によるもの。"
+        "reasoning": "市場金利変動による金融資産の評価損益であり、事業運営の本質的な問題ではなく外部要因による一時的な評価替えに過ぎない。"
       }
     },
     "action": "excluded",
@@ -332,13 +332,13 @@
     "_beta_source": "beta_config(Telecom_Equipment)",
     "high_growth_rate_used": 0.3,
     "high_growth_years": 4,
-    "terminal_growth_used": 0.03,
+    "terminal_growth_used": 0.025,
     "moat_score": 0.1136,
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 4,
     "pv_high": 35693775.31416994,
-    "pv_terminal": 67514551.95981516,
+    "pv_terminal": 65093764.33170031,
     "roe_used": -0.6059836595491378,
     "fcf_floor_applied": 61697750.4,
     "fcf_floor_used_in_base": true,
@@ -372,7 +372,7 @@
     "insider_latest_date": "2026-10-20",
     "revenue_ttm": 174103430,
     "revenue_ttm_end": "2026-06-30",
-    "analyst_vs_iv": 562.6,
+    "analyst_vs_iv": 568.6,
     "max_eps": 0.7411,
     "max_eps_per": 6.1,
     "max_eps_reliability": "HIGH",
@@ -385,7 +385,7 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "(V₀ $0.25B + RPO $0.00B + GO $0.00B) / 0.582B + BS $+2.37/株 = $2.79 (差異0.00%、α=0.000は参考値・P_t未乗算)"
+        "detail": "(V₀ $0.23B + RPO $0.00B + GO $0.00B) / 0.582B + BS $+2.37/株 = $2.77 (差異0.00%、α=0.000は参考値・P_t未乗算)"
       },
       "dcf_components": {
         "pass": true,
@@ -403,18 +403,18 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": 0.3634964018353035,
+  "required_growth_rf_base": 0.4566073552622951,
   "risk_free_rate_live": 0.04836999893188477,
   "risk_free_rate_live_date": "2026-11-05",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.46112426090532366,
+  "required_growth_rf_live": 0.5346867236597497,
   "tanuki_score": "WATCH",
   "funda_score": 50,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
   "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "TRIM",
-  "pre_rounding_comment": "割高(-38%超)、FCFマイナス（投資フェーズ）、売上成長加速",
+  "pre_rounding_comment": "割高(-39%超)、FCFマイナス（投資フェーズ）、売上成長加速",
   "rounded_by_policy": "A",
   "matrix": {
     "matrix": "①投資効率系",
@@ -424,6 +424,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-2",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -433,7 +434,8 @@
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
     "GROWTH-SANITY-CONTINUITY-1-2",
-    "SECTOR-MASTER-ADOPT-1-1"
+    "SECTOR-MASTER-ADOPT-1-1",
+    "SECTOR-MASTER-ADOPT-1-2"
   ],
   "fcf_history": [
     {
