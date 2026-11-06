@@ -122,7 +122,7 @@ def test_mappings_match_existing_names():
     import maturity_config as mc
     from src.market.market_pulse.sector_rotation import SECTOR_MAP
     assert sm.ETF_BY_SECTOR == SECTOR_MAP
-    known = set(gs.SECTOR_TO_DAMODARAN.values()) | set(gs.TICKER_INDUSTRY_OVERRIDES.values()) | set(mc._DAMODARAN_TV_G)
+    known = set(gs.SECTOR_TO_DAMODARAN.values()) | set(gs._load_sector_tables()["exceptions"].values()) | set(mc._DAMODARAN_TV_G) | {"Tobacco"}  # Tobacco: MOの業種（以前はTICKER_INDUSTRY_OVERRIDESにあった。fundgrEB.xlsに実在、GROWTH-SANITY-CLASS-SYNC-1で確認済み）
     assert set(sm.DAMODARAN_BY_INDUSTRY.values()) <= known
     eps_names = {s["name"] for s in yaml.safe_load(open(os.path.join(REPO, "config", "sectors.yaml"), encoding="utf-8"))["sectors"]}
     assert set(sm.EPS_CATEGORY_BY_SECTOR.values()) | set(sm.EPS_CATEGORY_BY_INDUSTRY.values()) <= eps_names

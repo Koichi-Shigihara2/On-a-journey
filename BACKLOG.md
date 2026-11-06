@@ -2101,48 +2101,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-### [GROWTH-SANITY-CONTINUITY-1] 推奨成長率（check_growth_sanity）が候補を閾値で入れる・捨てるため、候補の数が変わる境目で中央値が飛ぶ。業種のベンチマークが初めて付く銘柄（LOAR −90%）・RR×ROICの1%の境目（MRVL 11.4%→22.5%）・偶数個/奇数個の切り替わり・今の伸びの一時的な高さ（SNPS買収・JOBYの底上げ・XOMの原油）
-**型・処置:** 型B（規則の境目で値が飛ぶ）・根治策
-**優先度:** 高（理論株価の中心の入力。[[SECTOR-MASTER-ADOPT-1]]の段1・段2はこの件の後）
-**分類:** TANUKI VALUATION / `src/value/tanuki_valuation/growth_sanity.py::check_growth_sanity`（推奨成長率の候補・中央値・逓減モデルへの切り替え・上限）とpipeline.pyの上書き
-**登録日:** 2026-11-06
-**着手条件:** なし（STEP 0＝設計の案と試算から。実装は案の決定の後）
-**発見:** [[SECTOR-MASTER-ADOPT-1]]の段1の確かめ（2026-11-06）と、その前の案a（会社の今の伸びを候補に足す）の試算
-
-#### 中身
-- 段1（Damodaranの業種を写像に寄せる）で、業種のベンチマークが初めて付く銘柄の推奨成長率が変わる（LOAR 73.76→7.34、−90%。候補が1つから2つになり、上書きが初めて効く）
-- 案a（候補に会社の今の伸び〈TTMの売上の前年比〉・2年CAGRを足し、RR×ROICは1%未満を外し、中央値を取る）の試算は、理論株価49銘柄・判定4（HQY・LOAR・RMBS・V）で、見込み（48前後・判定3）と違った。**案aは採らずに止めた**（実装は未commit、スクラッチパッドに保存）
-  - 上位10銘柄の所見: JOBY +128%（今の伸び118,568%・2年CAGR620%の底上げ効果、推奨成長率が上限50%）、MRVL +56%（RR×ROIC 0.8%が1%未満で外れ、候補が3つになって中央値が11.4%→22.5%）、XOM +36%（今の9.1%は原油価格の戻り）、SNPS +22%（今の伸び49.5%はAnsys買収の外部成長）、LLY・DOCN・FICO・GTLB・ABBV・LOARは実績に照らして妥当
-  - 規則の飛び3つ: ①新しい候補が逓減モデルのトリガー（TTM・3年CAGR・5年CAGRのいずれか50%超）に入っておらず、JOBY・CRWVのように年次のCAGRが無い銘柄は今の伸びが中央値に直接入る ②RR×ROICの1%の境目で候補の数が変わり（MRVL 0.8%・XOM 0.8%・ABBV 0.9%・V 0.6%は外れ、RMBS 1.3%は残る）偶数個/奇数個の切り替わりで中央値が飛ぶ ③外部成長・底上げ効果・景気循環の戻りで今の伸びが一時的に高い
-  - 案1〜3: 案1＝今の伸び・2年CAGRは年次の裏づけ（3年・5年CAGRの最大の2倍以内）があるときだけ候補にし、逓減モデルのトリガーにも入れる／案2＝1つ前の点の売上が一定額未満なら今の伸びと2年CAGRを使わない／案3＝RR×ROICの1%の除外を取り下げる。（このSTEP 0の依頼で、境目を作らない形の案に作り直す）
-- 今の`check_growth_sanity`にも同じ型が残っている（候補の数が`_min_rec_candidates`の2に届くかで推奨成長率がNoneか値か、`industry_g > 0`の正負で候補に入るか、`_trigger_max > 0.50`で逓減モデルと中央値モデルが切り替わる、上限`max(業種×3, 50%)`）
-
-#### 設計の第一条件
-入力が少し変わったときに推奨成長率が少しだけ変わる（境目で値が飛ばない）こと。段1bの下限・CVの境目（FINDINGS 2026-11-04の行）と同じ型を繰り返さない
-
-#### 進め方
-1. STEP 0（設計の案）: 今の`check_growth_sanity`の全体を図に起こし、境目で値が飛ぶ箇所を全部挙げる。境目を作らない形の案を2〜3（候補を捨てずに裏づけの強さで重みをつける／上下の幅に収める／逓減モデルと中央値モデルを1つの式でつなぐ）。各案の連続性の確かめ（入力を少しずつ動かして、LOAR・MRVL・JOBY・SNPS・XOMで）と、全銘柄の試算（今の業種のまま）
-2. 案の決定（チャット側）→実装・公開（計算方法の変更の手順、scopeのID `GROWTH-SANITY-CONTINUITY-1`）
-3. [[SECTOR-MASTER-ADOPT-1]]の段1・段2は、この件の公開の後に出す（段1の例外の台帳と案tは、そのときに一緒に出す）
-
-#### 決定（チャット側、2026-11-06）と段1の結果
-- 決定: (a) 中央値→重み付き平均 (b) 負のCAGRは0として入れる (c) 候補の不足は max(p1, 0) で埋める（場合分けをしない） (d) RR×ROICと業種の重みの傾斜はどちらも0〜5%（1つの定数 `WEIGHT_RAMP`）、今の伸びの上限は年次の最大＋10pt（段2で使う）
-- **段1 実装済み（2026-11-06）**: 候補は今のまま（売上CAGR 3年・5年・RR×ROIC・業種）で境目だけ連続にした。`growth_sanity.py`の定数は1か所（WEIGHT_RAMP・FILL_WEIGHT・GROWTH_MEASURE_CAP・DECAY_BLEND_LO/HI・DECAY_END_DEFAULT、理由はコメント）。符号のゲートをやめ負のCAGRを0で入れる／RR×ROIC・業種は0〜5%で重み0→1／候補の重みの合計2に届くまで max(p1,0) で埋める（候補2件未満でNoneにならない・floor例外も不要）／逓減モデルへの切り替えを tmax 0.50〜0.70 のなだらかな混合 s に／taperの終点を `tapering_g_end = rec − s·(rec − 業種)`（業種が0以下は0、s=0は逓減なし）に。floor_hit・verdict は旧規則の『推奨成長率なし』で判定（表示は変えない）
-- 連続性のテスト `tests/test_growth_sanity_continuity.py`（J1〜J7、1刻みあたりの動きの上限10倍。旧コードでは8件失敗）。既存の `tests/test_pipeline_logic.py::TestRecommendedGrowth` は中央値の期待値を重み付き平均の期待値に書き換えた
-- 試算（手元、前後同条件、scopeのID `GROWTH-SANITY-CONTINUITY-1-1`）: 理論株価が変わる38銘柄・判定4（HQY BUY→WATCH・LOAR WATCH→HOLD 73.76→72.97・MO HOLD→TRIM 57.06→51.19・RMBS WATCH→BUY）、保有9銘柄は変化0。見込み（ELF BUY→WATCHを含む5）との違いはELFが BUY→BUY のまま（181.98→143.27、重みの傾斜を業種も5%にしたため）。taperの連続化だけの差はS（17.66→20.04、混合の途中）とRDW（5.91→6.19）の2銘柄
-- **公開（2026-11-06、8f26c32315）**: TANUKI 42141498707 → HypeCore 42143252923 → TANUKI 42143521063 すべて success。1回目のTANUKIは試算と96銘柄で理論株価・推奨成長率・判定・funda・乖離率が一致、印（method_change=GROWTH-SANITY-CONTINUITY-1-1）は95銘柄、2回目は印0。3回目はHypeCoreのstageを読んで timing が動き、判定が7銘柄（CDNS・HEI・MSFT・SNPS・TDY HOLD→TRIM、FCX HOLD→SELL、TSLA WATCH→SELL）変わった（理論株価・funda・乖離率は不変＝読み合いによる相場側の変化）。Discordの🛠の文面は実行ログでは確認できず未確認
-- **段2 実装済み（2026-11-06、scopeのID `GROWTH-SANITY-CONTINUITY-1-2`）**: 候補に2年CAGR（年次が3点の銘柄、重み0.5）と会社の今の伸び（Layer3のTTMの売上の前年比、年次の最大＋10ptで上を切る連続のmin）を足し、成長の測り（CAGR・今の伸び）は基準の売上が5,000万ドル未満なら重みを0→1に連続で下げる。定数は `growth_sanity.py` の1か所（GROWTH_BASE_REVENUE_FULL・CAGR_2YR_WEIGHT・TTM_GROWTH_EXCESS_CAP）。埋め先は段1のまま max(p1, 0)（決定、場合分けを作らない）。pipelineはTTM系列（ttm_calculatorの1か所で作った点）の最新と1年前の売上から今の伸びと基準の売上を渡す。連続性のテストに今の伸び・基準の売上・2年CAGRの境目（K1〜K4）を足した
-- 段2の試算（段1の公開の後を前に、手元）: 理論株価52銘柄・判定5（CPRT HOLD→TRIM・FICO HOLD→WATCH・LLY TRIM→HOLD・LOAR HOLD→TRIM・SNPS TRIM→HOLD）、保有9銘柄は変化0。動きの大きい順に QBTS −53%（基準の売上が小さく測りの重みが下がり、p1 −44% を max(p1,0)=0 で埋めた人工的な値。決定により場合分けしない）・FICO +52%・LOAR −47%・LLY +39%・DELL +26%・CAT +24%・MRVL +21%・LRCX +19%
-- 本項目の移設の所見: 段1・段2で第一条件（境目で飛ばない）を満たした。残る J8（年次の点の数が3→4→6で候補が増える。入力でなくデータの到着で、重みの合計は連続に近づける作りにした）・J9（p1の上限0.50は上流の頭打ち。逓減の窓を0.50から上に置いて吸収）・J10（verdict・floor_hitの旧規則の閾値。表示だけ）は推奨成長率の値の飛びではないので、FINDINGSの行にして移設してよい（移設はチャット側の判断）
-- [[SECTOR-MASTER-ADOPT-1]] の段1・段2の着手条件「[[GROWTH-SANITY-CONTINUITY-1]]の公開の後」は満たした（段1の例外の台帳・案tは、そのとき一緒に出す）
-- **段2の公開（2026-11-06、8ed5a5267c）**: TANUKI 42147371188 → HypeCore 42149210392 → TANUKI 42149429093 すべて success。1回目は試算と96銘柄で理論株価・推奨成長率・判定・funda・乖離率が一致、印（GROWTH-SANITY-CONTINUITY-1-2）は96銘柄、2回目は印0・試算と一致のまま（HypeCoreを読んでも判定の動きなし）。Discordの🛠は実行ログでは確認できず未確認。rev_cagr_2yr・ttm_rev_yoy がWARN-INV-6（読み手なし）になったため、report.txtの[4. 成長率根拠]に『推奨成長率の候補』の行を足して読み手にした（表示だけ、値は不変）
-- 埋め先（QBTSのように基準の売上が小さく p1 が負の銘柄）は max(p1, 0) のまま（チャット側の決定 2026-11-06）
-
-#### 投資判断への影響
-あり（理論株価の中心の入力。セグメント未設定の銘柄は推奨成長率でDCFの成長率が上書きされる）
-
-#### 規模の見込み
-中
+（[[GROWTH-SANITY-CONTINUITY-1]]は2026-11-06、段1・段2を実装・公開済みで完了、BACKLOG_DONE.md「2026-11-06（完了）」参照）
 
 ---
 
@@ -2434,8 +2393,8 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 寄せるのはTANUKI・EPS ANALYZERを1つずつ。全銘柄の試算（理論株価・判定・調整後EPS・STONKS）と、計算方法の変更の手順（`CLAUDE_CODE_START.md`「計算方法の変更の手順」）で公開する。見込み: TANUKIは4・5のDamodaranの業種（手で書いた業種が写像の結果に変わる銘柄と、業種が新しく付く43銘柄）で推奨成長率→理論株価・判定が変わりうる。EPS ANALYZERは業種の出ない41銘柄に区分が付き、業種別の除外が効き始める（調整後EPS→TANUKIの最大EPSに波及しうる）。STONKSの金融ガード・Market PulseのETFは同じ見込み
 
 #### 寄せる段（STEP 0 2026-11-06、手元の試算。段ごとに公開する）
-- 段1（TANUKIのDamodaranの業種→写像、例外の台帳）: 未。**[[GROWTH-SANITY-CONTINUITY-1]]の後に、案tと一緒に出す**（案a〈今の伸びを候補に足す〉は試算で飛びが見つかり採らずに止めた、2026-11-06）。例外の台帳に残すのはAPP・META・NET・CIX・KULR・PAYS（チャット側の決定 2026-11-06）、ABBV・ASTS・CRWV・HQYは写像に寄せる、`TICKER_INDUSTRY_OVERRIDES`の登録に無い9銘柄は消す。公開の前に成長率の確かめ（LOAR −90%等）を確かめる
-- 段2（永久成長率の直引き`_TICKER_TV_G`・Phase2の上限`_mega_tech_tickers`→業種の規則）: 未。段1の後（[[GROWTH-SANITY-CONTINUITY-1]]の後）
+- 段1（TANUKIのDamodaranの業種→写像、例外の台帳）: **実装済み（2026-11-06、scope `SECTOR-MASTER-ADOPT-1-1`。公開の結果は下）**。`config/sector_exceptions.json`（理由つき6銘柄: APP・META・NET・CIX・KULR・PAYS）→業種のマスターの写像の順で `growth_sanity.industry_for_ticker` が引く。手書きの `TICKER_INDUSTRY_OVERRIDES`（35銘柄、登録に無い9銘柄を含む）と `beta_config.overrides.sector` の読みをやめた。案t（逓減の終点は業種が正のときだけ、0以下は0）は [[GROWTH-SANITY-CONTINUITY-1]] 段1で入っている（`max(業種, 0)`・`tapering_g_end`）。永久成長率（型D）は段2に回した: `maturity_config` の業種の経路は VST の2.0%だけで使われていたので VST を `_TICKER_TV_G` に移し値を変えない。マスターの業種を永久成長率に使うと21銘柄が動く（試算: VZ −28%・ENTG +9%・PEP −8%・DELL +8%…、判定2〈HQY・RMBS〉）ため段2で決める。試算（成長率の段2の公開の後を前に）: 業種が新しく付く42銘柄を含む46銘柄で業種が変わり、理論株価29銘柄・判定6（FICO WATCH→BUY・HQY WATCH→HOLD・IOT HOLD→TRIM・RBRK HOLD→TRIM・RMBS BUY→WATCH・ZETA BUY→WATCH）、保有9銘柄は変化0。LOAR −44%（推奨成長率 33→21%、業種10.9%が候補に入り重み合計 1.5→2.5）・RXRX −40%（業種が−1.6%で逓減の終点が10%→0%）・RCAT −26%（同、終点10%→10.9%）は飛びでなく候補・終点の変化。例外の台帳に残すのはAPP・META・NET・CIX・KULR・PAYS（チャット側の決定 2026-11-06）、ABBV・ASTS・CRWV・HQYは写像に寄せる、`TICKER_INDUSTRY_OVERRIDES`の登録に無い9銘柄は消す。公開の前に成長率の確かめ（LOAR −90%等）を確かめる
+- 段2（永久成長率の直引き`_TICKER_TV_G`・Phase2の上限`_mega_tech_tickers`→業種の規則）: 未。**次に着手**（段1の公開の後、[[GROWTH-SANITY-CONTINUITY-1]]は完了）
 - 段3（`financial_institution_config`→マスターの金融）: 未（先に進めてよい）。11-08のSICの保存の後なら変化0の見込み
 - 段4（EPS ANALYZERの区分→9区分の写像）: 未（先に進めてよい）。EPS ANALYZERの計算方法の変更として別に
 - 段5（TANUKI SCOREの画面の`CYCLICAL_KEYWORDS`→マスターの景気循環株）: **済 2026-11-06**。`common/sector_master.py`が区分だけを`docs/common/sector_class.json`に書き（公開はdocs/の下だけのため。同じ書き手・手で書かない）、画面はその`cyclical`を読む。表示だけ、CATが景気敏感に入る（TSLAは前から入っている）

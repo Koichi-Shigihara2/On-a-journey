@@ -170,46 +170,41 @@ _TICKER_BENCHMARK_OVERRIDES: dict[str, float] = {
                    # ※Damodaran Beverage (Soft) g_ebit=9.85%だが、デストック後の実力値として保守化
 }
 
-TICKER_INDUSTRY_OVERRIDES = {
-    # SICベース分類が実態と乖離 → 実態に近い業種に上書き
-    "APP":   "Software (System & Application)",   # SIC→Retail(General) を上書き
-    "CRM":   "Software (System & Application)",   # SIC→Prepackaged Software を上書き
-    "NOW":   "Software (System & Application)",   # SIC→Services-Prepackaged を上書き
-    "BILL":  "Software (System & Application)",   # SIC→Services-Computers を上書き
-    "SPOT":  "Entertainment",                     # SIC→Services-Radio を上書き
-    "MDB":   "Software (Internet)",               # SIC→Services-Prepackaged を上書き
-    "OKTA":  "Software (Internet)",               # SIC→Services-Prepackaged を上書き
-    "SHOP":  "Software (Internet)",               # SIC→Retail(General) を上書き
-    "SQ":    "Financial Svcs. (Non-bank & Insurance)",  # SIC→Services-Computers を上書き
-    "META":  "Software (Entertainment)",           # indname.xls実態分類（旧"Advertising"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "AMZN":  "Retail (General)",                   # indname.xls実態分類（旧"Software (System & Application)"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "NET":   "Software (Internet)",                # indname.xls実態分類（旧"Software (System & Application)"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "ZS":    "Software (System & Application)",   # SIC→Steel を上書き
-    "ANET":  "Telecom. Equipment",                # SIC→Telecom.Services を上書き
-    "ARM":   "Semiconductor",                     # SIC→Transportation を上書き
-    "S":     "Software (System & Application)",   # SIC→Utility(Water) を上書き
-    "DIS":   "Entertainment",                     # SIC→Real Estate を上書き
-    "CIX":   "Office Equipment & Services",       # indname.xls実態分類（旧"Electrical Equipment"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "AAPL":  "Computers/Peripherals",             # SIC→Software_Internet デフォルトを上書き。indname.xls実態分類
-    "ADBE":  "Software (System & Application)",   # Creative/Document Cloud SaaS
-    "BKNG":  "Hotel/Gaming",                       # indname.xls実態分類（旧"Software (Internet)"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "ADSK":  "Software (System & Application)",   # AEC/製造業向けSaaS
-    "CDNS":  "Software (System & Application)",   # EDA半導体設計ツール
-    "PAYS":  "Financial Svcs. (Non-bank & Insurance)",  # 小型FinTech・プリペイドカード
-    "INTU":  "Software (System & Application)",   # 税務・会計SaaS
-    "HEI":   "Aerospace/Defense",                 # 航空MRO部品・防衛電子機器
-    "HWM":   "Aerospace/Defense",                 # 航空エンジン精密部品
-    "HON":   "Diversified",                        # indname.xls実態分類（旧"Machinery"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "TDY":   "Electronics (General)",              # indname.xls実態分類（旧"Aerospace/Defense"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "KULR":  "Electrical Equipment",               # indname.xls実態分類（旧"Aerospace/Defense"はテストデータ。SECTOR-FCF-RATE-BROKEN-1）
-    "CEG":   "Power",                             # 原子力主体の規制電力会社
-    "VST":   "Power",                             # 原子力+ガス火力のハイブリッド電力会社
-    "SCCO":  "Metals & Mining",                   # ペルー・メキシコ中心の銅鉱山
-    "FCX":   "Metals & Mining",                   # グラスバーグ鉱山主力の銅生産会社
-    "MO":    "Tobacco",                           # beta_config.jsonにsector未設定のため業種ベンチマークがNoneだった
-                                                   # （GROWTH-SANITY-CLASS-SYNC-1調査で発見）。fundgrEB.xlsに
-                                                   # Tobacco業種が実在（g_ebit≈1.5%）することを確認済み
-}
+# ─────────────────────────────────────────────
+# 銘柄 → Damodaran業種（[[SECTOR-MASTER-ADOPT-1]] 段1、2026-11-06）
+# 以前は TICKER_INDUSTRY_OVERRIDES（手書きの35銘柄）と beta_config.overrides.sector（手書き35銘柄）の2か所だった。
+# 今は 1. 例外の台帳 config/sector_exceptions.json（理由つき、写像と違う銘柄だけ）→ 2. config/sector_master.json の
+# damodaran_industry（yfinanceのsector・industryからの写像、全銘柄）。どちらにも無い銘柄（登録前）は呼び出し側の sector → SECTOR_TO_DAMODARAN
+# ─────────────────────────────────────────────
+_EXCEPTIONS_PATH = os.path.join(_REPO_ROOT, "config", "sector_exceptions.json")
+_MASTER_PATH = os.path.join(_REPO_ROOT, "config", "sector_master.json")
+_sector_tables: dict = {}
+
+
+def _load_sector_tables() -> dict:
+    """{"exceptions": {T: 業種}, "master": {T: 業種}}（初回に読んで保持。読めなければ空）"""
+    if _sector_tables:
+        return _sector_tables
+    tables = {"exceptions": {}, "master": {}}
+    try:
+        with open(_EXCEPTIONS_PATH, encoding="utf-8") as f:
+            tables["exceptions"] = {t: e["industry"] for t, e in (json.load(f).get("damodaran_industry") or {}).items()}
+    except (OSError, ValueError, KeyError, TypeError) as e:
+        logger.warning("sector_exceptions.json を読めません: %s", e)
+    try:
+        with open(_MASTER_PATH, encoding="utf-8") as f:
+            tables["master"] = {t: e.get("damodaran_industry") for t, e in (json.load(f).get("tickers") or {}).items()
+                                if e.get("damodaran_industry")}
+    except (OSError, ValueError, TypeError) as e:
+        logger.warning("sector_master.json を読めません: %s", e)
+    _sector_tables.update(tables)
+    return _sector_tables
+
+
+def industry_for_ticker(ticker: str) -> str | None:
+    """例外の台帳 → 業種のマスターの写像の順でDamodaran業種名を返す（どちらにも無ければ None）"""
+    t = _load_sector_tables()
+    return t["exceptions"].get(ticker) or t["master"].get(ticker)
 
 
 # ─────────────────────────────────────────────
@@ -281,8 +276,8 @@ def get_industry_benchmark(ticker: str, sector: str | None) -> dict | None:
             "rr":       None,
         }
 
-    # 優先順位: ticker個別上書き > sector マッピング
-    industry_name = TICKER_INDUSTRY_OVERRIDES.get(ticker)
+    # 優先順位: 例外の台帳 > 業種のマスターの写像 > sector マッピング（登録前の銘柄）
+    industry_name = industry_for_ticker(ticker)
     if industry_name is None and sector:
         industry_name = SECTOR_TO_DAMODARAN.get(sector)
     if industry_name is None:

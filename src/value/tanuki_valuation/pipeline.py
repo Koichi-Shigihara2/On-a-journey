@@ -1087,7 +1087,7 @@ class TanukiValuationPipeline:
         _phase1_growth_source = valuation.get("growth", {}).get("source")  # GROWTH-FLOOR-VERDICT-1
         _annual_revs = self._load_annual_revenues(ticker)
         _g_fund = self._calc_g_fundamental(ticker)
-        _sector = self._load_beta_sector(ticker)
+        _sector = None   # [[SECTOR-MASTER-ADOPT-1]] 段1: 業種は例外の台帳＋業種のマスターから（beta_config.overrides.sector の手書きはやめた）
         _ttm_rev_yoy, _ttm_base_rev = self._load_ttm_revenue_yoy(ticker)   # 段2: 会社の今の伸びと基準の売上
         _hype_info   = self._load_hype_info(ticker)      # GROWTH-1
         _hype_phase  = _hype_info.get("phase")
@@ -3958,16 +3958,6 @@ class TanukiValuationPipeline:
         history.sort(key=lambda e: e.get("date", ""))
         with open(hist_path, "w", encoding="utf-8") as f:
             json.dump(history, f, ensure_ascii=False, indent=2)
-
-    def _load_beta_sector(self, ticker: str) -> str | None:
-        """beta_config.json の overrides[ticker].sector を返す（SECTOR_TO_DAMODARAN キー形式）"""
-        beta_path = os.path.join(self.repo_root, "config", "beta_config.json")
-        try:
-            with open(beta_path, encoding="utf-8") as f:
-                beta_cfg = json.load(f)
-            return beta_cfg.get("overrides", {}).get(ticker, {}).get("sector")
-        except Exception:
-            return None
 
     def _save_report(self, ticker: str, report_text: str) -> None:
         ticker_dir = os.path.join(self.output_dir, ticker)

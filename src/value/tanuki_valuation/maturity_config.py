@@ -105,6 +105,8 @@ _DAMODARAN_TV_G: Dict[str, float] = {
 # 新規銘柄追加時はここに追記する。
 # ============================================================
 _TICKER_TV_G: Dict[str, float] = {
+    # ── 電力（2.0%）。段1（SECTOR-MASTER-ADOPT-1）で TICKER_INDUSTRY_OVERRIDES の経路から移した。段2で業種の規則に寄せる ──
+    "VST": 0.02,
     # ── 半導体・フォトニクス（3.5%）──
     "NVDA": 0.035, "AMD": 0.035, "AMAT": 0.035,
     "MRVL": 0.035, "COHR": 0.035, "LITE": 0.035, "SITM": 0.035,
@@ -226,24 +228,15 @@ def _lookup_tv_g_by_industry(ticker: str) -> Optional[float]:
 
     優先順位:
     1. _TICKER_TV_G（ポートフォリオ銘柄直引きテーブル）
-    2. growth_sanity.TICKER_INDUSTRY_OVERRIDES → _DAMODARAN_TV_G
-       （TICKER_INDUSTRY_OVERRIDES はSIC誤分類銘柄のみ登録済み）
-    growth_sanity がテストでモック済みの場合は gracefully に None を返す。
+    2. （段2で業種の規則に寄せる。段1では直引きに無い銘柄は None → 3.0%）
     """
     # 直引きテーブルを優先
     tv_g = _TICKER_TV_G.get(ticker)
     if tv_g is not None:
         return tv_g
-    # growth_sanity の SIC 上書きマッピングで解決
-    try:
-        import growth_sanity as _gs
-        overrides = getattr(_gs, "TICKER_INDUSTRY_OVERRIDES", None)
-        if isinstance(overrides, dict):
-            industry = overrides.get(ticker)
-            if industry and isinstance(industry, str):
-                return _DAMODARAN_TV_G.get(industry)
-    except Exception:
-        pass
+    # [[SECTOR-MASTER-ADOPT-1]] 段1（2026-11-06）: 以前はここで growth_sanity.TICKER_INDUSTRY_OVERRIDES（手書きの辞書）から業種を引いていたが、
+    # 辞書は台帳＋業種のマスターに置き換わった。永久成長率を業種の規則で決めるのは段2（_TICKER_TV_Gの直引きをやめる）なので、
+    # 段1では値を変えない（以前この経路で値が出ていたのは VST の2.0%だけ → _TICKER_TV_G に移した。CIX・FCX・MO・SCCOは業種の表に無く3.0%のまま）
     return None
 
 
@@ -260,7 +253,7 @@ def get_terminal_growth(ticker: str) -> float:
        - 上記フラグがない場合は従来通り、3.0% 以外に明示設定された場合のみ
          採用する（後方互換。既存のmaturity_config.jsonエントリは全て
          このフラグを持たないため、本変更による既存挙動への影響はない）
-    2. growth_sanity.TICKER_INDUSTRY_OVERRIDES → _DAMODARAN_TV_G（セクター別）
+    2. （段2で業種の規則に寄せる。以前は growth_sanity.TICKER_INDUSTRY_OVERRIDES → _DAMODARAN_TV_G）
     3. デフォルト 3.0%
     """
     _DEFAULT_TV_G = 0.03
