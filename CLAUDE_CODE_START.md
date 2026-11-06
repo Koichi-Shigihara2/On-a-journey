@@ -36,6 +36,18 @@ BACKLOG.mdのアクティブは**9件**（2026-11-06、`^### [`の機械カウ�
 **2026-10-14の確認**: STONKS SILO（24銘柄・IOTなし・financial_as_of・path_score_basis・10x候補13・ASTS 67.0・RKLB 79.2・IONQ 82.7・ヒートマップ10系列）、
 TANUKI TAILの2本（10-12 06:45・07:27 UTC、9成功・変更なし9・Grok 0回）、10-13のSystem Healthの[J]✅、Market Data Daily（暫定の行・CHECK-62 0件・D-02一致・XOMのROTCE 2026-06-30）を確認し、5件を移設
 
+**2026-11-06 の作業（終業の2回目、アクティブ9件）**:
+- アクティブは**9件**（`^### [`の機械カウント。`[[GROWTH-SANITY-CONTINUITY-1]]`の登録で10件→移設で9件）。rcc NG 0・WARN 207、pytest 2922件
+- **定義v2の確定**: 段Cの検証を経て定義v2を確定（4回目の改訂、`d033f776ee`・`fdf959cd9d`）、`[[HYPECORE-STAGE-TIMESCALE-1]]`を移設。共通の部品（業種のマスター・収益の段階・倍率の履歴・Layer3の配当と増資）は段Bで作成済み
+- **`[[STAGE-V2-ROLLOUT-1]]` 並行計算の開始**（`21c5a9bf90`）: `common/stage_v2.py` → `docs/common/stage_v2/{T}.json`（2022-01〜前の月末、生の判定・持続の後のstage・根拠・同じ月の今の定義）。段Cの試算と98銘柄・5,684か月で一致、公開の値は変えない。SEC_Data_Update・Market Data Weeklyに段、登録の手順にStep 1.9。2027-11ごろの評価は次回の確認手順29。②の評価の物差し（今の定義・定義v2・SCOREの判定をscore_verifierの30・60・90日後リターンと並行計算の12か月で、S&P500に対する超過で）を記録（`1df5be580e`）
+- **`[[GROWTH-SANITY-CONTINUITY-1]]`（登録→段1・段2の公開→移設）**: 推奨成長率（check_growth_sanity）の候補を閾値で入れる・捨てる作りが、候補の数・符号・逓減モデルへの切り替えの境目で値を飛ばしていた（LOAR −90%、MRVLのRR×ROIC 0.1%で5pt等）。段1（`8f26c32315`、scope `-1-1`: 候補の重み付き平均・負のCAGRは0で入れる・重み0〜5%・不足はmax(p1,0)・逓減は0.50〜0.70でなだらかに・taperの終点を連続に）→ 理論株価38銘柄・判定4。段2（`8ed5a5267c`、scope `-1-2`: 2年CAGR・会社の今の伸び・基準の売上の重み）→ 理論株価52銘柄・判定5。連続性のテスト`tests/test_growth_sanity_continuity.py`。J8〜J10は値の飛びでないので直さず移設
+- **`[[SECTOR-MASTER-ADOPT-1]]`（段5・段1・段2を公開）**: 段5（`1a312ff554`）= TANUKI SCOREの景気循環株を`docs/common/sector_class.json`（`sector_master.py`が書く）から。段1（`8093a5f689`、scope `-1-1`）= Damodaranの業種を`config/sector_exceptions.json`（理由つき6銘柄: APP・META・NET・CIX・KULR・PAYS）→業種のマスターの写像に、手書きの辞書とbeta_configのsectorをやめた → 業種が新しく付く42銘柄を含め理論株価29・判定6。段2（`fce4e59a79`、scope `-1-2`）= 永久成長率を業種の規則（直引き63銘柄を廃止、例外の台帳は0件）、メガテックを「時価総額1兆ドル以上かつ業種がソフトウェア・インターネット・半導体・家電」の規則に（今は同じ6銘柄）→ 理論株価38・判定3。保有9銘柄は段1・段2とも判定の変化0。残りは段3（金融、11-08のSICの後）・段4（EPS ANALYZER、別の計算方法の変更）
+- **公開の手順**: 各段とも計算方法の変更の手順のとおり（TANUKI→HypeCore→TANUKI、1回目は試算と96銘柄で一致、2回目は印0）。Discordの🛠の文面は実行ログでは確認できていない
+- **モデルの使い分けの決まり**（`cbb6941256`、`CHAT_RULES.md`「モデルの使い分け」）: チャット側はOpus。Claude Code側は依頼ごとに`/model`で切り替え（Opus＝STEP 0・全銘柄の試算・案と勧め、Sonnet＝中身が依頼文で決まっている作業）。依頼文の見出しに【Opus】【Sonnet】、付いていなければOpus
+- **売却の考え方**（2026-11-06、TSLAがSELLになった時のKoichiさんの見立て）: SELL・stage・値動きのパターンは短期の参考値（ただし正確性は求める）。売却はテーゼの崩壊が前提。短期の見立てをシステムの判定と同じ物差しで突き合わせる案を`IDEAS_AND_WATCH.md`の`[[HUMAN-JUDGMENT-LOG-1]]`に登録（着手はBACKLOGが0件になった後）
+- **新しく見つけた範囲外**（FINDINGS.md）: 出力の一覧が`docs/common/`の共通の部品の出力をどの段階にも数えない（型A）、推奨成長率の表示名が「中央値」のまま・CHECK-52の文言・BULLシナリオのtaper（型B）
+- **注記**: 2026-11-06に週の使用量が91%に達したため、判断の要る作業（束ね以降）は枠が戻るまで止める
+
 **2026-11-05〜11-06 の作業（終業 2026-11-06）**:
 - 移設2件: `[[CHECK-REFERENCE-DEFINITION-1]]`（手順23の2回目、11-05のSystem Healthで[J]✅）・`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`（手順26・27、[P]✅・ROTCE・ubuntu-26.04。`60693f91b3`）
 - `[[HYPECORE-STAGE-TIMESCALE-1]]` 段A（仮の部品で規則の確かめ）: 移行中 32.2%→9.4%（2024-12〜）・11.1%（2022-01〜）。修正a〜d・fを定義v2の文書に（3回目の改訂 `64f9748154`）、eは採らない（代わりに収益の段階で倍率の種類を決める案を段Cで）。(b)(c)のstageの並びは保たれた。残る穴5つ・日足の過去分は段Cで
