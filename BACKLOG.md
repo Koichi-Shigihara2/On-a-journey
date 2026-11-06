@@ -1889,45 +1889,6 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ---
 
-### [MARKETPULSE-HEADLINES-CNBC-STALE-1] CNBC Markets の見出しが10-27から stale（5回連続）。配信元が実質Googleだけで、保存される見出しは約6時間分
-**処理の順番:** 2/8（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] の流れ）
-**型・処置:** 不具合・直す
-**優先度:** 高
-**分類:** Market Pulse 段階2のニュースの見出し / `src/market/market_pulse/news_headlines.py`（`SOURCES`・`fetch_headlines`）
-**登録日:** 2026-11-01
-**発見:** 2026-11-01 の大きく動いた日の事後分析の読み取りの調査。FINDINGS.md 2026-11-01（CNBCの停止）
-
-#### 内容（2026-11-01の読み取りの調査）
-- `headlines.failed_reasons`が`{"CNBC Markets": "stale"}`（最新記事が取得時刻から72時間より古い）のエントリが10-27〜10-31の5回連続。`status`はpartial、`items`はGoogle News ビジネス（US）の16件だけ
-- 保存される見出しは約6時間分（10-31のエントリは10-30 14:36〜20:12 UTC）
-- 関係するメモ: IDEAS_AND_WATCH.mdのCNBC Marketsのフィードの遅さ・同じ見出しの繰り返し（2026-10-09）
-- 対応: まず停止の原因（URLの移転か、配信の終了か）を読み取りで調べる。戻せなければ、代わりの米国の配信元を候補から実際に取得して確かめ、チャット側が決める
-
-#### 段階1の調査（2026-11-01、読み取り・保存しない試し取得）
-- id 10000664 は HTTP 200 のまま、`lastBuildDate` 2026-10-21 15:21 GMT・最新記事 10-21 15:30:50 GMT で止まっている（`search.cnbc.com`の別の書き方のURLも同じ）。CNBCのRSSの一覧（cnbc.com/rss-feeds/、54本）に移転先は無く、終了の告知も見当たらない。ほかのCNBCのフィード（Top News・US News・Earnings）は動いている
-- 名前と中身の食い違い（型E）: 一覧では id 10000664 は「Finance」。「Markets」のフィードは一覧に無い。最初の実装（`1193cd5845`、2026-09-30）から名前が中身と違っていた
-- `market_data.json`のheadlinesでは、最後の新しい記事は10-21のエントリ（取得 10-21 20:30 UTC）。10-22・10-23のエントリは止まった16件を ok として保存し（72時間の判定の前）、10-26のエントリから stale
-- 代わりの候補を取得して比べた（11-01 日曜）: CNBC Earnings（30件・約2.5日・秒まで・10-29 16:00 ET〜10-30 9:30 ETに14件）、Yahoo Finance ^GSPC（17件・約19時間・秒まで・題名で市況と分かる15/17）、Nasdaq Markets（約6時間）、MarketWatch（Top Storiesは分まで・個人のお金の記事、MarketPulseは2025-07で停止）、Seeking Alpha（7件）。Reuters（feeds.reuters.com は接続できない・reutersagency は404）と Yahoo の rssindex（404）は取得できない
-- 推奨（段階1）: CNBC Earnings に替える
-
-#### 決定（2026-11-01 チャット側）
-1. id 10000664（中身は Finance、名前は "CNBC Markets"）を外す
-2. 配信元を3本にする: CNBC Earnings（id 15839135、決算の材料）・Yahoo Finance ^GSPC（マクロ・市況の材料）・Google News ビジネス（US）（そのまま、広く拾う役）
-3. 名前は中身に合わせる（"CNBC Earnings"・"Yahoo Finance S&P 500"）。過去のデータの "CNBC Markets" は書き換えない
-4. 72時間の stale の判定は今のまま（止まった直後の数回が ok になる件は、①の積み足しでは害が無い）
-
-#### 実装（2026-11-01、`faa452e1b9`）
-- `news_headlines.py`の`SOURCES`を3本に。`PER_SOURCE`・`MAX_ITEMS`は同じで、候補（`MAX_CANDIDATES`）は32→48件。題名での重複の除き方はそのまま
-- 訳と判定（`translate_titles`）の`max_tokens`を8000→16000。本番のログで32件が出力969・考える分を含めて2,964トークン（10-23 run 40019408216）、16件が1,404〜1,766トークン（10-26〜10-30）で、48件は4,500前後の見込み（8000では余裕が2倍に満たない）。`finish_reason`がstop以外なら訳も判定も全件捨てる扱いは変えない
-- 試験: 3本のどれか1本が失敗・stale・0件でも残り2本で partial、2本が失敗でも partial、Yahooの実際の1件の形（pubDate `+0000`・linkは他社のサイトで`?.tsrc=rss`付き）をパース
-- 手元で本物の3本を取得（保存なし、2026-11-01 10:37 UTC）: status ok・failed 空・48件（CNBC Earnings 16件〈最新 10-31 15:37〉・Yahoo 16件〈11-01 10:13〉・Google 16件〈11-01 09:37〉）、表示の本表20件
-- 確認: CLAUDE_CODE_START.mdの次回の確認手順18（11-02 20:30 UTCの本番の実行）。済むまでBACKLOGに残す
-
-#### 完了の条件
-- 配信元が2つ以上 ok
-
----
-
 ### [MARKETPULSE-DAILY-ENTRY-GAP-1] market_data.json に欠けた日がある（2026-04-04からの146取引日のうち50日。9-21・04-08・10-05など）
 **処理の順番:** 5/8（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] の流れ）
 **型・処置:** 不具合・原因を調べる
@@ -1994,7 +1955,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 出力の一覧（market_pulse）を作り直し（出力5→6、読み手は`common/system_health.py`）、ANNOTATIONSに1文。UPDATE_SCHEDULE.md（生成・夏時間と冬時間の表・その他の定時・変更の経緯）・SYSTEM_MAP.md（Market Pulseのデータの流れ）
 - 試験 `tests/test_market_pulse_headlines_store.py`（正規化・題名での重複・also_in・title_updates・米国東部の日付〈夏時間と冬時間の境目・時刻なし〉・staleを積まない・新しい記事が無い回は書かない・夜の回の訳と判定・all_itemsを保存しない・[N]の閾値）
 - 手元で本物の3本を2回（保存先はscratchpad、2026-11-01 11:26 UTC）: 1回目は切る前の117件から新しい記事116件・also_in 1件、5ファイル（10-28 1件・10-29 22件・10-30 32件・10-31 54件・11-01 7件、大きいもので42KB）。2回目は「新しい記事も変更も無い」で何も書かなかった。重複のidとリンクは0件
-- 確認: CLAUDE_CODE_START.mdの次回の確認手順19。済むまでBACKLOGに残す
+- 確認（2026-11-06、次回の確認手順19）: `Market_Pulse_Headlines.yml`は11-04 05:07 UTC以降の7回すべてsuccess（11-03の2回の失敗は`ModuleNotFoundError: No module named 'common'`で、`3e8ca9609d`で直した退行〈FINDINGS 2026-11-04〉）。System Health [N]は11-04・11-05・11-06の3回とも✅。見出しの日ごとの積み足しの本番の経路は動いている
 
 #### ② [4/8] 5分足の保存
 - ^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYGを、該当日だけでなく毎日、日ごとの別ファイルに保存する
@@ -2022,7 +1983,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 試験 `tests/test_market_pulse_intraday_store.py`（シカゴ→ET・夏時間と冬時間の境目・引けの前を書かない・欠けた日だけ取り直す・足を減らさない・1本の欠けの記録・何度動かしても同じ・日曜の先物・[O]）
 - 最初の一回（手元、2026-11-01 12:39 UTC）: 09-04〜10-30のETの日付49ファイル・3.0MB。取引日40日はすべて10本そろい、1日の中央値74KB・最大76KB。09-21・10-30を含む。2回目の実行は0ファイル
 - 出力の一覧（market_pulse）を作り直し（出力7→8、読み手は`common/system_health.py`）、ANNOTATIONSに1文。UPDATE_SCHEDULE.md・SYSTEM_MAP.md
-- 確認: CLAUDE_CODE_START.mdの次回の確認手順20。済むまでBACKLOGに残す
+- 確認（2026-11-06、次回の確認手順20）: intraday 11-03・11-04・11-05の夜の回のログに「5分足の保存: 書いた …・欠け {}」があり「5分足の保存に失敗」は無い。System Health [O]は11-04・11-05・11-06の3回とも✅（10本）
 
 #### ③ [6/8] 起動の判定と材料
 - 起動: ±2σ（直近60営業日の標準偏差、NYSEの取引日で計算。VIXの休場日の行は除く）で、S&P500かNASDAQ。過去の日付を手動で指定しても作れる

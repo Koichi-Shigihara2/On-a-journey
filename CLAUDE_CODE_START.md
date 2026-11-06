@@ -5,7 +5,7 @@
 
 ## 今の状態（2026-11-06 終業）
 
-- BACKLOG.md のアクティブは **9件**（`^### [` の機械カウント）。rcc NG 0・WARN 207、pytest 2922件
+- BACKLOG.md のアクティブは **8件**（`^### [` の機械カウント）。rcc NG 0・WARN 207、pytest 2922件
 - 次の作業の順と注記（週の使用量が91%に達したため、判断の要る作業は枠が戻るまで止める）は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
 - 報告は20行以内（結論・変わった数・判定の変化・決めてほしいこと）。詳しい表はファイルに置き、場所だけ書く（`CHAT_RULES.md`「報告の形」）
@@ -71,35 +71,6 @@
    - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
    - 期限: 2026-11-30
    - 確認の手順: 新しいレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）に`data_as_of`（キューのfiled）が入り、`backfilled`がfalse、`kpi_snapshot`・`layer3_snapshot`の期が対象の期まで（対象より後の期が無い）、SECの財務の値が対象の期の申告日以前の値（Layer3の`first_val`）であること。確かめたらBACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」に書き足す
-
-18. **Market Pulseのニュースの見出しの配信元3本**（`[[MARKETPULSE-HEADLINES-CNBC-STALE-1]]`、2026-11-01 実装 `faa452e1b9`）
-   - 日時: 手順17と同じ2026-11-02 21:30 UTC頃（11-03 06:30 JST）のMarket Pulseの実行の後（平日の本番の実行）
-   - 期限: 2026-11-03
-   - 確認の手順: `docs/market-monitor/market-pulse/data/market_data.json`の最新エントリの`headlines`で、
-     - `failed`が空（`failed_reasons`も空、`status`がok）
-     - `items`の`source`に「CNBC Earnings」「Yahoo Finance S&P 500」「Google News ビジネス（US）」の3本とも入っている（最大48件）
-     - 表示の本表が20件以内（`news_headlines.split_for_display()`の1つ目。`translation`・`relevance`の`status`がokで、ログに「途中で切れた」が無いことも見る）
-   - 満たしたらBACKLOG_DONE.mdへ移す。それまではBACKLOGに残す
-
-19. **見出しの日ごとの積み足し**（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]` ①、2026-11-01 実装 `32f336a225`）
-   - 日時: 新しいワークフロー`Market_Pulse_Headlines.yml`の最初の数回（11-01 12:40 UTCの枠から6時間ごと）と、11-02 21:30 UTC頃のMarket Pulseの実行の後（11-03朝）
-   - 期限: 2026-11-03
-   - 確認の手順:
-     - `gh run list --workflow Market_Pulse_Headlines.yml`で最初の数回がsuccess。commitは「新しい記事があった回だけ」（`git log --format="%h %ad %s" --date=iso -- docs/market-monitor/market-pulse/data/headlines/`の件名「chore: auto-update market pulse headlines」と実行のログの「新しい記事が無い（commitしない）」が対になる）
-     - `docs/market-monitor/market-pulse/data/headlines/`のファイルの`fetches`に`run: scheduled`の記録があり、`sources`が3本ともok
-     - 11-03の朝に、`2026-11-02.json`に`run: evening`の取得の記録があり、夜の回の訳・判定（`title_ja`・`market`）が写っている記事がある（夜の回の`headlines.items`に入った記事）
-     - System Healthの[N]が✅（11-02 23:30 UTCの実行の通知）
-   - 満たしたらBACKLOGの①に確認を書き足す（①はEPICの中の段階なので、EPICが済むまでBACKLOGに残す）
-
-20. **5分足の日ごとの保存**（`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]` ②、2026-11-01 機能 `9cd26116a8`・最初の一回のデータ `21c4db3b1d`）
-   - 日時: 手順17と同じ2026-11-02 21:30 UTC頃（11-03 06:30 JST）のMarket Pulseの実行の後
-   - 期限: 2026-11-03
-   - 確認の手順:
-     - `docs/market-monitor/market-pulse/data/intraday/2026-11-02.json`があり、`tickers`に10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）がそろい、`missing`が空
-     - 11-01（日）の夜の先物などの分（`2026-11-01.json`）も入っている（最初の一回は10-30まで）
-     - 実行のログに「5分足の保存: 書いた …」があり、「5分足の保存に失敗」が無い。System Healthの[O]が✅（11-02 23:30 UTCの実行）
-     - 2026-11-02.jsonは、ETで11-02が終わる前に書いた分なので、次の回（11-03の夜）で夜の先物の足が足される（足が増える）
-   - 満たしたらBACKLOGの②に確認を書き足す（②はEPICの中の段階なので、EPICが済むまでBACKLOGに残す）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
