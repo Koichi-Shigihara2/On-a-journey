@@ -319,6 +319,13 @@ DECAY_BLEND_LO = 0.50
 DECAY_BLEND_HI = 0.70
 # 業種が無いときの終点（今の end_g の既定と同じ）
 DECAY_END_DEFAULT = 0.10
+# 段2（2026-11-06）: 成長の測り（売上CAGR・今の伸び）の基準の売上がこの額（ドル）未満なら、その測りの重みを 0→1 に連続で下げる。
+# 売上がほぼ0の会社のCAGR・前年比は底上げ効果で何百〜何万%にもなり（JOBY 118,568%）、そのまま平均に入ると推奨成長率を押し上げる
+GROWTH_BASE_REVENUE_FULL = 50_000_000.0
+# 2年CAGR（年次が3点の銘柄だけ）は3年・5年より短い期間の平均なので、重みを半分にする
+CAGR_2YR_WEIGHT = 0.5
+# 今の伸び（TTMの売上の前年比）は、年次の最大より何pt高い所まで認めるか（連続のmin）。買収・原油の戻り等の一時的な高さを抑える
+TTM_GROWTH_EXCESS_CAP = 0.10
 
 
 def _clamp(x: float, lo: float, hi: float) -> float:
@@ -424,6 +431,8 @@ def check_growth_sanity(
     hype_phase: int | None = None,         # GROWTH-1: HypeCoreフェーズ（1〜4）
     fcf_margins: list[float] | None = None,  # TANUKI-DCF-1③: FCFマージン時系列（古い順）
     growth_source: str | None = None,  # GROWTH-FLOOR-VERDICT-1: phase1_growthの採用経路("fcf_cagr"等)
+    ttm_rev_yoy: float | None = None,  # 段2: 会社の今の伸び = TTMの売上の前年比（Layer3のTTM系列の最新と1年前の点、小数）
+    ttm_base_revenue: float | None = None,  # 段2: その1年前のTTMの売上（ドル）。今の伸びの基準の売上
 ) -> dict:
     """
     成長率サニティチェックを実行し、結果 dict を返す。
@@ -525,10 +534,34 @@ def check_growth_sanity(
     #   候補が「>0」のときだけ入る（符号）・2件未満はNone・偶数/奇数で中央値が切り替わる・floor例外が±0.002の二値・
     #   逓減モデルへの切り替えが0.50超の二値・逓減の終点が業種>0かどうかの二値・taperの有無がラベルの二値
     # 候補: 売上CAGR 3年・5年（負は0として入れる）、RR×ROIC・業種の値（0〜WEIGHT_RAMPで重み0→1）
-    _meas: list[tuple[float, float]] = []
-    for _cv in (cagr.get("cagr_3yr"), cagr.get("cagr_5yr")):
+    # 段2: 年次が3点だけの銘柄は2年CAGRも、会社の今の伸び（TTMの売上の前年比）も候補にする。
+    # 成長の測りは、基準の売上が GROWTH_BASE_REVENUE_FULL 未満なら重みを連続で下げる
+    _revs = annual_revenues or []
+    _cagr_2yr = None
+    if len(_revs) == 3 and _revs[-3] > 0 and _revs[-1] > 0:
+        _cagr_2yr = (_revs[-1] / _revs[-3]) ** 0.5 - 1
+
+    def _base_w(base: float | None) -> float:
+        return 1.0 if base is None else _clamp(base / GROWTH_BASE_REVENUE_FULL, 0.0, 1.0)
+
+    _growth_meas = []  # (名前, 値〈0〜GROWTH_MEASURE_CAP〉, 重み, 基準の売上の重み)
+    for _nm, _cv, _w0, _bi in (("cagr_3yr", cagr.get("cagr_3yr"), 1.0, -4),
+                               ("cagr_5yr", cagr.get("cagr_5yr"), 1.0, -6),
+                               ("cagr_2yr", _cagr_2yr, CAGR_2YR_WEIGHT, -3)):
         if _cv is not None:
-            _meas.append((_clamp(_cv, 0.0, GROWTH_MEASURE_CAP), 1.0))
+            _bw = _base_w(_revs[_bi] if len(_revs) >= -_bi else None)
+            _growth_meas.append([_nm, _clamp(_cv, 0.0, GROWTH_MEASURE_CAP), _w0 * _bw, _bw])
+    if ttm_rev_yoy is not None:
+        _growth_meas.append(["ttm_rev_yoy", _clamp(ttm_rev_yoy, 0.0, GROWTH_MEASURE_CAP), 1.0 * _base_w(ttm_base_revenue),
+                             _base_w(ttm_base_revenue)])
+    # 今の伸びは、年次の測り（基準の重みをかけた値）の最大より TTM_GROWTH_EXCESS_CAP 高い所まで
+    # （年次の測りが無ければ業種の値〈0以上〉、それも無ければ既定の終点を基準にする）
+    _ann_vals = [m[1] * m[3] for m in _growth_meas if m[0] != "ttm_rev_yoy"]
+    _anchor = max(_ann_vals) if _ann_vals else (max(industry_g, 0.0) if industry_g is not None else DECAY_END_DEFAULT)
+    for _m in _growth_meas:
+        if _m[0] == "ttm_rev_yoy":
+            _m[1] = min(_m[1], _anchor + TTM_GROWTH_EXCESS_CAP)
+    _meas: list[tuple[float, float]] = [(m[1], m[2]) for m in _growth_meas]
     if g_fundamental is not None:
         _meas.append((max(g_fundamental, 0.0), _weight_ramp(g_fundamental)))
     if industry_g is not None:
@@ -674,6 +707,8 @@ def check_growth_sanity(
         "recommended_g": recommended_g,
         "growth_blend_s": growth_blend_s,
         "rec_evidence_weight": _w_sum,
+        "rev_cagr_2yr": _cagr_2yr,
+        "ttm_rev_yoy": ttm_rev_yoy,
         "growth_model": growth_model,
         "growth_model_reason": growth_model_reason,
         "hype_phase_used": hype_phase,

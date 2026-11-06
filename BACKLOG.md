@@ -2131,7 +2131,12 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 - 連続性のテスト `tests/test_growth_sanity_continuity.py`（J1〜J7、1刻みあたりの動きの上限10倍。旧コードでは8件失敗）。既存の `tests/test_pipeline_logic.py::TestRecommendedGrowth` は中央値の期待値を重み付き平均の期待値に書き換えた
 - 試算（手元、前後同条件、scopeのID `GROWTH-SANITY-CONTINUITY-1-1`）: 理論株価が変わる38銘柄・判定4（HQY BUY→WATCH・LOAR WATCH→HOLD 73.76→72.97・MO HOLD→TRIM 57.06→51.19・RMBS WATCH→BUY）、保有9銘柄は変化0。見込み（ELF BUY→WATCHを含む5）との違いはELFが BUY→BUY のまま（181.98→143.27、重みの傾斜を業種も5%にしたため）。taperの連続化だけの差はS（17.66→20.04、混合の途中）とRDW（5.91→6.19）の2銘柄
 - **公開（2026-11-06、8f26c32315）**: TANUKI 42141498707 → HypeCore 42143252923 → TANUKI 42143521063 すべて success。1回目のTANUKIは試算と96銘柄で理論株価・推奨成長率・判定・funda・乖離率が一致、印（method_change=GROWTH-SANITY-CONTINUITY-1-1）は95銘柄、2回目は印0。3回目はHypeCoreのstageを読んで timing が動き、判定が7銘柄（CDNS・HEI・MSFT・SNPS・TDY HOLD→TRIM、FCX HOLD→SELL、TSLA WATCH→SELL）変わった（理論株価・funda・乖離率は不変＝読み合いによる相場側の変化）。Discordの🛠の文面は実行ログでは確認できず未確認
-- 段2（2年CAGR・今の伸び〈年次の最大＋10ptまで〉・基準の売上の重み）は次の依頼。QBTSのように基準の売上が小さい銘柄の埋め先（p1が負のとき）は段2の前に決める
+- **段2 実装済み（2026-11-06、scopeのID `GROWTH-SANITY-CONTINUITY-1-2`）**: 候補に2年CAGR（年次が3点の銘柄、重み0.5）と会社の今の伸び（Layer3のTTMの売上の前年比、年次の最大＋10ptで上を切る連続のmin）を足し、成長の測り（CAGR・今の伸び）は基準の売上が5,000万ドル未満なら重みを0→1に連続で下げる。定数は `growth_sanity.py` の1か所（GROWTH_BASE_REVENUE_FULL・CAGR_2YR_WEIGHT・TTM_GROWTH_EXCESS_CAP）。埋め先は段1のまま max(p1, 0)（決定、場合分けを作らない）。pipelineはTTM系列（ttm_calculatorの1か所で作った点）の最新と1年前の売上から今の伸びと基準の売上を渡す。連続性のテストに今の伸び・基準の売上・2年CAGRの境目（K1〜K4）を足した
+- 段2の試算（段1の公開の後を前に、手元）: 理論株価52銘柄・判定5（CPRT HOLD→TRIM・FICO HOLD→WATCH・LLY TRIM→HOLD・LOAR HOLD→TRIM・SNPS TRIM→HOLD）、保有9銘柄は変化0。動きの大きい順に QBTS −53%（基準の売上が小さく測りの重みが下がり、p1 −44% を max(p1,0)=0 で埋めた人工的な値。決定により場合分けしない）・FICO +52%・LOAR −47%・LLY +39%・DELL +26%・CAT +24%・MRVL +21%・LRCX +19%
+- 本項目の移設の所見: 段1・段2で第一条件（境目で飛ばない）を満たした。残る J8（年次の点の数が3→4→6で候補が増える。入力でなくデータの到着で、重みの合計は連続に近づける作りにした）・J9（p1の上限0.50は上流の頭打ち。逓減の窓を0.50から上に置いて吸収）・J10（verdict・floor_hitの旧規則の閾値。表示だけ）は推奨成長率の値の飛びではないので、FINDINGSの行にして移設してよい（移設はチャット側の判断）
+- [[SECTOR-MASTER-ADOPT-1]] の段1・段2の着手条件「[[GROWTH-SANITY-CONTINUITY-1]]の公開の後」は満たした（段1の例外の台帳・案tは、そのとき一緒に出す）
+- 段2の公開の結果は、公開の後に追記する
+- 埋め先（QBTSのように基準の売上が小さく p1 が負の銘柄）は max(p1, 0) のまま（チャット側の決定 2026-11-06）
 
 #### 投資判断への影響
 あり（理論株価の中心の入力。セグメント未設定の銘柄は推奨成長率でDCFの成長率が上書きされる）
@@ -2395,7 +2400,7 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 **優先度:** 中
 **分類:** 共通の設定 / `config/sector_master.json`（`common/sector_master.py`）とその読み手（TANUKI VALUATION・EPS ANALYZER・STONKS SILO・Market Pulse・画面）
 **登録日:** 2026-11-05
-**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後。**段1・段2は[[GROWTH-SANITY-CONTINUITY-1]]の公開の後**（2026-11-06。段1は業種のベンチマークが初めて付く銘柄でLOAR −90%等の飛びを起こすため）。段3・段4は先に進めてよい
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後。段1・段2は[[GROWTH-SANITY-CONTINUITY-1]]の公開の後（2026-11-06に満たした。段1は業種のベンチマークが初めて付く銘柄でLOAR −90%等の飛びを起こすため、今は連続な推奨成長率の上で出せる）。段3・段4は先に進めてよい
 **発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-1のSTEP 0（2026-11-05）
 **経緯:** 2026-10-19の初回の束ねで[[SECTOR-MASTER-UNIFY-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行）。段B-1でマスターだけを作った（読み手は今のまま）
 

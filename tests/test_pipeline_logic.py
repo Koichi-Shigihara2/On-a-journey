@@ -580,15 +580,17 @@ class TestRecommendedGrowth:
     def test_recommended_g_is_weighted_mean_of_two_candidates(self, _mock):
         """業種 + RR×ROIC の2候補 → 重み付き平均（[[GROWTH-SANITY-CONTINUITY-1]] 段1。以前は中央値）。
         重みは 0〜5% で 0→1（業種 9.6% は1、RR×ROIC 2.6% は0.52）。重みの合計が2に届かないぶんは max(p1,0) で埋める"""
-        # annual_revenues 3件 → cagr_3yr/5yr = None（len<4 なので算出不可）。ttm_actual なし → 逓減モデルの混合 s=0
+        # annual_revenues 3件 → cagr_3yr/5yr = None（len<4 なので算出不可）だが、段2で2年CAGRが候補に入る
+        # （(400/100)^0.5-1=100%、重み0.5。基準の売上は10億ドルで5,000万ドル以上なので重みは下がらない）。ttm_actual なし → 逓減モデルの混合 s=0
         result = _gs.check_growth_sanity(
             "ALAB", phase1_growth=0.934, sector="Semiconductor",
-            annual_revenues=[100.0, 200.0, 400.0],
+            annual_revenues=[100e9, 200e9, 400e9],
             g_fundamental=0.026,
         )
-        w_sum = 1.0 + 0.026 / 0.05
-        mean = (0.096 * 1.0 + 0.026 * (0.026 / 0.05)) / w_sum
-        conf = w_sum / 2.0
+        items = [(1.0, 0.5), (0.026, 0.026 / 0.05), (0.096, 1.0)]
+        w_sum = sum(w for _, w in items)
+        mean = sum(v * w for v, w in items) / w_sum
+        conf = min(1.0, w_sum / 2.0)
         expected = conf * mean + (1 - conf) * 0.934
         assert result["growth_blend_s"] == 0.0
         assert abs(result["recommended_g"] - expected) < 1e-9
@@ -604,10 +606,10 @@ class TestRecommendedGrowth:
         """4候補（3年・5年CAGR・RR×ROIC・業種）→ 重みの合計が2以上なら p1 で埋めない（重み付き平均そのもの）"""
         result = _gs.check_growth_sanity(
             "NOW", phase1_growth=0.221, sector="Software_System",
-            annual_revenues=[500.0, 650.0, 900.0, 1200.0, 1700.0, 2300.0],
+            annual_revenues=[500e6, 650e6, 900e6, 1200e6, 1700e6, 2300e6],
             g_fundamental=0.014,
         )
-        cagr = _gs.calc_revenue_cagr([500.0, 650.0, 900.0, 1200.0, 1700.0, 2300.0])
+        cagr = _gs.calc_revenue_cagr([500e6, 650e6, 900e6, 1200e6, 1700e6, 2300e6])
         items = [(cagr["cagr_3yr"], 1.0), (cagr["cagr_5yr"], 1.0), (0.014, 0.014 / 0.05), (0.216, 1.0)]
         expected = sum(v * w for v, w in items) / sum(w for _, w in items)
         assert abs(result["recommended_g"] - expected) < 1e-9

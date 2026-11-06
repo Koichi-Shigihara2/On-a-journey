@@ -23,13 +23,14 @@ _gs = load_growth_sanity_with_stub_xlrd()
 LIPSCHITZ_MAX = 10.0
 
 
-def _rec(p1=0.20, ttm=None, c3=None, c5=None, gf=None, ind=None, src=None):
+def _rec(p1=0.20, ttm=None, c3=None, c5=None, gf=None, ind=None, src=None, yoy=None, base=None, annual=None):
     bench = {"industry": "X", "g_ebit": ind, "roc": None, "rr": None} if ind is not None else None
     with patch.object(_gs, "get_industry_benchmark", return_value=bench), \
             patch.object(_gs, "calc_revenue_cagr", return_value={"cagr_3yr": c3, "cagr_5yr": c5}):
         return _gs.check_growth_sanity(
-            "T", phase1_growth=p1, sector=None, annual_revenues=[1.0], g_fundamental=gf,
+            "T", phase1_growth=p1, sector=None, annual_revenues=annual if annual is not None else [1.0], g_fundamental=gf,
             ttm_actual=ttm if ttm is not None else (p1 if p1 > 0 else None), growth_source=src,
+            ttm_rev_yoy=yoy, ttm_base_revenue=base,
         )
 
 
@@ -129,3 +130,49 @@ def test_floor_hit_still_uses_legacy_no_candidate_rule():
     assert r["floor_hit"] is True
     r2 = _rec(p1=0.15, src="fcf_cagr", c3=0.10, c5=0.08)  # 候補2件 → 旧規則でも出る
     assert r2["floor_hit"] is False
+
+
+# ───────── 段2（候補を足す）の境目 ─────────
+def test_k1_current_growth_candidate_is_continuous_and_capped():
+    """今の伸び（TTMの売上の前年比）を0→120%に動かす。年次の最大＋10pt（TTM_GROWTH_EXCESS_CAP）で上を切る連続のmin"""
+    base = dict(p1=0.30, c3=0.116, c5=0.139, ind=0.216, base=1e9)
+    xs = _frange(0.0, 1.2, 240)
+    ys = [_rec(**base, yoy=x)["recommended_g"] for x in xs]
+    _assert_continuous(xs, ys, "K1 今の伸び 0→120%")
+    cap = 0.139 + _gs.TTM_GROWTH_EXCESS_CAP
+    assert _rec(**base, yoy=cap)["recommended_g"] == _rec(**base, yoy=1.2)["recommended_g"]   # 上限を超えた分は効かない（買収・原油の戻り）
+    assert _rec(**base, yoy=0.0)["recommended_g"] < _rec(**base, yoy=cap)["recommended_g"]    # 上限までは効く
+    assert _rec(**base)["rev_cagr_2yr"] is None and _rec(**base, yoy=0.3)["ttm_rev_yoy"] == 0.3
+
+
+def test_k2_base_revenue_weight_is_continuous():
+    """基準の売上が5,000万ドル未満の測りは重みを0→1に連続で下げる（JOBY: 売上ほぼ0で前年比118,568%）"""
+    full = _gs.GROWTH_BASE_REVENUE_FULL
+    base = dict(p1=0.15, c3=0.10, c5=0.08, ind=0.066)
+    xs = _frange(0.0, 2.0, 200)   # 基準の売上 / 5,000万ドル
+    ys = [_rec(**base, yoy=1185.0, base=x * full)["recommended_g"] for x in xs]
+    _assert_continuous(xs, ys, "K2 今の伸びの基準の売上 0→1億ドル")
+    assert abs(ys[0] - _rec(**base)["recommended_g"]) < 1e-12        # 基準の売上0なら、今の伸びは無いのと同じ
+    assert ys[100] == ys[-1]                                         # 5,000万ドル以上は重み1
+    # 年次のCAGRの基準の売上（annual_revenues[-4]・[-6]）も同じ。基準が小さい5年CAGR 45%は重みが下がる
+    big = _rec(p1=0.15, c3=0.10, c5=0.45, annual=[1e9] * 6)["recommended_g"]
+    small = _rec(p1=0.15, c3=0.10, c5=0.45, annual=[1e6, 1e9, 1e9, 1e9, 1e9, 1e9])["recommended_g"]
+    assert small < big
+
+
+def test_k3_two_year_cagr_only_for_three_annual_points():
+    """年次が3点の銘柄は2年CAGRも候補（重み0.5）。年次が3点→4点で3年CAGRが出ても飛ばない（重みの合計が連続）"""
+    r3 = _rec(p1=0.20, annual=[400e6, 500e6, 625e6])           # 2年CAGR 25%
+    assert abs(r3["rev_cagr_2yr"] - 0.25) < 1e-12
+    r4 = _rec(p1=0.20, annual=[320e6, 400e6, 500e6, 625e6])    # 3年CAGR 25%（同じ伸び）。2年CAGRは出ない
+    assert r4["rev_cagr_2yr"] is None
+    # 同じ伸び率の候補が入るので、3点でも4点でも推奨成長率は p1(20%) と 25% の間に連続に収まる
+    assert 0.20 <= r3["recommended_g"] <= 0.25 and 0.20 <= r4["recommended_g"] <= 0.25
+    xs = _frange(0.0, 0.6, 120)   # 最後の年の売上の伸び
+    ys = [_rec(p1=0.20, annual=[400e6, 500e6, 500e6 * (1 + x)])["recommended_g"] for x in xs]
+    _assert_continuous(xs, ys, "K3 2年CAGR（年次3点）")
+
+
+def test_k4_stage2_constants_in_one_place():
+    assert _gs.GROWTH_BASE_REVENUE_FULL == 50_000_000.0
+    assert _gs.CAGR_2YR_WEIGHT == 0.5 and _gs.TTM_GROWTH_EXCESS_CAP == 0.10

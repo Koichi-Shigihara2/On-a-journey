@@ -173,6 +173,27 @@ def _latest_ttm_entry(ttm_series: dict | None) -> dict | None:
     return max(entries, key=lambda e: e["ttm_end"])
 
 
+def ttm_revenue_yoy(ttm_series: dict | None) -> tuple[float | None, float | None]:
+    """[[GROWTH-SANITY-CONTINUITY-1]] 段2: 会社の今の伸び = TTMの売上の前年比（小数）と、その基準（1つ前の点のTTMの売上、ドル）。
+
+    ttm/{T}_ttm_series.jsonは約1年おきの点（ttm_calculator._select_anchors）のTTMで、最新の点と1つ前の点の
+    売上を比べる（TTMの作り方は ttm_calculator の1か所。ここでは作り直さない）。
+    どちらかの点の売上が4四半期そろっていない・0以下・1つ前が無い、なら (None, None)
+    """
+    entries = sorted((e for e in ((ttm_series or {}).get("series") or []) if e and e.get("ttm_end")),
+                     key=lambda e: e["ttm_end"], reverse=True)
+    if len(entries) < 2:
+        return None, None
+    cur = (entries[0].get("flow") or {}).get("revenue") or {}
+    prev = (entries[1].get("flow") or {}).get("revenue") or {}
+    if cur.get("quarters_used") != 4 or prev.get("quarters_used") != 4:
+        return None, None
+    v0, v1 = cur.get("val"), prev.get("val")
+    if not isinstance(v0, (int, float)) or not isinstance(v1, (int, float)) or v0 <= 0 or v1 <= 0:
+        return None, None
+    return v0 / v1 - 1, float(v1)
+
+
 def select_max_eps_shares(eps_ttm: dict | None, ttm_end: str | None, diluted_shares) -> tuple:
     """[[EPS-SHARES-BASIS-MISMATCH-1]]: 最大EPSの分母の株式数と、その基準を返す。
 
@@ -1067,6 +1088,7 @@ class TanukiValuationPipeline:
         _annual_revs = self._load_annual_revenues(ticker)
         _g_fund = self._calc_g_fundamental(ticker)
         _sector = self._load_beta_sector(ticker)
+        _ttm_rev_yoy, _ttm_base_rev = self._load_ttm_revenue_yoy(ticker)   # 段2: 会社の今の伸びと基準の売上
         _hype_info   = self._load_hype_info(ticker)      # GROWTH-1
         _hype_phase  = _hype_info.get("phase")
         _fcf_margins = [
@@ -1084,6 +1106,8 @@ class TanukiValuationPipeline:
                 hype_phase=_hype_phase,                           # GROWTH-1
                 fcf_margins=_fcf_margins or None,                  # TANUKI-DCF-1③
                 growth_source=_phase1_growth_source,               # GROWTH-FLOOR-VERDICT-1
+                ttm_rev_yoy=_ttm_rev_yoy,                          # 段2
+                ttm_base_revenue=_ttm_base_rev,
             )
         except Exception as _e:
             import logging as _logging
@@ -3539,6 +3563,17 @@ class TanukiValuationPipeline:
             except Exception:
                 pass
         return revs
+
+    def _load_ttm_revenue_yoy(self, ticker: str) -> tuple[float | None, float | None]:
+        """TTM系列（ttm/{T}_ttm_series.json）から (TTMの売上の前年比, 基準の売上)。無い・読めないなら (None, None)"""
+        path = os.path.join(self.repo_root, "common", "sec_data", "ttm", f"{ticker}_ttm_series.json")
+        if not os.path.exists(path):
+            return None, None
+        try:
+            with open(path, encoding="utf-8") as f:
+                return ttm_revenue_yoy(json.load(f))
+        except Exception:
+            return None, None
 
     def _get_lt_debt_fallback(self, ticker: str) -> float:
         """annual JSONでlong_term_debtが欠落した場合の補完値を取得（BUG-NETDEBT-3共通化）。
