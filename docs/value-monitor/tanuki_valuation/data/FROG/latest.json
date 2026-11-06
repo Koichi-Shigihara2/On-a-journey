@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 82.02914298632118,
   "intrinsic_value_beta": 67.55,
-  "upside_percent_beta": -9.5,
-  "intrinsic_value_rf": 408.52,
-  "upside_percent_rf": 447.5,
-  "intrinsic_value_rf_rate": 0.04836999893188477,
+  "upside_percent_beta": -33.1,
+  "intrinsic_value_rf": 401.84,
+  "upside_percent_rf": 297.9,
+  "intrinsic_value_rf_rate": 0.04859000205993652,
   "v0": 7504526645.858857,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 102.64,
       "value_growth_pct": 25.1,
-      "expected_return_pct": 37.6
+      "expected_return_pct": 1.6
     },
     "2年後": {
       "future_value": 128.43,
       "value_growth_pct": 56.6,
-      "expected_return_pct": 72.1
+      "expected_return_pct": 27.2
     },
     "3年後": {
       "future_value": 160.7,
       "value_growth_pct": 95.9,
-      "expected_return_pct": 115.4
+      "expected_return_pct": 59.1
     },
     "4年後": {
       "future_value": 201.08,
       "value_growth_pct": 145.1,
-      "expected_return_pct": 169.5
+      "expected_return_pct": 99.1
     },
     "5年後": {
       "future_value": 251.6,
       "value_growth_pct": 206.7,
-      "expected_return_pct": 237.2
+      "expected_return_pct": 149.2
     }
   },
-  "upside_percent": 9.9,
-  "calculation_date": "2026-11-06T14:23:03+09:00",
+  "upside_percent": -18.8,
+  "calculation_date": "2026-11-07T06:44:27+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -303,7 +303,7 @@
     "roe_10yr_avg": -0.08708334281571199,
     "roe_years_used": 6,
     "roe_outlier_adj": false,
-    "current_price": 74.62000274658203,
+    "current_price": 100.9800033569336,
     "latest_revenue": 531840000.0,
     "rpo": 659000000,
     "beta": 1.24,
@@ -335,11 +335,11 @@
     "alpha_uncapped": 0.0,
     "per": 82.38271,
     "per_is_forward": true,
-    "per_adjusted": 97.23,
+    "per_adjusted": 131.58,
     "peg": null,
     "ps": 19.39858,
     "ev_ebitda": null,
-    "ma200": 72.32202514648438,
+    "ma200": 72.54212516784668,
     "forward_eps": 1.14575,
     "next_quarter_eps": 0.23,
     "analyst_target_median": 115.0,
@@ -358,7 +358,7 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 40.2,
     "max_eps": 0.9838,
-    "max_eps_per": 75.8,
+    "max_eps_per": 102.6,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-06-30",
     "max_eps_shares": 118859809.5,
@@ -388,25 +388,25 @@
     "ai_comment": null
   },
   "phase1_growth": 0.2512626223195089,
-  "required_growth_rf_base": -0.19505314327657897,
-  "risk_free_rate_live": 0.04836999893188477,
-  "risk_free_rate_live_date": "2026-11-05",
+  "required_growth_rf_base": -0.14484816329336503,
+  "risk_free_rate_live": 0.04859000205993652,
+  "risk_free_rate_live_date": "2026-11-06",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.10797816350516343,
-  "tanuki_score": "WATCH",
+  "required_growth_rf_live": -0.04924385740761894,
+  "tanuki_score": "HOLD",
   "funda_score": 90,
-  "score_comment": "若干割安(10%)、FCF黒字、売上成長加速",
-  "timing_score": 50,
+  "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
   "rounded_by_policy": null,
   "matrix": {
     "matrix": "④キャッシュ創出力系",
-    "quadrant": "右上",
-    "label": "割安×高FCF",
+    "quadrant": "左上",
+    "label": "割高×高FCF",
     "key_metric_y": "FCF_Margin = 26.8%",
-    "qx": true,
+    "qx": false,
     "qy": true
   },
   "method_change_applied": [
@@ -479,7 +479,7 @@
     "shares_yr_now": 116200900,
     "shares_yr_3ago": 99243894
   },
-  "net_current_assets_ratio": 0.0588,
+  "net_current_assets_ratio": 0.0435,
   "dupont": {
     "ni_ttm": -44073000,
     "revenue_ttm": 599962000,
@@ -526,7 +526,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.033,
+  "erp": -0.0372,
   "dilution_severity": "medium",
   "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
 }

@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 35.28548194865025,
   "intrinsic_value_beta": 25.63,
-  "upside_percent_beta": -13.0,
-  "intrinsic_value_rf": 182.79,
-  "upside_percent_rf": 520.2,
-  "intrinsic_value_rf_rate": 0.04836999893188477,
+  "upside_percent_beta": -17.4,
+  "intrinsic_value_rf": 179.77,
+  "upside_percent_rf": 479.4,
+  "intrinsic_value_rf_rate": 0.04859000205993652,
   "v0": 6320599860.129911,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 45.57,
       "value_growth_pct": 29.1,
-      "expected_return_pct": 54.6
+      "expected_return_pct": 46.9
     },
     "2年後": {
       "future_value": 58.85,
       "value_growth_pct": 66.8,
-      "expected_return_pct": 99.7
+      "expected_return_pct": 89.7
     },
     "3年後": {
       "future_value": 76.0,
       "value_growth_pct": 115.4,
-      "expected_return_pct": 157.9
+      "expected_return_pct": 144.9
     },
     "4年後": {
       "future_value": 98.14,
       "value_growth_pct": 178.1,
-      "expected_return_pct": 233.0
+      "expected_return_pct": 216.3
     },
     "5年後": {
       "future_value": 126.74,
       "value_growth_pct": 259.1,
-      "expected_return_pct": 330.1
+      "expected_return_pct": 308.4
     }
   },
-  "upside_percent": 19.7,
-  "calculation_date": "2026-11-06T14:20:12+09:00",
+  "upside_percent": 13.7,
+  "calculation_date": "2026-11-07T06:40:19+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -197,7 +197,7 @@
       "total_transient_amount": 6752000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う典型的な一時的費用と判断される。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -307,7 +307,7 @@
     "roe_10yr_avg": -0.508450199181475,
     "roe_years_used": 5,
     "roe_outlier_adj": true,
-    "current_price": 29.469999313354492,
+    "current_price": 31.030000686645508,
     "latest_revenue": 1304668000.0,
     "rpo": 35398000.0,
     "beta": 1.392,
@@ -339,11 +339,11 @@
     "alpha_uncapped": 0.0,
     "per": 25.88548,
     "per_is_forward": true,
-    "per_adjusted": 31.71,
+    "per_adjusted": 33.39,
     "peg": 0.77,
     "ps": 4.9807167,
     "ev_ebitda": 66.71,
-    "ma200": 22.700899991989136,
+    "ma200": 22.747699995040893,
     "forward_eps": 1.20415,
     "next_quarter_eps": 0.27,
     "analyst_target_median": 38.0,
@@ -362,7 +362,7 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 7.7,
     "max_eps": 0.82,
-    "max_eps_per": 35.9,
+    "max_eps_per": 37.8,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-06-30",
     "max_eps_shares": 234574453.5,
@@ -392,14 +392,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.2913665704381648,
-  "required_growth_rf_base": -0.2212393223159299,
-  "risk_free_rate_live": 0.04836999893188477,
-  "risk_free_rate_live_date": "2026-11-05",
+  "required_growth_rf_base": -0.213163774711279,
+  "risk_free_rate_live": 0.04859000205993652,
+  "risk_free_rate_live_date": "2026-11-06",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.13699702769769773,
+  "required_growth_rf_live": -0.1251970208138713,
   "tanuki_score": "WATCH",
   "funda_score": 90,
-  "score_comment": "割安(20%)傾向、FCF黒字、売上成長加速",
+  "score_comment": "割安(14%)傾向、FCF黒字、売上成長加速",
   "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -483,7 +483,7 @@
     "shares_yr_now": 220722814,
     "shares_yr_3ago": 138985265
   },
-  "net_current_assets_ratio": 0.0531,
+  "net_current_assets_ratio": 0.0505,
   "dupont": {
     "ni_ttm": -2169000,
     "revenue_ttm": 1570877000,
@@ -541,7 +541,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0075,
+  "erp": -0.0098,
   "dilution_severity": "high",
   "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
 }
