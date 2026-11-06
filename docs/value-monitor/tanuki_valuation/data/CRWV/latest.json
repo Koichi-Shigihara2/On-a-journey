@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 35.2,
-  "calculation_date": "2026-11-06T06:36:18+09:00",
+  "calculation_date": "2026-11-06T10:09:49+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -482,13 +482,15 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
-    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-1"
   ],
   "fcf_history": [
     {
@@ -578,7 +580,7 @@
   "segment_growth_quarter": "2026Q2",
   "phase1_growth_original": 0.5,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": null,
+  "recommended_g": 0.49287570120159263,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
@@ -591,10 +593,12 @@
     "rev_cagr_3yr": null,
     "rev_cagr_5yr": null,
     "g_fundamental": null,
-    "recommended_g_median": null,
-    "recommended_g": null,
+    "recommended_g_median": 0.49287570120159263,
+    "recommended_g": 0.49287570120159263,
+    "growth_blend_s": 0.0,
+    "rec_evidence_weight": 1.0,
     "growth_model": "median",
-    "growth_model_reason": "CAGR_max=50.0%のため中央値モデル適用",
+    "growth_model_reason": "CAGR_max=50.0%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,
     "signals": [
       "業界平均Software (Internet)(48.6%)の1.0倍以内 ✅"

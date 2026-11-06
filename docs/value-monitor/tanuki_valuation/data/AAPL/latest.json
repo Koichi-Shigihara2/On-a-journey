@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -53.8,
-  "calculation_date": "2026-11-06T06:34:17+09:00",
+  "calculation_date": "2026-11-06T10:07:57+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -386,9 +386,9 @@
     "dividend_yield": 0.003009372,
     "payout_ratio": 0.1204,
     "insider_buy_count": 0,
-    "insider_sell_count": 32,
+    "insider_sell_count": 33,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-10-29",
+    "insider_latest_date": "2026-11-05",
     "revenue_ttm": 466823000000,
     "revenue_ttm_end": "2026-06-27",
     "analyst_vs_iv": 112.4,
@@ -443,13 +443,15 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
-    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-1"
   ],
   "fcf_history": [
     {
@@ -563,7 +565,7 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.0747,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.05244945333785067,
+  "recommended_g": 0.06389482254168137,
   "fcf_margin_bear_mult_applied": true,
   "fcf_margin_note": "FCFマージン悪化(25.8%→23.7%) BEAR補正係数=0.917",
   "growth_sanity": {
@@ -576,10 +578,12 @@
     "rev_cagr_3yr": 0.01812535743479393,
     "rev_cagr_5yr": 0.08677354924090741,
     "g_fundamental": 0.007915813725413888,
-    "recommended_g_median": 0.05244945333785067,
-    "recommended_g": 0.05244945333785067,
+    "recommended_g_median": 0.06389482254168137,
+    "recommended_g": 0.06389482254168137,
+    "growth_blend_s": 0.0,
+    "rec_evidence_weight": 3.1583162745082776,
     "growth_model": "median",
-    "growth_model_reason": "CAGR_max=8.7%のため中央値モデル適用",
+    "growth_model_reason": "CAGR_max=8.7%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 2,
     "signals": [
       "業界平均Computers/Peripherals(9.6%)の0.8倍以内 ✅",

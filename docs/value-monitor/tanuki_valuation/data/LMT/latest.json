@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -27.1,
-  "calculation_date": "2026-11-06T06:38:12+09:00",
+  "calculation_date": "2026-11-06T10:11:31+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -422,13 +422,15 @@
     "qx": false,
     "qy": true
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
-    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-1"
   ],
   "fcf_history": [
     {
@@ -533,7 +535,7 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.0569,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.043838941337237536,
+  "recommended_g": 0.06016671080529882,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
@@ -546,10 +548,12 @@
     "rev_cagr_3yr": 0.043838941337237536,
     "rev_cagr_5yr": 0.027909621535260998,
     "g_fundamental": -0.0015637860082304525,
-    "recommended_g_median": 0.043838941337237536,
-    "recommended_g": 0.043838941337237536,
+    "recommended_g_median": 0.06016671080529882,
+    "recommended_g": 0.06016671080529882,
+    "growth_blend_s": 0.0,
+    "rec_evidence_weight": 3.0,
     "growth_model": "median",
-    "growth_model_reason": "CAGR_max=5.7%のため中央値モデル適用",
+    "growth_model_reason": "CAGR_max=5.7%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 3,
     "signals": [
       "業界平均Aerospace/Defense(10.9%)の0.5倍以内 ✅",

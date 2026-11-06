@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 171.5,
-  "calculation_date": "2026-11-06T06:43:58+09:00",
+  "calculation_date": "2026-11-06T10:15:57+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -203,7 +203,7 @@
       "total_transient_amount": 7032000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的費用と判断されるため。"
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、典型的な一時的リストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -439,13 +439,15 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
-    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-1"
   ],
   "fcf_history": [
     {
@@ -540,8 +542,10 @@
     "g_fundamental": -0.04354729992481788,
     "recommended_g_median": 0.23204331876757467,
     "recommended_g": 0.23204331876757467,
+    "growth_blend_s": 0.0,
+    "rec_evidence_weight": 2.0,
     "growth_model": "median",
-    "growth_model_reason": "CAGR_max=50.0%のため中央値モデル適用",
+    "growth_model_reason": "CAGR_max=50.0%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 3,
     "signals": [
       "過去実績(3yr:19.0% / 5yr:27.4%)と整合 ✅"

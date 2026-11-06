@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -15.0,
-  "calculation_date": "2026-11-06T06:34:44+09:00",
+  "calculation_date": "2026-11-06T10:08:19+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -233,7 +233,7 @@
       "total_transient_amount": 15995000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由がマクロ変動による一時的影響または一過性の在庫評価損と明記されており、事業運営上の一時的な問題を示す。"
+        "reasoning": "全項目の理由が「マクロ変動による一時的影響」または「一過性の在庫評価損」と明記されており、事業運営上の一時的問題と判断される。"
       }
     },
     "action": "excluded",
@@ -466,13 +466,15 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
-    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-1"
   ],
   "fcf_history": [
     {
@@ -573,7 +575,7 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.1631,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.3203463030491572,
+  "recommended_g": 0.4453396615810124,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
@@ -587,9 +589,11 @@
     "rev_cagr_5yr": 0.3800488438563101,
     "g_fundamental": null,
     "recommended_g_median": 0.46037072497731224,
-    "recommended_g": 0.3203463030491572,
-    "growth_model": "decay",
-    "growth_model_reason": "CAGR_max=54.1%と業界平均10.0%の中間値32.0%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
+    "recommended_g": 0.4453396615810124,
+    "growth_blend_s": 0.10734601285490136,
+    "rec_evidence_weight": 2.0,
+    "growth_model": "median",
+    "growth_model_reason": "CAGR_max=54.1%のため候補の重み付き平均モデル適用（逓減モデルとの混合 s=0.11）",
     "hype_phase_used": 4,
     "signals": [
       "過去実績(3yr:54.1% / 5yr:38.0%)と整合 ✅"

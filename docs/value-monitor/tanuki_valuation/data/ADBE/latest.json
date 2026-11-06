@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 149.9,
-  "calculation_date": "2026-11-06T06:41:39+09:00",
+  "calculation_date": "2026-11-06T10:13:57+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -452,13 +452,15 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
     "FCF-DEFINITION-SINGLE-SOURCE-1-3",
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
-    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1"
+    "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-1"
   ],
   "fcf_history": [
     {
@@ -551,7 +553,7 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.1148,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.13057654594156753,
+  "recommended_g": 0.15070254593963608,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
@@ -564,10 +566,12 @@
     "rev_cagr_3yr": 0.10522339932516123,
     "rev_cagr_5yr": 0.13057654594156753,
     "g_fundamental": -0.05152394775036285,
-    "recommended_g_median": 0.13057654594156753,
-    "recommended_g": 0.13057654594156753,
+    "recommended_g_median": 0.15070254593963608,
+    "recommended_g": 0.15070254593963608,
+    "growth_blend_s": 0.0,
+    "rec_evidence_weight": 3.0,
     "growth_model": "median",
-    "growth_model_reason": "CAGR_max=13.1%のため中央値モデル適用",
+    "growth_model_reason": "CAGR_max=13.1%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,
     "signals": [
       "業界平均Software (System & Application)(21.6%)の0.5倍以内 ✅",
