@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -6.4,
-  "calculation_date": "2026-11-06T10:13:25+09:00",
+  "calculation_date": "2026-11-06T10:31:35+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -220,7 +220,7 @@
       "total_transient_amount": 27672000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されたリストラ費用のみで、事業再編に伴う一時的な支出と性質から判断。"
       }
     },
     "action": "flagged",
@@ -423,7 +423,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 75,
   "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
-  "timing_score": 45,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -436,7 +436,6 @@
     "qx": false,
     "qy": false
   },
-  "method_change": "GROWTH-SANITY-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -549,7 +548,7 @@
     "rec_evidence_weight": 3.0,
     "growth_model": "decay",
     "growth_model_reason": "CAGR_max=60.8%と業界平均21.6%の中間値41.2%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）（逓減モデルとの混合 s=0.56）",
-    "hype_phase_used": 3,
+    "hype_phase_used": 4,
     "signals": [
       "業界平均Software (System & Application)(21.6%)の1.9倍 ℹ️",
       "過去実績(3yr:33.4% / 5yr:60.8%)と整合 ✅"
