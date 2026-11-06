@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -75.8,
-  "calculation_date": "2026-11-06T11:20:42+09:00",
+  "calculation_date": "2026-11-06T12:46:12+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -209,7 +209,7 @@
       "total_transient_amount": 63390000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "すべての項目が理由欄で「一過性の事業再編費用」と明記されており、事業運営上の一時的な再編費用と判断されるため。"
       }
     },
     "action": "excluded",
@@ -446,6 +446,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -454,7 +455,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-2"
+    "GROWTH-SANITY-CONTINUITY-1-2",
+    "SECTOR-MASTER-ADOPT-1-1"
   ],
   "fcf_history": [
     {
@@ -555,29 +557,30 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.1526,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.14344698043805496,
+  "recommended_g": 0.14238281244338583,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
     "phase1_growth": 0.1526,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
+    "industry_benchmark": 0.13823641959190958,
+    "damodaran_industry": "Electronics (General)",
     "damodaran_year": 2025,
     "rev_cagr_3yr": 0.1131925802114353,
     "rev_cagr_5yr": 0.18042001127353102,
     "g_fundamental": 0.04481852828910509,
-    "recommended_g_median": 0.14344698043805496,
-    "recommended_g": 0.14344698043805496,
+    "recommended_g_median": 0.14238281244338583,
+    "recommended_g": 0.14238281244338583,
     "growth_blend_s": 0.0,
-    "rec_evidence_weight": 3.8963705657821017,
+    "rec_evidence_weight": 4.896370565782101,
     "rev_cagr_2yr": null,
     "ttm_rev_yoy": 0.22513599128416573,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=18.0%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,
     "signals": [
+      "業界平均Electronics (General)(13.8%)の1.1倍以内 ✅",
       "過去実績(3yr:11.3% / 5yr:18.0%)と整合 ✅",
       "RR×ROIC(4.5%)：再投資より還元重視型、または期待値先行 ℹ️"
     ],

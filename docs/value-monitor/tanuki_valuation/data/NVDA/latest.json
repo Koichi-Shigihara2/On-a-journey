@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 304.0,
-  "calculation_date": "2026-11-06T11:23:40+09:00",
+  "calculation_date": "2026-11-06T12:48:52+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -583,6 +583,7 @@
     "qx": true,
     "qy": true
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -591,7 +592,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-2"
+    "GROWTH-SANITY-CONTINUITY-1-2",
+    "SECTOR-MASTER-ADOPT-1-1"
   ],
   "fcf_history": [
     {
@@ -692,33 +694,35 @@
   "segment_growth_quarter": "2026Q3",
   "phase1_growth_original": 0.5,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.55,
+  "recommended_g": 0.5480362628467157,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
-    "verdict": "PLAUSIBLE",
+    "verdict": "REVIEW",
     "floor_hit": false,
     "phase1_growth": 0.5,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
+    "industry_benchmark": 0.09607252569343137,
+    "damodaran_industry": "Semiconductor",
     "damodaran_year": 2025,
     "rev_cagr_3yr": 1.0004509499443963,
     "rev_cagr_5yr": 0.6689858183148778,
     "g_fundamental": 0.02061795869963134,
     "recommended_g_median": 0.5,
-    "recommended_g": 0.55,
+    "recommended_g": 0.5480362628467157,
     "growth_blend_s": 1.0,
-    "rec_evidence_weight": 3.412359173992627,
+    "rec_evidence_weight": 4.412359173992627,
     "rev_cagr_2yr": null,
     "ttm_rev_yoy": 0.8337529809100703,
     "growth_model": "decay",
-    "growth_model_reason": "CAGR_max=100.0%と業界平均10.0%の中間値55.0%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
+    "growth_model_reason": "CAGR_max=100.0%と業界平均9.6%の中間値54.8%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
     "hype_phase_used": 4,
     "signals": [
       "過去実績(3yr:100.0% / 5yr:66.9%)と整合 ✅",
       "RR×ROIC(2.1%)：再投資より還元重視型、または期待値先行 ℹ️"
     ],
-    "warnings": [],
+    "warnings": [
+      "業界平均Semiconductor(9.6%)の5.2倍超 ⚠️"
+    ],
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },

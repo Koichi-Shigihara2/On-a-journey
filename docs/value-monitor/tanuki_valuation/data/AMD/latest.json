@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -54.7,
-  "calculation_date": "2026-11-06T11:19:43+09:00",
+  "calculation_date": "2026-11-06T12:45:01+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + three_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "three_stage",
   "growth": {
@@ -502,6 +502,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -510,7 +511,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-2"
+    "GROWTH-SANITY-CONTINUITY-1-2",
+    "SECTOR-MASTER-ADOPT-1-1"
   ],
   "fcf_history": [
     {
@@ -627,23 +629,23 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.246,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.25847890609257534,
+  "recommended_g": 0.21933826406284856,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
-    "verdict": "PLAUSIBLE",
+    "verdict": "REVIEW",
     "floor_hit": false,
     "phase1_growth": 0.246,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
+    "industry_benchmark": 0.09607252569343137,
+    "damodaran_industry": "Semiconductor",
     "damodaran_year": 2025,
     "rev_cagr_3yr": 0.13643599335368428,
     "rev_cagr_5yr": 0.2882389065515516,
     "g_fundamental": 0.007465146171846676,
-    "recommended_g_median": 0.25847890609257534,
-    "recommended_g": 0.25847890609257534,
+    "recommended_g_median": 0.21933826406284856,
+    "recommended_g": 0.21933826406284856,
     "growth_blend_s": 0.0,
-    "rec_evidence_weight": 3.1493029234369336,
+    "rec_evidence_weight": 4.149302923436934,
     "rev_cagr_2yr": null,
     "ttm_rev_yoy": 0.3954391891891893,
     "growth_model": "median",
@@ -653,7 +655,9 @@
       "過去実績(3yr:13.6% / 5yr:28.8%)と整合 ✅",
       "RR×ROIC(0.7%)：再投資より還元重視型、または期待値先行 ℹ️"
     ],
-    "warnings": [],
+    "warnings": [
+      "業界平均Semiconductor(9.6%)の2.6倍超 ⚠️"
+    ],
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },

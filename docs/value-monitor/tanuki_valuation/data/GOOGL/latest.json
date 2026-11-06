@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -63.8,
-  "calculation_date": "2026-11-06T11:22:01+09:00",
+  "calculation_date": "2026-11-06T12:47:15+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -437,6 +437,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -445,7 +446,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-2"
+    "GROWTH-SANITY-CONTINUITY-1-2",
+    "SECTOR-MASTER-ADOPT-1-1"
   ],
   "fcf_history": [
     {
@@ -547,29 +549,30 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.1385,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.1702809589389646,
+  "recommended_g": 0.23337504763180875,
   "fcf_margin_bear_mult_applied": true,
   "fcf_margin_note": "FCFマージン悪化(20.5%→18.2%) BEAR補正係数=0.886",
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
     "phase1_growth": 0.1385,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
+    "industry_benchmark": 0.4857514024031853,
+    "damodaran_industry": "Software (Internet)",
     "damodaran_year": 2025,
     "rev_cagr_3yr": 0.12511745609215974,
     "rev_cagr_5yr": 0.1715483907713573,
     "g_fundamental": 0.16234356961440777,
-    "recommended_g_median": 0.1702809589389646,
-    "recommended_g": 0.1702809589389646,
+    "recommended_g_median": 0.23337504763180875,
+    "recommended_g": 0.23337504763180875,
     "growth_blend_s": 0.0,
-    "rec_evidence_weight": 4.0,
+    "rec_evidence_weight": 5.0,
     "rev_cagr_2yr": null,
     "ttm_rev_yoy": 0.22211441927793363,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=17.2%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,
     "signals": [
+      "業界平均Software (Internet)(48.6%)の0.3倍以内 ✅",
       "過去実績(3yr:12.5% / 5yr:17.2%)と整合 ✅",
       "RR×ROIC上限(16.2%)以内 ✅"
     ],

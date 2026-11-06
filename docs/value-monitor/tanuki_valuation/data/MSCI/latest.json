@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -42.7,
-  "calculation_date": "2026-11-06T11:27:02+09:00",
+  "calculation_date": "2026-11-06T12:52:39+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -426,6 +426,7 @@
     "qx": false,
     "qy": true
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -434,7 +435,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-2"
+    "GROWTH-SANITY-CONTINUITY-1-2",
+    "SECTOR-MASTER-ADOPT-1-1"
   ],
   "fcf_history": [
     {
@@ -505,8 +507,8 @@
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
     "phase1_growth": 0.10693043753339758,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
+    "industry_benchmark": -0.059402779721690176,
+    "damodaran_industry": "Information Services",
     "damodaran_year": 2025,
     "rev_cagr_3yr": 0.11707823751600754,
     "rev_cagr_5yr": 0.13078124117012369,
@@ -521,6 +523,7 @@
     "growth_model_reason": "CAGR_max=15.0%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 3,
     "signals": [
+      "業界平均(Information Services)はマイナス成長。個別銘柄の独自評価が必要 ℹ️",
       "過去実績(3yr:11.7% / 5yr:13.1%)と整合 ✅",
       "RR×ROIC(3.5%)：再投資より還元重視型、または期待値先行 ℹ️"
     ],

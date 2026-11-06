@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -46.7,
-  "calculation_date": "2026-11-06T11:19:38+09:00",
+  "calculation_date": "2026-11-06T12:44:57+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -440,6 +440,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -448,7 +449,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-2"
+    "GROWTH-SANITY-CONTINUITY-1-2",
+    "SECTOR-MASTER-ADOPT-1-1"
   ],
   "fcf_history": [
     {
@@ -547,29 +549,30 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.0736,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.07694703431352282,
+  "recommended_g": 0.07715343998538252,
   "fcf_margin_bear_mult_applied": true,
   "fcf_margin_note": "FCFマージン悪化(25.4%→20.1%) BEAR補正係数=0.790",
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
     "phase1_growth": 0.0736,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
+    "industry_benchmark": 0.07797906267282129,
+    "damodaran_industry": "Semiconductor Equip",
     "damodaran_year": 2025,
     "rev_cagr_3yr": 0.032334704568867556,
     "rev_cagr_5yr": 0.10522310397599743,
     "g_fundamental": 0.09250342135942013,
-    "recommended_g_median": 0.07694703431352282,
-    "recommended_g": 0.07694703431352282,
+    "recommended_g_median": 0.07715343998538252,
+    "recommended_g": 0.07715343998538252,
     "growth_blend_s": 0.0,
-    "rec_evidence_weight": 4.0,
+    "rec_evidence_weight": 5.0,
     "rev_cagr_2yr": null,
     "ttm_rev_yoy": 0.07772690734980614,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=10.5%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,
     "signals": [
+      "業界平均Semiconductor Equip(7.8%)の0.9倍以内 ✅",
       "過去実績(3yr:3.2% / 5yr:10.5%)と整合 ✅",
       "RR×ROIC上限(9.3%)以内 ✅"
     ],

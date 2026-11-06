@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -15.0,
-  "calculation_date": "2026-11-06T11:19:57+09:00",
+  "calculation_date": "2026-11-06T12:45:21+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -233,7 +233,7 @@
       "total_transient_amount": 15995000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべてマクロ変動による一時的影響または一過性の在庫評価損と明記されており、構造的悪化を示す要素はない。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響または一過性の在庫評価損と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "excluded",
@@ -466,6 +466,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SECTOR-MASTER-ADOPT-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -474,7 +475,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
     "GROWTH-SANITY-CONTINUITY-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-2"
+    "GROWTH-SANITY-CONTINUITY-1-2",
+    "SECTOR-MASTER-ADOPT-1-1"
   ],
   "fcf_history": [
     {
@@ -575,29 +577,30 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.1631,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.4807148919376843,
+  "recommended_g": 0.40758208590373834,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
     "phase1_growth": 0.1631,
-    "industry_benchmark": null,
-    "damodaran_industry": null,
+    "industry_benchmark": 0.10875156954339793,
+    "damodaran_industry": "Aerospace/Defense",
     "damodaran_year": 2025,
     "rev_cagr_3yr": 0.5406926060983144,
     "rev_cagr_5yr": 0.3800488438563101,
     "g_fundamental": null,
-    "recommended_g_median": 0.5,
-    "recommended_g": 0.4807148919376843,
+    "recommended_g_median": 0.41754640639908425,
+    "recommended_g": 0.40758208590373834,
     "growth_blend_s": 0.10734601285490136,
-    "rec_evidence_weight": 3.0,
+    "rec_evidence_weight": 4.0,
     "rev_cagr_2yr": null,
     "ttm_rev_yoy": 0.8443747582472232,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=54.1%のため候補の重み付き平均モデル適用（逓減モデルとの混合 s=0.11）",
     "hype_phase_used": 4,
     "signals": [
+      "業界平均Aerospace/Defense(10.9%)の1.5倍以内 ✅",
       "過去実績(3yr:54.1% / 5yr:38.0%)と整合 ✅"
     ],
     "warnings": [],

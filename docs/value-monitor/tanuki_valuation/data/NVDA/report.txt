@@ -1,5 +1,5 @@
 NVDA INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-06T11:23:40+09:00
+Generated: 2026-11-06T12:48:52+09:00
 Price: $181.60
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -66,8 +66,8 @@ BASE: Growth=50.0%, IV=$733.64, Deviation=+304.0%
 BULL: Growth=60.0%, IV=$995.24, Deviation=+448.0%
 Return_Outlook(BASE): 1年後: $1,100.46 (+506.0%) / 3年後: $2,476.03 (+1263.5%) / 5年後: $5,571.08 (+2967.8%)
   5yr_Annualized_Return: +98.3%/yr
-Growth_Rate_Rec: 55.0% (recommended)
-Growth_Rate_Parallel: 採用値 50.0%（segment_xbrl） / 参考 55.0%（実績CAGR等ベース）
+Growth_Rate_Rec: 54.8% (recommended)
+Growth_Rate_Parallel: 採用値 50.0%（segment_xbrl） / 参考 54.8%（実績CAGR等ベース）
   ⚠️ 実績YoY(直近最大4四半期平均)は96.4%だが、上限50%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
 TTM_YoY_Growth: 83.4%
 (DCF Base vs TTM actual: -33.4pt discount)
@@ -174,12 +174,14 @@ market-priced future potential.
 Phase1成長率 : 50.0%
 成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
 DCF適用値:  50.0%（セグメント加重平均 → DCF G として直接使用）
-推奨成長率: 55.0%（Layer 2 参考値・DCF未適用）
-判定         : PLAUSIBLE
-業界ベンチマーク: N/A
+推奨成長率: 54.8%（Layer 2 参考値・DCF未適用）
+推奨成長率の候補: 今の伸び(TTM売上の前年比) 83.4%
+判定         : REVIEW
+業界ベンチマーク: Semiconductor / 9.6% (Damodaran 2025)
 signals:
   - 過去実績(3yr:100.0% / 5yr:66.9%)と整合 ✅
   - RR×ROIC(2.1%)：再投資より還元重視型、または期待値先行 ℹ️
+  - 業界平均Semiconductor(9.6%)の5.2倍超 ⚠️
   ⚠️ ハイパーグロース事業と成熟業種平均（Damodaran業種分類）との構造的ミスマッチ（Classificationには影響なし）
 Definition:
 

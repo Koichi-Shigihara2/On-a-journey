@@ -1,17 +1,17 @@
 IOT INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-06T11:22:19+09:00
+Generated: 2026-11-06T12:47:33+09:00
 Price: $41.09
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: HOLD
+Classification: TRIM
 Funda_Score: 90/100
 Timing_Score (components):
-  Deviation_Rate: -23.1%
+  Deviation_Rate: -32.1%
   MA200_Deviation: +19.3%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: None | Target: $52 median ($39-$60) | 24 analysts | vs IV: +66.1%
-Comment: 割高(-23%超)、FCF黒字、売上成長加速
+  Analyst_Consensus: None | Target: $52 median ($39-$60) | 24 analysts | vs IV: +88.3%
+Comment: 割高(-32%超)、FCF黒字、売上成長加速
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -31,9 +31,9 @@ PASS: Funda<25, excluded from consideration
 [2. MATRIX POSITION]
 Matrix: ①投資効率系
 Quadrant: 左下
-Label: 割高×中効率
-Key_Metric_Y: RICE = 1.075
-Deviation_Rate: -23.1%
+Label: 割高×低効率
+Key_Metric_Y: RICE = 0.966
+Deviation_Rate: -32.1%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,22 +58,22 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $41.09
-Intrinsic_Value_BASE: $31.61
-Deviation_BASE: -23.1%
+Intrinsic_Value_BASE: $27.88
+Deviation_BASE: -32.1%
 Growth_Rate_Original: 29.5% (TTM実績)
-Growth_Rate_Adjusted: 36.7% (推奨値・中央値ベース)
+Growth_Rate_Adjusted: 33.0% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=25.7%, IV=$21.77 （推奨値ベース）
-BASE: Growth=36.7%, IV=$31.61 （推奨値ベース）
-BULL: Growth=44.1%, IV=$40.11 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $43.22 (+5.2%) / 3年後: $80.79 (+96.6%) / 5年後: $151.03 (+267.6%)
-  5yr_Annualized_Return: +29.7%/yr
+BEAR: Growth=23.1%, IV=$19.86 （推奨値ベース）
+BASE: Growth=33.0%, IV=$27.88 （推奨値ベース）
+BULL: Growth=39.5%, IV=$34.67 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $37.07 (-9.8%) / 3年後: $65.52 (+59.5%) / 5年後: $115.81 (+181.8%)
+  5yr_Annualized_Return: +23.0%/yr
 TTM_YoY_Growth: 29.5%
-(DCF Base vs TTM actual: +7.2pt premium)
+(DCF Base vs TTM actual: +3.5pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 12.01%
-  参考①β込みWACC_IV: $23.78 (Deviation: -42.1%)
-  参考②Rf理論上限_IV（Rf 4.84%、^TNX 2026-11-05）: $161.58 (Deviation: +293.2%)
+  参考①β込みWACC_IV: $21.06 (Deviation: -48.7%)
+  参考②Rf理論上限_IV（Rf 4.84%、^TNX 2026-11-05）: $140.90 (Deviation: +242.9%)
   金利感応度チェック: 10年国債利回りが基準4.30%→現在4.84%（^TNX 2026-11-05）に変化すると、Rf基準の必要成長率は-9.6%→+0.1%（+9.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 1.352
@@ -84,23 +84,23 @@ FCF_Breakdown（TTM 2026-08-01）: OCF=$288M / CapEx=$33M / SBC(非現金)=$331M
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: NORMAL  (通常判定適用)
-DCF_FCF_PV: $3.10B (5yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $14.58B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $17.68B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_FCF_PV: $2.82B (5yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $12.67B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $15.50B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $1,578,915 (Remaining Performance Obligation premium)
 Growth_Option_PV: $0
-Equity_Value: $18.51B (= v0 + RPO_PV + GO_PV + Net_Cash $0.83B)
+Equity_Value: $16.33B (= v0 + RPO_PV + GO_PV + Net_Cash $0.83B)
 Shares_Used: 585.6M (source: yf_implied)
-→ Intrinsic_Value: $31.61 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $27.88 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  5yr  7yr
-  9.0%       $23.52  $37.68  $59.96
-  10.0%       $20.01  $31.61  $49.53
-  11.0%       $17.44  $27.18  $41.95
+  9.0%       $21.80  $33.16  $50.07
+  10.0%       $18.57  $27.88  $41.48
+  11.0%       $16.21  $24.02  $35.23
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由がすべてマクロ変動による一時的影響と明記されており、事業の構造的問題ではなく一過性の貸倒引当金増加と判断できる。
+  Reasoning: すべてマクロ変動による一時的影響と明記されており、事業固有の構造的悪化ではなく外部要因による一過性の費用と判断できる。
 Financial_Health:
   Net_Debt: $-0.83B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.29B  ST_Invest: $0.54B
@@ -117,8 +117,8 @@ FCF_History:
   2025: $0.11B (FCF_Margin: 8.9%)
   2026: $0.21B (FCF_Margin: 12.8%)
 Segment_Breakdown:
-  General: $1.8B (100%, YoY 37%)
-  Segment_Weighted_Growth: 36.7% (推奨値・中央値を自動適用)
+  General: $1.8B (100%, YoY 33%)
+  Segment_Weighted_Growth: 33.0% (推奨値・中央値を自動適用)
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -169,15 +169,17 @@ market-priced future potential.
 
 
 [4. 成長率根拠]
-Phase1成長率 : 36.7% (DCF適用値・推奨成長率)
+Phase1成長率 : 33.0% (DCF適用値・推奨成長率)
 元成長率      : 29.5% (推奨適用前)
 成長モデル: 中央値モデル（CAGR_max=45.3%のため候補の重み付き平均モデル適用）  HypePhase=4
 推奨成長率内訳:
-  中央値ベース:          36.7%
-  最終推奨値:            36.7%
+  中央値ベース:          33.0%
+  最終推奨値:            33.0%
+推奨成長率の候補: 今の伸び(TTM売上の前年比) 29.5%
 判定         : PLAUSIBLE
-業界ベンチマーク: N/A
+業界ベンチマーク: Software (System & Application) / 21.6% (Damodaran 2025)
 signals:
+  - 業界平均Software (System & Application)(21.6%)の1.5倍 ℹ️
   - 過去実績(3yr:35.4% / 5yr:45.3%)と整合 ✅
 Definition:
 
@@ -197,15 +199,15 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=0.753
-BASE: RICE=1.075
-BULL: RICE=1.291
+BEAR: RICE=0.676
+BASE: RICE=0.966
+BULL: RICE=1.157
 Components (BASE scenario):
-G  = 36.7%  [TANUKI forward growth rate]
+G  = 33.0%  [TANUKI forward growth rate]
 Q  = 0.6847   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 0.4277  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 10.0000  [R&D除外・CapExのみ投資強度]
-RICE_adj = 25.128  [参考：R&D資本化想定]
+RICE_adj = 22.595  [参考：R&D資本化想定]
 WACC = 10.0%
 SBC_Adjusted: true
 Definition:
@@ -334,7 +336,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 10.1%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: None | Target: $52 median ($39-$60) | 24 analysts | vs IV: +66.1%
+Analyst_Consensus: None | Target: $52 median ($39-$60) | 24 analysts | vs IV: +88.3%
 Insider_Activity: Sell優勢 | 買い0件 / 売り121件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 29.5%
