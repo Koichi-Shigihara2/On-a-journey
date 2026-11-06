@@ -301,6 +301,48 @@ def get_industry_benchmark(ticker: str, sector: str | None) -> dict | None:
 
 
 # ─────────────────────────────────────────────
+# 推奨成長率の定数（[[GROWTH-SANITY-CONTINUITY-1]] 段1、2026-11-06、チャット側の決定）
+# 第一条件: 入力が少し変わったとき、推奨成長率が少しだけ変わる（候補の数・符号・逓減への切り替えの境目で値が飛ばない）
+# ─────────────────────────────────────────────
+# RR×ROIC・業種の値の「重み」が0から1になる幅（0〜5%、1つの定数）。0以下は重み0、5%以上は重み1。
+# 今は「正のときだけ候補」の二値で、RR×ROICが0.06%（LOAR）のような「測れていない値」も1件と数えて中央値を押し下げ、
+# 0.1%の違いで推奨成長率が5pt動いていた（MRVL）。値が小さいほど候補への寄与を連続に小さくする
+WEIGHT_RAMP = 0.05
+# 候補の重みの合計がこの値に届くまで、足りない分を今のDCFの成長率 max(p1, 0) で埋める（場合分けしない）。
+# 今の「候補2件以上、なければ推奨成長率なし（上書きなし）」の連続版。業種だけ・1件だけでも成熟業種の平均を押し付けず、p1との間に置く
+FILL_WEIGHT = 2.0
+# 成長の測り（売上CAGR）の上限。逓減モデルの start_g の上限（100%）と同じ
+GROWTH_MEASURE_CAP = 1.0
+# 逓減モデルへの切り替えを tmax（今の伸び・3年・5年CAGRの最大）0.50〜0.70 でなだらかに混ぜる（今は0.50超で二値）。
+# DCFの成長率p1の上限が0.50なので、窓は0.50から上に置く（0.50ちょうどに頭打ちされた銘柄は今のまま）
+DECAY_BLEND_LO = 0.50
+DECAY_BLEND_HI = 0.70
+# 業種が無いときの終点（今の end_g の既定と同じ）
+DECAY_END_DEFAULT = 0.10
+
+
+def _clamp(x: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, x))
+
+
+def _smoothstep(t: float) -> float:
+    t = _clamp(t, 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+
+def _weight_ramp(x: float) -> float:
+    """RR×ROIC・業種の値の重み。0以下で0、WEIGHT_RAMP以上で1、その間は直線"""
+    return _clamp(x / WEIGHT_RAMP, 0.0, 1.0)
+
+
+def tapering_g_end(recommended_g: float, blend_s: float, industry_g: float | None) -> float:
+    """線形逓減DCFの終点。混ぜ具合sで推奨成長率から業種へ連続に近づける（s=0なら推奨成長率〈逓減なし〉、s=1なら業種）。
+    業種が0以下のときは0（逓減の終点を負にしない）。pipelineが tapering_g_end に渡す"""
+    end = max(industry_g, 0.0) if industry_g is not None else DECAY_END_DEFAULT
+    return recommended_g - blend_s * (recommended_g - end)
+
+
+# ─────────────────────────────────────────────
 # Revenue CAGR 計算
 # ─────────────────────────────────────────────
 def calc_revenue_cagr(annual_revenues: list[float]) -> dict:
@@ -478,111 +520,83 @@ def check_growth_sanity(
         except Exception:
             pass
 
-    # ─── Stage 1: 複数指標の中央値 ───
-    _rec_candidates = []
-    if cagr.get("cagr_3yr") is not None and cagr["cagr_3yr"] > 0:
-        _rec_candidates.append(cagr["cagr_3yr"])
-    if cagr.get("cagr_5yr") is not None and cagr["cagr_5yr"] > 0:
-        _rec_candidates.append(cagr["cagr_5yr"])
-    if industry_g is not None and industry_g > 0:
-        _rec_candidates.append(industry_g)
-    if g_fundamental is not None and g_fundamental > 0:
-        _rec_candidates.append(g_fundamental)
-
-    # GROWTH-SANITY-CLASS-SYNC-1（MO型iv）: 通常は中央値に候補2件以上が必要だが、
-    # 「fcf_cagr経路でfloor(15%)に到達している」かつ「業界ベンチマークのみ1件」の
-    # 銘柄に限り、industry_g単独をrecommended_gとして採用する（案B'）。
-    # 一般的な閾値緩和（候補1件で常に許容）はLOARのような真の高成長銘柄で
-    # 成熟業界平均を誤って押し付ける副作用が事前検証で確認されたため、
-    # floor到達中の銘柄のみへ厳密に限定する。
-    # 注: floor_hit変数自体はrecommended_g確定後（本ブロックの後段）でしか
-    # 算出できないため、同じ判定条件をここで独立に再現する
-    # （_FCF_CAGR_FLOORは関数末尾のfloor_hit算出と共用）。
-    _is_fcf_cagr_floor_candidate = (
-        growth_source == "fcf_cagr"
-        and phase1_growth is not None
-        and abs(phase1_growth - _FCF_CAGR_FLOOR) < 0.002
+    # ─── 推奨成長率（候補の重み付き平均 → 逓減モデルとのなだらかな混合）───
+    # [[GROWTH-SANITY-CONTINUITY-1]] 段1（2026-11-06）。今までの規則の飛び:
+    #   候補が「>0」のときだけ入る（符号）・2件未満はNone・偶数/奇数で中央値が切り替わる・floor例外が±0.002の二値・
+    #   逓減モデルへの切り替えが0.50超の二値・逓減の終点が業種>0かどうかの二値・taperの有無がラベルの二値
+    # 候補: 売上CAGR 3年・5年（負は0として入れる）、RR×ROIC・業種の値（0〜WEIGHT_RAMPで重み0→1）
+    _meas: list[tuple[float, float]] = []
+    for _cv in (cagr.get("cagr_3yr"), cagr.get("cagr_5yr")):
+        if _cv is not None:
+            _meas.append((_clamp(_cv, 0.0, GROWTH_MEASURE_CAP), 1.0))
+    if g_fundamental is not None:
+        _meas.append((max(g_fundamental, 0.0), _weight_ramp(g_fundamental)))
+    if industry_g is not None:
+        _meas.append((max(industry_g, 0.0), _weight_ramp(industry_g)))
+    _w_sum = sum(w for _, w in _meas)
+    _fill_g = max(phase1_growth, 0.0) if phase1_growth is not None else 0.0
+    if _w_sum > 0:
+        _mean = sum(v * w for v, w in _meas) / _w_sum
+        _conf = min(1.0, _w_sum / FILL_WEIGHT)
+        recommended_g_median = _conf * _mean + (1.0 - _conf) * _fill_g
+    else:
+        recommended_g_median = _fill_g
+    # 上限キャップ: max(industry_benchmark × 3, 50%)（通常モデルの側だけ）
+    _cap = max(
+        industry_g * 3.0 if (industry_g is not None and industry_g > 0) else 0.50,
+        0.50,
     )
-    _min_rec_candidates = 2
-    if (
-        _is_fcf_cagr_floor_candidate
-        and len(_rec_candidates) == 1
-        and industry_g is not None
-        and industry_g > 0
-    ):
-        _min_rec_candidates = 1
+    recommended_g_median = min(recommended_g_median, _cap)
 
-    recommended_g_median = None
-    if len(_rec_candidates) >= _min_rec_candidates:
-        _rec_candidates.sort()
-        _n = len(_rec_candidates)
-        if _n % 2 == 1:
-            recommended_g_median = _rec_candidates[_n // 2]
-        else:
-            recommended_g_median = (_rec_candidates[_n // 2 - 1] + _rec_candidates[_n // 2]) / 2
-
-    # ─── recommended_g ───
+    # 逓減モデルとの混合: tmax（今の伸び・3年・5年CAGRの最大、正のもの）がDECAY_BLEND_LO〜HIで s=0→1
     _cagr_vals = [v for v in [cagr.get("cagr_3yr"), cagr.get("cagr_5yr")] if v is not None and v > 0]
     _ttm_best_cagr = max(_cagr_vals) if _cagr_vals else None
     _ttm_actual_pos = ttm_actual if (ttm_actual is not None and ttm_actual > 0) else None
-    # 逓減モデルのトリガー: ttm_actual / cagr_3yr / cagr_5yr のいずれかが 50% 超
     _trigger_vals = [v for v in [_ttm_actual_pos, *_cagr_vals] if v is not None]
     _trigger_max = max(_trigger_vals) if _trigger_vals else None
+    growth_blend_s = _smoothstep(((_trigger_max or 0.0) - DECAY_BLEND_LO) / (DECAY_BLEND_HI - DECAY_BLEND_LO))
 
-    if _trigger_max is not None and _trigger_max > 0.50:
-        # ── 逓減モデル: TTM/CAGRピークと業界平均の中間値 ──
-        # GROWTH-1（2026-05-31導入、HypeCoreフェーズに応じてTTM/業界平均の
-        # 加重比率をPhase1-2=65%/Phase3=50%/Phase4=35%と変えていた）は、実証
-        # データ（バックテスト等）なしに理論的仮説のみで導入されており、かつ
-        # Funda側（DCF成長率）にTiming側（HypePhase＝価格・出来高ベースの
-        # センチメント指標、report.txt[7]HYPECORE参照）の信号を混ぜるという
-        # 設計思想上の非対称性があったため、2026-08-26
-        # [[LAYER1-GROWTH-HYPEPHASE-DECAY-GAP-1]]の結論に基づき固定50:50へ
-        # 復元した。HypePhase由来の「勢いの持続性・剥落」という発想自体は
-        # 無駄にせず、Timing側（HypeCore）の機能として
-        # [[STOCKHTML-SIGNAL-CONSISTENCY-SECTION-1]]で別途引き取りを検討中。
-        _ttm_weight = 0.50  # 固定（GROWTH-1のフェーズ別加重は廃止）
-
-        # A-2: decay モデルの start_g を「逓減を発動させた最大値」に統一。
-        # ttm_actual (phase1_growth) と cagr_3yr/5yr の最大値をスタート点とする。
-        # これにより start_g と _trigger_max が常に一致し、ラベルも正確になる。
-        _start_raw_ttm  = _ttm_actual_pos or 0.0
-        _start_raw_cagr = _ttm_best_cagr  or 0.0
-        if _start_raw_cagr > _start_raw_ttm:
-            _start_raw = _start_raw_cagr
-            _start_src = "CAGR_max"
-        else:
-            _start_raw = _start_raw_ttm
-            _start_src = "G入力値"   # phase1_growth (セグメント設定値 or TTM注入値)
-        start_g = min(_start_raw, 1.0)
-        end_g = industry_g if (industry_g is not None and industry_g > 0) else 0.10
-        recommended_g = start_g * _ttm_weight + end_g * (1 - _ttm_weight)
-        growth_model = "decay"
+    # 逓減モデル: TTM/CAGRピークと業種の中間（固定50:50。GROWTH-1のフェーズ別加重は2026-08-26に廃止済み）
+    # start_g は「逓減を発動させた最大値」（ttm_actual と cagr_3yr/5yr の最大）、上限100%
+    _start_raw_ttm = _ttm_actual_pos or 0.0
+    _start_raw_cagr = _ttm_best_cagr or 0.0
+    if _start_raw_cagr > _start_raw_ttm:
+        _start_raw = _start_raw_cagr
+        _start_src = "CAGR_max"
+    else:
+        _start_raw = _start_raw_ttm
+        _start_src = "G入力値"   # phase1_growth (セグメント設定値 or TTM注入値)
+    start_g = min(_start_raw, 1.0)
+    end_g = max(industry_g, 0.0) if industry_g is not None else DECAY_END_DEFAULT
+    _decay_g = start_g * 0.50 + end_g * 0.50
+    recommended_g = (1.0 - growth_blend_s) * recommended_g_median + growth_blend_s * _decay_g
+    growth_model = "decay" if growth_blend_s >= 0.5 else "median"
+    if growth_blend_s >= 0.5:
         growth_model_reason = (
             f"{_start_src}={start_g:.1%}と業界平均{end_g:.1%}の中間値"
-            f"{recommended_g:.1%}を採用（固定50:50、将来の成長減速を"
-            f"織り込んだ保守的推定）"
+            f"{_decay_g:.1%}を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）"
         )
     else:
-        # 中央値モデル
-        recommended_g = recommended_g_median  # None if < 2 candidates
-        growth_model = "median"
-        # A-2: _trigger_max は max(rev_cagr_3yr, rev_cagr_5yr, phase1_g) であり
-        # "TTM YoY Revenue Growth" とは別物。CAGR_max として表示する。
         _reason_cagr = f"CAGR_max={_trigger_max:.1%}" if _trigger_max is not None else "CAGRデータなし"
-        growth_model_reason = f"{_reason_cagr}のため中央値モデル適用"
+        growth_model_reason = f"{_reason_cagr}のため候補の重み付き平均モデル適用"
+    if 0.0 < growth_blend_s < 1.0:
+        growth_model_reason += f"（逓減モデルとの混合 s={growth_blend_s:.2f}）"
 
-        # 上限キャップ: max(industry_benchmark × 3, 50%)
-        if recommended_g is not None:
-            _cap = max(
-                industry_g * 3.0 if (industry_g is not None and industry_g > 0) else 0.50,
-                0.50,
-            )
-            recommended_g = min(recommended_g, _cap)
-
-        # マイナス成長は自動調整対象外
-        if recommended_g is not None and recommended_g < 0:
-            recommended_g = None
+    # 旧規則で「推奨成長率が出ない」銘柄（候補が正の値で2件未満。floor例外つき）。floor_hit・verdict の判定にだけ使う
+    # （段1では表示の判定を変えない）
+    _legacy_cands = [v for v in (cagr.get("cagr_3yr"), cagr.get("cagr_5yr"), industry_g, g_fundamental)
+                     if v is not None and v > 0]
+    _legacy_min = 2
+    if (
+        growth_source == "fcf_cagr"
+        and phase1_growth is not None
+        and abs(phase1_growth - _FCF_CAGR_FLOOR) < 0.002
+        and len(_legacy_cands) == 1
+        and industry_g is not None
+        and industry_g > 0
+    ):
+        _legacy_min = 1
+    _legacy_rec_none = len(_legacy_cands) < _legacy_min
 
     # ── TANUKI-DCF-1③ FCFマージン悪化補正係数 ──
     # fcf_margins は古い順。直近3年平均 vs 最新でトレンドを判定
@@ -615,7 +629,7 @@ def check_growth_sanity(
         growth_source == "fcf_cagr"
         and phase1_growth is not None
         and abs(phase1_growth - _FCF_CAGR_FLOOR) < 0.002
-        and recommended_g is None
+        and _legacy_rec_none
     )
 
     # JOBY-STATIC-GROWTH-HARDCODE-1: segment_weighted経路（admin.html::
@@ -634,7 +648,7 @@ def check_growth_sanity(
         and cagr.get("cagr_3yr") is None
         and cagr.get("cagr_5yr") is None
         and g_fundamental is None
-        and recommended_g is None
+        and _legacy_rec_none
     )
 
     floor_hit = _fcf_cagr_floor_hit or _segment_weighted_all_none_hit
@@ -658,6 +672,8 @@ def check_growth_sanity(
         "g_fundamental": g_fundamental,
         "recommended_g_median": recommended_g_median,
         "recommended_g": recommended_g,
+        "growth_blend_s": growth_blend_s,
+        "rec_evidence_weight": _w_sum,
         "growth_model": growth_model,
         "growth_model_reason": growth_model_reason,
         "hype_phase_used": hype_phase,

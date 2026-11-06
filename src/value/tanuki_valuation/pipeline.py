@@ -25,6 +25,7 @@ from data_fetcher import TanukiDataFetcher
 from core_calculator import KoichiValuationCalculator
 from validator import validate_calculation
 from growth_sanity import check_growth_sanity, calc_fundamental_growth
+from growth_sanity import tapering_g_end as tapering_g_end_continuous  # GROWTH-SANITY-CONTINUITY-1
 import segment_config as _seg_cfg
 # [[TANUKI-FIN-2]]: 金融機関向けFCFEエクイティDCF（参考表示専用）
 from calculator.fcfe import is_financial_institution_ticker, calculate_fcfe_valuation
@@ -1097,11 +1098,16 @@ class TanukiValuationPipeline:
 
         # DCF-1: 線形逓減DCFの適用条件
         # growth_model == "decay"（TTM>50%の高成長銘柄）かつ業界ベンチマーク取得済みの場合
+        # [[GROWTH-SANITY-CONTINUITY-1]] 段1: 逓減モデルとの混ぜ具合sで終点を連続に（tapering_g_end = rec − s·(rec − 業種)、
+        # 業種が0以下なら0）。s=0なら逓減なし（None）。今までは growth_model が "decay" の二値で業種の値をそのまま終点にしていた
         _tapering_g_end: float | None = None
         if (_growth_sanity
-                and _growth_sanity.get("growth_model") == "decay"
+                and (_growth_sanity.get("growth_blend_s") or 0.0) > 0.0
+                and _recommended_g is not None
                 and _growth_sanity.get("industry_benchmark") is not None):
-            _tapering_g_end = _growth_sanity["industry_benchmark"]
+            _tapering_g_end = tapering_g_end_continuous(
+                _recommended_g, _growth_sanity["growth_blend_s"], _growth_sanity["industry_benchmark"]
+            )
 
         if _is_seg_unconfigured and _recommended_g is not None and financials is not None:
             try:

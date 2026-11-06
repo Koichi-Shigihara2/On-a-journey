@@ -577,18 +577,22 @@ class TestRecommendedGrowth:
         "roc": 0.10,
         "rr": 0.50,
     })
-    def test_recommended_g_is_median_of_two_candidates(self, _mock):
-        """industry_g + g_fundamental の2候補 → recommended_g が中央値になる"""
-        # annual_revenues 3件 → cagr_3yr/5yr = None（len<4 なので算出不可）
+    def test_recommended_g_is_weighted_mean_of_two_candidates(self, _mock):
+        """業種 + RR×ROIC の2候補 → 重み付き平均（[[GROWTH-SANITY-CONTINUITY-1]] 段1。以前は中央値）。
+        重みは 0〜5% で 0→1（業種 9.6% は1、RR×ROIC 2.6% は0.52）。重みの合計が2に届かないぶんは max(p1,0) で埋める"""
+        # annual_revenues 3件 → cagr_3yr/5yr = None（len<4 なので算出不可）。ttm_actual なし → 逓減モデルの混合 s=0
         result = _gs.check_growth_sanity(
             "ALAB", phase1_growth=0.934, sector="Semiconductor",
             annual_revenues=[100.0, 200.0, 400.0],
             g_fundamental=0.026,
         )
-        # candidates: [0.096, 0.026] → sorted: [0.026, 0.096] → median = 0.061
-        assert "recommended_g" in result
-        assert result["recommended_g"] is not None
-        assert abs(result["recommended_g"] - 0.061) < 0.001
+        w_sum = 1.0 + 0.026 / 0.05
+        mean = (0.096 * 1.0 + 0.026 * (0.026 / 0.05)) / w_sum
+        conf = w_sum / 2.0
+        expected = conf * mean + (1 - conf) * 0.934
+        assert result["growth_blend_s"] == 0.0
+        assert abs(result["recommended_g"] - expected) < 1e-9
+        assert abs(result["recommended_g_median"] - expected) < 1e-9
 
     @patch.object(_gs, "get_industry_benchmark", return_value={
         "industry": "Software (System & Application)",
@@ -596,30 +600,29 @@ class TestRecommendedGrowth:
         "roc": 0.20,
         "rr": 0.60,
     })
-    def test_recommended_g_is_median_of_four_candidates(self, _mock):
-        """4候補 → recommended_g が中央値（中央2要素の平均）になる"""
-        # annual_revenues 6件 → cagr_3yr/5yr 両方算出可
+    def test_recommended_g_weighted_mean_of_four_candidates(self, _mock):
+        """4候補（3年・5年CAGR・RR×ROIC・業種）→ 重みの合計が2以上なら p1 で埋めない（重み付き平均そのもの）"""
         result = _gs.check_growth_sanity(
             "NOW", phase1_growth=0.221, sector="Software_System",
             annual_revenues=[500.0, 650.0, 900.0, 1200.0, 1700.0, 2300.0],
             g_fundamental=0.014,
         )
-        assert "recommended_g" in result
-        # candidates 4つすべて > 0 → median = 中央2要素の平均
-        # cagr_3yr/5yr の実計算値 + industry=0.216 + g_fundamental=0.014
-        # 候補は4個 → recommended_g は None でない
-        assert result["recommended_g"] is not None
+        cagr = _gs.calc_revenue_cagr([500.0, 650.0, 900.0, 1200.0, 1700.0, 2300.0])
+        items = [(cagr["cagr_3yr"], 1.0), (cagr["cagr_5yr"], 1.0), (0.014, 0.014 / 0.05), (0.216, 1.0)]
+        expected = sum(v * w for v, w in items) / sum(w for _, w in items)
+        assert abs(result["recommended_g"] - expected) < 1e-9
 
     @patch.object(_gs, "get_industry_benchmark", return_value=None)
-    def test_single_candidate_gives_none_recommended_g(self, _mock):
-        """industry_g=None + cagr 不可 → 候補1件 → recommended_g = None"""
+    def test_single_candidate_is_blended_with_p1_not_none(self, _mock):
+        """業種なし・CAGR 不可・RR×ROIC 3% の1候補 → 以前は None（上書きなし）。今は重み0.6のぶん
+        0.3×候補 + 0.7×max(p1,0) と連続に埋める（候補の数の境目で None↔値に飛ばない）"""
         result = _gs.check_growth_sanity(
             "TEST", phase1_growth=0.20, sector=None,
             annual_revenues=[100.0, 200.0],  # 2件 → cagr 計算不可
             g_fundamental=0.03,
         )
-        # candidates = [0.03] のみ（1件）→ None
-        assert result.get("recommended_g") is None
+        assert result["recommended_g"] is not None
+        assert abs(result["recommended_g"] - (0.3 * 0.03 + 0.7 * 0.20)) < 1e-9
 
     def test_segment_configured_no_auto_adjusted_in_report(self, tmp_path):
         """segment_configured=True → レポートに Growth_Rate_Original/Adjusted が出力されない"""

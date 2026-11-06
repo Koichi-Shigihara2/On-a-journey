@@ -2125,6 +2125,13 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 2. 案の決定（チャット側）→実装・公開（計算方法の変更の手順、scopeのID `GROWTH-SANITY-CONTINUITY-1`）
 3. [[SECTOR-MASTER-ADOPT-1]]の段1・段2は、この件の公開の後に出す（段1の例外の台帳と案tは、そのときに一緒に出す）
 
+#### 決定（チャット側、2026-11-06）と段1の結果
+- 決定: (a) 中央値→重み付き平均 (b) 負のCAGRは0として入れる (c) 候補の不足は max(p1, 0) で埋める（場合分けをしない） (d) RR×ROICと業種の重みの傾斜はどちらも0〜5%（1つの定数 `WEIGHT_RAMP`）、今の伸びの上限は年次の最大＋10pt（段2で使う）
+- **段1 実装済み（2026-11-06）**: 候補は今のまま（売上CAGR 3年・5年・RR×ROIC・業種）で境目だけ連続にした。`growth_sanity.py`の定数は1か所（WEIGHT_RAMP・FILL_WEIGHT・GROWTH_MEASURE_CAP・DECAY_BLEND_LO/HI・DECAY_END_DEFAULT、理由はコメント）。符号のゲートをやめ負のCAGRを0で入れる／RR×ROIC・業種は0〜5%で重み0→1／候補の重みの合計2に届くまで max(p1,0) で埋める（候補2件未満でNoneにならない・floor例外も不要）／逓減モデルへの切り替えを tmax 0.50〜0.70 のなだらかな混合 s に／taperの終点を `tapering_g_end = rec − s·(rec − 業種)`（業種が0以下は0、s=0は逓減なし）に。floor_hit・verdict は旧規則の『推奨成長率なし』で判定（表示は変えない）
+- 連続性のテスト `tests/test_growth_sanity_continuity.py`（J1〜J7、1刻みあたりの動きの上限10倍。旧コードでは8件失敗）。既存の `tests/test_pipeline_logic.py::TestRecommendedGrowth` は中央値の期待値を重み付き平均の期待値に書き換えた
+- 試算（手元、前後同条件、scopeのID `GROWTH-SANITY-CONTINUITY-1-1`）: 理論株価が変わる38銘柄・判定4（HQY BUY→WATCH・LOAR WATCH→HOLD 73.76→72.97・MO HOLD→TRIM 57.06→51.19・RMBS WATCH→BUY）、保有9銘柄は変化0。見込み（ELF BUY→WATCHを含む5）との違いはELFが BUY→BUY のまま（181.98→143.27、重みの傾斜を業種も5%にしたため）。taperの連続化だけの差はS（17.66→20.04、混合の途中）とRDW（5.91→6.19）の2銘柄
+- 段2（2年CAGR・今の伸び〈年次の最大＋10ptまで〉・基準の売上の重み）は次の依頼。QBTSのように基準の売上が小さい銘柄の埋め先（p1が負のとき）は段2の前に決める
+
 #### 投資判断への影響
 あり（理論株価の中心の入力。セグメント未設定の銘柄は推奨成長率でDCFの成長率が上書きされる）
 
