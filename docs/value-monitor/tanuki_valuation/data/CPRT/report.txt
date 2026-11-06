@@ -1,17 +1,17 @@
 CPRT INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-06T10:34:57+09:00
+Generated: 2026-11-06T11:09:35+09:00
 Price: $32.48
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
-Classification: HOLD
+Classification: TRIM
 Funda_Score: 55/100
 Timing_Score (components):
-  Deviation_Rate: -17.7%
+  Deviation_Rate: -30.4%
   MA200_Deviation: +0.9%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $37 median ($25-$55) | 10 analysts | vs IV: +38.4%
-Comment: フェアバリュー近辺、FCF黒字、売上安定成長
+  Analyst_Consensus: Buy | Target: $37 median ($25-$55) | 10 analysts | vs IV: +63.6%
+Comment: 割高(-30%超)、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -32,8 +32,8 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×低効率
-Key_Metric_Y: RICE = 0.568
-Deviation_Rate: -17.7%
+Key_Metric_Y: RICE = 0.434
+Deviation_Rate: -30.4%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,22 +58,22 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $32.48
-Intrinsic_Value_BASE: $26.72
-Deviation_BASE: -17.7%
+Intrinsic_Value_BASE: $22.62
+Deviation_BASE: -30.4%
 Growth_Rate_Original: 15.0% (TTM実績)
-Growth_Rate_Adjusted: 10.2% (推奨値・中央値ベース)
+Growth_Rate_Adjusted: 7.8% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=7.1%, IV=$21.69 （推奨値ベース）
-BASE: Growth=10.2%, IV=$26.72 （推奨値ベース）
-BULL: Growth=12.2%, IV=$30.70 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $29.45 (-9.3%) / 3年後: $35.77 (+10.1%) / 5年後: $43.44 (+33.7%)
-  5yr_Annualized_Return: +6.0%/yr
+BEAR: Growth=5.4%, IV=$19.30 （推奨値ベース）
+BASE: Growth=7.8%, IV=$22.62 （推奨値ベース）
+BULL: Growth=9.3%, IV=$25.14 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $24.38 (-24.9%) / 3年後: $28.30 (-12.9%) / 5年後: $32.87 (+1.2%)
+  5yr_Annualized_Return: +0.2%/yr
 TTM_YoY_Growth: 0.4%
-(DCF Base vs TTM actual: +9.8pt premium)
+(DCF Base vs TTM actual: +7.4pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 10.33%
-  参考①β込みWACC_IV: $25.40 (Deviation: -21.8%)
-  参考②Rf理論上限_IV（Rf 4.84%、^TNX 2026-11-05）: $110.62 (Deviation: +240.6%)
+  参考①β込みWACC_IV: $21.53 (Deviation: -33.7%)
+  参考②Rf理論上限_IV（Rf 4.84%、^TNX 2026-11-05）: $91.30 (Deviation: +181.1%)
   金利感応度チェック: 10年国債利回りが基準4.30%→現在4.84%（^TNX 2026-11-05）に変化すると、Rf基準の必要成長率は-18.1%→-12.2%（+5.9pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 1.058
@@ -84,23 +84,23 @@ FCF_Breakdown（TTM 2026-07-31）: OCF=$1,604M / CapEx=$337M / SBC(非現金)=$3
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
 DCF_Reliability: NORMAL  (通常判定適用)
-DCF_FCF_PV: $9.35B (9yr discounted FCF sum, pre-alpha, Rm=10%)
-DCF_TV_PV:  $15.40B (terminal value present value, pre-alpha, Rm=10%)
-DCF_v0:     $24.76B (= FCF_PV + TV_PV, Rm=10% enterprise value)
+DCF_FCF_PV: $8.37B (9yr discounted FCF sum, pre-alpha, Rm=10%)
+DCF_TV_PV:  $12.58B (terminal value present value, pre-alpha, Rm=10%)
+DCF_v0:     $20.95B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.7000 (HypeCore expectation premium; Rm basis) [CAPPED: セクター別上限到達]
 RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $24.76B (= v0 + RPO_PV + GO_PV)
+Equity_Value: $20.95B (= v0 + RPO_PV + GO_PV)
 Shares_Used: 926.3M (source: yf_implied)
-→ Intrinsic_Value: $26.72 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $22.62 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  5yr  9yr  13yr
-  9.0%       $25.90  $31.63  $37.63
-  10.0%       $22.09  $26.72  $31.39
-  11.0%       $19.24  $23.06  $26.78
+  9.0%       $23.38  $26.66  $29.78
+  10.0%       $19.98  $22.62  $25.06
+  11.0%       $17.42  $19.61  $21.54
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: マクロ変動による一時的影響と明記された貸倒引当金の変動であり、事業の構造的悪化を示すものではない。
+  Reasoning: すべての項目の理由がマクロ変動による一時的影響と明記されており、事業構造の変化ではなく外部要因による一過性の貸倒引当金繰入であるため。
 Financial_Health:
   Net_Debt: $+0.02B (negative=net cash)
   Total_Debt: $0.02B  Cash: $0.00B
@@ -169,16 +169,16 @@ market-priced future potential.
 
 
 [4. 成長率根拠]
-Phase1成長率 : 10.2% (DCF適用値・推奨成長率)
+Phase1成長率 : 7.8% (DCF適用値・推奨成長率)
 元成長率      : 15.0% (推奨適用前)
 成長モデル: 中央値モデル（CAGR_max=15.0%のため候補の重み付き平均モデル適用）  HypePhase=4
 推奨成長率内訳:
-  中央値ベース:          10.2%
-  最終推奨値:            10.2%
+  中央値ベース:          7.8%
+  最終推奨値:            7.8%
 判定         : PLAUSIBLE
 業界ベンチマーク: Business & Consumer Services / 12.6% (Damodaran 2025)
 signals:
-  - 業界平均Business & Consumer Services(12.6%)の0.8倍以内 ✅
+  - 業界平均Business & Consumer Services(12.6%)の0.6倍以内 ✅
   - 過去実績(3yr:6.4% / 5yr:11.6%)と整合 ✅
 Definition:
 
@@ -198,15 +198,15 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=0.395
-BASE: RICE=0.568
-BULL: RICE=0.679
+BEAR: RICE=0.301
+BASE: RICE=0.434
+BULL: RICE=0.518
 Components (BASE scenario):
-G  = 10.2%  [TANUKI forward growth rate]
+G  = 7.8%  [TANUKI forward growth rate]
 Q  = 1.0794   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 0.5158  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 0.5158  [R&D除外・CapExのみ投資強度]
-RICE_adj = 0.568  [参考：R&D資本化想定]
+RICE_adj = 0.434  [参考：R&D資本化想定]
 WACC = 10.0%
 SBC_Adjusted: true
 Definition:
@@ -336,7 +336,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 4.6%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $37 median ($25-$55) | 10 analysts | vs IV: +38.4%
+Analyst_Consensus: Buy | Target: $37 median ($25-$55) | 10 analysts | vs IV: +63.6%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 0.4%

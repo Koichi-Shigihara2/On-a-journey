@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -38.2,
-  "calculation_date": "2026-11-06T10:29:52+09:00",
+  "calculation_date": "2026-11-06T11:06:38+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -191,7 +191,7 @@
       "total_transient_amount": 15300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "市場金利変動による公正価値の評価替えで、事業運営とは無関係の金融調整による一時的損益である。"
+        "reasoning": "市場金利変動によるローン公正価値の評価損益は、事業運営とは無関係の金融会計上の調整であり、一過性の市場要因によるものと判断される。"
       }
     },
     "action": "excluded",
@@ -424,6 +424,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-2",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -431,7 +432,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-1"
+    "GROWTH-SANITY-CONTINUITY-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-2"
   ],
   "fcf_history": [
     {
@@ -533,10 +535,12 @@
     "rev_cagr_3yr": 1.8790498355579106,
     "rev_cagr_5yr": 0.8793796192673113,
     "g_fundamental": null,
-    "recommended_g_median": 0.5,
+    "recommended_g_median": 0.21137643557994307,
     "recommended_g": 0.559362997447453,
     "growth_blend_s": 1.0,
-    "rec_evidence_weight": 3.0,
+    "rec_evidence_weight": 1.4084074,
+    "rev_cagr_2yr": null,
+    "ttm_rev_yoy": 9.793206972435524,
     "growth_model": "decay",
     "growth_model_reason": "CAGR_max=100.0%と業界平均11.9%の中間値55.9%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
     "hype_phase_used": 4,

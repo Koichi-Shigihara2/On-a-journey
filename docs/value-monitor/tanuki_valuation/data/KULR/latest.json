@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 253.9,
-  "calculation_date": "2026-11-06T10:34:27+09:00",
+  "calculation_date": "2026-11-06T11:09:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -207,7 +207,7 @@
       "total_transient_amount": 3503532,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的な貸倒引当金の計上で、事業運営上の構造的な悪化ではなく外部要因による一過性の影響と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、事業運営上の一過性問題と判断される。"
       }
     },
     "action": "excluded",
@@ -423,6 +423,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-2",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -430,7 +431,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-1"
+    "GROWTH-SANITY-CONTINUITY-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-2"
   ],
   "fcf_history": [
     {
@@ -523,10 +525,12 @@
     "rev_cagr_3yr": 0.5937295510113654,
     "rev_cagr_5yr": 0.9173973737166883,
     "g_fundamental": null,
-    "recommended_g_median": 0.5,
+    "recommended_g_median": 0.17255339237420547,
     "recommended_g": 0.5013391731944579,
     "growth_blend_s": 1.0,
-    "rec_evidence_weight": 3.0,
+    "rec_evidence_weight": 1.34552096,
+    "rev_cagr_2yr": null,
+    "ttm_rev_yoy": 0.24633391767962087,
     "growth_model": "decay",
     "growth_model_reason": "CAGR_max=91.7%と業界平均8.5%の中間値50.1%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定）",
     "hype_phase_used": 4,

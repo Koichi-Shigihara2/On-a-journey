@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -67.8,
-  "calculation_date": "2026-11-06T10:39:01+09:00",
+  "calculation_date": "2026-11-06T11:13:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -239,7 +239,7 @@
       "total_transient_amount": 62500000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての理由欄に「一過性の」と明記されており、在庫評価損・リストラ費用はいずれも典型的な一時的費用と判断されるため。"
+        "reasoning": "すべての理由欄に「一過性の」と明記され、在庫評価損・リストラ費用はいずれも典型的な一時的費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -456,6 +456,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-2",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -463,7 +464,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-1"
+    "GROWTH-SANITY-CONTINUITY-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-2"
   ],
   "fcf_history": [
     {
@@ -557,7 +559,7 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.0656,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.05217264257970914,
+  "recommended_g": 0.06494063870828869,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
@@ -570,10 +572,12 @@
     "rev_cagr_3yr": -0.008753232926965393,
     "rev_cagr_5yr": 0.11446685773149401,
     "g_fundamental": 0.012879598386964036,
-    "recommended_g_median": 0.05217264257970914,
-    "recommended_g": 0.05217264257970914,
+    "recommended_g_median": 0.06494063870828869,
+    "recommended_g": 0.06494063870828869,
     "growth_blend_s": 0.0,
-    "rec_evidence_weight": 2.257591967739281,
+    "rec_evidence_weight": 3.257591967739281,
+    "rev_cagr_2yr": null,
+    "ttm_rev_yoy": 0.09376556421229609,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=11.4%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,

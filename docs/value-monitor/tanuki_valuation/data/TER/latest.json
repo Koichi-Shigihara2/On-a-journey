@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -42.0,
-  "calculation_date": "2026-11-06T10:39:09+09:00",
+  "calculation_date": "2026-11-06T11:13:27+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -221,7 +221,7 @@
       "total_transient_amount": 25820000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄にすべて「一過性の在庫評価損」と明記されており、事業運営上の一時的な在庫調整と判断できるため。"
+        "reasoning": "理由欄にすべて「一過性の在庫評価損」と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -456,6 +456,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-2",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -463,7 +464,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-1"
+    "GROWTH-SANITY-CONTINUITY-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-2"
   ],
   "fcf_history": [
     {
@@ -562,7 +564,7 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.1769,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.01228335977652918,
+  "recommended_g": 0.037095055700597575,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
@@ -575,10 +577,12 @@
     "rev_cagr_3yr": 0.003681989032964239,
     "rev_cagr_5yr": 0.004354396137920213,
     "g_fundamental": 0.03553958714300994,
-    "recommended_g_median": 0.01228335977652918,
-    "recommended_g": 0.01228335977652918,
+    "recommended_g_median": 0.037095055700597575,
+    "recommended_g": 0.037095055700597575,
     "growth_blend_s": 0.0,
-    "rec_evidence_weight": 2.7107917428601986,
+    "rec_evidence_weight": 3.7107917428601986,
+    "rev_cagr_2yr": null,
+    "ttm_rev_yoy": 0.7487836462182613,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=17.7%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,

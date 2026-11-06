@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -77.6,
-  "calculation_date": "2026-11-06T10:27:21+09:00",
+  "calculation_date": "2026-11-06T11:03:48+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 31100000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由がマクロ変動による一時的影響と明記されており、事業の構造的悪化ではなく外部要因による一過性費用と判断される。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業の構造的悪化ではなく一過性の財務調整と判断される。"
       }
     },
     "action": "flagged",
@@ -433,6 +433,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "GROWTH-SANITY-CONTINUITY-1-2",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -440,7 +441,8 @@
     "FCF-DEFINITION-SINGLE-SOURCE-1-4",
     "FCF-DEFINITION-SINGLE-SOURCE-1-5",
     "EXTERNAL-SOURCE-CHANGE-WATCH-1-1",
-    "GROWTH-SANITY-CONTINUITY-1-1"
+    "GROWTH-SANITY-CONTINUITY-1-1",
+    "GROWTH-SANITY-CONTINUITY-1-2"
   ],
   "fcf_history": [
     {
@@ -536,7 +538,7 @@
   "segment_ttm_applied": false,
   "phase1_growth_original": 0.105,
   "phase1_growth_auto_adjusted": false,
-  "recommended_g": 0.1144472665730093,
+  "recommended_g": 0.13634421841555724,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
   "growth_sanity": {
@@ -549,10 +551,12 @@
     "rev_cagr_3yr": 0.14160548012067586,
     "rev_cagr_5yr": 0.14373703938612636,
     "g_fundamental": null,
-    "recommended_g_median": 0.1144472665730093,
-    "recommended_g": 0.1144472665730093,
+    "recommended_g_median": 0.13634421841555724,
+    "recommended_g": 0.13634421841555724,
     "growth_blend_s": 0.0,
-    "rec_evidence_weight": 3.0,
+    "rec_evidence_weight": 4.0,
+    "rev_cagr_2yr": null,
+    "ttm_rev_yoy": 0.20203507394320108,
     "growth_model": "median",
     "growth_model_reason": "CAGR_max=14.4%のため候補の重み付き平均モデル適用",
     "hype_phase_used": 4,
