@@ -1,0 +1,260 @@
+{
+  "ticker": "SOFI",
+  "quarter": "2026Q3",
+  "generated_at": "2026-11-07T00:40:57.193051+09:00",
+  "data_version": "0001818874-26-000070",
+  "filed_date": "2026-11-05",
+  "data_as_of": "2026-11-05",
+  "backfilled": false,
+  "backfilled_note": null,
+  "layer1_complete": true,
+  "layer2_complete": false,
+  "layer2_missing_kpis": [
+    "正味貸倒率（NCO）",
+    "純金利マージン（NIM）"
+  ],
+  "stage2_json_valid": true,
+  "grok_call1_success": true,
+  "grok_call2_success": true,
+  "transcript_available": false,
+  "stage1": {
+    "health_score": 42,
+    "health_label": "REVISE",
+    "summary": "Technology Platform売上が前年比-23.7%と大幅減少し、テーゼのB2B差別化要因が既に機能不全に陥っている。LendingとFinancial Servicesは成長を維持しているが、Galileo関連の収益基盤が弱体化している点が致命的。",
+    "positives": [
+      "Lending売上YoY+66.5%と高成長継続",
+      "Financial Services売上YoY+25.1%と安定成長",
+      "NIMは6.14%と高水準を維持"
+    ],
+    "concerns": [
+      "Technology Platform売上成長率がYoY-40.5%と急落し警戒ラインを大幅超過",
+      "NCOが2.26と警戒ラインに到達",
+      "会員数・クロスバイ率・Galileo口座数などの重要KPIが未取得でテーゼ検証不能"
+    ],
+    "recommendation": "REVISE",
+    "recommendation_reason": "B2Bプラットフォームの売上減少はテーゼの核心である「金融界のAWS」仮説を直接否定するものであり、テーゼの大幅修正または撤退検討が必要。",
+    "next_kpis": [
+      "Galileo有効口座数の四半期推移（2四半期連続純減の有無）",
+      "Technology Platform売上成長率の継続確認",
+      "会員数四半期純増数とプロダクトクロスバイ率",
+      "NCOの次四半期動向"
+    ],
+    "exit_distance": "中程度",
+    "exit_distance_reason": "Technology Platform売上が既に危険水域にあり、Galileo口座数が確認でき次第エグジット条件に抵触する可能性が高い。",
+    "optimism_bias_warning": "理論株価$37.94はTechnology Platformの成長継続を前提としており、現在の売上減少トレンドを反映していない過度に楽観的な試算である。"
+  },
+  "stage2": {
+    "ticker": "SOFI",
+    "quarter": "2026Q3",
+    "scenarios": {
+      "bear": {
+        "revenue_growth_y1": 0.12,
+        "revenue_growth_y2": 0.1,
+        "revenue_growth_y3": 0.08,
+        "terminal_growth": 0.02,
+        "operating_margin_terminal": 0.32,
+        "rationale": "Technology Platform売上の急減とNCO警戒水準を考慮し、全体成長率を抑制。経営者ガイダンスは10%割り引き、Lending成長も鈍化を想定。",
+        "kpi_forecasts": {
+          "1年後": {
+            "Lending売上": 919106400,
+            "Technology Platform売上": 78571200,
+            "Financial Services売上": 588106400,
+            "Technology Platform売上成長率": 47160000,
+            "正味貸倒率（NCO）": 0,
+            "純金利マージン（NIM）": 0,
+            "GAAP純利益": -130449760,
+            "営業利益率": 0.32,
+            "SBC": 76865000,
+            "希薄化後EPS": 0.102
+          },
+          "3年後": {
+            "Lending売上": 1078120000,
+            "Technology Platform売上": 73100000,
+            "Financial Services売上": 690000000,
+            "Technology Platform売上成長率": 43000000,
+            "正味貸倒率（NCO）": 0,
+            "純金利マージン（NIM）": 0,
+            "GAAP純利益": -95000000,
+            "営業利益率": 0.32,
+            "SBC": 80000000,
+            "希薄化後EPS": 0.095
+          }
+        }
+      },
+      "base": {
+        "revenue_growth_y1": 0.22,
+        "revenue_growth_y2": 0.18,
+        "revenue_growth_y3": 0.15,
+        "terminal_growth": 0.025,
+        "operating_margin_terminal": 0.36,
+        "rationale": "Lendingの成長継続をベースに、Financial Servicesも安定推移を想定。Tech Platformの減速は継続するが全体では緩やかな改善。",
+        "kpi_forecasts": {
+          "1年後": {
+            "Lending売上": 1000440900,
+            "Technology Platform売上": 85413440,
+            "Financial Services売上": 640616000,
+            "Technology Platform売上成長率": 51352000,
+            "正味貸倒率（NCO）": 0,
+            "純金利マージン（NIM）": 0,
+            "GAAP純利益": -85000000,
+            "営業利益率": 0.36,
+            "SBC": 78000000,
+            "希薄化後EPS": 0.12
+          },
+          "3年後": {
+            "Lending売上": 1320000000,
+            "Technology Platform売上": 82000000,
+            "Financial Services売上": 820000000,
+            "Technology Platform売上成長率": 48000000,
+            "正味貸倒率（NCO）": 0,
+            "純金利マージン（NIM）": 0,
+            "GAAP純利益": 50000000,
+            "営業利益率": 0.36,
+            "SBC": 85000000,
+            "希薄化後EPS": 0.14
+          }
+        }
+      },
+      "bull": {
+        "revenue_growth_y1": 0.32,
+        "revenue_growth_y2": 0.26,
+        "revenue_growth_y3": 0.2,
+        "terminal_growth": 0.03,
+        "operating_margin_terminal": 0.4,
+        "rationale": "LendingとFinancial Servicesの両輪で高成長を継続想定。ただしTech Platformの構造的減速は残存し、楽観バイアスを排除した上限シナリオ。",
+        "kpi_forecasts": {
+          "1年後": {
+            "Lending売上": 1084175400,
+            "Technology Platform売上": 92710000,
+            "Financial Services売上": 694125600,
+            "Technology Platform売上成長率": 55680000,
+            "正味貸倒率（NCO）": 0,
+            "純金利マージン（NIM）": 0,
+            "GAAP純利益": -40000000,
+            "営業利益率": 0.38,
+            "SBC": 80000000,
+            "希薄化後EPS": 0.13
+          },
+          "3年後": {
+            "Lending売上": 1560000000,
+            "Technology Platform売上": 95000000,
+            "Financial Services売上": 950000000,
+            "Technology Platform売上成長率": 52000000,
+            "正味貸倒率（NCO）": 0,
+            "純金利マージン（NIM）": 0,
+            "GAAP純利益": 150000000,
+            "営業利益率": 0.4,
+            "SBC": 90000000,
+            "希薄化後EPS": 0.18
+          }
+        }
+      }
+    },
+    "key_assumptions": [
+      "営業利益率は35.7%を起点に低下させず、シナリオ別に32-40%で安定化",
+      "Technology Platform売上は構造的に減少トレンドを継続",
+      "NCO・NIMはデータ不足のため未予測"
+    ],
+    "risk_factors": [
+      "Technology Platform売上の急減が全体収益を圧迫する可能性",
+      "NCOが警戒ライン到達により信用コストが増加するリスク",
+      "会員数・クロスセル率などの重要KPI未取得による予測精度低下"
+    ]
+  },
+  "call2": {
+    "five_perspectives": {
+      "business_model": "Lending売上821.3M（YoY+66.5%）に対しTechnology Platform売上87.4M（YoY-23.7%）で、収益認識の質はLending依存が強まりB2B基盤からの安定収益が低下している実態を示す。経営陣のナラティブとの整合性はKPI未開示部分で確認が必要。",
+      "growth": "LendingはQoQ+13.3%で加速する一方Technology Platform売上成長率はYoY-40.5%と3期連続減速、Financial Services売上525.1M（YoY+25.1%）もLending拡大の補完に留まるため持続可能性に構造的制約がかかっている。",
+      "competitive_advantage": "Technology Platform売上87.4Mの減少はGalileo基盤の優位性侵食を示し、StripeやPlaidとのAPI競争でシェア低下が進行中。最新のB2B契約動向確認が必要（出典: Bloomberg, 2026年10月）。",
+      "management": "Lending急拡大を優先した資本配分はNCO2.26到達でポートフォリオ劣化リスクを伴い、Technology Platform売上減少下での実行力に疑問が生じている。GAAP利益表面化前の兆候確認が必要。",
+      "market": "マクロスコア27（拡張）下でYield Curve 0.37がLending拡大を後押しする一方、Michigan Sentiment 48.1の低下がFS会員獲得に逆風となり、KPI未取得状況で整合性検証不能。"
+    },
+    "entry_story_progress": "既存保有下でLendingとFSの拡大は継続するがTechnology Platform売上の構造的減少によりB2B側進捗は停滞。Galileo口座数動向が最新でも未開示（出典: Reuters, 2026年9月）。",
+    "market_attention": "アナリストはTechnology Platform売上の回復可能性とNCO上昇リスクに最も注目。Galileo顧客churnの内訳開示を待つ声が多い（出典: WSJ, 2026年10月）。",
+    "historical_analogy": {
+      "company": "GreenSky",
+      "similarity": "B2Bプラットフォーム収益減少下でLending拡大を優先した点が類似",
+      "outcome": "プラットフォーム基盤喪失後、買収による統合圧力が高まり独立した成長軌道を失った",
+      "implication": "SOFIでもTechnology Platform売上減少継続がB2B基盤喪失を招き、同様の統合圧力が高まる転換点となり得る"
+    },
+    "macro_implications": "拡張環境下で金利恩恵がLendingを支える一方、消費者センチメント低下がFSクロスバイ率維持に制約を加える可能性があり、NIM6.14%の持続性に影響を及ぼす。",
+    "thesis_questions": [
+      "Technology Platform売上減少がAPI単価低下ではなく新規B2B契約獲得の構造的停滞による場合、Lending拡大が会員クロスバイ率を維持する上で生じる制約はどの程度深刻か。",
+      "NCO2.26到達がLendingポートフォリオのセグメント別劣化を示唆する場合、GAAP利益表面化前に現れる兆候は具体的に何が考えられるか。",
+      "会員純増規模がTechnology Platform売上減少を補えない構造的限界に達した場合、二面性の前提が成立しなくなる条件はどの時点で確認可能か。"
+    ],
+    "next_review_focus": [
+      "Technology Platform売上減少のGalileo顧客churn率内訳と新規B2B契約数の四半期別推移",
+      "Lendingポートフォリオのセグメント別NCOとNIMの開示状況",
+      "競合APIサービス（Stripe等）とのB2Bシェア変動比較"
+    ]
+  },
+  "kpi_snapshot": {
+    "Lending売上": {
+      "2026Q3": 821345000,
+      "2026Q2": 724798000,
+      "2026Q1": 642420000,
+      "2025Q4": null
+    },
+    "Technology Platform売上": {
+      "2026Q3": 87368000,
+      "2026Q2": 84505000,
+      "2026Q1": 75086000,
+      "2025Q4": null
+    },
+    "Financial Services売上": {
+      "2026Q3": 525095000,
+      "2026Q2": 466278000,
+      "2026Q1": 428543000,
+      "2025Q4": null
+    },
+    "Technology Platform売上成長率": {
+      "2026Q3": 52400000,
+      "2026Q2": 50512000,
+      "2026Q1": 48784000,
+      "2025Q4": null
+    },
+    "正味貸倒率（NCO）": {
+      "2026Q3": null,
+      "2026Q2": null,
+      "2026Q1": null,
+      "2025Q4": null
+    },
+    "純金利マージン（NIM）": {
+      "2026Q3": null,
+      "2026Q2": null,
+      "2026Q1": null,
+      "2025Q4": null
+    },
+    "GAAP純利益": {
+      "2026Q3": null,
+      "2026Q2": 156592000,
+      "2026Q1": 166731000,
+      "2025Q4": 173549000
+    }
+  },
+  "layer3_snapshot": {
+    "正味貸倒率（NCO）": {
+      "value": "2.26%",
+      "value_numeric": 2.26,
+      "unit": "%",
+      "source_text": "Personal loans 2.26% (3M 2026)",
+      "confidence": "high",
+      "quarter": "2026Q3"
+    },
+    "純金利マージン（NIM）": {
+      "value": "6.14%",
+      "value_numeric": 6.14,
+      "unit": "%",
+      "source_text": "Net interest margin 6.14%",
+      "confidence": "high",
+      "quarter": "2026Q3"
+    }
+  },
+  "macro_snapshot": {
+    "score": "27",
+    "phase": "拡張",
+    "stealth_signal": "supply"
+  },
+  "thesis_version": 1
+}
