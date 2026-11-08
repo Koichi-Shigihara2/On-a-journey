@@ -1,7 +1,7 @@
 {
  "_schema_version": "1.0",
  "_description": "収益の段階・黒字化の見込み・構造的赤字・赤字の質の点数（common/profitability.py が機械で作る）。読み手は [[DEFICIT-QUALITY-ADOPT-1]] で寄せる（今は読む処理なし）",
- "generated_at": "2026-11-05T12:10:41+00:00",
+ "generated_at": "2026-11-08T17:22:39+00:00",
  "rules": {
   "revenue_stage": "TTMの営業利益（GAAP）",
   "breakeven_method": "ttm_operating_margin_ols_8q",
@@ -14,85 +14,85 @@
  },
  "tickers": {
   "AAPL": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-27",
-   "ttm_operating_income": 154859000000.0,
-   "ttm_revenue": 466823000000.0,
-   "operating_margin": 0.3317,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-26",
+   "ttm_operating_income": 158063000000.0,
+   "ttm_revenue": 478834000000.0,
+   "operating_margin": 0.3301,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-27）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-26）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-27",
-      136683000000.0
+      "2026-09-26",
+      136056000000.0
      ],
      [
-      "2025-06-28",
-      96184000000.0
+      "2025-09-27",
+      98767000000.0
      ],
      [
-      "2024-06-29",
-      104339000000.0
+      "2024-09-28",
+      108807000000.0
      ],
      [
-      "2023-07-01",
-      100987000000.0
+      "2023-09-30",
+      99584000000.0
      ],
      [
-      "2022-06-25",
-      107582000000.0
+      "2022-09-24",
+      111443000000.0
      ]
     ],
-    "fcf_5yr_avg": 109155000000.0,
-    "fcf_2yr_avg": 116433500000.0
+    "fcf_5yr_avg": 110931400000.0,
+    "fcf_2yr_avg": 117411500000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
     "score": 23.0,
-    "reason": "売上CAGR 2% (成長鈍化) / R&D+SM 13% (低投資) / 粗利率 47% (普通) / 純利益黒字",
-    "fiscal_year_end": "2025-09-27"
+    "reason": "売上CAGR 8% (成長鈍化) / R&D+SM 14% (低投資) / 粗利率 49% (普通) / 純利益黒字",
+    "fiscal_year_end": "2026-09-26"
    }
   },
   "ABBV": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 16870000000.0,
-   "ttm_revenue": 64386000000.0,
-   "operating_margin": 0.262,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 21233000000.0,
+   "ttm_revenue": 66014000000.0,
+   "operating_margin": 0.3216,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      18210000000.0
+      "2026-09-30",
+      18872000000.0
      ],
      [
-      "2025-06-30",
-      18239000000.0
+      "2025-09-30",
+      19684000000.0
      ],
      [
-      "2024-06-30",
-      17780000000.0
+      "2024-09-30",
+      15623000000.0
      ],
      [
-      "2023-06-30",
-      24799000000.0
+      "2023-09-30",
+      24729000000.0
      ],
      [
-      "2022-06-30",
-      22214000000.0
+      "2022-09-30",
+      21921000000.0
      ]
     ],
-    "fcf_5yr_avg": 20248400000.0,
-    "fcf_2yr_avg": 18224500000.0
+    "fcf_5yr_avg": 20165800000.0,
+    "fcf_2yr_avg": 19278000000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -102,7 +102,7 @@
    }
   },
   "ADBE": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-08-28",
    "ttm_operating_income": 9271000000.0,
    "ttm_revenue": 25970000000.0,
@@ -146,7 +146,7 @@
    }
   },
   "ADSK": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 2041000000.0,
    "ttm_revenue": 7790000000.0,
@@ -190,33 +190,33 @@
    }
   },
   "ALAB": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 273445000.0,
-   "ttm_revenue": 1201919000.0,
-   "operating_margin": 0.2275,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 397095000.0,
+   "ttm_revenue": 1556243000.0,
+   "operating_margin": 0.2552,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      276676000.0
+      "2026-09-30",
+      344690000.0
      ],
      [
-      "2025-06-30",
-      210374000.0
+      "2025-09-30",
+      229441000.0
      ],
      [
-      "2024-06-30",
-      43683000.0
+      "2024-09-30",
+      91564000.0
      ]
     ],
-    "fcf_5yr_avg": 176911000.0,
-    "fcf_2yr_avg": 243525000.0
+    "fcf_5yr_avg": 221898333.33333334,
+    "fcf_2yr_avg": 287065500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -226,7 +226,7 @@
    }
   },
   "AMAT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-26",
    "ttm_operating_income": 9141000000.0,
    "ttm_revenue": 30837000000.0,
@@ -270,41 +270,41 @@
    }
   },
   "AMD": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-27",
-   "ttm_operating_income": 6488000000.0,
-   "ttm_revenue": 41305000000.0,
-   "operating_margin": 0.1571,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-26",
+   "ttm_operating_income": 8050000000.0,
+   "ttm_revenue": 45436000000.0,
+   "operating_margin": 0.1772,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-27）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-26）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-27",
-      8403000000.0
+      "2026-09-26",
+      7056000000.0
      ],
      [
-      "2025-06-28",
-      4043000000.0
+      "2025-09-27",
+      5448000000.0
      ],
      [
-      "2024-06-29",
-      1357000000.0
+      "2024-09-28",
+      1556000000.0
      ],
      [
-      "2023-07-01",
-      1867000000.0
+      "2023-09-30",
+      1322000000.0
      ],
      [
-      "2022-06-25",
-      3330000000.0
+      "2022-09-24",
+      3408000000.0
      ]
     ],
-    "fcf_5yr_avg": 3800000000.0,
-    "fcf_2yr_avg": 6223000000.0
+    "fcf_5yr_avg": 3758000000.0,
+    "fcf_2yr_avg": 6252000000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -314,7 +314,7 @@
    }
   },
   "AMZN": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 104366000000.0,
    "ttm_revenue": 797455000000.0,
@@ -358,33 +358,33 @@
    }
   },
   "APP": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 5464971000.0,
-   "ttm_revenue": 6504077000.0,
-   "operating_margin": 0.8402,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 6094932000.0,
+   "ttm_revenue": 7283847000.0,
+   "operating_margin": 0.8368,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      4527589000.0
+      "2026-09-30",
+      4903009000.0
      ],
      [
-      "2025-06-30",
-      2855643000.0
+      "2025-09-30",
+      3358363000.0
      ],
      [
-      "2024-06-30",
-      1390360000.0
+      "2024-09-30",
+      1741996000.0
      ]
     ],
-    "fcf_5yr_avg": 2924530666.6666665,
-    "fcf_2yr_avg": 3691616000.0
+    "fcf_5yr_avg": 3334456000.0,
+    "fcf_2yr_avg": 4130686000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -394,7 +394,7 @@
    }
   },
   "ASTS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2021-03-31",
    "ttm_operating_income": -2374272.0,
    "ttm_revenue": 6145000.0,
@@ -453,7 +453,7 @@
    }
   },
   "AVAV": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-08-01",
    "ttm_operating_income": -252594000.0,
    "ttm_revenue": 2002659000.0,
@@ -524,7 +524,7 @@
    }
   },
   "BBAI": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": -233298000.0,
    "ttm_revenue": 142065000.0,
@@ -595,41 +595,41 @@
    }
   },
   "BKNG": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 9284000000.0,
-   "ttm_revenue": 28241000000.0,
-   "operating_margin": 0.3287,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 9219000000.0,
+   "ttm_revenue": 28126000000.0,
+   "operating_margin": 0.3278,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      9539000000.0
+      "2026-09-30",
+      9237000000.0
      ],
      [
-      "2025-06-30",
-      9240000000.0
+      "2025-09-30",
+      8315000000.0
      ],
      [
-      "2024-06-30",
-      7506000000.0
+      "2024-09-30",
+      8501000000.0
      ],
      [
-      "2023-06-30",
-      6448000000.0
+      "2023-09-30",
+      7845000000.0
      ],
      [
-      "2022-06-30",
-      5879000000.0
+      "2022-09-30",
+      4266000000.0
      ]
     ],
-    "fcf_5yr_avg": 7722400000.0,
-    "fcf_2yr_avg": 9389500000.0
+    "fcf_5yr_avg": 7632800000.0,
+    "fcf_2yr_avg": 8776000000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -639,41 +639,41 @@
    }
   },
   "BROS": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 180154000.0,
-   "ttm_revenue": 1882457000.0,
-   "operating_margin": 0.0957,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 191478000.0,
+   "ttm_revenue": 2008712000.0,
+   "operating_margin": 0.0953,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      95035000.0
+      "2026-09-30",
+      90928000.0
      ],
      [
-      "2025-06-30",
-      72894000.0
+      "2025-09-30",
+      65407000.0
      ],
      [
-      "2024-06-30",
-      -53259000.0
+      "2024-09-30",
+      -10490000.0
      ],
      [
-      "2023-06-30",
-      -117318000.0
+      "2023-09-30",
+      -108957000.0
      ],
      [
-      "2022-06-30",
-      -126515000.0
+      "2022-09-30",
+      -128118000.0
      ]
     ],
-    "fcf_5yr_avg": -25832600.0,
-    "fcf_2yr_avg": 83964500.0
+    "fcf_5yr_avg": -18246000.0,
+    "fcf_2yr_avg": 78167500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -683,41 +683,41 @@
    }
   },
   "BSY": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 377875000.0,
-   "ttm_revenue": 1602039000.0,
-   "operating_margin": 0.2359,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 416001000.0,
+   "ttm_revenue": 1647997000.0,
+   "operating_margin": 0.2524,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      498499000.0
+      "2026-09-30",
+      489264000.0
      ],
      [
-      "2025-06-30",
-      433745000.0
+      "2025-09-30",
+      460125000.0
      ],
      [
-      "2024-06-30",
-      406994000.0
+      "2024-09-30",
+      426118000.0
      ],
      [
-      "2023-06-30",
-      339203000.0
+      "2023-09-30",
+      341299000.0
      ],
      [
-      "2022-06-30",
-      288354000.0
+      "2022-09-30",
+      299436000.0
      ]
     ],
-    "fcf_5yr_avg": 393359000.0,
-    "fcf_2yr_avg": 466122000.0
+    "fcf_5yr_avg": 403248400.0,
+    "fcf_2yr_avg": 474694500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -727,41 +727,41 @@
    }
   },
   "CAKE": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 204157000.0,
-   "ttm_revenue": 3877250000.0,
-   "operating_margin": 0.0527,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-29",
+   "ttm_operating_income": 241761000.0,
+   "ttm_revenue": 4003464000.0,
+   "operating_margin": 0.0604,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-29）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      206302000.0
+      "2026-09-29",
+      219251000.0
      ],
      [
-      "2025-07-01",
-      131211000.0
+      "2025-09-30",
+      159475000.0
      ],
      [
-      "2024-07-02",
-      56128000.0
+      "2024-10-01",
+      70025000.0
      ],
      [
-      "2023-07-04",
-      47183000.0
+      "2023-10-03",
+      79241000.0
      ],
      [
-      "2022-06-28",
-      87662000.0
+      "2022-09-27",
+      96905000.0
      ]
     ],
-    "fcf_5yr_avg": 105697200.0,
-    "fcf_2yr_avg": 168756500.0
+    "fcf_5yr_avg": 124979400.0,
+    "fcf_2yr_avg": 189363000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -771,33 +771,33 @@
    }
   },
   "CART": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 589000000.0,
-   "ttm_revenue": 3993000000.0,
-   "operating_margin": 0.1475,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 597000000.0,
+   "ttm_revenue": 4149000000.0,
+   "operating_margin": 0.1439,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      1176000000.0
+      "2026-09-30",
+      1210000000.0
      ],
      [
-      "2025-06-30",
-      779000000.0
+      "2025-09-30",
+      880000000.0
      ],
      [
-      "2024-06-30",
-      623000000.0
+      "2024-09-30",
+      699000000.0
      ]
     ],
-    "fcf_5yr_avg": 859333333.3333334,
-    "fcf_2yr_avg": 977500000.0
+    "fcf_5yr_avg": 929666666.6666666,
+    "fcf_2yr_avg": 1045000000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -807,41 +807,41 @@
    }
   },
   "CAT": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 13092000000.0,
-   "ttm_revenue": 74729000000.0,
-   "operating_margin": 0.1752,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 14254000000.0,
+   "ttm_revenue": 77773000000.0,
+   "operating_margin": 0.1833,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      10698000000.0
+      "2026-09-30",
+      11274000000.0
      ],
      [
-      "2025-06-30",
-      8961000000.0
+      "2025-09-30",
+      8915000000.0
      ],
      [
-      "2024-06-30",
-      11381000000.0
+      "2024-09-30",
+      10824000000.0
      ],
      [
-      "2023-06-30",
-      8649000000.0
+      "2023-09-30",
+      10132000000.0
      ],
      [
-      "2022-06-30",
-      4438000000.0
+      "2022-09-30",
+      5151000000.0
      ]
     ],
-    "fcf_5yr_avg": 8825400000.0,
-    "fcf_2yr_avg": 9829500000.0
+    "fcf_5yr_avg": 9259200000.0,
+    "fcf_2yr_avg": 10094500000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -851,7 +851,7 @@
    }
   },
   "CDNS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 1773695000.0,
    "ttm_revenue": 6132096000.0,
@@ -895,7 +895,7 @@
    }
   },
   "CEG": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": 4596000000.0,
    "ttm_revenue": 31270000000.0,
@@ -939,41 +939,41 @@
    }
   },
   "CELH": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 160314000.0,
-   "ttm_revenue": 3047274000.0,
-   "operating_margin": 0.0526,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 412376000.0,
+   "ttm_revenue": 3169396000.0,
+   "operating_margin": 0.1301,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      462774000.0
+      "2026-09-30",
+      269010000.0
      ],
      [
-      "2025-06-30",
-      210840000.0
+      "2025-09-30",
+      523606000.0
      ],
      [
-      "2024-06-30",
-      245937000.0
+      "2024-09-30",
+      169669000.0
      ],
      [
-      "2023-06-30",
-      98479000.0
+      "2023-09-30",
+      55787000.0
      ],
      [
-      "2022-06-30",
-      -28351180.0
+      "2022-09-30",
+      122212557.0
      ]
     ],
-    "fcf_5yr_avg": 197935764.0,
-    "fcf_2yr_avg": 336807000.0
+    "fcf_5yr_avg": 228056911.4,
+    "fcf_2yr_avg": 396308000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -983,41 +983,41 @@
    }
   },
   "CIX": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 26386000.0,
-   "ttm_revenue": 161830000.0,
-   "operating_margin": 0.163,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 28015000.0,
+   "ttm_revenue": 165871000.0,
+   "operating_margin": 0.1689,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      21221000.0
+      "2026-09-30",
+      23660000.0
      ],
      [
-      "2025-06-30",
-      13164000.0
+      "2025-09-30",
+      14788000.0
      ],
      [
-      "2024-06-30",
-      26160000.0
+      "2024-09-30",
+      27893000.0
      ],
      [
-      "2023-06-30",
-      23175000.0
+      "2023-09-30",
+      19287000.0
      ],
      [
-      "2022-06-30",
-      3728000.0
+      "2022-09-30",
+      5665000.0
      ]
     ],
-    "fcf_5yr_avg": 17489600.0,
-    "fcf_2yr_avg": 17192500.0
+    "fcf_5yr_avg": 18258600.0,
+    "fcf_2yr_avg": 19224000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1027,41 +1027,41 @@
    }
   },
   "COHR": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 901522000.0,
-   "ttm_revenue": 7118181000.0,
-   "operating_margin": 0.1267,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 1115729000.0,
+   "ttm_revenue": 7907127000.0,
+   "operating_margin": 0.1411,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": true,
     "fcf_points": [
      [
-      "2026-06-30",
-      -1023395000.0
+      "2026-09-30",
+      -1833632000.0
      ],
      [
-      "2025-06-30",
-      192764000.0
+      "2025-09-30",
+      73777000.0
      ],
      [
-      "2024-06-30",
-      198915000.0
+      "2024-09-30",
+      123305000.0
      ],
      [
-      "2023-06-30",
-      197965000.0
+      "2023-09-30",
+      393984000.0
      ],
      [
-      "2022-06-30",
-      99000000.0
+      "2022-09-30",
+      34816000.0
      ]
     ],
-    "fcf_5yr_avg": -66950200.0,
-    "fcf_2yr_avg": -415315500.0
+    "fcf_5yr_avg": -241550000.0,
+    "fcf_2yr_avg": -879927500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1071,7 +1071,7 @@
    }
   },
   "CPRT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 1652590000.0,
    "ttm_revenue": 4666209000.0,
@@ -1115,7 +1115,7 @@
    }
   },
   "CRM": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 8735000000.0,
    "ttm_revenue": 43938000000.0,
@@ -1159,7 +1159,7 @@
    }
   },
   "CRWV": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -230739000.0,
    "ttm_revenue": 7589580000.0,
@@ -1216,7 +1216,7 @@
    }
   },
   "CSGP": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 212100000.0,
    "ttm_revenue": 3673900000.0,
@@ -1260,41 +1260,41 @@
    }
   },
   "DDOG": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 16329000.0,
-   "ttm_revenue": 3966725000.0,
-   "operating_margin": 0.0041,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 96844000.0,
+   "ttm_revenue": 4278164000.0,
+   "operating_margin": 0.0226,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      1072769000.0
+      "2026-09-30",
+      1109451000.0
      ],
      [
-      "2025-06-30",
-      854320000.0
+      "2025-09-30",
+      864668000.0
      ],
      [
-      "2024-06-30",
-      670006000.0
+      "2024-09-30",
+      735421000.0
      ],
      [
-      "2023-06-30",
-      421520000.0
+      "2023-09-30",
+      492609000.0
      ],
      [
-      "2022-06-30",
-      353833000.0
+      "2022-09-30",
+      363850000.0
      ]
     ],
-    "fcf_5yr_avg": 674489600.0,
-    "fcf_2yr_avg": 963544500.0
+    "fcf_5yr_avg": 713199800.0,
+    "fcf_2yr_avg": 987059500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1304,7 +1304,7 @@
    }
   },
   "DELL": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 14252000000.0,
    "ttm_revenue": 151197000000.0,
@@ -1348,41 +1348,41 @@
    }
   },
   "DOCN": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 149670000.0,
-   "ttm_revenue": 1011113000.0,
-   "operating_margin": 0.148,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 137763000.0,
+   "ttm_revenue": 1102671000.0,
+   "operating_margin": 0.1249,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      175316000.0
+      "2026-09-30",
+      220614000.0
      ],
      [
-      "2025-06-30",
-      95714000.0
+      "2025-09-30",
+      167046000.0
      ],
      [
-      "2024-06-30",
-      117949000.0
+      "2024-09-30",
+      98863000.0
      ],
      [
-      "2023-06-30",
-      107202000.0
+      "2023-09-30",
+      117426000.0
      ],
      [
-      "2022-06-30",
-      42484000.0
+      "2022-09-30",
+      45750000.0
      ]
     ],
-    "fcf_5yr_avg": 107733000.0,
-    "fcf_2yr_avg": 135515000.0
+    "fcf_5yr_avg": 129939800.0,
+    "fcf_2yr_avg": 193830000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1392,41 +1392,41 @@
    }
   },
   "ELF": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 127364000.0,
-   "ttm_revenue": 1762106000.0,
-   "operating_margin": 0.0723,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 172074000.0,
+   "ttm_revenue": 1938986000.0,
+   "operating_margin": 0.0887,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      280158000.0
+      "2026-09-30",
+      275687000.0
      ],
      [
-      "2025-06-30",
-      134963000.0
+      "2025-09-30",
+      141984000.0
      ],
      [
-      "2024-06-30",
-      40252000.0
+      "2024-09-30",
+      22730000.0
      ],
      [
-      "2023-06-30",
-      92561000.0
+      "2023-09-30",
+      107613000.0
      ],
      [
-      "2022-06-30",
-      39876000.0
+      "2022-09-30",
+      59922000.0
      ]
     ],
-    "fcf_5yr_avg": 117562000.0,
-    "fcf_2yr_avg": 207560500.0
+    "fcf_5yr_avg": 121587200.0,
+    "fcf_2yr_avg": 208835500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1436,7 +1436,7 @@
    }
   },
   "ENTG": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-26",
    "ttm_operating_income": 641700000.0,
    "ttm_revenue": 3524700000.0,
@@ -1480,7 +1480,7 @@
    }
   },
   "ESTC": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": -47610000.0,
    "ttm_revenue": 1802156000.0,
@@ -1551,41 +1551,41 @@
    }
   },
   "FCX": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 6923000000.0,
-   "ttm_revenue": 25868000000.0,
-   "operating_margin": 0.2676,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 7304000000.0,
+   "ttm_revenue": 26442000000.0,
+   "operating_margin": 0.2762,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      1762000000.0
+      "2026-09-30",
+      1976000000.0
      ],
      [
-      "2025-06-30",
-      1690000000.0
+      "2025-09-30",
+      1625000000.0
      ],
      [
-      "2024-06-30",
-      1498000000.0
+      "2024-09-30",
+      2113000000.0
      ],
      [
-      "2023-06-30",
-      383000000.0
+      "2023-09-30",
+      519000000.0
      ],
      [
-      "2022-06-30",
-      4659000000.0
+      "2022-09-30",
+      3157000000.0
      ]
     ],
-    "fcf_5yr_avg": 1998400000.0,
-    "fcf_2yr_avg": 1726000000.0
+    "fcf_5yr_avg": 1878000000.0,
+    "fcf_2yr_avg": 1800500000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1595,85 +1595,85 @@
    }
   },
   "FICO": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 1236298000.0,
-   "ttm_revenue": 2393575000.0,
-   "operating_margin": 0.5165,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 1265694000.0,
+   "ttm_revenue": 2534873000.0,
+   "operating_margin": 0.4993,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      960878000.0
+      "2026-09-30",
+      1034375000.0
      ],
      [
-      "2025-06-30",
-      747911000.0
+      "2025-09-30",
+      739400000.0
      ],
      [
-      "2024-06-30",
-      551039000.0
+      "2024-09-30",
+      607413000.0
      ],
      [
-      "2023-06-30",
-      445726000.0
+      "2023-09-30",
+      464678000.0
      ],
      [
-      "2022-06-30",
-      449370000.0
+      "2022-09-30",
+      503421000.0
      ]
     ],
-    "fcf_5yr_avg": 630984800.0,
-    "fcf_2yr_avg": 854394500.0
+    "fcf_5yr_avg": 669857400.0,
+    "fcf_2yr_avg": 886887500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
     "score": 25.0,
-    "reason": "売上CAGR +13% (緩成長) / R&D+SM 11% (低投資) / 粗利率計算不可 / 純利益黒字",
-    "fiscal_year_end": "2025-09-30"
+    "reason": "売上CAGR +19% (緩成長) / R&D+SM 10% (低投資) / 粗利率計算不可 / 純利益黒字",
+    "fiscal_year_end": "2026-09-30"
    }
   },
   "FLYW": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 39299000.0,
-   "ttm_revenue": 713538000.0,
-   "operating_margin": 0.0551,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 59805000.0,
+   "ttm_revenue": 763700000.0,
+   "operating_margin": 0.0783,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      147606000.0
+      "2026-09-30",
+      121531000.0
      ],
      [
-      "2025-06-30",
-      87612000.0
+      "2025-09-30",
+      46220000.0
      ],
      [
-      "2024-06-30",
-      42425000.0
+      "2024-09-30",
+      186349000.0
      ],
      [
-      "2023-06-30",
-      -2383000.0
+      "2023-09-30",
+      45471000.0
      ],
      [
-      "2022-06-30",
-      -12284000.0
+      "2022-09-30",
+      -51809000.0
      ]
     ],
-    "fcf_5yr_avg": 52595200.0,
-    "fcf_2yr_avg": 117609000.0
+    "fcf_5yr_avg": 69552400.0,
+    "fcf_2yr_avg": 83875500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1683,68 +1683,68 @@
    }
   },
   "FROG": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -69092000.0,
-   "ttm_revenue": 599962000.0,
-   "operating_margin": -0.1152,
-   "revenue_stage": "loss",
-   "revenue_stage_label": "赤字",
-   "stage_reason": "0に届くのが2年より先（9.0四半期後）",
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": -49351000.0,
+   "ttm_revenue": 642225000.0,
+   "operating_margin": -0.0768,
+   "revenue_stage": "near_profit",
+   "revenue_stage_label": "黒字化目前",
+   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで3.8四半期後に0（2027年、R² 0.895）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
-     "2024-09-30",
      "2024-12-31",
      "2025-03-31",
      "2025-06-30",
      "2025-09-30",
      "2025-12-31",
      "2026-03-31",
-     "2026-06-30"
+     "2026-06-30",
+     "2026-09-30"
     ],
     "margins": [
-     -0.1979,
      -0.2126,
      -0.2162,
      -0.2196,
      -0.1909,
      -0.1727,
      -0.1452,
-     -0.1152
+     -0.1152,
+     -0.0768
     ],
-    "slope_per_quarter": 0.0128,
-    "r2": 0.707,
-    "quarters_to_zero": 9.0,
-    "year": 2028,
-    "reason": "TOO_FAR"
+    "slope_per_quarter": 0.0202,
+    "r2": 0.895,
+    "quarters_to_zero": 3.8,
+    "year": 2027,
+    "reason": "PREDICTED"
    },
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      169701000.0
+      "2026-09-30",
+      207381000.0
      ],
      [
-      "2025-06-30",
-      138791000.0
+      "2025-09-30",
+      140898000.0
      ],
      [
-      "2024-06-30",
-      89958000.0
+      "2024-09-30",
+      91272000.0
      ],
      [
-      "2023-06-30",
-      24810000.0
+      "2023-09-30",
+      46378000.0
      ],
      [
-      "2022-06-30",
-      4816000.0
+      "2022-09-30",
+      27297000.0
      ]
     ],
-    "fcf_5yr_avg": 85615200.0,
-    "fcf_2yr_avg": 154246000.0
+    "fcf_5yr_avg": 102645200.0,
+    "fcf_2yr_avg": 174139500.0
    },
    "deficit_quality": {
     "verdict": "GOOD_DEFICIT",
@@ -1754,41 +1754,41 @@
    }
   },
   "FRSH": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 30277000.0,
-   "ttm_revenue": 903868000.0,
-   "operating_margin": 0.0335,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 65957000.0,
+   "ttm_revenue": 934178000.0,
+   "operating_margin": 0.0706,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      220559000.0
+      "2026-09-30",
+      236096000.0
      ],
      [
-      "2025-06-30",
-      181929000.0
+      "2025-09-30",
+      199033000.0
      ],
      [
-      "2024-06-30",
-      122157000.0
+      "2024-09-30",
+      140191000.0
      ],
      [
-      "2023-06-30",
-      23978000.0
+      "2023-09-30",
+      53285000.0
      ],
      [
-      "2022-06-30",
-      -12928000.0
+      "2022-09-30",
+      -15975000.0
      ]
     ],
-    "fcf_5yr_avg": 107139000.0,
-    "fcf_2yr_avg": 201244000.0
+    "fcf_5yr_avg": 122526000.0,
+    "fcf_2yr_avg": 217564500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -1798,7 +1798,7 @@
    }
   },
   "GEV": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 2827000000.0,
    "ttm_revenue": 44041000000.0,
@@ -1834,7 +1834,7 @@
    }
   },
   "GOOGL": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 156976000000.0,
    "ttm_revenue": 471097000000.0,
@@ -1878,7 +1878,7 @@
    }
   },
   "GTLB": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": -90204000.0,
    "ttm_revenue": 1055167000.0,
@@ -1949,7 +1949,7 @@
    }
   },
   "HEI": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 1244555000.0,
    "ttm_revenue": 5176756000.0,
@@ -1993,7 +1993,7 @@
    }
   },
   "HON": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 6527000000.0,
    "ttm_revenue": 33614000000.0,
@@ -2037,7 +2037,7 @@
    }
   },
   "HQY": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 351409000.0,
    "ttm_revenue": 1362123000.0,
@@ -2081,7 +2081,7 @@
    }
   },
   "HWM": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 2730000000.0,
    "ttm_revenue": 9731000000.0,
@@ -2125,7 +2125,7 @@
    }
   },
   "INTU": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 5884000000.0,
    "ttm_revenue": 21448000000.0,
@@ -2169,68 +2169,68 @@
    }
   },
   "IONQ": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -1006194000.0,
-   "ttm_revenue": 246474000.0,
-   "operating_margin": -4.0824,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": -1270456000.0,
+   "ttm_revenue": 380439000.0,
+   "operating_margin": -3.3394,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.361 < 0.5）",
+   "stage_reason": "0に届くのが2年より先（8.63四半期後）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
-     "2024-09-30",
      "2024-12-31",
      "2025-03-31",
      "2025-06-30",
      "2025-09-30",
      "2025-12-31",
      "2026-03-31",
-     "2026-06-30"
+     "2026-06-30",
+     "2026-09-30"
     ],
     "margins": [
-     -5.5886,
      -5.3968,
      -5.9284,
      -7.0061,
      -6.0447,
      -4.8741,
      -4.4333,
-     -4.0824
+     -4.0824,
+     -3.3394
     ],
-    "slope_per_quarter": 0.23197,
-    "r2": 0.361,
-    "quarters_to_zero": null,
-    "year": null,
-    "reason": "LOW_FIT"
+    "slope_per_quarter": 0.38715,
+    "r2": 0.635,
+    "quarters_to_zero": 8.63,
+    "year": 2028,
+    "reason": "TOO_FAR"
    },
    "structural_deficit": {
     "value": true,
     "fcf_points": [
      [
-      "2026-06-30",
-      -483868000.0
+      "2026-09-30",
+      -688541000.0
      ],
      [
-      "2025-06-30",
-      -152973000.0
+      "2025-09-30",
+      -256262000.0
      ],
      [
-      "2024-06-30",
-      -118054000.0
+      "2024-09-30",
+      -114373000.0
      ],
      [
-      "2023-06-30",
-      -65542000.0
+      "2023-09-30",
+      -78415000.0
      ],
      [
-      "2022-06-30",
-      -55421431.0
+      "2022-09-30",
+      -47242000.0
      ]
     ],
-    "fcf_5yr_avg": -175171686.2,
-    "fcf_2yr_avg": -318420500.0
+    "fcf_5yr_avg": -236966600.0,
+    "fcf_2yr_avg": -472401500.0
    },
    "deficit_quality": {
     "verdict": "GOOD_DEFICIT",
@@ -2240,7 +2240,7 @@
    }
   },
   "IOT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-08-01",
    "ttm_operating_income": 19368000.0,
    "ttm_revenue": 1847552000.0,
@@ -2284,7 +2284,7 @@
    }
   },
   "JNJ": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-27",
    "ttm_operating_income": 25525000000.0,
    "ttm_revenue": 99335000000.0,
@@ -2328,68 +2328,68 @@
    }
   },
   "JOBY": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -882906000.0,
-   "ttm_revenue": 116295000.0,
-   "operating_margin": -7.592,
-   "revenue_stage": "loss",
-   "revenue_stage_label": "赤字",
-   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.248 < 0.5）",
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": -979336000.0,
+   "ttm_revenue": 148810000.0,
+   "operating_margin": -6.5811,
+   "revenue_stage": "near_profit",
+   "revenue_stage_label": "黒字化目前",
+   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで0.01四半期後に0（2026年、R² 0.619）",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
-     "2024-09-30",
      "2024-12-31",
      "2025-03-31",
      "2025-06-30",
      "2025-09-30",
      "2025-12-31",
      "2026-03-31",
-     "2026-06-30"
+     "2026-06-30",
+     "2026-09-30"
     ],
     "margins": [
-     -516.7305,
      -4387.8971,
      -5532.8018,
      -6507.3265,
      -29.2656,
      -13.4692,
      -10.1697,
-     -7.592
+     -7.592,
+     -6.5811
     ],
-    "slope_per_quarter": 577.24602,
-    "r2": 0.248,
-    "quarters_to_zero": null,
-    "year": null,
-    "reason": "LOW_FIT"
+    "slope_per_quarter": 926.22057,
+    "r2": 0.619,
+    "quarters_to_zero": 0.01,
+    "year": 2026,
+    "reason": "PREDICTED"
    },
    "structural_deficit": {
     "value": true,
     "fcf_points": [
      [
-      "2026-06-30",
-      -743330000.0
+      "2026-09-30",
+      -784494000.0
      ],
      [
-      "2025-06-30",
-      -500696000.0
+      "2025-09-30",
+      -532753000.0
      ],
      [
-      "2024-06-30",
-      -400786000.0
+      "2024-09-30",
+      -432176000.0
      ],
      [
-      "2023-06-30",
-      -321724000.0
+      "2023-09-30",
+      -336803000.0
      ],
      [
-      "2022-06-30",
-      -345677517.0
+      "2022-09-30",
+      -267619000.0
      ]
     ],
-    "fcf_5yr_avg": -462442703.4,
-    "fcf_2yr_avg": -622013000.0
+    "fcf_5yr_avg": -470769000.0,
+    "fcf_2yr_avg": -658623500.0
    },
    "deficit_quality": {
     "verdict": "WATCH",
@@ -2399,7 +2399,7 @@
    }
   },
   "KLAC": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 6185273000.0,
    "ttm_revenue": 14505795000.0,
@@ -2443,7 +2443,7 @@
    }
   },
   "KO": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-10-02",
    "ttm_operating_income": 15337000000.0,
    "ttm_revenue": 51054000000.0,
@@ -2487,7 +2487,7 @@
    }
   },
   "KULR": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -42695415.0,
    "ttm_revenue": 16675408.0,
@@ -2558,41 +2558,41 @@
    }
   },
   "LITE": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-27",
-   "ttm_operating_income": 524800000.0,
-   "ttm_revenue": 3014000000.0,
-   "operating_margin": 0.1741,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-26",
+   "ttm_operating_income": 877900000.0,
+   "ttm_revenue": 3742800000.0,
+   "operating_margin": 0.2346,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-27）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-26）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-27",
-      300100000.0
+      "2026-09-26",
+      356300000.0
      ],
      [
-      "2025-06-28",
-      -104700000.0
+      "2025-09-27",
+      -88500000.0
      ],
      [
-      "2024-06-29",
-      -108300000.0
+      "2024-09-28",
+      -82700000.0
      ],
      [
-      "2023-07-01",
-      51300000.0
+      "2023-09-30",
+      -6700000.0
      ],
      [
-      "2022-07-02",
-      368100000.0
+      "2022-10-01",
+      322000000.0
      ]
     ],
-    "fcf_5yr_avg": 101300000.0,
-    "fcf_2yr_avg": 97700000.0
+    "fcf_5yr_avg": 100080000.0,
+    "fcf_2yr_avg": 133900000.0
    },
    "deficit_quality": {
     "verdict": "BAD_DEFICIT",
@@ -2602,7 +2602,7 @@
    }
   },
   "LLY": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 44314300000.0,
    "ttm_revenue": 86462000000.0,
@@ -2646,7 +2646,7 @@
    }
   },
   "LMT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-27",
    "ttm_operating_income": 9316000000.0,
    "ttm_revenue": 79116000000.0,
@@ -2690,33 +2690,33 @@
    }
   },
   "LOAR": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 128151000.0,
-   "ttm_revenue": 586168000.0,
-   "operating_margin": 0.2186,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 145311000.0,
+   "ttm_revenue": 635587000.0,
+   "operating_margin": 0.2286,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      106041000.0
+      "2026-09-30",
+      118544000.0
      ],
      [
-      "2025-06-30",
-      80102000.0
+      "2025-09-30",
+      92305000.0
      ],
      [
-      "2024-06-30",
-      19486000.0
+      "2024-09-30",
+      35862000.0
      ]
     ],
-    "fcf_5yr_avg": 68543000.0,
-    "fcf_2yr_avg": 93071500.0
+    "fcf_5yr_avg": 82237000.0,
+    "fcf_2yr_avg": 105424500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -2726,7 +2726,7 @@
    }
   },
   "LRCX": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-27",
    "ttm_operating_income": 9654434000.0,
    "ttm_revenue": 26127935000.0,
@@ -2770,68 +2770,68 @@
    }
   },
   "LYFT": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -119723000.0,
-   "ttm_revenue": 6771939000.0,
-   "operating_margin": -0.0177,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": -162154000.0,
+   "ttm_revenue": 6908566000.0,
+   "operating_margin": -0.0235,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
-   "stage_reason": "見込み不明（TTMの営業利益率が直線に乗らない、R² 0.036 < 0.5）",
+   "stage_reason": "TTMの営業利益率が上向きでない",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
-     "2024-09-30",
      "2024-12-31",
      "2025-03-31",
      "2025-06-30",
      "2025-09-30",
      "2025-12-31",
      "2026-03-31",
-     "2026-06-30"
+     "2026-06-30",
+     "2026-09-30"
     ],
     "margins": [
-     -0.0379,
      -0.0206,
      -0.0142,
      -0.009,
      0.0039,
      -0.0298,
      -0.0253,
-     -0.0177
+     -0.0177,
+     -0.0235
     ],
-    "slope_per_quarter": 0.001,
-    "r2": 0.036,
+    "slope_per_quarter": -0.00143,
+    "r2": 0.108,
     "quarters_to_zero": null,
     "year": null,
-    "reason": "LOW_FIT"
+    "reason": "NO_TREND"
    },
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      1112326000.0
+      "2026-09-30",
+      1129187000.0
      ],
      [
-      "2025-06-30",
-      992969000.0
+      "2025-09-30",
+      1027944000.0
      ],
      [
-      "2024-06-30",
-      368399000.0
+      "2024-09-30",
+      641255000.0
      ],
      [
-      "2023-06-30",
-      -354402000.0
+      "2023-09-30",
+      -329130000.0
      ],
      [
-      "2022-06-30",
-      -274192000.0
+      "2022-09-30",
+      -334846000.0
      ]
     ],
-    "fcf_5yr_avg": 369020000.0,
-    "fcf_2yr_avg": 1052647500.0
+    "fcf_5yr_avg": 426882000.0,
+    "fcf_2yr_avg": 1078565500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -2841,7 +2841,7 @@
    }
   },
   "META": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 79380000000.0,
    "ttm_revenue": 241607000000.0,
@@ -2885,7 +2885,7 @@
    }
   },
   "MO": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 11056000000.0,
    "ttm_revenue": 23517000000.0,
@@ -2929,7 +2929,7 @@
    }
   },
   "MRVL": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-08-01",
    "ttm_operating_income": 1561300000.0,
    "ttm_revenue": 9450300000.0,
@@ -2973,7 +2973,7 @@
    }
   },
   "MSCI": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 1910120000.0,
    "ttm_revenue": 3432328000.0,
@@ -3017,7 +3017,7 @@
    }
   },
   "MSFT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 163191000000.0,
    "ttm_revenue": 346445000000.0,
@@ -3061,38 +3061,38 @@
    }
   },
   "NET": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -354384000.0,
-   "ttm_revenue": 2512350000.0,
-   "operating_margin": -0.1411,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": -384850000.0,
+   "ttm_revenue": 2732836000.0,
+   "operating_margin": -0.1408,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
    "stage_reason": "TTMの営業利益率が上向きでない",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
-     "2024-09-30",
      "2024-12-31",
      "2025-03-31",
      "2025-06-30",
      "2025-09-30",
      "2025-12-31",
      "2026-03-31",
-     "2026-06-30"
+     "2026-06-30",
+     "2026-09-30"
     ],
     "margins": [
-     -0.1036,
      -0.0927,
      -0.0867,
      -0.0989,
      -0.0957,
      -0.0956,
      -0.0927,
-     -0.1411
+     -0.1411,
+     -0.1408
     ],
-    "slope_per_quarter": -0.0034,
-    "r2": 0.242,
+    "slope_per_quarter": -0.00703,
+    "r2": 0.604,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -3101,28 +3101,28 @@
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      348405000.0
+      "2026-09-30",
+      359479000.0
      ],
      [
-      "2025-06-30",
-      208473000.0
+      "2025-09-30",
+      236431000.0
      ],
      [
-      "2024-06-30",
-      182147000.0
+      "2024-09-30",
+      195862000.0
      ],
      [
-      "2023-06-30",
-      83346000.0
+      "2023-09-30",
+      123363000.0
      ],
      [
-      "2022-06-30",
-      -82228000.0
+      "2022-09-30",
+      -45706000.0
      ]
     ],
-    "fcf_5yr_avg": 148028600.0,
-    "fcf_2yr_avg": 278439000.0
+    "fcf_5yr_avg": 173885800.0,
+    "fcf_2yr_avg": 297955000.0
    },
    "deficit_quality": {
     "verdict": "GOOD_DEFICIT",
@@ -3132,7 +3132,7 @@
    }
   },
   "NOW": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 1493000000.0,
    "ttm_revenue": 15431000000.0,
@@ -3176,7 +3176,7 @@
    }
   },
   "NVDA": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-26",
    "ttm_operating_income": 197579000000.0,
    "ttm_revenue": 302969000000.0,
@@ -3220,7 +3220,7 @@
    }
   },
   "ONDS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -244441458.0,
    "ttm_revenue": 174103430.0,
@@ -3275,7 +3275,7 @@
    }
   },
   "PAYS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": 17115217.0,
    "ttm_revenue": 100642169.0,
@@ -3319,7 +3319,7 @@
    }
   },
   "PEP": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-05",
    "ttm_operating_income": 15053000000.0,
    "ttm_revenue": 98241000000.0,
@@ -3363,41 +3363,41 @@
    }
   },
   "PLTR": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 2634652000.0,
-   "ttm_revenue": 6155941000.0,
-   "operating_margin": 0.428,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 3326241000.0,
+   "ttm_revenue": 7288260000.0,
+   "operating_margin": 0.4564,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      3358272000.0
+      "2026-09-30",
+      4053956000.0
      ],
      [
-      "2025-06-30",
-      1708704000.0
+      "2025-09-30",
+      1793789000.0
      ],
      [
-      "2024-06-30",
-      696413000.0
+      "2024-09-30",
+      980322000.0
      ],
      [
-      "2023-06-30",
-      375354000.0
+      "2023-09-30",
+      474602000.0
      ],
      [
-      "2022-06-30",
-      260233000.0
+      "2022-09-30",
+      197448000.0
      ]
     ],
-    "fcf_5yr_avg": 1279795200.0,
-    "fcf_2yr_avg": 2533488000.0
+    "fcf_5yr_avg": 1500023400.0,
+    "fcf_2yr_avg": 2923872500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -3407,7 +3407,7 @@
    }
   },
   "PM": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 16662000000.0,
    "ttm_revenue": 43138000000.0,
@@ -3451,7 +3451,7 @@
    }
   },
   "QBTS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -170580000.0,
    "ttm_revenue": 12425000.0,
@@ -3518,7 +3518,7 @@
    }
   },
   "RBRK": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": -282398000.0,
    "ttm_revenue": 1542178000.0,
@@ -3581,7 +3581,7 @@
    }
   },
   "RCAT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -107419254.0,
    "ttm_revenue": 73630701.0,
@@ -3636,38 +3636,38 @@
    }
   },
   "RDW": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -215260000.0,
-   "ttm_revenue": 426272000.0,
-   "operating_margin": -0.505,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": -199677000.0,
+   "ttm_revenue": 431875000.0,
+   "operating_margin": -0.4623,
    "revenue_stage": "loss",
    "revenue_stage_label": "赤字",
    "stage_reason": "TTMの営業利益率が上向きでない",
    "breakeven": {
     "method": "ttm_operating_margin_ols_8q",
     "basis_ends": [
-     "2024-09-30",
      "2024-12-31",
      "2025-03-31",
      "2025-06-30",
      "2025-09-30",
      "2025-12-31",
      "2026-03-31",
-     "2026-06-30"
+     "2026-06-30",
+     "2026-09-30"
     ],
     "margins": [
-     -0.1006,
      -0.1388,
      -0.1906,
      -0.5269,
      -0.564,
      -0.6848,
      -0.7684,
-     -0.505
+     -0.505,
+     -0.4623
     ],
-    "slope_per_quarter": -0.08927,
-    "r2": 0.723,
+    "slope_per_quarter": -0.05574,
+    "r2": 0.389,
     "quarters_to_zero": null,
     "year": null,
     "reason": "NO_TREND"
@@ -3676,28 +3676,28 @@
     "value": true,
     "fcf_points": [
      [
-      "2026-06-30",
-      -98203000.0
+      "2026-09-30",
+      -136685000.0
      ],
      [
-      "2025-06-30",
-      -152026000.0
+      "2025-09-30",
+      -159628000.0
      ],
      [
-      "2024-06-30",
-      -179000.0
+      "2024-09-30",
+      -14881000.0
      ],
      [
-      "2023-06-30",
-      -31228000.0
+      "2023-09-30",
+      -23645000.0
      ],
      [
-      "2022-06-30",
-      -54820374.0
+      "2022-09-30",
+      -32909000.0
      ]
     ],
-    "fcf_5yr_avg": -67291274.8,
-    "fcf_2yr_avg": -125114500.0
+    "fcf_5yr_avg": -73549600.0,
+    "fcf_2yr_avg": -148156500.0
    },
    "deficit_quality": {
     "verdict": "BAD_DEFICIT",
@@ -3707,7 +3707,7 @@
    }
   },
   "RKLB": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -223494000.0,
    "ttm_revenue": 769146000.0,
@@ -3778,7 +3778,7 @@
    }
   },
   "RMBS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 288967000.0,
    "ttm_revenue": 796107000.0,
@@ -3822,11 +3822,11 @@
    }
   },
   "RXRX": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -544010000.0,
-   "ttm_revenue": 54855000.0,
-   "operating_margin": -9.9172,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": -494984000.0,
+   "ttm_revenue": 68232000.0,
+   "operating_margin": -7.2544,
    "revenue_stage": "unclassified",
    "revenue_stage_label": "区分なし",
    "stage_reason": "業種のマスター: 区分なし（Biotechnology: 定義v2 §6 の銀行・保険・REIT・バイオ）",
@@ -3835,28 +3835,28 @@
     "value": true,
     "fcf_points": [
      [
-      "2026-06-30",
-      -352270000.0
+      "2026-09-30",
+      -312480000.0
      ],
      [
-      "2025-06-30",
-      -393872000.0
+      "2025-09-30",
+      -447688000.0
      ],
      [
-      "2024-06-30",
-      -342163000.0
+      "2024-09-30",
+      -332285000.0
      ],
      [
-      "2023-06-30",
-      -265457000.0
+      "2023-09-30",
+      -276318000.0
      ],
      [
-      "2022-06-30",
-      -113428000.0
+      "2022-09-30",
+      -133478000.0
      ]
     ],
-    "fcf_5yr_avg": -293438000.0,
-    "fcf_2yr_avg": -373071000.0
+    "fcf_5yr_avg": -300449800.0,
+    "fcf_2yr_avg": -380084000.0
    },
    "deficit_quality": {
     "verdict": "WATCH",
@@ -3866,7 +3866,7 @@
    }
   },
   "S": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": -323687000.0,
    "ttm_revenue": 1098704000.0,
@@ -3937,7 +3937,7 @@
    }
   },
   "SCCO": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 10029100000.0,
    "ttm_revenue": 17106800000.0,
@@ -3981,68 +3981,41 @@
    }
   },
   "SITM": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": -18383000.0,
-   "ttm_revenue": 467851000.0,
-   "operating_margin": -0.0393,
-   "revenue_stage": "near_profit",
-   "revenue_stage_label": "黒字化目前",
-   "stage_reason": "最新のTTMの営業利益率から直近8点の回帰の傾きで0.44四半期後に0（2026年、R² 0.997）",
-   "breakeven": {
-    "method": "ttm_operating_margin_ols_8q",
-    "basis_ends": [
-     "2024-09-30",
-     "2024-12-31",
-     "2025-03-31",
-     "2025-06-30",
-     "2025-09-30",
-     "2025-12-31",
-     "2026-03-31",
-     "2026-06-30"
-    ],
-    "margins": [
-     -0.6763,
-     -0.5685,
-     -0.4709,
-     -0.3936,
-     -0.326,
-     -0.205,
-     -0.1348,
-     -0.0393
-    ],
-    "slope_per_quarter": 0.0892,
-    "r2": 0.997,
-    "quarters_to_zero": 0.44,
-    "year": 2026,
-    "reason": "PREDICTED"
-   },
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 5971000.0,
+   "ttm_revenue": 682955000.0,
+   "operating_margin": 0.0087,
+   "revenue_stage": "profit",
+   "revenue_stage_label": "黒字",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
+   "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      84488000.0
+      "2026-09-30",
+      41435000.0
      ],
      [
-      "2025-06-30",
-      -13274000.0
+      "2025-09-30",
+      19741000.0
      ],
      [
-      "2024-06-30",
-      -3811000.0
+      "2024-09-30",
+      3510000.0
      ],
      [
-      "2023-06-30",
-      -11137000.0
+      "2023-09-30",
+      -17010000.0
      ],
      [
-      "2022-06-30",
-      47294000.0
+      "2022-09-30",
+      23795000.0
      ]
     ],
-    "fcf_5yr_avg": 20712000.0,
-    "fcf_2yr_avg": 35607000.0
+    "fcf_5yr_avg": 14294200.0,
+    "fcf_2yr_avg": 30588000.0
    },
    "deficit_quality": {
     "verdict": "BAD_DEFICIT",
@@ -4052,7 +4025,7 @@
    }
   },
   "SNPS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 802356000.0,
    "ttm_revenue": 9416465000.0,
@@ -4096,11 +4069,11 @@
    }
   },
   "SOFI": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 1572033000.0,
-   "ttm_revenue": 4305695000.0,
-   "operating_margin": 0.3651,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 1759566000.0,
+   "ttm_revenue": 4729194000.0,
+   "operating_margin": 0.3721,
    "revenue_stage": "unclassified",
    "revenue_stage_label": "区分なし",
    "stage_reason": "業種のマスター: 金融・資産の重い業種（P/TBV÷ROTCE の側）",
@@ -4109,28 +4082,28 @@
     "value": true,
     "fcf_points": [
      [
-      "2026-06-30",
-      -8799784000.0
+      "2026-09-30",
+      -10545926000.0
      ],
      [
-      "2025-06-30",
-      -3029362000.0
+      "2025-09-30",
+      -3179012000.0
      ],
      [
-      "2024-06-30",
-      -2821229000.0
+      "2024-09-30",
+      -1323679000.0
      ],
      [
-      "2023-06-30",
-      -9696639000.0
+      "2023-09-30",
+      -9504818000.0
      ],
      [
-      "2022-06-30",
-      -3468040000.0
+      "2022-09-30",
+      -6168620000.0
      ]
     ],
-    "fcf_5yr_avg": -5563010800.0,
-    "fcf_2yr_avg": -5914573000.0
+    "fcf_5yr_avg": -6144411000.0,
+    "fcf_2yr_avg": -6862469000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -4140,7 +4113,7 @@
    }
   },
   "SOUN": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -139287000.0,
    "ttm_revenue": 203200000.0,
@@ -4211,7 +4184,7 @@
    }
   },
   "SPIR": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": -91492000.0,
    "ttm_revenue": 62377000.0,
@@ -4282,41 +4255,41 @@
    }
   },
   "TASK": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-06-30",
-   "ttm_operating_income": 143545000.0,
-   "ttm_revenue": 1226790000.0,
-   "operating_margin": 0.117,
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 142119000.0,
+   "ttm_revenue": 1242824000.0,
+   "operating_margin": 0.1144,
    "revenue_stage": "profit",
    "revenue_stage_label": "黒字",
-   "stage_reason": "TTMの営業利益がプラス（2026-06-30）",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      120586000.0
+      "2026-09-30",
+      100648000.0
      ],
      [
-      "2025-06-30",
-      48495000.0
+      "2025-09-30",
+      84171000.0
      ],
      [
-      "2024-06-30",
-      118630000.0
+      "2024-09-30",
+      111093000.0
      ],
      [
-      "2023-06-30",
-      126896000.0
+      "2023-09-30",
+      105874000.0
      ],
      [
-      "2022-06-30",
-      -70652000.0
+      "2022-09-30",
+      88446000.0
      ]
     ],
-    "fcf_5yr_avg": 68791000.0,
-    "fcf_2yr_avg": 84540500.0
+    "fcf_5yr_avg": 98046400.0,
+    "fcf_2yr_avg": 92409500.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -4326,7 +4299,7 @@
    }
   },
   "TDY": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-27",
    "ttm_operating_income": 1304100000.0,
    "ttm_revenue": 6519800000.0,
@@ -4370,7 +4343,7 @@
    }
   },
   "TER": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-27",
    "ttm_operating_income": 1605982000.0,
    "ttm_revenue": 5000771000.0,
@@ -4414,7 +4387,7 @@
    }
   },
   "TSLA": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 3466000000.0,
    "ttm_revenue": 103570000000.0,
@@ -4458,51 +4431,51 @@
    }
   },
   "V": {
-   "as_of": "2026-11-05",
-   "ttm_end": "2026-03-31",
-   "ttm_operating_income": 26296000000.0,
-   "ttm_revenue": 43027000000.0,
-   "operating_margin": 0.6112,
-   "revenue_stage": "unclassified",
-   "revenue_stage_label": "区分なし",
-   "stage_reason": "業種のマスター: 金融・資産の重い業種（P/TBV÷ROTCE の側）",
+   "as_of": "2026-11-08",
+   "ttm_end": "2026-09-30",
+   "ttm_operating_income": 28110000000.0,
+   "ttm_revenue": 45903000000.0,
+   "operating_margin": 0.6124,
+   "revenue_stage": "profit",
+   "revenue_stage_label": "黒字",
+   "stage_reason": "TTMの営業利益がプラス（2026-09-30）",
    "breakeven": null,
    "structural_deficit": {
     "value": false,
     "fcf_points": [
      [
-      "2026-03-31",
-      21185000000.0
+      "2026-09-30",
+      22057000000.0
      ],
      [
-      "2025-03-31",
-      20508000000.0
+      "2025-09-30",
+      21577000000.0
      ],
      [
-      "2024-03-31",
-      19728000000.0
+      "2024-09-30",
+      18693000000.0
      ],
      [
-      "2023-03-31",
-      18170000000.0
+      "2023-09-30",
+      19696000000.0
      ],
      [
-      "2022-03-31",
-      15279000000.0
+      "2022-09-30",
+      17879000000.0
      ]
     ],
-    "fcf_5yr_avg": 18974000000.0,
-    "fcf_2yr_avg": 20846500000.0
+    "fcf_5yr_avg": 19980400000.0,
+    "fcf_2yr_avg": 21817000000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
     "score": 25.0,
-    "reason": "売上CAGR +11% (緩成長) / R&D+SM 4% (低投資) / 粗利率計算不可 / 純利益黒字",
-    "fiscal_year_end": "2025-09-30"
+    "reason": "売上CAGR +12% (緩成長) / R&D+SM 5% (低投資) / 粗利率計算不可 / 純利益黒字",
+    "fiscal_year_end": "2026-09-30"
    }
   },
   "VRT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 2641700000.0,
    "ttm_revenue": 13116600000.0,
@@ -4546,7 +4519,7 @@
    }
   },
   "VST": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": 3563000000.0,
    "ttm_revenue": 19212000000.0,
@@ -4590,7 +4563,7 @@
    }
   },
   "VZ": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-09-30",
    "ttm_operating_income": 29075000000.0,
    "ttm_revenue": 139387000000.0,
@@ -4634,7 +4607,7 @@
    }
   },
   "WMT": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": 32280000000.0,
    "ttm_revenue": 735840000000.0,
@@ -4678,7 +4651,7 @@
    }
   },
   "XOM": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": null,
    "ttm_operating_income": null,
    "ttm_revenue": null,
@@ -4691,28 +4664,28 @@
     "value": false,
     "fcf_points": [
      [
-      "2026-06-30",
-      30553000000.0
+      "2026-09-30",
+      42964000000.0
      ],
      [
-      "2025-06-30",
-      29123000000.0
+      "2025-09-30",
+      23775000000.0
      ],
      [
-      "2024-06-30",
-      32412000000.0
+      "2024-09-30",
+      32778000000.0
      ],
      [
-      "2023-06-30",
-      46340000000.0
+      "2023-09-30",
+      37834000000.0
      ],
      [
-      "2022-06-30",
-      49289000000.0
+      "2022-09-30",
+      59587000000.0
      ]
     ],
-    "fcf_5yr_avg": 37543400000.0,
-    "fcf_2yr_avg": 29838000000.0
+    "fcf_5yr_avg": 39387600000.0,
+    "fcf_2yr_avg": 33369500000.0
    },
    "deficit_quality": {
     "verdict": "PROFITABLE",
@@ -4722,7 +4695,7 @@
    }
   },
   "ZETA": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-06-30",
    "ttm_operating_income": 24675000.0,
    "ttm_revenue": 1570877000.0,
@@ -4766,7 +4739,7 @@
    }
   },
   "ZS": {
-   "as_of": "2026-11-05",
+   "as_of": "2026-11-08",
    "ttm_end": "2026-07-31",
    "ttm_operating_income": -133267000.0,
    "ttm_revenue": 3352523000.0,

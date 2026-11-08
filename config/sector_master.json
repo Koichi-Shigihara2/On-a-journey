@@ -1,7 +1,7 @@
 {
  "_schema_version": "1.0",
  "_description": "業種のマスター（common/sector_master.py が機械で作る。手で書かない）。主は yfinance の sector・industry、SIC・社名は控え。区分と写像は rules の業種の名前の規則で決める。読み手は [[SECTOR-MASTER-ADOPT-1]] で寄せる",
- "generated_at": "2026-11-06T04:43:25+00:00",
+ "generated_at": "2026-11-08T17:22:39+00:00",
  "rules": {
   "cyclical_keywords": [
    "Agricultural",
@@ -137,14 +137,14 @@
    "sector": "Technology",
    "industry": "Consumer Electronics",
    "attributes_fetched_at": "2026-11-01T18:29:07.395834+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3571,
+   "sic_description": "Electronic Computers",
+   "entity_name": "Apple Inc.",
    "cyclical": false,
    "mega_tech": true,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -155,14 +155,14 @@
    "sector": "Healthcare",
    "industry": "Drug Manufacturers - General",
    "attributes_fetched_at": "2026-11-01T18:28:47.121398+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2834,
+   "sic_description": "Pharmaceutical Preparations",
+   "entity_name": "AbbVie Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "ヘルスケア / バイオ",
@@ -173,14 +173,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:28:48.203412+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "ADOBE INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -191,14 +191,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:29:14.088019+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Autodesk, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -209,14 +209,14 @@
    "sector": "Technology",
    "industry": "Semiconductors",
    "attributes_fetched_at": "2026-11-01T18:33:31.834149+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3674,
+   "sic_description": "Semiconductors & Related Devices",
+   "entity_name": "Astera Labs, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -227,14 +227,14 @@
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
    "attributes_fetched_at": "2026-11-01T18:29:07.905268+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3674,
+   "sic_description": "Semiconductors & Related Devices",
+   "entity_name": "APPLIED MATERIALS INC /DE",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -245,14 +245,14 @@
    "sector": "Technology",
    "industry": "Semiconductors",
    "attributes_fetched_at": "2026-11-01T18:28:48.728520+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3674,
+   "sic_description": "Semiconductors & Related Devices",
+   "entity_name": "ADVANCED MICRO DEVICES INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -263,14 +263,14 @@
    "sector": "Consumer Cyclical",
    "industry": "Internet Retail",
    "attributes_fetched_at": "2026-11-01T18:28:58.033199+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 5961,
+   "sic_description": "Retail-Catalog & Mail-Order Houses",
+   "entity_name": "AMAZON COM INC",
    "cyclical": false,
    "mega_tech": true,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -281,14 +281,14 @@
    "sector": "Communication Services",
    "industry": "Advertising Agencies",
    "attributes_fetched_at": "2026-11-01T18:29:08.418893+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7370,
+   "sic_description": "Services-Computer Programming, Data Processing, Etc.",
+   "entity_name": "AppLovin Corp",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -299,14 +299,14 @@
    "sector": "Technology",
    "industry": "Communication Equipment",
    "attributes_fetched_at": "2026-11-01T18:33:32.328569+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 4899,
+   "sic_description": "Communications Services, NEC",
+   "entity_name": "AST SpaceMobile, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "通信・インフラ",
@@ -317,14 +317,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:33:32.830905+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3721,
+   "sic_description": "Aircraft",
+   "entity_name": "AeroVironment Inc",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -335,14 +335,14 @@
    "sector": "Technology",
    "industry": "Information Technology Services",
    "attributes_fetched_at": "2026-11-01T18:33:33.331738+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "BigBear.ai Holdings, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -353,14 +353,14 @@
    "sector": "Consumer Cyclical",
    "industry": "Travel Services",
    "attributes_fetched_at": "2026-11-01T18:29:25.189044+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 4700,
+   "sic_description": "Transportation Services",
+   "entity_name": "Booking Holdings Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -371,14 +371,14 @@
    "sector": "Consumer Cyclical",
    "industry": "Restaurants",
    "attributes_fetched_at": "2026-11-01T18:33:52.477367+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 5810,
+   "sic_description": "Retail-Eating & Drinking Places",
+   "entity_name": "Dutch Bros Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -389,14 +389,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:33:33.825768+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "BENTLEY SYSTEMS INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -407,14 +407,14 @@
    "sector": "Consumer Cyclical",
    "industry": "Restaurants",
    "attributes_fetched_at": "2026-11-01T18:33:34.319569+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 5812,
+   "sic_description": "Retail-Eating  Places",
+   "entity_name": "CHEESECAKE FACTORY INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -425,14 +425,14 @@
    "sector": "Consumer Cyclical",
    "industry": "Internet Retail",
    "attributes_fetched_at": "2026-11-01T18:33:34.884481+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "Maplebear Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -443,14 +443,14 @@
    "sector": "Industrials",
    "industry": "Farm & Heavy Construction Machinery",
    "attributes_fetched_at": "2026-11-01T18:29:35.680055+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3531,
+   "sic_description": "Construction Machinery & Equip",
+   "entity_name": "CATERPILLAR INC",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -461,14 +461,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:29:31.263522+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "CADENCE DESIGN SYSTEMS INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -479,14 +479,14 @@
    "sector": "Utilities",
    "industry": "Utilities - Independent Power Producers",
    "attributes_fetched_at": "2026-11-01T18:29:55.184011+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 4911,
+   "sic_description": "Electric Services",
+   "entity_name": "Constellation Energy Corp",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "通信・インフラ",
@@ -497,14 +497,14 @@
    "sector": "Consumer Defensive",
    "industry": "Beverages - Non-Alcoholic",
    "attributes_fetched_at": "2026-11-01T18:33:35.381243+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2086,
+   "sic_description": "Bottled & Canned Soft Drinks & Carbonated Waters",
+   "entity_name": "Celsius Holdings, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -515,14 +515,14 @@
    "sector": "Industrials",
    "industry": "Security & Protection Services",
    "attributes_fetched_at": "2026-11-01T18:33:47.591062+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3420,
+   "sic_description": "Cutlery, Handtools & General Hardware",
+   "entity_name": "COMPX INTERNATIONAL INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -533,14 +533,14 @@
    "sector": "Technology",
    "industry": "Scientific & Technical Instruments",
    "attributes_fetched_at": "2026-11-01T18:29:50.761145+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3827,
+   "sic_description": "Optical Instruments & Lenses",
+   "entity_name": "COHERENT CORP.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -551,14 +551,14 @@
    "sector": "Industrials",
    "industry": "Specialty Business Services",
    "attributes_fetched_at": "2026-11-01T18:29:56.207495+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 5500,
+   "sic_description": "Retail-Auto Dealers & Gasoline Stations",
+   "entity_name": "COPART INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -569,14 +569,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:32:34.221942+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Salesforce, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -587,14 +587,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:35.896988+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "CoreWeave, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -605,14 +605,14 @@
    "sector": "Real Estate",
    "industry": "Real Estate Services",
    "attributes_fetched_at": "2026-11-01T18:29:57.851119+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "COSTAR GROUP, INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "不動産 (REITs)",
@@ -623,14 +623,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:30:03.483713+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Datadog, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -641,14 +641,14 @@
    "sector": "Technology",
    "industry": "Computer Hardware",
    "attributes_fetched_at": "2026-11-01T18:30:05.784213+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3571,
+   "sic_description": "Electronic Computers",
+   "entity_name": "Dell Technologies Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -659,14 +659,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:48.143351+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7370,
+   "sic_description": "Services-Computer Programming, Data Processing, Etc.",
+   "entity_name": "DigitalOcean Holdings, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -677,14 +677,14 @@
    "sector": "Consumer Defensive",
    "industry": "Household & Personal Products",
    "attributes_fetched_at": "2026-11-01T18:33:36.434579+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2844,
+   "sic_description": "Perfumes, Cosmetics & Other Toilet Preparations",
+   "entity_name": "e.l.f. Beauty, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -695,14 +695,14 @@
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
    "attributes_fetched_at": "2026-11-01T18:33:55.519837+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3089,
+   "sic_description": "Plastics Products, NEC",
+   "entity_name": "ENTEGRIS INC",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -713,14 +713,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:33:36.948020+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Elastic N.V.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -731,14 +731,14 @@
    "sector": "Basic Materials",
    "industry": "Copper",
    "attributes_fetched_at": "2026-11-01T18:30:41.645662+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 1000,
+   "sic_description": "Metal Mining",
+   "entity_name": "FREEPORT-MCMORAN INC",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -749,14 +749,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:30:31.756823+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "FAIR ISAAC CORP",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -767,14 +767,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:52.965332+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "Flywire Corp",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -785,14 +785,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:33:53.458420+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "JFrog Ltd",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -803,14 +803,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:33:48.683649+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Freshworks Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -821,14 +821,14 @@
    "sector": "Industrials",
    "industry": "Specialty Industrial Machinery",
    "attributes_fetched_at": "2026-11-01T18:30:44.327950+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3600,
+   "sic_description": "Electronic & Other Electrical Equipment (No Computer Equip)",
+   "entity_name": "GE Vernova Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -839,14 +839,14 @@
    "sector": "Communication Services",
    "industry": "Internet Content & Information",
    "attributes_fetched_at": "2026-11-01T18:28:56.382363+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7370,
+   "sic_description": "Services-Computer Programming, Data Processing, Etc.",
+   "entity_name": "Alphabet Inc.",
    "cyclical": false,
    "mega_tech": true,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -857,14 +857,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:37.470663+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Gitlab Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -875,14 +875,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:33:49.282390+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3724,
+   "sic_description": "Aircraft Engines & Engine Parts",
+   "entity_name": "HEICO CORP",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -893,14 +893,14 @@
    "sector": "Industrials",
    "industry": "Conglomerates",
    "attributes_fetched_at": "2026-11-01T18:30:57.525415+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3724,
+   "sic_description": "Aircraft Engines & Engine Parts",
+   "entity_name": "HONEYWELL INTERNATIONAL INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -911,14 +911,14 @@
    "sector": "Healthcare",
    "industry": "Health Information Services",
    "attributes_fetched_at": "2026-11-01T18:33:49.849253+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "HEALTHEQUITY, INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "ヘルスケア / バイオ",
@@ -929,14 +929,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:30:59.196185+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3350,
+   "sic_description": "Rolling Drawing & Extruding of  Nonferrous Metals",
+   "entity_name": "Howmet Aerospace Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -947,14 +947,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:31:09.641886+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "INTUIT INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -965,14 +965,14 @@
    "sector": "Technology",
    "industry": "Computer Hardware",
    "attributes_fetched_at": "2026-11-01T18:33:37.953102+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7373,
+   "sic_description": "Services-Computer Integrated Systems Design",
+   "entity_name": "IonQ, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -983,14 +983,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:38.619985+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7373,
+   "sic_description": "Services-Computer Integrated Systems Design",
+   "entity_name": "Samsara Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1001,14 +1001,14 @@
    "sector": "Healthcare",
    "industry": "Drug Manufacturers - General",
    "attributes_fetched_at": "2026-11-01T18:31:15.242505+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2834,
+   "sic_description": "Pharmaceutical Preparations",
+   "entity_name": "JOHNSON & JOHNSON",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "ヘルスケア / バイオ",
@@ -1019,14 +1019,14 @@
    "sector": "Industrials",
    "industry": "Airports & Air Services",
    "attributes_fetched_at": "2026-11-01T18:33:39.125274+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3721,
+   "sic_description": "Aircraft",
+   "entity_name": "Joby Aviation, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -1037,14 +1037,14 @@
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
    "attributes_fetched_at": "2026-11-01T18:31:21.367642+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3827,
+   "sic_description": "Optical Instruments & Lenses",
+   "entity_name": "KLA CORP",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1055,14 +1055,14 @@
    "sector": "Consumer Defensive",
    "industry": "Beverages - Non-Alcoholic",
    "attributes_fetched_at": "2026-11-01T18:29:49.678236+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2080,
+   "sic_description": "Beverages",
+   "entity_name": "COCA COLA CO",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1073,14 +1073,14 @@
    "sector": "Technology",
    "industry": "Electronic Components",
    "attributes_fetched_at": "2026-11-01T18:33:50.360248+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3670,
+   "sic_description": "Electronic Components & Accessories",
+   "entity_name": "KULR Technology Group, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1091,14 +1091,14 @@
    "sector": "Technology",
    "industry": "Communication Equipment",
    "attributes_fetched_at": "2026-11-01T18:31:31.762377+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3669,
+   "sic_description": "Communications Equipment, NEC",
+   "entity_name": "Lumentum Holdings Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "通信・インフラ",
@@ -1109,14 +1109,14 @@
    "sector": "Healthcare",
    "industry": "Drug Manufacturers - General",
    "attributes_fetched_at": "2026-11-01T18:31:27.303717+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2834,
+   "sic_description": "Pharmaceutical Preparations",
+   "entity_name": "ELI LILLY & Co",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "ヘルスケア / バイオ",
@@ -1127,14 +1127,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:31:29.120191+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3760,
+   "sic_description": "Guided Missiles & Space Vehicles & Parts",
+   "entity_name": "LOCKHEED MARTIN CORP",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -1145,14 +1145,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:33:53.939736+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3728,
+   "sic_description": "Aircraft Parts & Auxiliary Equipment, NEC",
+   "entity_name": "Loar Holdings Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -1163,14 +1163,14 @@
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
    "attributes_fetched_at": "2026-11-01T18:31:24.574904+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3559,
+   "sic_description": "Special Industry Machinery, NEC",
+   "entity_name": "LAM RESEARCH CORP",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1181,14 +1181,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:33:54.451796+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "Lyft, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1199,14 +1199,14 @@
    "sector": "Communication Services",
    "industry": "Internet Content & Information",
    "attributes_fetched_at": "2026-11-01T18:31:40.449978+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7370,
+   "sic_description": "Services-Computer Programming, Data Processing, Etc.",
+   "entity_name": "Meta Platforms, Inc.",
    "cyclical": false,
    "mega_tech": true,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1217,14 +1217,14 @@
    "sector": "Consumer Defensive",
    "industry": "Tobacco",
    "attributes_fetched_at": "2026-11-01T18:28:57.428617+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2111,
+   "sic_description": "Cigarettes",
+   "entity_name": "ALTRIA GROUP, INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1235,14 +1235,14 @@
    "sector": "Technology",
    "industry": "Semiconductors",
    "attributes_fetched_at": "2026-11-01T18:31:35.792485+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3674,
+   "sic_description": "Semiconductors & Related Devices",
+   "entity_name": "Marvell Technology, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1253,14 +1253,14 @@
    "sector": "Financial Services",
    "industry": "Financial Data & Stock Exchanges",
    "attributes_fetched_at": "2026-11-01T18:31:49.896726+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "MSCI Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "フィンテック / 銀行",
@@ -1271,14 +1271,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:31:43.949914+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "MICROSOFT CORP",
    "cyclical": false,
    "mega_tech": true,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1289,14 +1289,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:39.618259+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Cloudflare, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1307,14 +1307,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:32:37.638128+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "ServiceNow, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1325,14 +1325,14 @@
    "sector": "Technology",
    "industry": "Semiconductors",
    "attributes_fetched_at": "2026-11-01T18:31:59.362766+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3674,
+   "sic_description": "Semiconductors & Related Devices",
+   "entity_name": "NVIDIA CORP",
    "cyclical": false,
    "mega_tech": true,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1343,14 +1343,14 @@
    "sector": "Technology",
    "industry": "Communication Equipment",
    "attributes_fetched_at": "2026-11-01T18:33:40.097479+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3663,
+   "sic_description": "Radio & Tv Broadcasting & Communications Equipment",
+   "entity_name": "Ondas Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "通信・インフラ",
@@ -1361,14 +1361,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:50.862146+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "Paysign, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1379,14 +1379,14 @@
    "sector": "Consumer Defensive",
    "industry": "Beverages - Non-Alcoholic",
    "attributes_fetched_at": "2026-11-01T18:32:10.193031+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2080,
+   "sic_description": "Beverages",
+   "entity_name": "PEPSICO INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1397,14 +1397,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:32:06.716398+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Palantir Technologies Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1415,14 +1415,14 @@
    "sector": "Consumer Defensive",
    "industry": "Tobacco",
    "attributes_fetched_at": "2026-11-01T18:32:11.897034+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2111,
+   "sic_description": "Cigarettes",
+   "entity_name": "Philip Morris International Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1433,14 +1433,14 @@
    "sector": "Technology",
    "industry": "Computer Hardware",
    "attributes_fetched_at": "2026-11-01T18:33:40.591695+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7374,
+   "sic_description": "Services-Computer Processing & Data Preparation",
+   "entity_name": "D-Wave Quantum Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1451,14 +1451,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:41.153407+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Rubrik, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1469,14 +1469,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:33:41.682646+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Red Cat Holdings, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -1487,14 +1487,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:33:42.255325+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3760,
+   "sic_description": "Guided Missiles & Space Vehicles & Parts",
+   "entity_name": "Redwire Corp",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -1505,14 +1505,14 @@
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
    "attributes_fetched_at": "2026-11-01T18:33:42.748164+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3760,
+   "sic_description": "Guided Missiles & Space Vehicles & Parts",
+   "entity_name": "Rocket Lab Corp",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "宇宙・航空",
@@ -1523,14 +1523,14 @@
    "sector": "Technology",
    "industry": "Semiconductors",
    "attributes_fetched_at": "2026-11-01T18:33:54.950262+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3674,
+   "sic_description": "Semiconductors & Related Devices",
+   "entity_name": "RAMBUS INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1541,14 +1541,14 @@
    "sector": "Healthcare",
    "industry": "Biotechnology",
    "attributes_fetched_at": "2026-11-01T18:33:43.277577+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2836,
+   "sic_description": "Biological Products, (No Diagnostic Substances)",
+   "entity_name": "RECURSION PHARMACEUTICALS, INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": "区分なし（Biotechnology: 定義v2 §6 の銀行・保険・REIT・バイオ）",
    "eps_category": "ヘルスケア / バイオ",
@@ -1559,14 +1559,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:43.807633+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "SentinelOne, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1577,14 +1577,14 @@
    "sector": "Basic Materials",
    "industry": "Copper",
    "attributes_fetched_at": "2026-11-01T18:33:51.413210+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 1000,
+   "sic_description": "Metal Mining",
+   "entity_name": "SOUTHERN COPPER CORP/",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1595,14 +1595,14 @@
    "sector": "Technology",
    "industry": "Semiconductors",
    "attributes_fetched_at": "2026-11-01T18:33:44.342529+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3674,
+   "sic_description": "Semiconductors & Related Devices",
+   "entity_name": "SITIME Corp",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1613,14 +1613,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:32:48.420122+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "SYNOPSYS INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1631,14 +1631,14 @@
    "sector": "Financial Services",
    "industry": "Credit Services",
    "attributes_fetched_at": "2026-11-01T18:33:44.899391+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 6199,
+   "sic_description": "Finance Services",
+   "entity_name": "SoFi Technologies, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": true,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "フィンテック / 銀行",
@@ -1649,14 +1649,14 @@
    "sector": "Technology",
    "industry": "Software - Application",
    "attributes_fetched_at": "2026-11-01T18:33:45.499826+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "SOUNDHOUND AI, INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1667,14 +1667,14 @@
    "sector": "Industrials",
    "industry": "Specialty Business Services",
    "attributes_fetched_at": "2026-11-01T18:33:46.031397+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 4899,
+   "sic_description": "Communications Services, NEC",
+   "entity_name": "Spire Global, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1685,14 +1685,14 @@
    "sector": "Technology",
    "industry": "Information Technology Services",
    "attributes_fetched_at": "2026-11-01T18:33:51.912712+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7374,
+   "sic_description": "Services-Computer Processing & Data Preparation",
+   "entity_name": "TaskUs, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1703,14 +1703,14 @@
    "sector": "Technology",
    "industry": "Scientific & Technical Instruments",
    "attributes_fetched_at": "2026-11-01T18:32:53.584156+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3812,
+   "sic_description": "Search, Detection, Navigation, Guidance, Aeronautical Sys",
+   "entity_name": "TELEDYNE TECHNOLOGIES INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1721,14 +1721,14 @@
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
    "attributes_fetched_at": "2026-11-01T18:32:54.090975+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3825,
+   "sic_description": "Instruments For Meas & Testing of  Electricity & Elec Signals",
+   "entity_name": "TERADYNE, INC",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1739,14 +1739,14 @@
    "sector": "Consumer Cyclical",
    "industry": "Auto Manufacturers",
    "attributes_fetched_at": "2026-11-01T18:32:54.677772+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3711,
+   "sic_description": "Motor Vehicles & Passenger Car Bodies",
+   "entity_name": "Tesla, Inc.",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1757,14 +1757,14 @@
    "sector": "Financial Services",
    "industry": "Credit Services",
    "attributes_fetched_at": "2026-11-01T18:33:15.012193+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7389,
+   "sic_description": "Services-Business Services, NEC",
+   "entity_name": "VISA INC.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
-    "value": true,
-    "basis": "sector_only"
+    "value": false,
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "フィンテック / 銀行",
@@ -1775,14 +1775,14 @@
    "sector": "Industrials",
    "industry": "Electrical Equipment & Parts",
    "attributes_fetched_at": "2026-11-01T18:33:13.479881+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 3679,
+   "sic_description": "Electronic Components, NEC",
+   "entity_name": "Vertiv Holdings Co",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1793,14 +1793,14 @@
    "sector": "Utilities",
    "industry": "Utilities - Independent Power Producers",
    "attributes_fetched_at": "2026-11-01T18:33:15.556945+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 4911,
+   "sic_description": "Electric Services",
+   "entity_name": "Vistra Corp.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "通信・インフラ",
@@ -1811,14 +1811,14 @@
    "sector": "Communication Services",
    "industry": "Telecom Services",
    "attributes_fetched_at": "2026-11-01T18:33:12.268298+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 4813,
+   "sic_description": "Telephone Communications (No Radiotelephone)",
+   "entity_name": "VERIZON COMMUNICATIONS INC",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "通信・インフラ",
@@ -1829,14 +1829,14 @@
    "sector": "Consumer Defensive",
    "industry": "Discount Stores",
    "attributes_fetched_at": "2026-11-01T18:33:19.515666+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 5331,
+   "sic_description": "Retail-Variety Stores",
+   "entity_name": "Walmart Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1847,14 +1847,14 @@
    "sector": "Energy",
    "industry": "Oil & Gas Integrated",
    "attributes_fetched_at": "2026-11-01T18:30:29.983827+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 2911,
+   "sic_description": "Petroleum Refining",
+   "entity_name": "ExxonMobil Holdings Corp",
    "cyclical": true,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "一般消費財 / 製造 / EV",
@@ -1865,14 +1865,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:46.564440+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7372,
+   "sic_description": "Services-Prepackaged Software",
+   "entity_name": "Zeta Global Holdings Corp.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
@@ -1883,14 +1883,14 @@
    "sector": "Technology",
    "industry": "Software - Infrastructure",
    "attributes_fetched_at": "2026-11-01T18:33:47.081774+00:00",
-   "sic": null,
-   "sic_description": null,
-   "entity_name": null,
+   "sic": 7371,
+   "sic_description": "Services-Computer Programming Services",
+   "entity_name": "Zscaler, Inc.",
    "cyclical": false,
    "mega_tech": false,
    "financial": {
     "value": false,
-    "basis": "sector_only"
+    "basis": "sector+sic"
    },
    "unclassified": null,
    "eps_category": "Technology",
