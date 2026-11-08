@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 192.6,
-  "calculation_date": "2026-11-09T02:37:02+09:00",
+  "calculation_date": "2026-11-09T02:53:57+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -196,6 +196,12 @@
         {
           "category": "リストラ・事業再編関連",
           "item_name": "リストラ費用",
+          "amount": -218000,
+          "reason": "一過性の事業再編費用"
+        },
+        {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
           "amount": 7032000,
           "reason": "一過性の事業再編費用"
         }
@@ -203,7 +209,7 @@
       "total_transient_amount": 7032000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業再編に伴う典型的な一時的費用であるため、構造的な収益力悪化とは判断されない。"
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。"
       }
     },
     "action": "flagged",
@@ -365,7 +371,7 @@
     "alpha_uncapped": 0.0,
     "per": 23.36508,
     "per_is_forward": false,
-    "per_adjusted": 20.84,
+    "per_adjusted": 19.75,
     "peg": 0.5976,
     "ps": 4.249242,
     "ev_ebitda": 55.858,
@@ -387,12 +393,12 @@
     "revenue_ttm": 934178000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": -59.1,
-    "max_eps": 1.2497,
-    "max_eps_per": 9.7,
+    "max_eps": 1.1682,
+    "max_eps_per": 10.4,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
-    "max_eps_shares": 260920772,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 279122250.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -424,7 +430,7 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.2929611807787832,
   "tanuki_score": "BUY",
-  "funda_score": 70,
+  "funda_score": 80,
   "score_comment": "割安圏(193%)で買い余地大、FCF黒字、売上安定成長",
   "timing_score": 80,
   "sell_reason": null,

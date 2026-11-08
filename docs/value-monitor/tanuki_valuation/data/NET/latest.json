@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -62.9,
-  "calculation_date": "2026-11-09T02:33:10+09:00",
+  "calculation_date": "2026-11-09T02:48:51+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -194,6 +194,24 @@
       "source": "adjusted_eps_analyzer",
       "items": [
         {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3141000,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
+          "amount": 11018000,
+          "reason": "一過性の事業再編費用"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3656000.0,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
           "category": "リストラ・事業再編関連",
           "item_name": "リストラ費用",
           "amount": 150693000,
@@ -212,14 +230,14 @@
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 154405000,
+      "total_transient_amount": 172220000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」や「マクロ変動による一時的影響」と明記されており、構造的悪化ではなく一時的要因と判断される。"
+        "reasoning": "すべての項目がマクロ変動や一過性の事業再編費用と明記されており、事業運営上の一時的な影響に留まるため、収益力の構造的悪化を示す兆候とは判断されない。"
       }
     },
     "action": "flagged",
-    "note": "TTM 2026-09-30 FCF($359M)が5年平均($174M)から107%乖離。一過性費用$154Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
+    "note": "TTM 2026-09-30 FCF($359M)が5年平均($174M)から107%乖離。一過性費用$172Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-09-30",
@@ -357,7 +375,7 @@
     "alpha_uncapped": 0.0,
     "per": 166.08682,
     "per_is_forward": true,
-    "per_adjusted": 225.77,
+    "per_adjusted": 216.23,
     "peg": 2.38,
     "ps": 39.7841,
     "ev_ebitda": null,
@@ -379,12 +397,12 @@
     "revenue_ttm": 2732836000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 271.3,
-    "max_eps": 0.9164,
-    "max_eps_per": 293.3,
+    "max_eps": 0.9241,
+    "max_eps_per": 290.8,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
-    "max_eps_shares": 356079715,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 353126500.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -416,7 +434,7 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.22734541546933928,
   "tanuki_score": "TRIM",
-  "funda_score": 90,
+  "funda_score": 80,
   "score_comment": "割高(-63%超)、FCF黒字、売上成長加速",
   "timing_score": 40,
   "sell_reason": null,

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -81.0,
-  "calculation_date": "2026-11-09T02:29:19+09:00",
+  "calculation_date": "2026-11-09T02:45:06+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -184,6 +184,12 @@
         {
           "category": "リストラ・事業再編関連",
           "item_name": "リストラ費用",
+          "amount": 8580000,
+          "reason": "一過性の事業再編費用"
+        },
+        {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
           "amount": 6099000,
           "reason": "一過性の事業再編費用"
         },
@@ -200,14 +206,14 @@
           "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 44114000,
+      "total_transient_amount": 52694000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべて『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "全ての項目が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的な費用と判断されるため。"
       }
     },
     "action": "excluded",
-    "note": "TTM 2026-09-30 FCF($-1833.6M)がマイナス。一過性費用合計$44M(リストラ・事業再編関連(リストラ費用 $6M)、リストラ・事業再編関連(リストラ費用 $34M)、リストラ・事業再編関連(リストラ費用 $4M))による影響と判断し除外。5年平均($-242M)を採用。"
+    "note": "TTM 2026-09-30 FCF($-1833.6M)がマイナス。一過性費用合計$53M(リストラ・事業再編関連(リストラ費用 $9M)、リストラ・事業再編関連(リストラ費用 $6M)、リストラ・事業再編関連(リストラ費用 $34M)、リストラ・事業再編関連(リストラ費用 $4M))による影響と判断し除外。5年平均($-242M)を採用。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-09-30",
@@ -367,7 +373,7 @@
     "alpha_uncapped": 0.17100861622311322,
     "per": 51.048546,
     "per_is_forward": false,
-    "per_adjusted": 27.52,
+    "per_adjusted": 25.97,
     "peg": 0.92,
     "ps": 5.818701,
     "ev_ebitda": 30.269,
@@ -389,12 +395,12 @@
     "revenue_ttm": 7907127000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 1049.0,
-    "max_eps": 5.9921,
-    "max_eps_per": 32.2,
+    "max_eps": 6.0012,
+    "max_eps_per": 32.1,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
-    "max_eps_shares": 196931166,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 196634250.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",

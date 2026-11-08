@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -16.6,
-  "calculation_date": "2026-11-09T02:33:58+09:00",
+  "calculation_date": "2026-11-09T02:49:47+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -172,24 +172,14 @@
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
-      "found": true,
-      "source": "adjusted_eps_analyzer",
-      "items": [
-        {
-          "category": "在庫・サプライチェーン関連",
-          "item_name": "在庫評価損・減損",
-          "amount": 11227000.0,
-          "reason": "一過性の在庫評価損"
-        }
-      ],
-      "total_transient_amount": 11227000.0,
-      "ai_assessment": {
-        "assessment": "transient",
-        "reasoning": "理由欄に一過性と明記されており、在庫評価損は事業運営上の一時的な問題と判断される。"
-      }
+      "found": false,
+      "source": null,
+      "items": [],
+      "total_transient_amount": 0.0,
+      "ai_assessment": null
     },
-    "action": "excluded",
-    "note": "TTM 2026-09-30 FCF($-136.7M)がマイナス。一過性費用合計$11M(在庫・サプライチェーン関連(在庫評価損・減損 $11M))による影響と判断し除外。5年平均($-74M)を採用。"
+    "action": "flagged",
+    "note": "TTM 2026-09-30 FCF($-136.7M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-09-30",
@@ -356,8 +346,8 @@
     "max_eps_per": null,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
-    "max_eps_shares": 249992609,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 195933457.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -491,7 +481,7 @@
     "dupont_bs_period": "2026Q3"
   },
   "next_earnings_date": "2026-11-05",
-  "breakeven_estimate": 2027,
+  "breakeven_estimate": 2026,
   "breakeven_reason": "PREDICTED",
   "segments": [
     {

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -90.2,
-  "calculation_date": "2026-11-09T02:31:50+09:00",
+  "calculation_date": "2026-11-09T02:47:34+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -209,7 +209,7 @@
       "total_transient_amount": 3700000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動や一過性の事業再編による一時的費用と明記されており、事業運営上の一時的な問題を示す。"
+        "reasoning": "すべての項目がマクロ変動や事業再編による一過性費用と明記されており、構造的な収益力悪化を示す内容ではない。"
       }
     },
     "action": "flagged",
@@ -397,8 +397,8 @@
     "max_eps_per": null,
     "max_eps_reliability": "MED",
     "max_eps_ttm_end": "2026-09-26",
-    "max_eps_shares": 90582856,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 90075000.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -429,7 +429,7 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.43307238845205265,
   "tanuki_score": "TRIM",
-  "funda_score": 75,
+  "funda_score": 100,
   "score_comment": "割高(-90%超)、FCF黒字、売上成長加速",
   "timing_score": 40,
   "sell_reason": null,

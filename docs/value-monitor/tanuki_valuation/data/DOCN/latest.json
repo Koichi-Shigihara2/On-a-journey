@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -10.3,
-  "calculation_date": "2026-11-09T02:36:50+09:00",
+  "calculation_date": "2026-11-09T02:53:42+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -196,6 +196,18 @@
         {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 5000000,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 4586000.0,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 3492000,
           "reason": "マクロ変動による一時的影響"
         },
@@ -206,14 +218,14 @@
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 8140000,
+      "total_transient_amount": 17726000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の恒常的な問題や収益力の構造的悪化を示す兆候とは判断されない。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性調整で構造的な収益力悪化を示すものではない。"
       }
     },
     "action": "flagged",
-    "note": "TTM 2026-09-30 FCF($221M)が5年平均($130M)から70%乖離。一過性費用$8Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
+    "note": "TTM 2026-09-30 FCF($221M)が5年平均($130M)から70%乖離。一過性費用$18Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-09-30",
@@ -374,7 +386,7 @@
     "alpha_uncapped": 0.0,
     "per": 41.313362,
     "per_is_forward": false,
-    "per_adjusted": 33.74,
+    "per_adjusted": 175.23,
     "peg": 1.54,
     "ps": 10.365618,
     "ev_ebitda": 38.077,
@@ -396,12 +408,12 @@
     "revenue_ttm": 1102671000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 169.1,
-    "max_eps": 1.2449,
-    "max_eps_per": 58.2,
+    "max_eps": 1.2697,
+    "max_eps_per": 57.1,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
-    "max_eps_shares": 116908096,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 114622000.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
@@ -537,7 +549,8 @@
     "reliability_reason": "単四半期NI集中（一過性要因の可能性）"
   },
   "next_earnings_date": "2026-11-03",
-  "breakeven_reason": "ACHIEVED",
+  "breakeven_estimate": 2026,
+  "breakeven_reason": "PREDICTED",
   "segment_configured": false,
   "phase1_growth_original": 0.4791,
   "phase1_growth_auto_adjusted": true,

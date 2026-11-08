@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 45.6,
-  "calculation_date": "2026-11-09T02:37:55+09:00",
+  "calculation_date": "2026-11-09T02:55:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -184,6 +184,18 @@
         {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 1404000,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 460000.0,
+          "reason": "マクロ変動による一時的影響"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": 147000,
           "reason": "マクロ変動による一時的影響"
         },
@@ -194,14 +206,14 @@
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 879000,
+      "total_transient_amount": 2743000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく一過性の金融費用と判断される。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性問題で構造的悪化を示す兆候ではない。"
       }
     },
     "action": "flagged",
-    "note": "TTM 2026-09-30 FCF($122M)が5年平均($70M)から73%乖離。一過性費用$1Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
+    "note": "TTM 2026-09-30 FCF($122M)が5年平均($70M)から73%乖離。一過性費用$3Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-09-30",
@@ -359,7 +371,7 @@
     "alpha_uncapped": 0.0,
     "per": 75.730774,
     "per_is_forward": false,
-    "per_adjusted": 24.1,
+    "per_adjusted": 18.39,
     "peg": null,
     "ps": 3.4090998,
     "ev_ebitda": 33.16,
@@ -381,12 +393,12 @@
     "revenue_ttm": 763700000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": -33.2,
-    "max_eps": 1.2089,
-    "max_eps_per": 17.8,
+    "max_eps": 1.1764,
+    "max_eps_per": 18.3,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
-    "max_eps_shares": 123540994,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 126950216.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
