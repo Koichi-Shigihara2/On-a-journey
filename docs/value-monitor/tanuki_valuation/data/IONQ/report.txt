@@ -1,17 +1,17 @@
 IONQ INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-07T06:36:34+09:00
+Generated: 2026-11-09T02:31:12+09:00
 Price: $32.62
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: WATCH
-Classification_Pre_Rounding: HOLD
-Funda_Score: 75/100
+Classification_Pre_Rounding: GROWTH_PREMIUM
+Funda_Score: 100/100
 Timing_Score (components):
-  Deviation_Rate: -21.6%
+  Deviation_Rate: -30.3%
   MA200_Deviation: -21.5%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $62 median ($42-$100) | 14 analysts | vs IV: +144.5%
+  Analyst_Consensus: Strong Buy | Target: $62 median ($42-$100) | 14 analysts | vs IV: +175.0%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -30,11 +30,11 @@ PASS: Funda<25, excluded from consideration
 
 
 [2. MATRIX POSITION]
-Matrix: ④キャッシュ創出力系
+Matrix: ①投資効率系
 Quadrant: 左下
-Label: 割高×低FCF
-Key_Metric_Y: FCF_Margin = -230.4%
-Deviation_Rate: -21.6%
+Label: 割高×N/A (OCF赤字)
+Key_Metric_Y: RICE = -2.144
+Deviation_Rate: -30.3%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,32 +59,32 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $32.62
-Intrinsic_Value_BASE: $25.56
-Deviation_BASE: -21.6%
+Intrinsic_Value_BASE: $22.73
+Deviation_BASE: -30.3%
 Growth_Rate_Original: 15.0% (TTM実績)
 Growth_Rate_Adjusted: 54.8% (推奨値・逓減モデル)
 Scenarios:
-BEAR: Growth=38.3%, IV=$21.29 （推奨値ベース）
-BASE: Growth=54.8%, IV=$25.56 （推奨値ベース）
-BULL: Growth=65.7%, IV=$28.76 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $39.56 (+21.3%) / 3年後: $94.78 (+190.6%) / 5年後: $151.84 (+365.5%)
-  5yr_Annualized_Return: +36.0%/yr
+BEAR: Growth=38.3%, IV=$18.46 （推奨値ベース）
+BASE: Growth=54.8%, IV=$22.73 （推奨値ベース）
+BULL: Growth=65.7%, IV=$25.93 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $35.18 (+7.8%) / 3年後: $84.29 (+158.4%) / 5年後: $135.03 (+313.9%)
+  5yr_Annualized_Return: +32.9%/yr
 TTM_YoY_Growth: 201.9%
 (DCF Base vs TTM actual: -147.1pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $13.45 (Deviation: -58.8%)
-  参考②Rf理論上限_IV（Rf 4.86%、^TNX 2026-11-06）: $106.74 (Deviation: +227.2%)
+  参考①β込みWACC_IV: $10.62 (Deviation: -67.5%)
+  参考②Rf理論上限_IV（Rf 4.86%、^TNX 2026-11-06）: $103.91 (Deviation: +218.6%)
   金利感応度チェック: 10年国債利回りが基準4.30%→現在4.86%（^TNX 2026-11-06）に変化すると、Rf基準の必要成長率は-13.6%→-4.0%（+9.7pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 2.5
-FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
+FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
 ⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
    [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
     以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
     評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
-FCF_Base: $225.06M (5yr平均 + R&D補正) [実績avg: $-173.5M]
-FCF_Breakdown（TTM 2026-06-30）: OCF=$-452M / CapEx=$31M / SBC(非現金)=$450M / D&A=$154M
+FCF_Base: $225.06M (5yr平均 + R&D補正) [実績avg: $-237.0M]
+FCF_Breakdown（TTM 2026-09-30）: OCF=$-645M / CapEx=$44M / SBC(非現金)=$524M / D&A=$258M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
@@ -97,24 +97,25 @@ DCF_v0:     $8.86B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $10.98B (= v0 + RPO_PV + GO_PV + Net_Cash $2.12B)
+Equity_Value: $9.76B (= v0 + RPO_PV + GO_PV + Net_Cash $0.90B)
 Shares_Used: 429.4M (source: yf_implied)
-→ Intrinsic_Value: $25.56 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $22.73 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $20.51  $29.45  $42.66
-  10.0%       $18.10  $25.56  $36.40
-  11.0%       $16.34  $22.71  $31.83
+  9.0%       $17.68  $26.62  $39.83
+  10.0%       $15.27  $22.73  $33.57
+  11.0%       $13.51  $19.88  $29.00
 Financial_Health:
-  Net_Debt: $-2.12B (negative=net cash)
-  Total_Debt: $0.00B  Cash: $1.24B  ST_Invest: $0.88B
-  Net_Debt_Period: 2026Q2
+  Net_Debt: $-0.90B (negative=net cash)
+  Total_Debt: $0.09B  Cash: $0.21B  ST_Invest: $0.79B
+  Net_Debt_Period: 2026Q3
+  Finance_Lease: +$0.03B をLTDebtに含む（2026-09-30、負債と同じ期末、FinanceLeaseLiabilityNoncurrent+FinanceLeaseLiabilityCurrent）
   SBC_TTM: $312M
   Dilution_3yr_Annual: +12.34%/yr  高い希薄化 ⚠️ SBC・増資を確認
   Dilution_Comment: 継続なら1株価値を年率12.3%毀損。SBC・増資の内訳を確認。
   ⚠️ 期中に大規模な株式発行の可能性（+53.2%乖離: yf=429M vs SEC=280M）
   Next_Earnings_Date: 2026-11-06
-  DuPont_ROE: 純利益率-553.3% × 資産回転率0.04x × 財務レバレッジ2.04x = ROE-41.0%
+  DuPont_ROE: 純利益率67.1% × 資産回転率0.05x × 財務レバレッジ1.57x = ROE5.1%
     ⚠️ DuPont_Reliability: LOW (単四半期NI集中（一過性要因の可能性）)
 FCF_History:
   2021: $-0.04B (FCF_Margin: -1712.3%)
@@ -123,7 +124,7 @@ FCF_History:
   2024: $-0.13B (FCF_Margin: -296.2%)
   2025: $-0.30B (FCF_Margin: -230.4%)
 Segment_Breakdown:
-  General: $0.2B (100%, YoY 55%)
+  General: $0.4B (100%, YoY 55%)
   Segment_Weighted_Growth: 54.8% (推奨値・中央値を自動適用)
   (= basis for TANUKI forward growth rate G)
 Definition:
@@ -180,7 +181,7 @@ Phase1成長率 : 54.8% (DCF適用値・推奨成長率)
 成長モデル: 逓減モデル（CAGR_max=100.0%と業界平均9.6%の中間値54.8%を採用（固定50:50、将来の成長減速を織り込んだ保守的推定））  HypePhase=4
 推奨成長率内訳:
   最終推奨値:            54.8%
-推奨成長率の候補: 今の伸び(TTM売上の前年比) 370.6%
+推奨成長率の候補: 今の伸び(TTM売上の前年比) 376.5%
 判定         : REVIEW
 業界ベンチマーク: Computers/Peripherals / 9.6% (Damodaran 2025)
 signals:
@@ -203,17 +204,18 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 
 
 [5. RICE METRICS]
-Available: false
-Exclusion_Reason: Q計算不可（OCF/純利益データなし）
-BEAR: RICE=N/A
-BASE: RICE=N/A
-BULL: RICE=N/A
+Available: true
+Exclusion_Reason: N/A
+BEAR: RICE=-1.498
+BASE: RICE=-2.144
+BULL: RICE=-2.57
 Components (BASE scenario):
-G  = N/A
-Q  = 0.0   [OCF / (NetIncome + SBC), 3yr avg]
-CF = 0.0  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+G  = 54.8%  [TANUKI forward growth rate]
+Q  = -0.8276   [OCF / (NetIncome + SBC), 3yr avg]
+CF = 0.4728  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
+CF_adj = 4.5125  [R&D除外・CapExのみ投資強度]
 WACC = 10.0%
-SBC_Adjusted: false
+SBC_Adjusted: true
 Definition:
 
 RICE measures reinvestment efficiency and compounding power
@@ -282,7 +284,7 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.0
-HYPE_Signal: 実体軟化・期待崩壊中 — 売上成長+370.6%はあるが、EPSが予想比-748.6%の大幅ミスで期待の修正が続いている。
+HYPE_Signal: 実体軟化・期待崩壊中 — 売上成長+376.5%はあるが、EPSが予想比-748.6%の大幅ミスで期待の修正が続いている。
 Phase_History (recent 6 months):
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
@@ -339,7 +341,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: yes
 Short_Interest: 11.8%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $62 median ($42-$100) | 14 analysts | vs IV: +144.5%
+Analyst_Consensus: Strong Buy | Target: $62 median ($42-$100) | 14 analysts | vs IV: +175.0%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: 84.9
 Revenue_Growth_YoY: 201.9%
