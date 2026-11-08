@@ -1,15 +1,106 @@
 {
   "ticker": "V",
-  "last_updated": "2026-11-03T13:38:22.523474",
+  "last_updated": "2026-11-08T17:32:07.509788",
   "quarters": [
     {
-      "gaap_eps": 3.484375,
-      "adjusted_eps": 3.484375,
-      "gaap_net_income": 6021000000.0,
-      "adjusted_net_income": 6021000000.0,
+      "gaap_eps": 3.4733796296296298,
+      "adjusted_eps": 3.538970784943191,
+      "gaap_net_income": 6002000000.0,
+      "adjusted_net_income": 6115341516.381834,
       "diluted_shares_used": 1728000000.0,
-      "adjustments": [],
-      "net_adjustment_total": 0.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 200000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 113341516.38183363,
+          "tax_rate_applied": 0.43329241809083185
+        }
+      ],
+      "net_adjustment_total": 113341516.38183363,
+      "filing_date": "2026-09-30",
+      "form": "10-K",
+      "sector": null,
+      "revenue": 12139000000.0,
+      "diluted_shares": 1728000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 4,
+      "tax_expense": 4589000000.0,
+      "pretax_income": 10591000000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "SBCの調整は恒常的な報酬コストであり一過性ではないため、GAAP EPSベースで市場が判断する場合にVisaの真の実力（非現金費用の実態）がやや見えにくくなる可能性はある。ただし調整幅は約2%と小さく、SBCは株式希薄化を伴う実質コストであるためAdjusted EPS依存は過大評価リスクを招く。投資家は調整後のEPSを過信せず、希薄化後株数やキャッシュフローへの影響を注視すべきであり、過小評価の可能性は限定的。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として株式報酬費用をadd_back調整しているが、毎年発生する恒常的な報酬コストであり一過性とは言えない（category:株式報酬関連、reason:非現金費用）",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "gaap_eps": 3.2569444444444446,
+      "adjusted_eps": 3.3627605818169997,
+      "gaap_net_income": 5628000000.0,
+      "adjusted_net_income": 5810850285.379775,
+      "diluted_shares_used": 1728000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 222000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 182850285.37977463,
+          "tax_rate_applied": 0.17635006585687107
+        }
+      ],
+      "net_adjustment_total": 182850285.37977463,
+      "filing_date": "2026-06-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 11633000000.0,
+      "diluted_shares": 1728000000.0,
+      "period_end": "2026-06-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 1205000000.0,
+      "pretax_income": 6833000000.0
+    },
+    {
+      "gaap_eps": 3.484375,
+      "adjusted_eps": 3.617941089350432,
+      "gaap_net_income": 6021000000.0,
+      "adjusted_net_income": 6251802202.397547,
+      "diluted_shares_used": 1728000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 275000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 230802202.39754668,
+          "tax_rate_applied": 0.16071926400892111
+        }
+      ],
+      "net_adjustment_total": 230802202.39754668,
       "filing_date": "2026-03-31",
       "form": "10-Q",
       "sector": null,
@@ -19,12 +110,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 1153000000.0,
-      "pretax_income": 7174000000.0,
-      "ai_analysis": {
-        "health": "Excellent",
-        "comment": "調整項目がゼロです。GAAP EPSがそのまま実質EPSと一致しており、最高水準の信頼性です。",
-        "sources": []
-      }
+      "pretax_income": 7174000000.0
     },
     {
       "gaap_eps": 3.3871527777777777,
@@ -1250,14 +1336,19 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.041821644090023424,
+      "value": 0.034886061717528505,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.14370508525748998,
-      "prior_4q_avg_yoy": 0.10188344116746656
+      "recent_4q_avg_yoy": 0.14809173425786756,
+      "prior_4q_avg_yoy": 0.11320567254033906
     },
     "roic_trend": {
       "years": [
+        {
+          "year": 2026,
+          "roic_wacc_ratio": 4.908253028025816,
+          "reason": "ok"
+        },
         {
           "year": 2025,
           "roic_wacc_ratio": 4.128247234079623,
@@ -1272,19 +1363,14 @@
           "year": 2023,
           "roic_wacc_ratio": 3.866231647634584,
           "reason": "ok"
-        },
-        {
-          "year": 2022,
-          "roic_wacc_ratio": 3.510053847243871,
-          "reason": "ok"
         }
       ],
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": null,
-      "reason": "no_sbc_data",
-      "period_end": "2026-03-31"
+      "value": 0.016475821731608865,
+      "reason": "ok",
+      "period_end": "2026-09-30"
     }
   }
 }

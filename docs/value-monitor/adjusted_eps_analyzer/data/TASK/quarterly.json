@@ -1,23 +1,103 @@
 {
   "ticker": "TASK",
-  "last_updated": "2026-11-03T13:39:17.186700",
+  "last_updated": "2026-11-08T17:33:01.192914",
   "quarters": [
     {
+      "gaap_eps": 0.2808610201427224,
+      "adjusted_eps": 0.3619822793082893,
+      "gaap_net_income": 26215000.0,
+      "adjusted_net_income": 33786694.38444924,
+      "diluted_shares_used": 93337979.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 4200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 3397192.2246220303,
+          "tax_rate_applied": 0.19114470842332612
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 5001000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 4045085.3131749462,
+          "tax_rate_applied": 0.19114470842332612
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 160000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 129416.84665226782,
+          "tax_rate_applied": 0.19114470842332612
+        }
+      ],
+      "net_adjustment_total": 7571694.384449244,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 314747000.0,
+      "diluted_shares": 93337979.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 6195000.0,
+      "pretax_income": 32410000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "SBCと無形資産償却は毎期発生する恒常的コストであるため、Adjusted EPSは企業の実力をやや過大に示している可能性がある。市場がGAAP EPS基準で評価する場合、非現金費用を控除した真の収益力が見えにくくなり、銘柄の実力を過小評価するリスクが高い。ただしSBCの株主希薄化効果を無視した調整は過大評価の危険もあり、投資家は希薄化後EPSやFCFに注目すべき。貸倒引当異常分は一過性と見なせる。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に発生させる恒常的なコストである",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は定期的に発生する非現金費用であり、恒常的性格が強い",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響として異常変動分を調整しており、真に一過性の項目",
+            "confidence": 0.75
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 0.23751357954078847,
-      "adjusted_eps": 0.30811006217836534,
+      "adjusted_eps": 0.3095186113131933,
       "gaap_net_income": 21969000.0,
-      "adjusted_net_income": 28498875.597275406,
+      "adjusted_net_income": 28629160.425632857,
       "diluted_shares_used": 92495764.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 3767000,
+          "amount": 3767000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 2804473.990985801,
           "tax_rate_applied": 0.2555152665288556
@@ -34,9 +114,22 @@
           "category": "買収・統合関連",
           "net_amount": 3725401.6062896065,
           "tax_rate_applied": 0.2555152665288556
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 175000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 130284.82835745027,
+          "tax_rate_applied": 0.2555152665288556
         }
       ],
-      "net_adjustment_total": 6529875.597275408,
+      "net_adjustment_total": 6660160.425632859,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": null,
@@ -46,23 +139,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 7540000.0,
-      "pretax_income": 29509000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の株式報酬費用と無形資産償却費はともに恒常的に発生する非現金費用であり、一過性とは判断しにくい項目です。市場がGAAP EPS（0.2375）を基準に評価する場合、非現金コストにより企業の実力（調整後EPS 0.308への約30%の上昇）が過小評価されている可能性があります。ただしSBCによる株式希薄化や買収関連償却の継続性を考慮すると、調整後数値に過度に依拠すれば過大評価リスクも存在します。投資家はフリーキャッシュフローや希薄化後EPSを重点的に検証し、調整の持続可能性を注視すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として毎期発生する恒常的な報酬コストであり、一過性とはみなせない。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金償却で、償却期間中は恒常的に発生する費用である。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 29509000.0
     },
     {
       "gaap_eps": 0.26137022232646095,
@@ -1574,11 +1651,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.07397412795497371,
+      "value": -0.11254580063737649,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.11593231235889806,
-      "prior_4q_avg_yoy": 0.18990644031387177
+      "recent_4q_avg_yoy": 0.0868913466398526,
+      "prior_4q_avg_yoy": 0.19943714727722908
     },
     "roic_trend": {
       "years": [
@@ -1606,9 +1683,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.01219666186398148,
+      "value": 0.013344050936148715,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

@@ -1,7 +1,51 @@
 {
   "ticker": "SOFI",
-  "last_updated": "2026-11-03T13:37:18.317055",
+  "last_updated": "2026-11-08T17:30:21.115517",
   "quarters": [
+    {
+      "gaap_eps": 0.17748346419347022,
+      "adjusted_eps": 0.21706644474888928,
+      "gaap_net_income": 240989000.0,
+      "adjusted_net_income": 294735206.4109341,
+      "diluted_shares_used": 1357811000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 70884000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 53746206.410934076,
+          "tax_rate_applied": 0.24177238289410757
+        }
+      ],
+      "net_adjustment_total": 53746206.410934076,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "フィンテック / 銀行",
+      "revenue": 1385099000.0,
+      "diluted_shares": 1357811000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 76843000.0,
+      "pretax_income": 317832000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "株式報酬費用（SBC）は恒常的に毎期発生する非現金コストであり一過性ではないため、調整の信頼性は限定的。市場がGAAP EPS（0.177）を基準に判断する場合、SBC加算後のAdjusted EPS（0.217）と比べて企業の実力が保守的に低く見え、過小評価の可能性がある。ただしSBCは株主希薄化を生む実質的な恒常コストであるため、Adjusted EPS重視は過大評価リスクを伴う。投資家はSBCの規模推移と事業貢献度を注視し、希薄化影響を加味した評価が必要。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期発生する株式報酬費用をadd_backしており、SOFIのような成長企業では恒常的な運用コストである。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 0.11582334188862344,
       "adjusted_eps": 0.1593983247541313,
@@ -12,12 +56,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 76865000,
+          "amount": 76865000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 58912941.084337935,
           "tax_rate_applied": 0.23355309849296899
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 47717000.0,
-      "pretax_income": 204309000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "SBCは毎期継続的に発生する恒常的な人材確保コストであり、一過性ではない。GAAP EPSはこれを控除した保守的な数値を示しているため、市場がGAAP EPS中心に判断する場合、SoFiの真の実力（非現金費用の実態や成長投資効率）を過小評価している可能性がある。ただしSBCは株式希薄化を伴う実質コストのため、調整後EPSを過信すると企業価値の過大評価リスクが生じる。投資家は調整の持続可能性と希薄化影響を慎重に検証すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされており、Adjusted EPS算出時に加算。毎期発生する恒常的な報酬関連コストであり、将来も継続的に見込まれる。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 204309000.0
     },
     {
       "gaap_eps": 0.12099395432982755,
@@ -213,9 +246,9 @@
     },
     {
       "gaap_eps": 0.30186673203860576,
-      "adjusted_eps": 0.05675237654236919,
+      "adjusted_eps": 0.055357321203206855,
       "gaap_net_income": 332473000.0,
-      "adjusted_net_income": 62506500.0,
+      "adjusted_net_income": 60970000.0,
       "diluted_shares_used": 1101390000.0,
       "adjustments": [
         {
@@ -234,12 +267,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -269966500.0,
-          "net_amount": -269966500.0,
-          "note": "tax_expense=-265,320,000, median_normal_tax=4,646,500"
+          "amount": -271503000.0,
+          "net_amount": -271503000.0,
+          "note": "tax_expense=-265,320,000, median_normal_tax=6,183,000"
         }
       ],
-      "net_adjustment_total": -269966500.0,
+      "net_adjustment_total": -271503000.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
       "sector": "フィンテック / 銀行",
@@ -908,9 +941,9 @@
     },
     {
       "gaap_eps": 0.10822304864577524,
-      "adjusted_eps": -1.3390176676483205,
+      "adjusted_eps": -1.3603143779767315,
       "gaap_net_income": 7808000.0,
-      "adjusted_net_income": -96606500.0,
+      "adjusted_net_income": -98143000.0,
       "diluted_shares_used": 72147293.0,
       "adjustments": [
         {
@@ -929,12 +962,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -104414500.0,
-          "net_amount": -104414500.0,
-          "note": "tax_expense=-99,768,000, median_normal_tax=4,646,500"
+          "amount": -105951000.0,
+          "net_amount": -105951000.0,
+          "note": "tax_expense=-99,768,000, median_normal_tax=6,183,000"
         }
       ],
-      "net_adjustment_total": -104414500.0,
+      "net_adjustment_total": -105951000.0,
       "filing_date": "2020-06-30",
       "form": "10-Q",
       "sector": "フィンテック / 銀行",
@@ -949,11 +982,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.12789902200483655,
+      "value": 0.12272592464789833,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.4067286569084157,
-      "prior_4q_avg_yoy": 0.27882963490357915
+      "recent_4q_avg_yoy": 0.4219844729646761,
+      "prior_4q_avg_yoy": 0.2992585483167778
     },
     "roic_trend": {
       "years": [
@@ -981,9 +1014,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.0630725475844277,
+      "value": 0.05117612531667411,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

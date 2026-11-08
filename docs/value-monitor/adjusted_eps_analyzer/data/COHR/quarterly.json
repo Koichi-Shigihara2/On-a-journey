@@ -1,7 +1,87 @@
 {
   "ticker": "COHR",
-  "last_updated": "2026-11-03T13:34:58.180302",
+  "last_updated": "2026-11-08T17:27:53.813986",
   "quarters": [
+    {
+      "gaap_eps": 1.9040767029986239,
+      "adjusted_eps": 2.386157126740723,
+      "gaap_net_income": 384673000.0,
+      "adjusted_net_income": 482065779.68692136,
+      "diluted_shares_used": 202026000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 74377000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 69680567.68446712,
+          "tax_rate_applied": 0.0631436104646985
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 21000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 19673984.18024133,
+          "tax_rate_applied": 0.0631436104646985
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 8580000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 8038227.822212887,
+          "tax_rate_applied": 0.0631436104646985
+        }
+      ],
+      "net_adjustment_total": 97392779.68692134,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 2370324000.0,
+      "diluted_shares": 202026000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2027,
+      "quarter": 1,
+      "tax_expense": -22847000.0,
+      "pretax_income": 361826000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目のうちSBCは恒常的な非現金コスト（毎期発生しやすい）である一方、M&A統合費用とリストラ費用は一過性です。市場がGAAP EPS（1.90）で判断する場合、これら費用控除により企業の実力が見えにくくなっており、特に一過性項目の影響で実力を過小評価している可能性があります。Adjusted EPS（2.39）は約25%高いが、SBCのadd_backが大きいため持続可能性に疑問があり、投資家はSBCの性質を考慮して分析すべきです。過小評価リスクが高いが、過大調整による過大評価リスクも存在します。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、企業が継続的に付与する恒常的なコストである。",
+            "confidence": 0.2
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "M&A統合費用は一過性の買収統合コストとして分類されており、非経常的とみなされる。",
+            "confidence": 0.8
+          },
+          {
+            "item": "restructuring",
+            "snippet": "リストラ費用は一過性の事業再編費用であり、通常は非経常的である。",
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 1.2310440305649812,
       "adjusted_eps": 1.8196294647998184,
@@ -72,33 +152,7 @@
       "fiscal_year": 2026,
       "quarter": 4,
       "tax_expense": 60849000.0,
-      "pretax_income": 301379000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目の半分以上をSBCと無形資産償却が占め、これらは恒常的に発生するコスト（非現金だが希薄化や買収経済性を反映）であるため、Adjusted EPSは実力を大幅に過大に見せている。市場がGAAP EPSで判断する場合、企業の実力（特に持続可能性）が過小評価されている可能性は低く、むしろGAAPの方が経済的実態を適切に示しており、調整依存の投資は過大評価リスクを高める。投資家は一過性項目（M&A統合・リストラ）は排除しつつ、SBCの継続性と希薄化効果を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は毎期発生する非現金費用であり、従業員報酬として恒常的なコストである。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は、過去のM&Aから生じる継続的な非現金費用であり、恒常的と見なされる。",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "M&A統合費用は買収後の統合プロセスに関わる一過性のコストである。",
-            "confidence": 0.8
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は事業再編に伴う一過性の費用として分類される。",
-            "confidence": 0.8
-          }
-        ]
-      }
+      "pretax_income": 301379000.0
     },
     {
       "gaap_eps": 0.9747157108882857,
@@ -2134,11 +2188,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.015026748572379789,
+      "value": 0.09323670943279336,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.22271203313582513,
-      "prior_4q_avg_yoy": 0.23773878170820492
+      "recent_4q_avg_yoy": 0.3041835810885349,
+      "prior_4q_avg_yoy": 0.21094687165574152
     },
     "roic_trend": {
       "years": [
@@ -2166,9 +2220,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.024648343487980885,
+      "value": 0.031378410715159614,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

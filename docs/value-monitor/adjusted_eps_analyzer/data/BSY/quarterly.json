@@ -1,7 +1,69 @@
 {
   "ticker": "BSY",
-  "last_updated": "2026-11-03T13:34:36.348848",
+  "last_updated": "2026-11-08T17:27:12.898799",
   "quarters": [
+    {
+      "gaap_eps": 0.28308286974721736,
+      "adjusted_eps": 0.3566829935147144,
+      "gaap_net_income": 89933000.0,
+      "adjusted_net_income": 113315128.12627238,
+      "diluted_shares_used": 317691424.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 21860000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 17030964.97535367,
+          "tax_rate_applied": 0.22090736617778278
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 8152000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 6351163.150918716,
+          "tax_rate_applied": 0.22090736617778278
+        }
+      ],
+      "net_adjustment_total": 23382128.126272384,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 421507000.0,
+      "diluted_shares": 317691424.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 25500000.0,
+      "pretax_income": 115433000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "調整項目の株式報酬費用と無形資産償却費はいずれも恒常的に発生する非現金項目であり、一過性とは判断しにくい。GAAP EPS 0.283に対しAdjusted EPS 0.357と約26%の上方修正となっており、市場がGAAPベースで評価する場合、非現金費用の影響で企業の実力（キャッシュ生成力）が過小評価される可能性がある。SBCは株式希薄化を伴う実質コスト、無形資産償却は過去の買収反映であるため、投資家は調整依存を避けフリーキャッシュフローや希薄化影響を注視すべき。過小評価リスクはある一方、恒常項目の過大調整リスクも存在する。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期継続的に発生する株式報酬費用であり、恒常的な調整項目（基準: 毎期発生するSBCは恒常的コストの可能性が高い）",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の定期的な償却費であり、恒常的に発生する非一過性項目（基準: 無形資産償却など恒常的）",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 0.2463430165528035,
       "adjusted_eps": 0.3266836263301997,
@@ -12,12 +74,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 22748000,
+          "amount": 22748000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 18778535.89964489,
           "tax_rate_applied": 0.17449727889727049
@@ -46,23 +108,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 16609000.0,
-      "pretax_income": 95182000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目であるSBCと無形資産償却はともに恒常的に発生する非現金費用であり、Adjusted EPSがGAAP EPSを約33%上回る大きな調整となっています。市場がGAAP EPSで判断する場合、企業の非現金費用を控除した実質的な収益力やキャッシュ生成能力が見えにくくなり、実力を過小評価するリスクがあります。特にSBCは運用上避けられないコストであるため、調整を過度に信頼すると過大評価のリスクも伴います。投資家は調整後のEPSだけでなく、株式希薄化効果や継続的な償却負担を総合的に考慮すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算調整されているが、テック企業では毎期発生する恒常的な運用コストであり、実質的な報酬負担を伴う。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金費用として加算調整されているが、継続的な償却として恒常的に発生する項目である。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 95182000.0
     },
     {
       "gaap_eps": 0.2963803325334758,
@@ -480,9 +526,9 @@
     },
     {
       "gaap_eps": 0.5400993618617094,
-      "adjusted_eps": 0.06837368901770767,
+      "adjusted_eps": 0.05963844611586545,
       "gaap_net_income": 179585000.0,
-      "adjusted_net_income": 22734500.0,
+      "adjusted_net_income": 19830000.0,
       "diluted_shares_used": 332503633.0,
       "adjustments": [
         {
@@ -514,12 +560,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -156850500.0,
-          "net_amount": -156850500.0,
-          "note": "tax_expense=-143,241,000, median_normal_tax=13,609,500"
+          "amount": -159755000.0,
+          "net_amount": -159755000.0,
+          "note": "tax_expense=-143,241,000, median_normal_tax=16,514,000"
         }
       ],
-      "net_adjustment_total": -156850500.0,
+      "net_adjustment_total": -159755000.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": "Technology",
@@ -1465,11 +1511,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.02352142397985585,
+      "value": 0.01717129448720503,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.12815969063226523,
-      "prior_4q_avg_yoy": 0.10463826665240938
+      "recent_4q_avg_yoy": 0.12863777691291825,
+      "prior_4q_avg_yoy": 0.11146648242571322
     },
     "roic_trend": {
       "years": [
@@ -1497,9 +1543,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.05538472026431182,
+      "value": 0.05186153492112824,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

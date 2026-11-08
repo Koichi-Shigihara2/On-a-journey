@@ -1,7 +1,69 @@
 {
   "ticker": "FROG",
-  "last_updated": "2026-11-03T13:39:54.055152",
+  "last_updated": "2026-11-08T17:33:44.077408",
   "quarters": [
+    {
+      "gaap_eps": 0.05061742873858934,
+      "adjusted_eps": 0.3793738332232737,
+      "gaap_net_income": 6553000.0,
+      "adjusted_net_income": 49114243.671900034,
+      "diluted_shares_used": 129461337.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 41793000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 39710714.99519385,
+          "tax_rate_applied": 0.049823774431272026
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 3000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 2850528.6767061837,
+          "tax_rate_applied": 0.049823774431272026
+        }
+      ],
+      "net_adjustment_total": 42561243.671900034,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 179170000.0,
+      "diluted_shares": 129461337.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": -311000.0,
+      "pretax_income": 6242000.0,
+      "ai_analysis": {
+        "health": "過大調整",
+        "comment": "調整項目はSBCと無形資産償却費の加算が主で、両者とも恒常的に発生する非現金費用であるため一過性とは言えず、Adjusted EPS(0.38)がGAAP EPS(0.05)を大幅に上回る形となっています。市場がGAAP EPSのみで判断する場合、企業の実力(特にキャッシュ生成力)が過小評価されやすいですが、SBCの継続性や株式希薄化、無形資産の経済的コストを考慮すると調整が過大で実力以上に良く見せているリスクが高いです。投資家は調整後数字に過度に依拠せず、希薄化後EPSや将来キャッシュフローへの影響を注視すべきであり、過大評価リスクが大きいと言えます。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だが、テック企業において毎期継続的に発生する恒常的な運用コストであり、実質的な報酬支出を反映する",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連無形資産の定期的な償却であり、一過性ではなく複数期にわたる恒常的な非現金費用である",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": -0.03419093810764593,
       "adjusted_eps": 0.23711231755404566,
@@ -12,12 +74,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 39577000,
+          "amount": 39577000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 29540896.953405023,
           "tax_rate_applied": 0.253584229390681
@@ -46,23 +108,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": -1415000.0,
-      "pretax_income": -5580000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の主なものはSBCと無形資産償却であり、どちらも恒常的に発生する非現金費用です。GAAP EPSがマイナスな一方でAdjusted EPSが大幅にプラスとなるため、市場がGAAPベースで判断する場合に企業の実力（調整後収益性）が過小評価されている可能性があります。ただしSBCは継続的な報酬コストであり希薄化効果も伴うため、調整を過信すると過大評価リスクが生じます。投資家はフリーキャッシュフローやSBCの今後の趨勢を注視すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが成長企業では毎期発生する恒常的な運用コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は定期的に発生する非一過性費用",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": -5580000.0
     },
     {
       "gaap_eps": -0.06880039720640593,
@@ -1263,11 +1309,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.04340879846094153,
+      "value": 0.050487280073548135,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.2631005410271137,
-      "prior_4q_avg_yoy": 0.2196917425661722
+      "recent_4q_avg_yoy": 0.2764295534950191,
+      "prior_4q_avg_yoy": 0.22594227342147094
     },
     "roic_trend": {
       "years": [
@@ -1295,9 +1341,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.2416591358718218,
+      "value": 0.23325891611318858,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

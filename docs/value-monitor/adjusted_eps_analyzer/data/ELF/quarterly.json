@@ -1,12 +1,101 @@
 {
   "ticker": "ELF",
-  "last_updated": "2026-11-03T13:35:17.106862",
+  "last_updated": "2026-11-08T17:28:16.266708",
   "quarters": [
     {
+      "gaap_eps": 0.4997560797582079,
+      "adjusted_eps": 1.1202827691978188,
+      "gaap_net_income": 30030000.0,
+      "adjusted_net_income": 67317023.08711725,
+      "diluted_shares_used": 60089314.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 24627000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "category": "株式報酬関連",
+          "net_amount": 17194410.96463695,
+          "tax_rate_applied": 0.301806514612541
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 11100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 7749947.687800795,
+          "tax_rate_applied": 0.301806514612541
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 17678000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 12342664.434679499,
+          "tax_rate_applied": 0.301806514612541
+        }
+      ],
+      "net_adjustment_total": 37287023.08711725,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 520816000.0,
+      "diluted_shares": 60089314.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2027,
+      "quarter": 2,
+      "tax_expense": 12981000.0,
+      "pretax_income": 43011000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
+        }
+      },
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目の合計が大きく、GAAP EPS 0.50に対しAdjusted EPS 1.12と2倍以上に膨らんでいる。SBCと無形資産償却は恒常的なコストである一方、偶発対価FV変動は非経常的性質が強いため、市場がGAAP EPSのみで評価する場合、企業の非現金費用調整後の実力（キャッシュ生成力）を過小評価している可能性がある。投資家はSBCによる株主希薄化リスクと、買収関連調整の継続性を注視すべきで、過大調整により割高評価のリスクも併存する。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は毎期発生する非現金費用だが、恒常的な運用コストとみなされ、調整の正当性に議論がある。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収により継続的に発生する非現金費用であり、恒常的な調整項目に該当する。",
+            "confidence": 0.2
+          },
+          {
+            "item": "contingent_consideration_fv",
+            "snippet": "偶発対価の公正価値変動は非現金かつ非経常的な買収関連項目で、調整の妥当性が高い。",
+            "confidence": 0.65
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 1.1150461072628515,
-      "adjusted_eps": 1.4789596408382664,
+      "adjusted_eps": 1.6690928448507651,
       "gaap_net_income": 66599000.0,
-      "adjusted_net_income": 88334672.87014061,
+      "adjusted_net_income": 99690868.07278743,
       "diluted_shares_used": 59727575.0,
       "adjustments": [
         {
@@ -34,9 +123,22 @@
           "category": "買収・統合関連",
           "net_amount": 7839164.598842017,
           "tax_rate_applied": 0.29376895505927764
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 16080000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 11356195.202646814,
+          "tax_rate_applied": 0.29376895505927764
         }
       ],
-      "net_adjustment_total": 21735672.870140612,
+      "net_adjustment_total": 33091868.072787426,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": null,
@@ -47,21 +149,14 @@
       "quarter": 1,
       "tax_expense": 27703000.0,
       "pretax_income": 94302000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目のSBCと無形資産償却はともに非現金だが恒常的に発生する費用であり、特にSBCは企業の実態コストとして毎期継続する性質を持つ。GAAP EPSで市場が判断する場合、非現金費用により企業の実力（特にキャッシュ生成力）が過小評価される可能性はあるが、SBCによる株主希薄化を無視した調整後EPSは実力を過大に見せているリスクが高い。投資家は調整の持続可能性と将来の希薄化効果を慎重に検証すべきであり、過大評価リスクが大きい。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用である株式報酬費用を加算。ただし毎期発生する恒常的なコストであり、株主希薄化を伴う。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却費を加算。買収後複数年にわたり継続して発生する非現金費用。",
-            "confidence": 0.2
-          }
-        ]
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
       }
     },
     {
@@ -180,9 +275,9 @@
     },
     {
       "gaap_eps": 0.050273593392344954,
-      "adjusted_eps": -0.12156443502364588,
+      "adjusted_eps": -0.12613704990996563,
       "gaap_net_income": 2996000.0,
-      "adjusted_net_income": -7244500.0,
+      "adjusted_net_income": -7517000.0,
       "diluted_shares_used": 59593910.0,
       "adjustments": [
         {
@@ -227,12 +322,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -10240500.0,
-          "net_amount": -10240500.0,
-          "note": "tax_expense=-6,985,000, median_normal_tax=3,255,500"
+          "amount": -10513000.0,
+          "net_amount": -10513000.0,
+          "note": "tax_expense=-6,985,000, median_normal_tax=3,528,000"
         }
       ],
-      "net_adjustment_total": -10240500.0,
+      "net_adjustment_total": -10513000.0,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": null,
@@ -1776,9 +1871,9 @@
     },
     {
       "gaap_eps": 0.08018591822167427,
-      "adjusted_eps": -0.0545648005228849,
+      "adjusted_eps": -0.06006874579124919,
       "gaap_net_income": 3970000.0,
-      "adjusted_net_income": -2701500.0,
+      "adjusted_net_income": -2974000.0,
       "diluted_shares_used": 49509940.0,
       "adjustments": [
         {
@@ -1797,12 +1892,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -6671500.0,
-          "net_amount": -6671500.0,
-          "note": "tax_expense=-3,416,000, median_normal_tax=3,255,500"
+          "amount": -6944000.0,
+          "net_amount": -6944000.0,
+          "note": "tax_expense=-3,416,000, median_normal_tax=3,528,000"
         }
       ],
-      "net_adjustment_total": -6671500.0,
+      "net_adjustment_total": -6944000.0,
       "filing_date": "2017-06-30",
       "form": "10-Q",
       "sector": null,
@@ -1863,11 +1958,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.09783966584618814,
+      "value": 0.25449375600702606,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.30645766592245205,
-      "prior_4q_avg_yoy": 0.2086180000762639
+      "recent_4q_avg_yoy": 0.39943812835391856,
+      "prior_4q_avg_yoy": 0.14494437234689247
     },
     "roic_trend": {
       "years": [
@@ -1895,9 +1990,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.04104736812461277,
+      "value": 0.047285413658566554,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

@@ -1,7 +1,51 @@
 {
   "ticker": "FICO",
-  "last_updated": "2026-11-03T13:39:44.563633",
+  "last_updated": "2026-11-08T17:32:28.982218",
   "quarters": [
+    {
+      "gaap_eps": 7.611101444231773,
+      "adjusted_eps": 9.107627022794501,
+      "gaap_net_income": 174964000.0,
+      "adjusted_net_income": 209366130.0,
+      "diluted_shares_used": 22988000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 43547000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 34402130.0,
+          "tax_rate_applied": 0.21
+        }
+      ],
+      "net_adjustment_total": 34402130.0,
+      "filing_date": "2026-09-30",
+      "form": "10-K",
+      "sector": null,
+      "revenue": 657049000.0,
+      "diluted_shares": 22988000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 4,
+      "tax_expense": 265083000.0,
+      "pretax_income": 440047000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目のSBCは恒常的に発生する非現金費用であり一過性ではないため、Adjusted EPSがGAAP EPSを約20%上回る大幅調整となっている。市場がGAAP EPSで判断する場合、企業の実力（非現金費用の影響を除いた収益力）が過小評価される可能性がある。ただしSBCは株式希薄化を伴う実質コストであるため、調整を過信すると過大評価リスクが生じる。投資家は希薄化効果や継続性を慎重に検証すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用として毎期継続的に発生する恒常的コストであり、一過性調整とはみなせない（reason: 非現金費用、category: 株式報酬関連）",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 10.446725102409372,
       "adjusted_eps": 12.184321203855063,
@@ -46,23 +90,7 @@
       "fiscal_year": 2026,
       "quarter": 3,
       "tax_expense": 77487000.0,
-      "pretax_income": 314659000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "主調整であるSBCは恒常的な報酬コスト（非現金だが希薄化効果あり）であり、調整によりAdjusted EPSが17%程度上方修正されているが、これは過大調整のリスクが高い。貸倒引当金異常分は金額が僅少（6千USD）で一過性と判断される。市場がGAAP EPSで評価する場合、SBCの影響で企業の実力（キャッシュ生成力）が過小評価されている可能性がある一方、SBCを無視した調整は投資家に過大評価のリスクをもたらす。投資家はSBCの継続性と希薄化効果を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は毎期発生する恒常的な非現金費用（us-gaap:ShareBasedCompensation）であり、調整の根拠は非現金だが実質的な報酬コストとして恒常的。",
-            "confidence": 0.2
-          },
-          {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響（us-gaap:ProvisionForDoubtfulAccounts）とされ、真に一過性の調整項目。",
-            "confidence": 0.75
-          }
-        ]
-      }
+      "pretax_income": 314659000.0
     },
     {
       "gaap_eps": 11.136011453596092,
@@ -2244,14 +2272,19 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.07010501250535131,
+      "value": 0.11145212186851416,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.23595610961460012,
-      "prior_4q_avg_yoy": 0.1658510971092488
+      "recent_4q_avg_yoy": 0.27032410731181833,
+      "prior_4q_avg_yoy": 0.15887198544330416
     },
     "roic_trend": {
       "years": [
+        {
+          "year": 2026,
+          "roic_wacc_ratio": 8.558618464187951,
+          "reason": "ok"
+        },
         {
           "year": 2025,
           "roic_wacc_ratio": 6.214062942528775,
@@ -2266,19 +2299,14 @@
           "year": 2023,
           "roic_wacc_ratio": 4.897681528416707,
           "reason": "ok"
-        },
-        {
-          "year": 2022,
-          "roic_wacc_ratio": 4.665190306144667,
-          "reason": "ok"
         }
       ],
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.07762078233371107,
+      "value": 0.06627663994618362,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

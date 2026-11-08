@@ -1,7 +1,69 @@
 {
   "ticker": "JOBY",
-  "last_updated": "2026-11-03T13:35:49.738178",
+  "last_updated": "2026-11-08T17:28:45.012763",
   "quarters": [
+    {
+      "gaap_eps": -0.21647689984280966,
+      "adjusted_eps": -0.1589380350927274,
+      "gaap_net_income": -211830000.0,
+      "adjusted_net_income": -155526266.3043478,
+      "diluted_shares_used": 978533969.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 54665000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 54605581.521739125,
+          "tax_rate_applied": 0.0010869565217391304
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 1700000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 1698152.1739130435,
+          "tax_rate_applied": 0.0010869565217391304
+        }
+      ],
+      "net_adjustment_total": 56303733.69565217,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 55089000.0,
+      "diluted_shares": 978533969.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 230000.0,
+      "pretax_income": -211600000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "主な調整はSBC（株式報酬費用）と無形資産償却費で、両者とも恒常的な非現金項目です。SBCは毎期発生する成長企業の標準コストであり、無形資産償却も買収後の定期償却です。市場がGAAP EPS（-0.216）を基準に判断する場合、非現金費用による損失の拡大で企業の実力（キャッシュベースの進捗）を過小評価する可能性があります。ただしSBCは株式希薄化を伴う実質コストのため、調整EPS（-0.159）が実態をやや過大評価するリスクもあり、投資家は希薄化影響と資金消費率を注視すべきです。全体として過小評価リスクがやや優勢ですが、調整の恒常性を考慮した慎重な評価が必要です。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "毎期発生するSBCは恒常的なコストであり、非現金費用として加算調整されているが、株式希薄化の影響を考慮する必要がある。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却は買収関連で定期的に発生する非現金費用であり、恒常的性格が強い。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": -0.25305868966663525,
       "adjusted_eps": -0.19734222797819476,
@@ -12,12 +74,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 51971000,
+          "amount": 51971000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 51940914.994231574,
           "tax_rate_applied": 0.0005788806405191988
@@ -46,23 +108,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 142000.0,
-      "pretax_income": -245301000.0,
-      "ai_analysis": {
-        "health": "調整中",
-        "comment": "SBCと無形資産償却の両調整項目は非現金費用だが、主に恒常的な性質を持つ（SBCは成長企業で毎期発生、無形資産償却も定期償却）。市場がGAAP EPS(-0.253)で判断する場合、非現金費用により損失が大きく見え企業の実力（調整後-0.197）が過小評価される可能性がある。ただしSBCは株主希薄化を伴う実質コストのため、調整後EPSを過大評価するリスクもあり、投資家はキャッシュフローと希薄化率を特に注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算されているが、毎期発生する恒常的なコストである。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金償却だが、定期的に発生する恒常的な費用である。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": -245301000.0
     },
     {
       "gaap_eps": -0.11653375611108793,
@@ -1431,9 +1477,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 1.3450399855068713,
+      "value": 0.9923033636479152,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

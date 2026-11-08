@@ -1,29 +1,104 @@
 {
   "ticker": "AMD",
-  "last_updated": "2026-11-03T13:33:53.205464",
+  "last_updated": "2026-11-08T17:26:17.422557",
   "quarters": [
     {
+      "gaap_eps": 1.4617700180614088,
+      "adjusted_eps": 1.9095688823044803,
+      "gaap_net_income": 2428000000.0,
+      "adjusted_net_income": 3171793913.507742,
+      "diluted_shares_used": 1661000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 523000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 368026695.14148426,
+          "tax_rate_applied": 0.2963160704751735
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 534000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 375767218.36625737,
+          "tax_rate_applied": 0.2963160704751735
+        }
+      ],
+      "net_adjustment_total": 743793913.5077417,
+      "filing_date": "2026-09-26",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 13377000000.0,
+      "diluted_shares": 1661000000.0,
+      "period_end": "2026-09-26",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": -555000000.0,
+      "pretax_income": 1873000000.0,
+      "ai_analysis": {
+        "health": "過大調整",
+        "comment": "調整項目のSBCと無形資産償却費はいずれも恒常的に発生する費用（非現金ではあるが運用上または買収経済性を反映した継続コスト）であるため、一過性とは判断しにくい。市場がGAAP EPS（1.46）を基準に評価する場合、非現金費用を控除した実質的な事業力が見えにくくなり、企業の実力を過小評価するリスクがある。ただしこれらを全額加算したAdjusted EPS（1.91）は実態を過大評価する可能性もあり、投資家はSBCによる株式希薄化や買収の長期収益貢献を慎重に検証する必要がある。過大調整のリスクが高い。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金運用コストであり、調整により実質的な報酬負担が見えにくくなる。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "無形資産償却費は買収関連で複数年にわたり継続する恒常的な非現金費用であり、一過性調整として扱うのは不適切。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 1.38456901748041,
-      "adjusted_eps": 1.6577891884465323,
+      "adjusted_eps": 1.953279790843293,
       "gaap_net_income": 2297000000.0,
-      "adjusted_net_income": 2750272263.6327972,
+      "adjusted_net_income": 3240491173.009023,
       "diluted_shares_used": 1659000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 503000000,
+          "amount": 503000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 453272263.6327972,
           "tax_rate_applied": 0.09886229894076108
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 544000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 490218909.376226,
+          "tax_rate_applied": 0.09886229894076108
         }
       ],
-      "net_adjustment_total": 453272263.6327972,
+      "net_adjustment_total": 943491173.0090232,
       "filing_date": "2026-06-27",
       "form": "10-Q",
       "sector": "Technology",
@@ -33,18 +108,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 252000000.0,
-      "pretax_income": 2549000000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "SBC調整は恒常的なコストであり一過性ではないため、GAAP EPSに含まれるこの費用により企業の実力（キャッシュ生成力）が低く表示され、市場がAMDの実力を過小評価している可能性がある。調整後EPSは約20%高い水準を示すが、SBCは株主希薄化を伴う実質コストのため、過大評価リスクも存在。投資家はGAAPと非GAAPの両方を比較し、将来の希薄化効果と人材確保のための継続的なSBC規模を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、AMDのようなテック企業では毎期発生する恒常的コストであり、株主価値の希薄化を伴うため調整の妥当性に留意が必要。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 2549000000.0
     },
     {
       "gaap_eps": 0.8381818181818181,
@@ -1546,11 +1610,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.12080498367116949,
+      "value": 0.09846570253411491,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.39414162876558295,
-      "prior_4q_avg_yoy": 0.27333664509441347
+      "recent_4q_avg_yoy": 0.41685925631672716,
+      "prior_4q_avg_yoy": 0.31839355378261225
     },
     "roic_trend": {
       "years": [
@@ -1578,9 +1642,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.04360263522884882,
+      "value": 0.0390969574643044,
       "reason": "ok",
-      "period_end": "2026-06-27"
+      "period_end": "2026-09-26"
     }
   }
 }

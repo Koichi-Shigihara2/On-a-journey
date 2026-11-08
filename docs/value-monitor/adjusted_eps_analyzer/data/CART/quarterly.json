@@ -1,29 +1,104 @@
 {
   "ticker": "CART",
-  "last_updated": "2026-11-03T13:34:37.974895",
+  "last_updated": "2026-11-08T17:27:34.174243",
   "quarters": [
     {
+      "gaap_eps": 0.5937210964857366,
+      "adjusted_eps": 0.9939087968794376,
+      "gaap_net_income": 147000000.0,
+      "adjusted_net_income": 246082872.92817682,
+      "diluted_shares_used": 247591000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 120000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 97458563.5359116,
+          "tax_rate_applied": 0.1878453038674033
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 2000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 1624309.3922651934,
+          "tax_rate_applied": 0.1878453038674033
+        }
+      ],
+      "net_adjustment_total": 99082872.9281768,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 1095000000.0,
+      "diluted_shares": 247591000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 34000000.0,
+      "pretax_income": 181000000.0,
+      "ai_analysis": {
+        "health": "過大調整",
+        "comment": "主な調整であるSBC（120M USD）は恒常的な非現金コストであり、毎期発生し株主希薄化を伴うため、Adjusted EPSを大幅に押し上げ企業実力を過大に見せている可能性が高い。市場がGAAP EPS（0.59）で判断する場合、真のキャッシュ生成力や事業体質が見えにくくなり株価の過小評価リスクがある一方、SBCの恒常性を考慮すると調整後EPSを用いた評価は過大評価を招く恐れもある。貸倒引当異常分は一過性が高いが影響額は小さい。投資家はSBCの継続性と将来の希薄化リスクを注視し、GAAPと非GAAPの両面から実力を評価すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、テック企業では恒常的に発生する運用コストであり、株主希薄化を伴う recurring 項目。",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響としてadd_backされており、通常の事業から除外可能な一過性項目。",
+            "confidence": 0.75
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 0.445899532006347,
-      "adjusted_eps": 0.8766324132641787,
+      "adjusted_eps": 0.8826990735635849,
       "gaap_net_income": 111000000.0,
-      "adjusted_net_income": 218224489.79591835,
+      "adjusted_net_income": 219734693.87755102,
       "diluted_shares_used": 248935000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 142000000,
+          "amount": 141000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 107224489.79591836,
+          "net_amount": 106469387.75510204,
+          "tax_rate_applied": 0.24489795918367346
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 2265306.1224489794,
           "tax_rate_applied": 0.24489795918367346
         }
       ],
-      "net_adjustment_total": 107224489.79591836,
+      "net_adjustment_total": 108734693.87755102,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": null,
@@ -33,18 +108,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 36000000.0,
-      "pretax_income": 147000000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBCは毎期発生する恒常的な人材獲得コストであり、一過性ではないため調整の妥当性に疑問がある。GAAP EPS 0.45に対しAdjusted EPS 0.88と大幅に加算されており、市場がGAAPベースで判断する場合に企業の実力（キャッシュ生成力）が過小評価される可能性はあるが、株主希薄化という実質コストを無視した調整は過大評価リスクを高める。投資家はSBCの継続性と希薄化影響を注視し、調整後EPSを過信せずキャッシュフローや株式数で実質価値を検証すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、テック企業では恒常的に発生する報酬コストであり、株主希薄化の実質的影響を伴う。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 147000000.0
     },
     {
       "gaap_eps": 0.5678300610811642,
@@ -475,9 +539,9 @@
     },
     {
       "gaap_eps": 1.0335640350339927,
-      "adjusted_eps": -2.5992221473632635,
+      "adjusted_eps": -2.595394132418693,
       "gaap_net_income": 135000000.0,
-      "adjusted_net_income": -339500000.0,
+      "adjusted_net_income": -339000000.0,
       "diluted_shares_used": 130616000.0,
       "adjustments": [
         {
@@ -509,12 +573,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -474500000.0,
-          "net_amount": -474500000.0,
-          "note": "tax_expense=-439,000,000, median_normal_tax=35,500,000"
+          "amount": -474000000.0,
+          "net_amount": -474000000.0,
+          "note": "tax_expense=-439,000,000, median_normal_tax=35,000,000"
         }
       ],
-      "net_adjustment_total": -474500000.0,
+      "net_adjustment_total": -474000000.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
       "sector": null,
@@ -666,9 +730,9 @@
     },
     {
       "gaap_eps": 4.592037839968467,
-      "adjusted_eps": 0.7242806464327947,
+      "adjusted_eps": 0.7292077256602286,
       "gaap_net_income": 466000000.0,
-      "adjusted_net_income": 73500000.0,
+      "adjusted_net_income": 74000000.0,
       "diluted_shares_used": 101480000.0,
       "adjustments": [
         {
@@ -700,12 +764,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -392500000.0,
-          "net_amount": -392500000.0,
-          "note": "tax_expense=-357,000,000, median_normal_tax=35,500,000"
+          "amount": -392000000.0,
+          "net_amount": -392000000.0,
+          "note": "tax_expense=-357,000,000, median_normal_tax=35,000,000"
         }
       ],
-      "net_adjustment_total": -392500000.0,
+      "net_adjustment_total": -392000000.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
       "sector": null,
@@ -791,11 +855,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.02085477283935308,
+      "value": 0.04012779265538728,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.12567556471521063,
-      "prior_4q_avg_yoy": 0.10482079187585755
+      "recent_4q_avg_yoy": 0.14168094202700474,
+      "prior_4q_avg_yoy": 0.10155314937161745
     },
     "roic_trend": {
       "years": [
@@ -823,9 +887,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.1361457334611697,
+      "value": 0.1095890410958904,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

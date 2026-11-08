@@ -1,7 +1,51 @@
 {
   "ticker": "BROS",
-  "last_updated": "2026-11-03T13:40:05.885451",
+  "last_updated": "2026-11-08T17:33:18.778164",
   "quarters": [
+    {
+      "gaap_eps": 0.19653635166234856,
+      "adjusted_eps": 0.23454409067390553,
+      "gaap_net_income": 27157000.0,
+      "adjusted_net_income": 32408833.361138918,
+      "diluted_shares_used": 138178000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 6955000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 5251833.361138917,
+          "tax_rate_applied": 0.24488377266155045
+        }
+      ],
+      "net_adjustment_total": 5251833.361138917,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": null,
+      "revenue": 549839000.0,
+      "diluted_shares": 138178000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 8807000.0,
+      "pretax_income": 35964000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目の株式報酬費用(SBC)は恒常的に発生する運用コストであり、一過性とは言えない。市場がGAAP EPS(0.1965)で判断する場合、非現金費用を加算したAdjusted EPS(0.2345)に比べて企業の実力が見えにくくなっており、収益力を過小評価している可能性がある。ただしSBCは実質的な報酬コストと株式希薄化を伴うため、Adjustedベースに過度に依拠すると過大評価リスクが生じる。投資家はSBCの継続規模、希薄化効果、将来的な現金流出への影響を注視すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用としてadd_backされているが、株式報酬は企業が継続的に付与する恒常的なコストであり、一過性ではない。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": 0.2775943308722591,
       "adjusted_eps": 0.31576056919637063,
@@ -12,12 +56,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 6879000,
+          "amount": 6879000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 5143473.107748886,
           "tax_rate_applied": 0.25229348629904264
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 12623000.0,
-      "pretax_income": 50033000.0,
-      "ai_analysis": {
-        "health": "調整中",
-        "comment": "株式報酬費用（SBC）は恒常的な報酬コストであり一過性ではないため、調整によりAdjusted EPSが約14%押し上げられている。市場がGAAP EPSのみで判断する場合、非現金費用を控除したEPSにより企業の実力（キャッシュ生成力）が過小評価される可能性がある。ただしSBCは株式希薄化を伴う実質コストであるため、調整を過度に信頼すると過大評価リスクが生じる。投資家はSBCの継続規模、希薄化効果、将来の現金流出可能性を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用としてadd_backされているが、成長企業で毎期継続的に発生する恒常的な株式報酬コストであり、従業員インセンティブとして実質的な経済的コスト（希薄化）を伴う",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": 50033000.0
     },
     {
       "gaap_eps": 0.12636594862777115,
@@ -510,9 +543,9 @@
     },
     {
       "gaap_eps": 0.03239736851776986,
-      "adjusted_eps": -0.09571281561248117,
+      "adjusted_eps": -0.1004814583409901,
       "gaap_net_income": 1763000.0,
-      "adjusted_net_income": -5208500.0,
+      "adjusted_net_income": -5468000.0,
       "diluted_shares_used": 54418000.0,
       "adjustments": [
         {
@@ -531,12 +564,12 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -6971500.0,
-          "net_amount": -6971500.0,
-          "note": "tax_expense=-3,371,000, median_normal_tax=3,600,500"
+          "amount": -7231000.0,
+          "net_amount": -7231000.0,
+          "note": "tax_expense=-3,371,000, median_normal_tax=3,860,000"
         }
       ],
-      "net_adjustment_total": -6971500.0,
+      "net_adjustment_total": -7231000.0,
       "filing_date": "2022-09-30",
       "form": "10-Q",
       "sector": null,
@@ -780,11 +813,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.004835233409587025,
+      "value": 0.013132521736542946,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.2947380190568524,
-      "prior_4q_avg_yoy": 0.2995732524664394
+      "recent_4q_avg_yoy": 0.3061485460974959,
+      "prior_4q_avg_yoy": 0.293016024360953
     },
     "roic_trend": {
       "years": [
@@ -812,9 +845,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.012487950462103182,
+      "value": 0.012649157298772914,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

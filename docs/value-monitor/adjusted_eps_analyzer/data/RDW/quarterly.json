@@ -1,7 +1,51 @@
 {
   "ticker": "RDW",
-  "last_updated": "2026-11-03T13:36:58.099232",
+  "last_updated": "2026-11-08T17:29:42.365171",
   "quarters": [
+    {
+      "gaap_eps": -0.09269323332798042,
+      "adjusted_eps": -0.08902400340942422,
+      "gaap_net_income": -23178000.0,
+      "adjusted_net_income": -22260506.80228862,
+      "diluted_shares_used": 250050615.0,
+      "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 934000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 917493.1977113796,
+          "tax_rate_applied": 0.017673235855054037
+        }
+      ],
+      "net_adjustment_total": 917493.1977113796,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "宇宙・航空",
+      "revenue": 109035000.0,
+      "diluted_shares": 250050615.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": -417000.0,
+      "pretax_income": -23595000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "M&A統合費用は典型的には一過性の調整項目であり、GAAP EPS(-0.0927)がAdjusted EPS(-0.0890)より悪化要因となっているため、市場がGAAPベースで判断する場合に企業の実力(継続的収益力)が過小評価される可能性があります。投資家は今後のM&A戦略による類似費用の再発リスクを注視すべきであり、過小評価リスクはあるが過大調整の懸念は限定的です。",
+        "sources": [
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コスト",
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": -0.185837615208855,
       "adjusted_eps": -0.18579009653277226,
@@ -33,18 +77,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 1862000.0,
-      "pretax_income": -39109000.0,
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目「ma_integration」はM&A統合費用として一過性の買収統合コストと分類されており、ほぼ非経常的と判断できるが、金額が1.1万ドルと小さくEPSへの影響は0.00005程度に留まる。GAAP EPSとAdjusted EPSの差異が極めて僅少のため、市場がGAAPベースで判断していても企業の実力が見えにくくなる可能性は低い。投資家としては過小評価リスクは限定的だが、今後のM&A活動次第で同様費用が散発的に発生する可能性に留意し、コア事業の収益性を別途モニタリングすべき。",
-        "sources": [
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト (M&A統合費用、category:買収・統合関連、reason:一過性の買収統合コスト)",
-            "confidence": 0.8
-          }
-        ]
-      }
+      "pretax_income": -39109000.0
     },
     {
       "gaap_eps": -0.3950074919344677,
@@ -81,22 +114,22 @@
     },
     {
       "gaap_eps": -0.7149903665811899,
-      "adjusted_eps": -0.531750101028564,
+      "adjusted_eps": -0.6088293072369735,
       "gaap_net_income": -85473000.0,
-      "adjusted_net_income": -63567676.58638573,
+      "adjusted_net_income": -72782053.8705911,
       "diluted_shares_used": 119544268.0,
       "adjustments": [
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
-          "amount": 794000.0,
+          "amount": 110000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "一過性の買収統合コスト",
           "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
           "category": "買収・統合関連",
-          "net_amount": 614240.2454587418,
+          "net_amount": 85096.25566808764,
           "tax_rate_applied": 0.22639767574465774
         },
         {
@@ -113,19 +146,6 @@
           "tax_rate_applied": 0.22639767574465774
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 11227000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 8685233.294414727,
-          "tax_rate_applied": 0.22639767574465774
-        },
-        {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
           "amount": -4603000,
@@ -139,7 +159,7 @@
           "tax_rate_applied": 0.22639767574465774
         }
       ],
-      "net_adjustment_total": 21905323.41361427,
+      "net_adjustment_total": 12690946.12940889,
       "filing_date": "2025-12-31",
       "form": "10-K",
       "sector": "宇宙・航空",
@@ -162,11 +182,37 @@
     },
     {
       "gaap_eps": -0.28235800081176554,
-      "adjusted_eps": -0.3593177093913024,
+      "adjusted_eps": -0.29490968408063883,
       "gaap_net_income": -41152000.0,
-      "adjusted_net_income": -52368420.0,
+      "adjusted_net_income": -42981333.21668125,
       "diluted_shares_used": 145744055.0,
       "adjustments": [
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 684000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 547120.2099737533,
+          "tax_rate_applied": 0.20011665208515603
+        },
+        {
+          "item_id": "inventory_writeoff",
+          "item_name": "在庫評価損・減損",
+          "amount": 11227000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価損",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "在庫・サプライチェーン関連",
+          "net_amount": 8980290.347039953,
+          "tax_rate_applied": 0.20011665208515603
+        },
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
@@ -177,11 +223,11 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": -11216420.0,
-          "tax_rate_applied": 0.21
+          "net_amount": -11356743.773694955,
+          "tax_rate_applied": 0.20011665208515603
         }
       ],
-      "net_adjustment_total": -11216420.0,
+      "net_adjustment_total": -1829333.2166812494,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "宇宙・航空",
@@ -926,11 +972,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.7160320738788173,
+      "value": 0.5001754884240949,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.6365142029008983,
-      "prior_4q_avg_yoy": -0.07951787097791899
+      "recent_4q_avg_yoy": 0.5233268257514525,
+      "prior_4q_avg_yoy": 0.0231513373273576
     },
     "roic_trend": {
       "years": [
@@ -960,7 +1006,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

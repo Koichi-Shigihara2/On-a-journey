@@ -1,25 +1,132 @@
 {
   "ticker": "IONQ",
-  "last_updated": "2026-11-03T13:35:45.746115",
+  "last_updated": "2026-11-08T17:28:45.252873",
   "quarters": [
     {
+      "gaap_eps": 1.4068491651974928,
+      "adjusted_eps": 0.29958656739964307,
+      "gaap_net_income": 563957000.0,
+      "adjusted_net_income": 120093856.52034903,
+      "diluted_shares_used": 400865291.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 146906000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 97606704.52214894,
+          "tax_rate_applied": 0.3355839480882405
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 41900000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 27839032.57510272,
+          "tax_rate_applied": 0.3355839480882405
+        },
+        {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 39300000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 26111550.840132147,
+          "tax_rate_applied": 0.3355839480882405
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -896156000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -595420431.4170347,
+          "tax_rate_applied": 0.3355839480882405
+        }
+      ],
+      "net_adjustment_total": -443863143.479651,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 173831000.0,
+      "diluted_shares": 400865291.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": -141702000.0,
+      "pretax_income": 422255000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
+        }
+      },
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "GAAP EPS 1.41に対しAdjusted EPSが0.30と大幅に低い主因は、ワラント公正価値変動による巨額の非現金利益がGAAPに含まれているためです。市場がGAAP EPSで判断する場合、企業の一時的な非経常利益により本質的な収益力（実力）が歪められ見えにくくなっており、過大評価リスクが顕著です。一方でSBCや無形資産償却は恒常的コストのため、調整後の数字も過小評価につながらないよう投資家は注意が必要。全体として過小評価より過大評価の可能性が高い銘柄です。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用であり毎期発生する恒常的な株式報酬コスト",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で継続的に発生する非現金費用",
+            "confidence": 0.25
+          },
+          {
+            "item": "ma_integration",
+            "snippet": "一過性の買収統合コストであり非経常的",
+            "confidence": 0.8
+          },
+          {
+            "item": "warrant_fv_change",
+            "snippet": "非現金・非経常のワラント時価評価変動による巨額調整",
+            "confidence": 0.85
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": -5.080070633397915,
-      "adjusted_eps": -0.09971129278690728,
+      "adjusted_eps": -0.10749212995753228,
       "gaap_net_income": -1867742000.0,
-      "adjusted_net_income": -36659917.322416544,
+      "adjusted_net_income": -39520624.86518097,
       "diluted_shares_used": 367660636.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 144715000,
+          "amount": 141845000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 144246443.22340217,
+          "net_amount": 141385735.68063766,
           "tax_rate_applied": 0.0032377899775270585
         },
         {
@@ -62,7 +169,7 @@
           "tax_rate_applied": 0.0032377899775270585
         }
       ],
-      "net_adjustment_total": 1831082082.6775835,
+      "net_adjustment_total": 1828221375.134819,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -81,32 +188,6 @@
           "flag": "FAIR_VALUE_ADJUSTED",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
         }
-      },
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "ワラント公正価値変動(16億ドル超)がGAAP EPSを-5.08まで大幅に悪化させており、非現金・非経常項目であるため市場がGAAPベースで判断する場合、IONQの事業実力(調整後EPS約-0.1)を強く過小評価している可能性が高い。ただしSBCと無形資産償却は恒常的コストのため調整依存度が高く、過大評価リスクも存在。投資家はSBCの継続性と株式希薄化リスクに特に注目すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用としてテック企業で毎期発生する恒常的な株式報酬コスト",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の定期的な償却費で恒常的な非現金項目",
-            "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コストであり非経常的",
-            "confidence": 0.8
-          },
-          {
-            "item": "warrant_fv_change",
-            "snippet": "非現金・非経常のワラント時価評価変動で主要調整要因",
-            "confidence": 0.9
-          }
-        ]
       }
     },
     {
@@ -1289,11 +1370,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 3.5402131016613874,
+      "value": 3.5280237956806157,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 4.228920518179676,
-      "prior_4q_avg_yoy": 0.6887074165182882
+      "recent_4q_avg_yoy": 4.515266088339712,
+      "prior_4q_avg_yoy": 0.9872422926590965
     },
     "roic_trend": {
       "years": [
@@ -1321,9 +1402,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 1.8078076202373516,
+      "value": 0.845108179783813,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

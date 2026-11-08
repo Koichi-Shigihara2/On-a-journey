@@ -1,23 +1,112 @@
 {
   "ticker": "ABBV",
-  "last_updated": "2026-11-03T13:39:11.568470",
+  "last_updated": "2026-11-08T17:33:00.186451",
   "quarters": [
     {
+      "gaap_eps": 2.380361173814898,
+      "adjusted_eps": 3.7064003692547702,
+      "gaap_net_income": 4218000000.0,
+      "adjusted_net_income": 6567741454.319453,
+      "diluted_shares_used": 1772000000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 160000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 139813548.78806713,
+          "tax_rate_applied": 0.12616532007458048
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 1700000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 1485518955.8732133,
+          "tax_rate_applied": 0.12616532007458048
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 829000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 724408949.6581727,
+          "tax_rate_applied": 0.12616532007458048
+        }
+      ],
+      "net_adjustment_total": 2349741454.3194532,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "ヘルスケア / バイオ",
+      "revenue": 17404000000.0,
+      "diluted_shares": 1772000000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 609000000.0,
+      "pretax_income": 4827000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      },
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目の多くが買収関連の無形資産償却や偶発対価変動など非現金・非経常項目だが、SBCは恒常的運用コストであり、特に1.7Bの償却費はAbbVieの買収戦略上毎期発生しやすい。GAAP EPS 2.38に対しAdjusted 3.71と大幅上方修正されており、市場がGAAPベースで判断する場合、非現金費用により企業の実力（キャッシュ生成力）が過小評価される可能性が高い。ただし恒常的項目の過大調整リスクもあり、持続可能性を注視すべき。過小評価リスクの方がやや優勢だが、買収依存のビジネスモデルを考慮した総合判断が必要。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として株式報酬費用160Mをadd_back。SBCは企業が継続的に付与する恒常的コストであり一過性とは言えない。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却費1.7Bをadd_back。製薬企業のM&A戦略では定期的に発生する非現金費用で恒常的性格が強い。",
+            "confidence": 0.2
+          },
+          {
+            "item": "contingent_consideration_fv",
+            "snippet": "買収偶発対価の公正価値変動829Mをadd_back。非現金・非経常的とされるが、M&A戦略に伴う変動であり完全に一過性とは限らない。",
+            "confidence": 0.6
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 2.0400903444381706,
-      "adjusted_eps": 2.9305718842560946,
+      "adjusted_eps": 3.6549829118250172,
       "gaap_net_income": 3613000000.0,
-      "adjusted_net_income": 5190042807.017544,
+      "adjusted_net_income": 6472974736.842106,
       "diluted_shares_used": 1771000000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 166000000,
+          "amount": 166000000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 140294269.00584796,
           "tax_rate_applied": 0.15485380116959063
@@ -34,9 +123,22 @@
           "category": "買収・統合関連",
           "net_amount": 1436748538.011696,
           "tax_rate_applied": 0.15485380116959063
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": 1518000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": 1282931929.8245616,
+          "tax_rate_applied": 0.15485380116959063
         }
       ],
-      "net_adjustment_total": 1577042807.017544,
+      "net_adjustment_total": 2859974736.842106,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "ヘルスケア / バイオ",
@@ -47,21 +149,14 @@
       "quarter": 2,
       "tax_expense": 662000000.0,
       "pretax_income": 4275000000.0,
-      "ai_analysis": {
-        "health": "過大調整",
-        "comment": "SBCと無形資産償却の両調整項目は恒常的な性質が強く（毎期発生する非現金費用）、特にAbbVieの買収戦略を考慮すると無形資産償却は長期的に続く経常項目です。GAAP EPS 2.04に対しAdjusted EPS 2.93と約44%の大きな開きが生じていますが、市場がGAAPベースで判断する場合、非現金ではあるものの実質的な経済コストを反映した数字が見えにくくなり、企業の実力を過小評価する可能性があります。一方で、これらを加算した調整EPSは持続可能な利益を過大評価するリスクもあり、投資家は買収依存のビジネスモデルと株主希薄化効果を注視すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用として加算されているが、毎期継続的に発生する恒常的な運用コストである",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金償却として加算されているが、AbbVieのような連続買収企業では長期にわたって発生する恒常的項目である",
-            "confidence": 0.2
-          }
-        ]
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: 偶発対価公正価値変動損益"
+        }
       }
     },
     {
@@ -1494,9 +1589,9 @@
     },
     {
       "gaap_eps": 0.021518230723251645,
-      "adjusted_eps": 1.2619545726240287,
+      "adjusted_eps": 1.2494022713687987,
       "gaap_net_income": 36000000.0,
-      "adjusted_net_income": 2111250000.0,
+      "adjusted_net_income": 2090250000.0,
       "diluted_shares_used": 1673000000.0,
       "adjustments": [
         {
@@ -1528,9 +1623,9 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -1618000000.0,
-          "net_amount": -1618000000.0,
-          "note": "tax_expense=-1,224,000,000, median_normal_tax=394,000,000"
+          "amount": -1639000000.0,
+          "net_amount": -1639000000.0,
+          "note": "tax_expense=-1,224,000,000, median_normal_tax=415,000,000"
         },
         {
           "item_id": "contingent_consideration_fv",
@@ -1546,7 +1641,7 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 2075250000.0,
+      "net_adjustment_total": 2054250000.0,
       "filing_date": "2020-12-31",
       "form": "10-K",
       "sector": "ヘルスケア / バイオ",
@@ -2723,11 +2818,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.04317088051209232,
+      "value": 0.03303246721783762,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.10433252461212632,
-      "prior_4q_avg_yoy": 0.061161644100033996
+      "recent_4q_avg_yoy": 0.10737878568344568,
+      "prior_4q_avg_yoy": 0.07434631846560806
     },
     "roic_trend": {
       "years": [
@@ -2755,9 +2850,9 @@
       "reason": "ok"
     },
     "sbc_ratio": {
-      "value": 0.009770453207769276,
+      "value": 0.009193288899103653,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

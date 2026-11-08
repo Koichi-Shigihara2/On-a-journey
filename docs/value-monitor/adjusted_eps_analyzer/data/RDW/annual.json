@@ -1,27 +1,27 @@
 {
   "ticker": "RDW",
-  "last_updated": "2026-11-03T13:36:58.101274",
+  "last_updated": "2026-11-08T17:29:42.366572",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": -226552000.0,
-      "adjusted_net_income": -198642840.85935828,
+      "adjusted_net_income": -198470131.3602449,
       "diluted_shares_used": 106508852.75,
       "gaap_eps": -2.1270720146781414,
-      "adjusted_eps": -1.8650359639645848,
+      "adjusted_eps": -1.8634144133173465,
       "adjustments": [
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
-          "amount": 794000.0,
+          "amount": 110000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "一過性の買収統合コスト",
           "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
           "category": "買収・統合関連",
-          "net_amount": 614240.2454587418,
+          "net_amount": 85096.25566808764,
           "tax_rate_applied": 0.22639767574465774
         },
         {
@@ -38,19 +38,6 @@
           "tax_rate_applied": 0.22639767574465774
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 11227000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 8685233.294414727,
-          "tax_rate_applied": 0.22639767574465774
-        },
-        {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
           "amount": -4603000,
@@ -64,6 +51,32 @@
           "tax_rate_applied": 0.22639767574465774
         },
         {
+          "item_id": "ma_integration",
+          "item_name": "M&A統合費用",
+          "amount": 684000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の買収統合コスト",
+          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
+          "category": "買収・統合関連",
+          "net_amount": 547120.2099737533,
+          "tax_rate_applied": 0.20011665208515603
+        },
+        {
+          "item_id": "inventory_writeoff",
+          "item_name": "在庫評価損・減損",
+          "amount": 11227000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価損",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "在庫・サプライチェーン関連",
+          "net_amount": 8980290.347039953,
+          "tax_rate_applied": 0.20011665208515603
+        },
+        {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
           "amount": -14198000,
@@ -73,8 +86,8 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": -11216420.0,
-          "tax_rate_applied": 0.21
+          "net_amount": -11356743.773694955,
+          "tax_rate_applied": 0.20011665208515603
         },
         {
           "item_id": "ma_integration",
@@ -142,7 +155,7 @@
           "tax_rate_applied": 0.058146964856230034
         }
       ],
-      "net_adjustment_total": 27909159.140641727
+      "net_adjustment_total": 28081868.6397551
     },
     {
       "year": "2024",

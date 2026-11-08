@@ -1,23 +1,121 @@
 {
   "ticker": "NET",
-  "last_updated": "2026-11-03T13:36:24.055715",
+  "last_updated": "2026-11-08T17:29:22.567220",
   "quarters": [
     {
+      "gaap_eps": -0.09538650224290586,
+      "adjusted_eps": 0.30676035452379485,
+      "gaap_net_income": -34065000.0,
+      "adjusted_net_income": 109552098.36966476,
+      "diluted_shares_used": 357126000.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 167629000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 126051849.2397875,
+          "tax_rate_applied": 0.2480307748671918
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 9200000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 6918116.871221835,
+          "tax_rate_applied": 0.2480307748671918
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3141000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 2361935.3361421507,
+          "tax_rate_applied": 0.2480307748671918
+        },
+        {
+          "item_id": "restructuring",
+          "item_name": "リストラ費用",
+          "amount": 11018000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の事業再編費用",
+          "extracted_from": "us-gaap:RestructuringCharges",
+          "category": "リストラ・事業再編関連",
+          "net_amount": 8285196.92251328,
+          "tax_rate_applied": 0.2480307748671918
+        }
+      ],
+      "net_adjustment_total": 143617098.36966476,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 782513000.0,
+      "diluted_shares": 357126000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 6770000.0,
+      "pretax_income": -27295000.0,
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目の主力は恒常的なSBC（株式報酬）と無形資産償却であり、リストラや異常貸倒引当は一過性。GAAP EPSが-0.095と赤字である一方、Adjusted EPSが+0.307と大幅に改善するため、市場がGAAPのみで判断する場合、NET（Cloudflare）の真の収益力・事業実力を過小評価している可能性が高い。ただしSBCは毎期発生する実質的な報酬コストであり、過大に加算することで実力の過大評価リスクもある。投資家はSBCの希薄化影響、キャッシュフロー生成力、調整の持続可能性を注視し、過小評価の機会を慎重に評価すべき。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "株式報酬費用は非現金費用だがテック企業では恒常的に発生する報酬コストであり、完全に一過性とは言えない。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却は買収後も複数期に発生する非現金恒常費用。",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響として異常変動分の貸倒引当金を加回する一過性項目。",
+            "confidence": 0.75
+          },
+          {
+            "item": "restructuring",
+            "snippet": "一過性の事業再編費用としてリストラ費用を加回するほぼ一過性の項目。",
+            "confidence": 0.8
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": -0.47971969949256915,
-      "adjusted_eps": 0.4067341087253171,
+      "adjusted_eps": 0.41692666175110504,
       "gaap_net_income": -169981000.0,
-      "adjusted_net_income": 144119723.68107653,
+      "adjusted_net_income": 147731291.76491606,
       "diluted_shares_used": 354334000.0,
       "adjustments": [
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 159872000,
+          "amount": 159872000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 157929051.61367154,
           "tax_rate_applied": 0.012153149934500417
@@ -36,6 +134,19 @@
           "tax_rate_applied": 0.012153149934500417
         },
         {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 3656000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 3611568.0838394663,
+          "tax_rate_applied": 0.012153149934500417
+        },
+        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 150693000,
@@ -49,7 +160,7 @@
           "tax_rate_applied": 0.012153149934500417
         }
       ],
-      "net_adjustment_total": 314100723.6810765,
+      "net_adjustment_total": 317712291.76491606,
       "filing_date": "2026-06-30",
       "form": "10-Q",
       "sector": "Technology",
@@ -59,28 +170,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 2041000.0,
-      "pretax_income": -167940000.0,
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目には恒常的なSBC（株式報酬）と無形資産償却に加え、一過性のリストラ費用が含まれており、GAAP EPSが-0.48の赤字である一方、Adjusted EPSは+0.41と大幅に改善している。市場がGAAP EPSのみで判断する場合、非現金・一過性費用により企業の実力（運用キャッシュ生成力）が過小評価されている可能性が高い。特にリストラは一時的だがSBCは成長企業として継続するため、投資家は調整の質を慎重に見極める必要がある。全体として過小評価リスクが優勢。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金だがテック企業で毎期発生する恒常的コストであり、調整の正当性は中程度。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連の非現金費用で定期的に発生する可能性が高く、完全に一過性とは言えない。",
-            "confidence": 0.2
-          },
-          {
-            "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用であり、真に非経常的とみなせる。",
-            "confidence": 0.8
-          }
-        ]
-      }
+      "pretax_income": -167940000.0
     },
     {
       "gaap_eps": -0.06501807869549805,
@@ -1816,11 +1906,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 0.060849962286721904,
+      "value": 0.07591107714908368,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.33421260970464484,
-      "prior_4q_avg_yoy": 0.27336264741792293
+      "recent_4q_avg_yoy": 0.35559127545890956,
+      "prior_4q_avg_yoy": 0.2796801983098259
     },
     "roic_trend": {
       "years": [
@@ -1848,9 +1938,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.229681019335949,
+      "value": 0.2142188053105827,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }
