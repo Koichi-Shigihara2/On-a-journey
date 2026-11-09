@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 660.0919184953424,
   "intrinsic_value_beta": 654.46,
-  "upside_percent_beta": 91.6,
-  "intrinsic_value_rf": 3420.47,
-  "upside_percent_rf": 901.6,
-  "intrinsic_value_rf_rate": 0.04859000205993652,
+  "upside_percent_beta": 93.5,
+  "intrinsic_value_rf": 3407.64,
+  "upside_percent_rf": 907.5,
+  "intrinsic_value_rf_rate": 0.04863999843597412,
   "v0": 174276370560.32843,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.8,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 744.38,
       "value_growth_pct": 12.8,
-      "expected_return_pct": 118.0
+      "expected_return_pct": 120.1
     },
     "2年後": {
       "future_value": 839.44,
       "value_growth_pct": 27.2,
-      "expected_return_pct": 145.8
+      "expected_return_pct": 148.2
     },
     "3年後": {
       "future_value": 946.64,
       "value_growth_pct": 43.4,
-      "expected_return_pct": 177.2
+      "expected_return_pct": 179.9
     },
     "4年後": {
       "future_value": 1067.52,
       "value_growth_pct": 61.7,
-      "expected_return_pct": 212.6
+      "expected_return_pct": 215.6
     },
     "5年後": {
       "future_value": 1203.85,
       "value_growth_pct": 82.4,
-      "expected_return_pct": 252.5
+      "expected_return_pct": 255.9
     }
   },
-  "upside_percent": 93.3,
-  "calculation_date": "2026-11-09T21:54:01+09:00",
+  "upside_percent": 95.2,
+  "calculation_date": "2026-11-10T06:40:21+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 293000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、典型的な一時的リストラ費用であるため、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、通常のリストラ費用として事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -345,7 +345,7 @@
     "roe_10yr_avg": 0.3074588003021922,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
-    "current_price": 341.5,
+    "current_price": 338.2300109863281,
     "latest_revenue": 21448000000.0,
     "rpo": 2000000,
     "beta": 1.009,
@@ -377,11 +377,11 @@
     "alpha_uncapped": 1.291326961269207,
     "per": 20.747267,
     "per_is_forward": false,
-    "per_adjusted": 13.95,
+    "per_adjusted": 13.82,
     "peg": 1.0837,
     "ps": 4.254993,
     "ev_ebitda": 13.503,
-    "ma200": 355.80275085449216,
+    "ma200": 354.6740510559082,
     "forward_eps": 26.94382,
     "next_quarter_eps": 2.64,
     "analyst_target_median": 400.0,
@@ -400,7 +400,7 @@
     "revenue_ttm_end": "2026-07-31",
     "analyst_vs_iv": -39.4,
     "max_eps": 23.7774,
-    "max_eps_per": 14.4,
+    "max_eps_per": 14.2,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-07-31",
     "max_eps_shares": 278500000.0,
@@ -429,15 +429,15 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": -0.3523721029809813,
-  "risk_free_rate_live": 0.04859000205993652,
-  "risk_free_rate_live_date": "2026-11-06",
+  "required_growth_rf_base": -0.35361713622657576,
+  "risk_free_rate_live": 0.04863999843597412,
+  "risk_free_rate_live_date": "2026-11-09",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.2799685684166401,
+  "required_growth_rf_live": -0.2808248028667104,
   "tanuki_score": "BUY",
   "funda_score": 80,
-  "score_comment": "割安圏(93%)で買い余地大、FCF黒字、売上安定成長",
-  "timing_score": 80,
+  "score_comment": "割安圏(95%)で買い余地大、FCF黒字、売上安定成長",
+  "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -521,7 +521,7 @@
     "shares_yr_3ago": 283000000,
     "buyback_ttm": 5412000000.0
   },
-  "net_current_assets_ratio": 0.0609,
+  "net_current_assets_ratio": 0.0615,
   "dupont": {
     "ni_ttm": 4566000000,
     "revenue_ttm": 21448000000,
@@ -598,7 +598,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0303,
+  "erp": 0.031,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }
