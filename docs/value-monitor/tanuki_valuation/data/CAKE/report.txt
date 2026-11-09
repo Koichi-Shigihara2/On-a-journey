@@ -1,5 +1,5 @@
 CAKE INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-09T02:44:28+09:00
+Generated: 2026-11-09T21:30:59+09:00
 Price: $106.76
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,10 +7,10 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: TRIM
 Funda_Score: 65/100
 Timing_Score (components):
-  Deviation_Rate: -63.6%
+  Deviation_Rate: -63.7%
   MA200_Deviation: +31.8%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Hold | Target: $110 median ($74-$127) | 15 analysts | vs IV: +183.4%
+  Analyst_Consensus: Hold | Target: $110 median ($74-$127) | 15 analysts | vs IV: +183.9%
 Comment: 割高(-64%超)、FCF黒字、売上安定成長
 Definition:
 
@@ -33,7 +33,7 @@ Matrix: ②収益性系
 Quadrant: 左下
 Label: 割高×低ROE
 Key_Metric_Y: ROE_avg (10yr) = 14.6% (outlier-adjusted)
-Deviation_Rate: -63.6%
+Deviation_Rate: -63.7%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,22 +58,22 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $106.76
-Intrinsic_Value_BASE: $38.82
-Deviation_BASE: -63.6%
+Intrinsic_Value_BASE: $38.75
+Deviation_BASE: -63.7%
 Scenarios:
-BEAR: Growth=3.3%, IV=$36.75, Deviation=-65.6%
-BASE: Growth=4.7%, IV=$38.82, Deviation=-63.6%
-BULL: Growth=5.6%, IV=$40.23, Deviation=-62.3%
-Return_Outlook(BASE): 1年後: $40.64 (-61.9%) / 3年後: $44.55 (-58.3%) / 5年後: $48.84 (-54.3%)
+BEAR: Growth=3.3%, IV=$36.68, Deviation=-65.6%
+BASE: Growth=4.7%, IV=$38.75, Deviation=-63.7%
+BULL: Growth=5.6%, IV=$40.16, Deviation=-62.4%
+Return_Outlook(BASE): 1年後: $40.57 (-62.0%) / 3年後: $44.47 (-58.3%) / 5年後: $48.75 (-54.3%)
   5yr_Annualized_Return: -14.5%/yr
 Growth_Rate_Rec: 7.5% (recommended)
 TTM_YoY_Growth: 7.9%
 (DCF Base vs TTM actual: -3.2pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 10.21%
-  参考①β込みWACC_IV: $37.26 (Deviation: -65.1%)
-  参考②Rf理論上限_IV（Rf 4.86%、^TNX 2026-11-06）: $163.67 (Deviation: +53.3%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.86%（^TNX 2026-11-06）に変化すると、Rf基準の必要成長率は-13.2%→-8.4%（+4.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $37.19 (Deviation: -65.2%)
+  参考②Rf理論上限_IV（Rf 4.86%、^TNX 2026-11-06）: $163.36 (Deviation: +53.0%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.86%（^TNX 2026-11-06）に変化すると、Rf基準の必要成長率は-13.2%→-8.3%（+4.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 2.5%
 Beta: 1.037
 Valuation_Gap_Analysis:
@@ -99,13 +99,13 @@ Alpha_Premium: 0.6000 (HypeCore expectation premium; Rm basis) [CAPPED: セク�
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $1.93B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.88B)
-Shares_Used: 49.8M (source: yf_implied)
-→ Intrinsic_Value: $38.82 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 49.9M (source: yf_implied)
+→ Intrinsic_Value: $38.75 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  6yr  9yr
-  9.0%       $45.66  $47.62  $49.39
-  10.0%       $37.18  $38.82  $40.27
-  11.0%       $30.70  $32.10  $33.31
+  9.0%       $45.57  $47.53  $49.30
+  10.0%       $37.11  $38.75  $40.19
+  11.0%       $30.64  $32.04  $33.25
 Financial_Health:
   Net_Debt: $+0.88B (negative=net cash)
   Total_Debt: $1.12B  Cash: $0.25B
@@ -264,9 +264,9 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 30.5x
+  Market_PER_GAAP: 25.3x
   Adjusted_EPS_PER: 21.9x (TTM調整後EPS: $4.8725)
-  Delta: -8.6x (cheaper on adjusted basis)
+  Delta: -3.4x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-10-28
   Next_Quarter_EPS: $1.22 (yfinance analyst estimate)
@@ -292,10 +292,10 @@ Phase_History (recent 6 months):
 2026-10: Phase3 (陶酔期)
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 30.5x
-  PEG: 1.52
-  PS:  1.4x
-  EV_EBITDA: 19.6x
+  PER: 25.3x
+  PEG: 1.44
+  PS:  1.3x
+  EV_EBITDA: 19.0x
   PEG_Signal: 適正水準（成長率対比でPEG 1.0〜2.0）
   PS_Signal: 低水準（売上対比で低い期待）
 Definition:
@@ -339,9 +339,9 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 
 [8. STONKS SILO]
 Short_Report_Target: no
-Short_Interest: 40.0%
+Short_Interest: 39.9%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Hold | Target: $110 median ($74-$127) | 15 analysts | vs IV: +183.4%
+Analyst_Consensus: Hold | Target: $110 median ($74-$127) | 15 analysts | vs IV: +183.9%
 Insider_Activity: Sell優勢 | 買い1件 / 売り7件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 7.9%

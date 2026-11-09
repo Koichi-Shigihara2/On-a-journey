@@ -1,50 +1,50 @@
 {
-  "intrinsic_value_per_share": 166.72344302875257,
-  "intrinsic_value_beta": 103.76,
-  "upside_percent_beta": -10.7,
-  "intrinsic_value_rf": 708.95,
-  "upside_percent_rf": 510.4,
+  "intrinsic_value_per_share": 166.3298275017624,
+  "intrinsic_value_beta": 103.52,
+  "upside_percent_beta": -10.9,
+  "intrinsic_value_rf": 707.27,
+  "upside_percent_rf": 509.0,
   "intrinsic_value_rf_rate": 0.04859000205993652,
   "v0": 6628556792.186554,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.4039093512804799,
   "alpha_was_capped": false,
   "future_values": {
-    "1年後": 224.05,
-    "2年後": 301.09,
-    "3年後": 404.62,
-    "4年後": 543.75,
-    "5年後": 730.73
+    "1年後": 223.52,
+    "2年後": 300.38,
+    "3年後": 403.67,
+    "4年後": 542.48,
+    "5年後": 729.02
   },
   "return_metrics": {
     "1年後": {
-      "future_value": 224.05,
+      "future_value": 223.52,
       "value_growth_pct": 34.4,
-      "expected_return_pct": 92.9
+      "expected_return_pct": 92.5
     },
     "2年後": {
-      "future_value": 301.09,
+      "future_value": 300.38,
       "value_growth_pct": 80.6,
-      "expected_return_pct": 159.2
+      "expected_return_pct": 158.6
     },
     "3年後": {
-      "future_value": 404.62,
+      "future_value": 403.67,
       "value_growth_pct": 142.7,
-      "expected_return_pct": 248.4
+      "expected_return_pct": 247.6
     },
     "4年後": {
-      "future_value": 543.75,
+      "future_value": 542.48,
       "value_growth_pct": 226.1,
-      "expected_return_pct": 368.2
+      "expected_return_pct": 367.1
     },
     "5年後": {
-      "future_value": 730.73,
+      "future_value": 729.02,
       "value_growth_pct": 338.3,
-      "expected_return_pct": 529.2
+      "expected_return_pct": 527.7
     }
   },
-  "upside_percent": 43.6,
-  "calculation_date": "2026-11-09T02:46:15+09:00",
+  "upside_percent": 43.2,
+  "calculation_date": "2026-11-09T21:32:35+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -62,19 +62,19 @@
   "sensitivity": {
     "matrix": [
       [
-        121.66,
-        199.13,
-        316.88
+        121.37,
+        198.66,
+        316.14
       ],
       [
-        102.44,
-        166.72,
-        262.67
+        102.2,
+        166.33,
+        262.05
       ],
       [
-        88.04,
-        142.51,
-        222.35
+        87.83,
+        142.17,
+        221.82
       ]
     ],
     "wacc_values": [
@@ -105,15 +105,15 @@
   "scenario_valuations": {
     "bear": {
       "growth_rate": 0.241,
-      "intrinsic_value_per_share": 112.25
+      "intrinsic_value_per_share": 111.98
     },
     "base": {
       "growth_rate": 0.344,
-      "intrinsic_value_per_share": 166.72
+      "intrinsic_value_per_share": 166.33
     },
     "bull": {
       "growth_rate": 0.413,
-      "intrinsic_value_per_share": 213.18
+      "intrinsic_value_per_share": 212.68
     }
   },
   "growth_options": {
@@ -238,7 +238,7 @@
     "long_term_debt": 826676000.0,
     "short_term_debt": 30000000.0,
     "net_cash": -505877000.0,
-    "net_cash_per_share": -8.57302457788941,
+    "net_cash_per_share": -8.55278461927397,
     "fiscal_year": 2026,
     "applied": true,
     "sector_guard": "none",
@@ -293,7 +293,7 @@
       107613000.0,
       59922000.0
     ],
-    "diluted_shares": 59007996,
+    "diluted_shares": 59147637,
     "roe_10yr_avg": 0.09616889316201903,
     "roe_years_used": 10,
     "roe_outlier_adj": false,
@@ -327,19 +327,19 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.4039093512804799,
-    "per": 113.96939,
+    "per": 81.788734,
     "per_is_forward": false,
     "per_adjusted": 29.17,
     "peg": 1.37,
-    "ps": 3.7401855,
-    "ev_ebitda": 34.257,
+    "ps": 3.5427828,
+    "ev_ebitda": 27.9,
     "ma200": 81.84295024871827,
-    "forward_eps": 3.95722,
-    "next_quarter_eps": 0.6,
-    "analyst_target_median": 116.5,
-    "analyst_target_mean": 117.125,
-    "analyst_target_low": 100.0,
-    "analyst_target_high": 137.0,
+    "forward_eps": 4.14901,
+    "next_quarter_eps": 0.77,
+    "analyst_target_median": 129.5,
+    "analyst_target_mean": 123.75,
+    "analyst_target_low": 103.0,
+    "analyst_target_high": 140.0,
     "analyst_count": 16,
     "analyst_rec_key": "buy",
     "dividend_yield": 0.0,
@@ -350,7 +350,7 @@
     "insider_latest_date": "2026-10-19",
     "revenue_ttm": 1938986000,
     "revenue_ttm_end": "2026-09-30",
-    "analyst_vs_iv": -30.1,
+    "analyst_vs_iv": -22.1,
     "max_eps": 2.9833,
     "max_eps_per": 38.9,
     "max_eps_reliability": "HIGH",
@@ -363,7 +363,7 @@
     "checks": {
       "pt_shares_consistency": {
         "pass": true,
-        "detail": "(V₀ $10.34B + RPO $0.00B + GO $0.00B) / 0.059B + BS $-8.57/株 = $166.72 (差異0.00%、α=0.404は参考値・P_t未乗算)"
+        "detail": "(V₀ $10.34B + RPO $0.00B + GO $0.00B) / 0.059B + BS $-8.55/株 = $166.33 (差異0.00%、α=0.404は参考値・P_t未乗算)"
       },
       "dcf_components": {
         "pass": true,
@@ -382,14 +382,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.34385860629556064,
-  "required_growth_rf_base": -0.16162388442891373,
+  "required_growth_rf_base": -0.16122746012966493,
   "risk_free_rate_live": 0.04859000205993652,
   "risk_free_rate_live_date": "2026-11-06",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.09945355870807149,
+  "required_growth_rf_live": -0.09902773730727088,
   "tanuki_score": "BUY",
   "funda_score": 100,
-  "score_comment": "割安圏(44%)で買い余地大、FCF黒字、売上成長加速",
+  "score_comment": "割安圏(43%)で買い余地大、FCF黒字、売上成長加速",
   "timing_score": 85,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -474,7 +474,7 @@
     "shares_yr_3ago": 55337554,
     "buyback_ttm": 99969000
   },
-  "net_current_assets_ratio": 0.0872,
+  "net_current_assets_ratio": 0.087,
   "dupont": {
     "ni_ttm": 86640000,
     "revenue_ttm": 1938986000,
@@ -488,7 +488,7 @@
     "reliability": "LOW",
     "reliability_reason": "単四半期NI集中（一過性要因の可能性）"
   },
-  "next_earnings_date": "2026-11-05",
+  "next_earnings_date": "2027-02-04",
   "breakeven_reason": "ACHIEVED",
   "segments": [
     {
@@ -533,7 +533,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0145,
+  "erp": -0.0129,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }

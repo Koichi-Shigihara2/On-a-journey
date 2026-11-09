@@ -1,5 +1,5 @@
 DOCN INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-09T02:53:42+09:00
+Generated: 2026-11-09T21:39:11+09:00
 Price: $72.48
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,10 +7,10 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: HOLD
 Funda_Score: 50/100
 Timing_Score (components):
-  Deviation_Rate: -10.3%
+  Deviation_Rate: -11.1%
   MA200_Deviation: -35.4%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $175 median ($105-$220) | 15 analysts | vs IV: +169.1%
+  Analyst_Consensus: Strong Buy | Target: $160 median ($100-$220) | 15 analysts | vs IV: +148.3%
 Comment: フェアバリュー近辺、FCF黒字、売上成長加速
 Definition:
 
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 左下
 Label: 割高×中効率
 Key_Metric_Y: RICE = 1.767
-Deviation_Rate: -10.3%
+Deviation_Rate: -11.1%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,23 +58,23 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $72.48
-Intrinsic_Value_BASE: $65.04
-Deviation_BASE: -10.3%
+Intrinsic_Value_BASE: $64.44
+Deviation_BASE: -11.1%
 Growth_Rate_Original: 47.9% (TTM実績)
 Growth_Rate_Adjusted: 21.9% (推奨値・中央値ベース)
 Scenarios:
-BEAR: Growth=15.3%, IV=$46.92 （推奨値ベース）
-BASE: Growth=21.9%, IV=$65.04 （推奨値ベース）
-BULL: Growth=26.2%, IV=$79.99 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $79.26 (+9.4%) / 3年後: $117.71 (+62.4%) / 5年後: $174.80 (+141.2%)
-  5yr_Annualized_Return: +19.3%/yr
+BEAR: Growth=15.3%, IV=$46.48 （推奨値ベース）
+BASE: Growth=21.9%, IV=$64.44 （推奨値ベース）
+BULL: Growth=26.2%, IV=$79.25 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $78.53 (+8.3%) / 3年後: $116.62 (+60.9%) / 5年後: $173.19 (+138.9%)
+  5yr_Annualized_Return: +19.0%/yr
 TTM_YoY_Growth: 27.6%
 (DCF Base vs TTM actual: -5.7pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 14.00%
-  参考①β込みWACC_IV: $36.20 (Deviation: -50.1%)
-  参考②Rf理論上限_IV（Rf 4.86%、^TNX 2026-11-06）: $356.77 (Deviation: +392.2%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.86%（^TNX 2026-11-06）に変化すると、Rf基準の必要成長率は-21.0%→-12.2%（+8.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $35.87 (Deviation: -50.5%)
+  参考②Rf理論上限_IV（Rf 4.86%、^TNX 2026-11-06）: $353.48 (Deviation: +387.7%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.86%（^TNX 2026-11-06）に変化すると、Rf基準の必要成長率は-20.9%→-12.0%（+8.8pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 1.701
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
@@ -91,16 +91,16 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0 (RPO/Revenue=0.01 < 0.3, not applied)
 Growth_Option_PV: $0
 Equity_Value: $7.60B (= v0 + RPO_PV + GO_PV + Net_Cash $-0.53B)
-Shares_Used: 116.9M (source: yf_implied)
-→ Intrinsic_Value: $65.04 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 118.0M (source: yf_implied)
+→ Intrinsic_Value: $64.44 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  6yr  9yr
-  9.0%       $50.28  $78.93  $118.98
-  10.0%       $41.67  $65.04  $96.80
-  11.0%       $35.37  $54.88  $80.71
+  9.0%       $49.81  $78.21  $117.88
+  10.0%       $41.29  $64.44  $95.91
+  11.0%       $35.04  $54.38  $79.97
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性調整で構造的な収益力悪化を示すものではない。
+  Reasoning: すべての項目の理由が「マクロ変動による一時的影響」と明記されており、事業運営上の一時的な問題と判断される。
 Financial_Health:
   Net_Debt: $+0.53B (negative=net cash)
   Total_Debt: $1.20B  Cash: $0.67B  ST_Invest: $0.00B (推定ゼロ、最終確認: FY2024)
@@ -109,7 +109,7 @@ Financial_Health:
   SBC_TTM: $80M
   Dilution_3yr_Annual: +1.48%/yr  許容範囲内 ✅
   Dilution_Comment: 希薄化はほぼ無視できるレベル。
-  ⚠️ 期中に大規模な株式発行の可能性（+11.0%乖離: yf=117M vs SEC=105M）
+  ⚠️ 期中に大規模な株式発行の可能性（+12.0%乖離: yf=118M vs SEC=105M）
   Next_Earnings_Date: 2026-11-03
   DuPont_ROE: 純利益率3.1% × 資産回転率0.30x × 財務レバレッジ2.64x = ROE2.4%
     ⚠️ DuPont_Reliability: LOW (単四半期NI集中（一過性要因の可能性）)
@@ -265,13 +265,13 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 41.3x
+  Market_PER_GAAP: 249.9x
   Adjusted_EPS_PER: 175.2x (TTM調整後EPS: $0.4136)
-  Delta: +133.9x (more expensive on adjusted basis)
+  Delta: -74.7x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-03
-  Next_Quarter_EPS: $0.32 (yfinance analyst estimate)
-  Next_FY_EPS: $1.83 (yfinance forward EPS)
+  Next_Quarter_EPS: $0.31 (yfinance analyst estimate)
+  Next_FY_EPS: $1.97 (yfinance forward EPS)
 Definition:
 
 Market_PER_GAAP: Price / GAAP EPS TTM (market-provided, trailing 12M)
@@ -293,10 +293,10 @@ Phase_History (recent 6 months):
 2026-10: Phase4 (期待剥落期)
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 41.3x
+  PER: 249.9x
   PEG: 1.54
-  PS:  10.4x
-  EV_EBITDA: 38.1x
+  PS:  7.8x
+  EV_EBITDA: 29.1x
   PEG_Signal: 適正水準（成長率対比でPEG 1.0〜2.0）
   PS_Signal: 適正水準
 Definition:
@@ -316,9 +316,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 2.53%  (ForwardEPS $1.83 / Price $72.48)
+  Forward_Earnings_Yield: 2.72%  (ForwardEPS $1.97 / Price $72.48)
   Risk_Free_Rate (10Y):  4.86%  (^TNX 2026-11-06)
-  ERP: -2.33%
+  ERP: -2.14%
   ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 4.86%, ^TNX 2026-11-06]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -340,9 +340,9 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 
 [8. STONKS SILO]
 Short_Report_Target: no
-Short_Interest: 11.5%
+Short_Interest: 11.4%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $175 median ($105-$220) | 15 analysts | vs IV: +169.1%
+Analyst_Consensus: Strong Buy | Target: $160 median ($100-$220) | 15 analysts | vs IV: +148.3%
 Insider_Activity: Sell優勢 | 買い0件 / 売り7件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 27.6%

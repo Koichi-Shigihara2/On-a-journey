@@ -1,5 +1,5 @@
 TSLA INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-09T02:50:43+09:00
+Generated: 2026-11-09T21:36:28+09:00
 Price: $358.22
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -105,16 +105,16 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0.681B (optional segment premium)
 Equity_Value: $153.04B (= v0 + RPO_PV + GO_PV + Net_Cash $35.92B)
-Shares_Used: 3952.7M (source: yf_implied)
+Shares_Used: 3952.8M (source: yf_implied)
 → Intrinsic_Value: $38.72 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
   9.0%       $40.06  $43.78  $47.66
-  10.0%       $35.61  $38.72  $41.92
+  10.0%       $35.60  $38.72  $41.92
   11.0%       $32.27  $34.93  $37.62
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断されるため。
+  Reasoning: 理由が一過性の事業再編費用と明記されており、事業運営上の一時的な問題として位置づけられるため。
 Financial_Health:
   Net_Debt: $-35.92B (negative=net cash)
   Total_Debt: $9.52B  Cash: $17.85B  ST_Invest: $27.59B
@@ -275,9 +275,9 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 439.4x
+  Market_PER_GAAP: 393.6x
   Adjusted_EPS_PER: 211.9x (TTM調整後EPS: $1.6904)
-  Delta: -227.4x (cheaper on adjusted basis)
+  Delta: -181.7x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2027-01-28
   Next_Quarter_EPS: $0.50 (yfinance analyst estimate)
@@ -294,7 +294,7 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.0
-HYPE_Signal: 実体維持・バリュエーション過熱 — 実体（売上・EPS）は強いが、株価÷IV=9.25x、FwdPE=185xと割高感が残る。期待の訂正がまだ終わっていない可能性。
+HYPE_Signal: 実体維持・バリュエーション過熱 — 実体（売上・EPS）は強いが、株価÷IV=9.25x、FwdPE=166xと割高感が残る。期待の訂正がまだ終わっていない可能性。
 Phase_History (recent 6 months):
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
@@ -303,10 +303,10 @@ Phase_History (recent 6 months):
 2026-10: Phase4 (期待剥落期)
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (market-provided, yfinance):
-  PER: 439.4x
-  PEG: 4.66
-  PS:  15.3x
-  EV_EBITDA: 157.8x
+  PER: 393.6x
+  PEG: 4.18
+  PS:  13.7x
+  EV_EBITDA: 141.0x
   PEG_Signal: 割高水準（成長率対比でPEG>2.0）
   PS_Signal: 適正水準
 Definition:
@@ -350,7 +350,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 
 [8. STONKS SILO]
 Short_Report_Target: no
-Short_Interest: 2.0%
+Short_Interest: 2.1%
 Institutional_Ownership: N/A (not in data source)
 Analyst_Consensus: Buy | Target: $436 median ($128-$600) | 40 analysts | vs IV: +1026.1%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
