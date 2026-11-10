@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 2.767168203017133,
   "intrinsic_value_beta": 2.54,
-  "upside_percent_beta": -57.4,
-  "intrinsic_value_rf": 3.69,
-  "upside_percent_rf": -38.1,
-  "intrinsic_value_rf_rate": 0.04863999843597412,
+  "upside_percent_beta": -54.3,
+  "intrinsic_value_rf": 3.63,
+  "upside_percent_rf": -34.8,
+  "intrinsic_value_rf_rate": 0.049830002784729,
   "v0": 100787539.64587025,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 3.6,
       "value_growth_pct": 30.0,
-      "expected_return_pct": -39.7
+      "expected_return_pct": -35.4
     },
     "2年後": {
       "future_value": 4.68,
       "value_growth_pct": 69.0,
-      "expected_return_pct": -21.6
+      "expected_return_pct": -16.0
     },
     "3年後": {
       "future_value": 6.09,
       "value_growth_pct": 119.9,
-      "expected_return_pct": 2.0
+      "expected_return_pct": 9.3
     },
     "4年後": {
       "future_value": 7.91,
       "value_growth_pct": 185.6,
-      "expected_return_pct": 32.5
+      "expected_return_pct": 42.0
     },
     "5年後": {
       "future_value": 8.11,
       "value_growth_pct": 192.8,
-      "expected_return_pct": 35.8
+      "expected_return_pct": 45.6
     }
   },
-  "upside_percent": -53.6,
-  "calculation_date": "2026-11-10T06:38:14+09:00",
+  "upside_percent": -50.3,
+  "calculation_date": "2026-11-11T06:39:00+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -191,7 +191,7 @@
       "total_transient_amount": 15300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "市場金利変動によるローン公正価値の評価損益で、事業運営とは無関係な外部金融要因による一時的変動である。"
+        "reasoning": "市場金利変動によるローン公正価値の評価損失で、事業運営とは無関係の一時的な金融評価項目であるため。"
       }
     },
     "action": "excluded",
@@ -319,7 +319,7 @@
     "roe_10yr_avg": -0.6059836595491378,
     "roe_years_used": 6,
     "roe_outlier_adj": true,
-    "current_price": 5.96999979019165,
+    "current_price": 5.570000171661377,
     "latest_revenue": 50731000.0,
     "rpo": 2900000,
     "beta": 2.5,
@@ -355,7 +355,7 @@
     "peg": null,
     "ps": 17.843374,
     "ev_ebitda": null,
-    "ma200": 8.820975003242495,
+    "ma200": 8.793025004863738,
     "forward_eps": -0.02,
     "next_quarter_eps": -0.09,
     "analyst_target_median": 18.5,
@@ -374,7 +374,7 @@
     "revenue_ttm_end": "2026-06-30",
     "analyst_vs_iv": 568.6,
     "max_eps": 0.7411,
-    "max_eps_per": 8.1,
+    "max_eps_per": 7.5,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-06-30",
     "max_eps_shares": 361744353.75,
@@ -403,18 +403,18 @@
     "overall": "PASS",
     "ai_comment": null
   },
-  "required_growth_rf_base": 0.5399608329095005,
-  "risk_free_rate_live": 0.04863999843597412,
-  "risk_free_rate_live_date": "2026-11-09",
+  "required_growth_rf_base": 0.518748471104326,
+  "risk_free_rate_live": 0.049830002784729,
+  "risk_free_rate_live_date": "2026-11-10",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.6262400893019948,
+  "required_growth_rf_live": 0.6196706274455461,
   "tanuki_score": "WATCH",
   "funda_score": 50,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
   "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": "TRIM",
-  "pre_rounding_comment": "割高(-54%超)、FCFマイナス（投資フェーズ）、売上成長加速",
+  "pre_rounding_comment": "割高(-50%超)、FCFマイナス（投資フェーズ）、売上成長加速",
   "rounded_by_policy": "A",
   "matrix": {
     "matrix": "①投資効率系",
@@ -495,7 +495,7 @@
     "shares_yr_3ago": 42242525
   },
   "computed_runway_months": 407.02425400558576,
-  "net_current_assets_ratio": 0.4149,
+  "net_current_assets_ratio": 0.4447,
   "dupont": {
     "ni_ttm": 167055500,
     "revenue_ttm": 174103430,
@@ -554,7 +554,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.052,
+  "erp": -0.0534,
   "dilution_severity": "critical",
   "dilution_comment": "極度の希薄化 🚨 IPO直後か継続増資か要確認"
 }
