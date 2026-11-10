@@ -1350,6 +1350,7 @@ SYSTEM_MAP.md/CHAT_RULES.md等への追記、ソースコードの修正等）�
 - 影響が無く、長く気づかれなかったもの（読み手のいない出力など）は、直すのではなく、機能を削除するか記録を捨てる
 - 束ねた結果（根治策・削除・捨てる）は`FINDINGS.md`の各行の状態に書き、行は消さない
 - 初回の束ね（2026-10-19の確認の後）は、`FINDINGS.md`の行に加えて、BACKLOG.mdのアクティブ全件も同じ基準で対象にする（進め方は`PROJECT_STATUS.md`「次の作業」の2）
+- 統合で閉じるとき（2026-11-11追加。初回の束ねで統合として閉じた4件が統合先で作られていなかった件〈FINDINGS 2026-11-05〉の再発防止）: 統合先の項目の本文に、統合した件を1行で書く。BACKLOG_DONE.mdの見出しは「統合」と「完了」を分けて書く（「完了」は作って確認したものだけ。統合は統合先のIDを書く）
 
 **4. 根治策は2026-07-23のトップダウンの手順に沿う**
 - 出力項目の棚卸し → 定義 → 必要データ → 取得の確認、の順（`docs/architecture/new_data_platform/`の`archive/OUTPUT_ITEMS_INVENTORY.md`〈07-22の棚卸しの凍結版〉・`TO_BE_FINAL_LIST.md`・`FIELD_DEFINITIONS.md`・`INPUT_DATA_AS_IS.md`／`INPUT_DATA_TOBE.md`）
