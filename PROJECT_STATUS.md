@@ -11,7 +11,18 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-06 終業の2回目 更新〈それまでは2026-11-06 終業の1回目〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。2026-11-06からCLAUDE_CODE_START.mdは細くし、履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+**次の作業（2026-11-11 束ねの後 更新〈それまでは2026-11-06 終業の2回目〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+1. `[[SECTOR-MASTER-ADOPT-1]]` の段3（金融。11-08のSICの保存は済み、Vは金融から外れた）・段4（EPS ANALYZERの区分。別の計算方法の変更）【Opus】
+2. `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`【Opus】（2026-11-11 束ねで登録、優先: 高）
+3. `[[TANUKI-CALC-CONTINUITY-1]]`【Opus】（同、優先: 高）
+4. `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`【Opus】（同、優先: 中。`[[MULTIPLES-ADOPT-1]]`と`[[STAGE-V2-ROLLOUT-1]]`の切り替えより前）
+5. `[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`【Opus】
+6. `[[STAGE-V2-ROLLOUT-1]]` の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）【Opus】。①並行計算は2026-11-06に開始、②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
+7. `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）
+8. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+**注記（2026-11-11）**: 束ね（`docs/architecture/BUNDLING_2026-11-11.md`）で根治策6件を登録した（実装は許可されていない）。モデルの使い分けは`CHAT_RULES.md`「モデルの使い分け」（依頼文の見出しの【Opus】【Sonnet】）。11-06の使用量の注記は、枠が戻ったかをチャット側が判断する
+
+**（旧）次の作業（2026-11-06 終業の2回目。2026-11-11 束ねの後に上へ置き換えた。記録として残す）**:
 1. 11-07（土）: 手順26の残り（MACRO PULSEの週1回の回の`05_fed_context.csv`の`fomc_date_source`）【Sonnet】
 2. 11-08（日）: SEC_Data_Updateの後に手順5（V）・手順25（cf_lines）・手順28（業種のマスターのSIC・各部品の作り直し）【Sonnet】
 3. 束ね【Opus】（FINDINGS.mdの未登録の行、`docs/common/`の出力が出力の一覧のどの段階にも入らない件を優先）
