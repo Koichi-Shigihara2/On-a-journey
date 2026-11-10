@@ -2576,6 +2576,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 #### 規模の見込み
 小〜中
+- 2026-11-11 直し済み（`bb99b0ffb5`）: 一覧の`json_keys`・`json_parents`がリストの100件超で先頭50・末尾50件しか見ず、日付つきのリスト（`market_data.json`）が増えるたびに古い件にだけ残るキー（`roll_suspect`）が窓から外れてNG-INV-5が出た。全件のキーの和集合にし、キーの控えの名前をfile_keys_v2.jsonに上げた（rcc NG 1→0、件数が増えても結果が変わらないテスト）
 
 ---
 
