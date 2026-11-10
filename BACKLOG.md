@@ -2516,6 +2516,133 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 ---
 
+### [PARSER-LAYER3-SINGLE-SOURCE-1] parserの年次・四半期がcompanyfactsから独自に値を選び、Layer3（cf_lines・bs_lines）と選び方が二重にある（SOUNのSPACの年・ZSのD&Aのタグ・CAKEの前年度末の列）
+**型・処置（2026-11-11 束ね）:** 型B・型C・根治策
+**優先度:** 高
+**分類:** SEC層 / `common/sec_data/parser.py`（年次`annual_YYYY.json`・四半期`quarterly_*.json`）とその読み手（TANUKI・STONKS・EPS ANALYZER・TAIL・screening・rcc）
+**登録日:** 2026-11-11
+**着手条件:** なし（登録のみ。次の作業の順は`PROJECT_STATUS.md`）
+**発見:** FINDINGS 2026-11-04の3行（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 束ねた行: (1) 年次がSPACの合併の年に器の会社の値を採る（SOUN 2021年 OCF −0.86M、正しくは−66.2M。VRT 2018・2019年） (2) ZSのD&A（2024・2025年）でparserとLayer3が別のタグを採る（14.6M対66.3M等） (3) 四半期が10-Qの貸借対照表の前年度末の列の値を当期にする（CAKEの短期借入金68.815M、理論株価 約−1.38ドル〈約3%〉）
+- 方針: parserの年次・四半期をcompanyfactsから独自に選ぶのをやめ、Layer3（cf_lines・bs_linesを正）から作る。**読み手（TANUKI・Stonks・EPS・TAIL・screening・rcc）は変えない**（出力の形はそのまま）
+- 計算方法の変更の手順（`CLAUDE_CODE_PROCEDURES.md`）で行う: scope・派生ファイル・読み合い・印。関連: [[FCF-DEFINITION-SINGLE-SOURCE-1]]（cf_linesの導入）・[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]（bs_linesの試算でCAKEを発見）
+
+#### 投資判断への影響
+あり（小さい）。CAKEの理論株価が約3%小さい。SOUN（保有）はFCFの履歴の表示だけで理論株価は不変。ZSは未試算
+
+#### 規模の見込み
+大（parserの年次・四半期の作り方を変える。全銘柄の試算が要る）
+
+---
+
+### [TANUKI-CALC-CONTINUITY-1] TANUKIの計算が境目（CV 0.5・逆算のQ4が負・taperのs=0）で方法を切り替え、境目の前後で値が飛ぶ
+**型・処置（2026-11-11 束ね）:** 型B・根治策
+**優先度:** 高
+**分類:** TANUKI VALUATION / `adjustments.py`（`DEFAULT_FCF_CV_THRESHOLD`）・Layer3の逆算のQ4・`check_growth_sanity`
+**登録日:** 2026-11-11
+**着手条件:** なし（登録のみ）。実装の前に[[GROWTH-SANITY-CONTINUITY-1]]の結果を読む
+**発見:** FINDINGS 2026-11-04（fcf_baseのCV）・2026-11-05（逆算のQ4の負）・2026-11-06（check_growth_sanityの残り）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 束ねた行: (1) fcf_baseの方法がCVの境目0.5で5年平均と直近2年平均に切り替わる（HQY: CV 0.48→0.58で基準のFCF +26%・理論株価+24.7%・HOLD→BUY。DOCNも同じ型） (2) 既存の9項目（自社株買い・SBC・R&D・販売費・SG&A・売上・売上原価・粗利・D&A）の逆算したQ4が負の所が19か所、うち4か所（TASKの自社株買い・FRSHのSBC・APPの販売費・KULRの粗利、2025-12-31）は今のTTMの窓に入る (3) `check_growth_sanity`の段1の後の残り: ①画面・report.txt・stock.htmlの表示名「中央値モデル」（中身は重み付き平均） ②CHECK-52の文言「推奨成長率が算出できずfloorに転落」 ③taperが s>0 で常にかかり、BULLシナリオ（growth_rate > 終点）が s=0 と s=0+ で飛ぶ
+- 方針: 境目で方法を切り替えず、なだらかにする（[[GROWTH-SANITY-CONTINUITY-1]]と同じ考え方）。新しい5項目に入れた「非負の項目の逆算のQ4が負なら欠け」の規則を既存の9項目にも当てる。連続性のテストを足す（境目の前後で値が飛ばないこと）
+- 計算方法の変更の手順で行う
+
+#### 投資判断への影響
+あり（理論株価・判定）。HQY・DOCNの判定、4銘柄のTTM。(3)はBULL/BEARの表示のみ
+
+#### 規模の見込み
+中〜大（全銘柄の試算が要る）
+
+---
+
+### [OUTPUT-INVENTORY-COMMON-LAYER-1] 出力の一覧（CHECK-INV）に`common/`直下の出力の段階が無く、画面が読むキーに書き手が無い場合も検査していない
+**型・処置（2026-11-11 束ね）:** 型A・型E・根治策
+**優先度:** 中
+**分類:** 出力の一覧 / `scripts/inventory/build_output_inventory.py`・rcc CHECK-INV
+**登録日:** 2026-11-11
+**着手条件:** なし（登録のみ）
+**発見:** FINDINGS 2026-11-06（commonの出力）・2026-11-03（stock.htmlの書き手の無い7キー）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 束ねた行: (1) `config/sector_master.json`・`docs/common/profitability.json`・`docs/common/multiples/{T}.json`・`docs/common/stage_v2/{T}.json`（2026-11-05〜06）がどの段階にも入らず、読み手0件・誰も読まないキーの検査の外にある (2) TANUKIの`stock.html`の836〜934行が読む7キー（`adj_net_income`・`conversion_rate`・`divergence_ratio`・`divergence_warning`・`ma_addback_detected_but_not_applied`・`ma_addback_excluded`・`rate_is_sector_default`）は今の書き手のコードに無く、古い履歴にだけ残る（転換率方式の廃止等）
+- 方針: CHECK-INVにcommonの段階を足す。「画面が読むキーに書き手が無い」も検査（NG）にする。7キーを読む表示は消す
+- 関連: [[OUTPUT-INVENTORY-CHECK-1]]（完了済み）・[[CHECK-REFERENCE-DEFINITION-1]]（書き手のコードが正）・[[STAGE-V2-ROLLOUT-1]]
+
+#### 投資判断への影響
+なし（今は読み手が無いことを各モジュールの説明文に書いている。7キーの欄は出ない）
+
+#### 規模の見込み
+小〜中
+
+---
+
+### [POINT-IN-TIME-HISTORY-INTEGRITY-1] 過去の時点の値の基準が混ざる: 日足の分割の調整の経路が無い・HONの併合と分社・Q4のfirst_filedが翌年の10-Kの日付
+**型・処置（2026-11-11 束ね）:** 型C・型X・根治策
+**優先度:** 中
+**分類:** 時点の履歴 / `common/market_data/daily/`・`config/split_history.yaml`・Layer3の`first_filed`
+**登録日:** 2026-11-11
+**着手条件:** [[MULTIPLES-ADOPT-1]]と[[STAGE-V2-ROLLOUT-1]]の切り替えより前
+**発見:** FINDINGS 2026-11-03（日足の分割の調整）・2026-11-05（HONの併合と分社・Q4のfirst_filed）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 束ねた行: (1) `daily/`に株式分割の調整の経路が無い（`split_adjust.py`は株数の点だけ）。Yahooの日足は分割の後に過去の足も調整した値で返り、確定の行と値が違うと`_daily_rejected_overwrites.json`に出る。`fetcher.correct_daily_rows(reason="split_adjust")`は用意したが呼ぶ処理が無い (2) HONの2026-06-29の株式併合（分社と同時）で、併合の前の終値はYahooの比0.9535（併合と分社が混ざった値）で割り戻した値。`split_history.yaml`の0.5で換算したLayer3の株数と掛けると時価総額が約半分。`history.json`に跳ね2か所（2026-06-26・27の理論株価79.99、06-30のma200 429.4） (3) Layer3の四半期の第4四半期の`first_filed`が翌年の10-Kの日付（HON 2024-12-31・JNJ 2023-01-01・DOCN 2023-12-31・DELL 2024-02-02）。`first_filed`で絞るとその間は4四半期のTTMが組めない。DOCN・DELLは年次の組み替えが無く、原因は未調査
+- 方針: `split_history.yaml`と日足の基準をそろえる。Q4の`first_filed`の原因を調べる
+- **前提（順序）**: [[MULTIPLES-ADOPT-1]]と[[STAGE-V2-ROLLOUT-1]]の切り替えより前に行う（時点の倍率の履歴・定義v2の時点の値が日足の基準・`first_filed`に依るため）
+- 関連: [[MARKETDATA-DAILY-ROW-WRITE-1]]・[[LAYER3-FIRST-FILED-DATE-1]]・[[HYPECORE-STAGE-TIMESCALE-1]]
+
+#### 投資判断への影響
+なし（今の公開の値は正しい）。過去の履歴の表示に跳ね。時点の倍率の履歴（定義v2の段B・C）には効く
+
+#### 規模の見込み
+中
+
+---
+
+### [TEST-ISOLATION-GUARD-1] テストが実データ・今日の日付・外部の通信に依っていて、日付が進むと失敗し（2028・2029年）、新しい段を足すと本物の取得・書き込みが動く
+**型・処置（2026-11-11 束ね）:** 型C・型A・根治策
+**優先度:** 低
+**分類:** テスト基盤 / `tests/conftest.py`
+**登録日:** 2026-11-11
+**着手条件:** なし（登録のみ。2028-01-01までに）
+**発見:** FINDINGS 2026-11-03の2行（2028・2029年に失敗）・2026-11-05（登録のテスト）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 束ねた行: (1) `tests/test_conditional_tags_and_stale_latest.py`が実データを読み、最新期が「今から何年以内」の範囲にある前提で、時刻を2028-01-01に進めると失敗する (2) Layer3・EPSの固定データのテスト17本（`test_eps_analyzer_*`・`test_extract_key_facts_*`・`test_layer3_shares_non_additive.py`・`test_tag_fallback_selection.py`等）が固定データの期末・申告日が「今から何年以内」から外れると失敗し、時刻を2029-01-01に進めると失敗する (3) 登録の手順のテスト2本（`test_register_ticker_preflight.py`・`test_registration_consistency_gate.py`）が新しい段（Step 1.5・1.6）を差し替えておらず、ゲートの途中で本物のyfinanceの取得とリポジトリのファイルへの書き込みが動いた（直し済み`9dbb2fa974`）
+- 方針: conftestで「今日」を固定する仕組みと、リポジトリのデータのフォルダへの書き込み・外部への通信を禁止する仕組み（新しい段を足したとき差し替えの漏れが失敗として出る）
+- 確認の道具: scratchpadのtime-machine（時刻を進めてtests全体を回す）
+
+#### 投資判断への影響
+なし（2028年からpytestのゲートが止まる。ゲートが止まると全ての変更が止まる）
+
+#### 規模の見込み
+小〜中
+
+---
+
+### [METHOD-CHANGE-NOTICE-ACCURACY-1] 計算方法の変更の通知（🛠）の内訳が誤る: 古い形の印・試算のEPSが公開のEPSと食い違う
+**型・処置（2026-11-11 束ね）:** 型C・根治策
+**優先度:** 低
+**分類:** 通知 / `config/method_change.json`・`scripts/method_change_scope.py`・`score_watcher`
+**登録日:** 2026-11-11
+**着手条件:** なし（登録のみ）
+**発見:** FINDINGS 2026-11-03の2行（古い形の印・試算のEPSの食い違い）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 束ねた行: (1) `config/method_change.json`の古い形（`{id, date}`）の印`QUARTERLY-BASIS-MIX-1`で、11-02のTANUKI SCOREの通知4通の変化がすべて🛠の下に入った（Q3の10-Q・相場による変化を含む）。古い形で新しい件を足すことを止める仕組みが無い (2) EPSが動く計算方法の変更で、手元の試算のEPS（SEC・Grok・Alpha Vantageを呼ばない）が公開のEPSと14銘柄で食い違い、scopeのbefore→afterと「計算方法の分／残り」が誤る（FCF-DEFINITION-SINGLE-SOURCE-1-3のSOUN: 「60→50／残り −15」、実際は60→35の全部が計算方法の分）
+- 方針: `method_change.json`の形の検査を足す（新しい形`{id,committed_at,scope}`以外を足せない）。scopeのEPSは公開の値を使う
+- 関連: [[METHOD-CHANGE-PUBLISH-TIMING-1]]（移設済み）・[[FCF-DEFINITION-SINGLE-SOURCE-1]]
+
+#### 投資判断への影響
+なし（通知の見出し・内訳だけ。値は正しい）
+
+#### 規模の見込み
+小
+
+---
+
 （[[TAIL-REVIEW-PERIOD-FILTER-1]]は2026-10-30、実装・push済みで完了、BACKLOG_DONE.md「2026-10-30（完了）」参照）
 
 ---
