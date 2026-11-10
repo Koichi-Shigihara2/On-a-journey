@@ -2,6 +2,63 @@
 
 ---
 
+## 2026-11-11（完了）
+
+### ✅ [SEC-COMPANYFACTS-API-LAG-1] CDNS・KO・RMBS・V・XOMのQ2の10-Q（2026-07-28〜08-03提出）が、EDGARのcompanyfacts APIに入っておらず、手元でも取り込めない
+**完了（2026-11-11）:** 次回の確認手順5に合格。2026-11-08のSEC_Data_Update（run `42504087662`）の`common/sec_data/data/_freshness.json`でVがREFRESHED（local_latest_filed 2026-11-05、pending空）。Vの7月の10-Qが入った。`config/warn_acknowledged.json`のVの1件（WARN-60・accn `0001403161-26-000104`）を削除。CDNS・KO・RMBS・XOMは既に解消済みで、5銘柄とも解消
+**型・処置（2026-10-19 束ね）:** 型X・残す（確認待ち（次回の確認手順5）。外部の変化の件として[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]の対象）
+**優先度:** 中（保有銘柄ではない。5銘柄のQ2が欠け、TTMが1四半期古い）
+**分類:** データ取得 / 外部データ（SEC EDGARのcompanyfacts API）
+**登録日:** 2026-10-10
+**着手条件（2026-10-14 終業）:** 毎週日曜のSEC_Data_Updateの後に`_freshness.json`で4銘柄がREFRESHEDになったかを確かめる（次は2026-10-18）。Q3の10-Q（10月末〜11月上旬の提出）でも解消しなければ、直し方の候補2をチャット側が判断
+**発見:** [[SEC-FETCH-CACHE-MTIME-CI-1]]の読み取り調査（2026-10-10、EDGARの公開データとの照合）
+
+#### 内容（観測した事実。SEC側の原因は未確認）
+- data.sec.govのsubmissionsでは5銘柄ともQ2の10-Qを提出済みで、`isXBRL=1`・`isInlineXBRL=1`:
+  CDNS 2026-07-29（`0000813672-26-000092`）・KO 2026-07-29（`0001628280-26-050503`）・RMBS 2026-07-28（`0001193125-26-321000`）・
+  V 2026-07-29（`0001403161-26-000104`）・XOM 2026-08-03（`0000034088-26-000093`）
+- 同じ日（2026-10-10）に取得したcompanyfacts APIの`filed`の最大値は、CDNS 05-01・KO 04-30・RMBS 04-28・V 04-29・XOM 05-04で、Q1の10-Qまでしか入っていない。手元のcompany_facts.jsonと同じ値
+- CDNS・Vは2026-08-30の手動実行（`68b172b3ee`）でAPIから取り直されている（差分は`"units": {}`の空の概念の追加だけで、今のEDGARの内容と一致）。手元のキャッシュの問題ではない
+- 比較: 同じ時期に提出した他の銘柄は、08-30の手動実行で取り込めている（手元のfiledの最大値がMSFT・FICO・VRT 07-29、META 07-30、AAPL・AMZN 07-31、CAKE 08-03）
+
+#### 実害
+- 5銘柄の年次・四半期・TTMがQ1（2026-03-31前後）で止まる（[[TTM-DATA-DRIFT-BEHIND-PIPELINE-1]]の2026-10-10の追記の15銘柄のうちの5銘柄）。
+  XOMのTTM純利益がYahooのtrailing PEからの逆算と大きくずれる件（同追記）は、これが原因の可能性がある（未確認）
+- [[SEC-FETCH-CACHE-MTIME-CI-1]]を直しても、この5銘柄は解消しない
+
+#### 直し方の候補（未決定）
+1. 様子を見る（SECの取り込みを待つ）。週次の実行の後にcompanyfactsのfiledを確かめる
+2. 欠けている書類だけ、別の経路（その書類のXBRLのインスタンス、XBRL frames API等）から取り込む。取り込み方が2系統になる
+3. 検知: submissionsにある10-Q・10-Kが、companyfactsに一定の日数入らないときに知らせる（[[SEC-FETCH-CACHE-MTIME-CI-1]]の候補5と同じ検査で見つけられる）
+
+#### 追記（2026-10-10、[[SEC-FETCH-CACHE-MTIME-CI-1]]の完了時）
+- 候補3の検知は実装済み: update.pyが毎週submissionsと照らし、取り直しても入らない提出をSEC_LAGとして`common/sec_data/data/_freshness.json`に記録する（CHECK-60はSEC_LAG 14日超でWARN、System Health [M]は確認済みでないSEC_LAG 30日超でCRITICAL）。SEC_LAGの銘柄は毎週company_factsを取り直すので、SEC側で入れば自動でREFRESHEDになる
+- 5件のaccnを`config/warn_acknowledged.json`（WARN-60・銘柄＋accn、確認日2026-10-10）で確認済みにした（`fa9dbb7739`）。[M]の詳細には「確認済み」として表示され続ける。同じ銘柄の次の提出（Q3の10-Q等）が入らなければ、別のaccnとして再び警告される
+- 解消の確認: `_freshness.json`で5銘柄がREFRESHEDになったら、warn_acknowledged.jsonの5件を消して本項目をBACKLOG_DONE.mdへ移す
+
+#### 追記（2026-10-12、10-11のSEC_Data_Updateの確認。移設しない）
+- run `38157028361`（10-11 16:49 UTC起動）はXOMで失敗し（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）、`_freshness.json`は更新・commitされていない（generated_atは10-10T10:10:24Zのまま）
+- ログの判定: KO・CDNS・Vは「SEC API取得中」の後も「SEC_LAG（b）提出はあるがcompanyfacts APIに入っていない」（同じCIKのまま。SECの`company_tickers.json`とcik_lookup.csvのCIKは一致）
+- XOMは新CIK（0002115436）のcompanyfactsで「REFRESHED（b）」。XOMの未反映はSEC側の遅れではなく、持株会社への登録者の切り替えとみられる（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）
+- RMBSはXOMの後の順番のため処理されず、未確認
+
+#### 追記（2026-10-12、XOMは解消・4銘柄は残る）
+- XOMは会社番号の切り替え（2026-07の持株会社化）が原因と確定（`[[SEC-XOM-CIK-HOLDING-REORG-1]]`）。新CIKの統合でQ2（期末06-30）が入り、REFRESHED。
+  `config/warn_acknowledged.json`のXOMの1件（WARN-60・accn `0000034088-26-000093`）を削除
+- SEC_Data_Updateの手動実行（run `38194243923`）の`_freshness.json`（2026-10-12T02:05:31Z）: CDNS・KO・RMBS・VはSEC_LAGのまま（4銘柄ともSECの`company_tickers.json`のCIKとcik_lookup.csvは一致）。
+  System Health（02:32 UTC）の[M]は✅、確認済み4件（CDNS 75日・KO 75日・RMBS 76日・V 75日）
+
+#### 追記（2026-11-02 朝、手順5。CDNS・KO・RMBSは解消、Vだけ残る）
+- 11-01のSEC_Data_Update（run `41330561316`、data `0a4f7e9953`）の`_freshness.json`: CDNS（local 2026-10-28）・KO（2026-10-28）・RMBS（2026-10-26）はREFRESHED（Q3の10-Qまで入り、TTMの期末はCDNS・RMBS 2026-09-30、KO 2026-10-02）。
+  VはSEC_LAG（local 2026-04-29、submissions 2026-07-29、pending `0001403161-26-000104`）。XOMはOK_NO_NEW（XOMの確認済みの行は2026-10-12に削除済み）
+- `config/warn_acknowledged.json`のCDNS・KO・RMBSの3件（WARN-60）を削除。Vの1件は残す
+- 本項目はVの7月の10-Qがcompanyfactsに入るまで残す（Vの次の確認も毎週日曜のSEC_Data_Updateの後、手順5）
+
+#### 追記（2026-11-11、手順5、移設）
+- 2026-11-08のSEC_Data_Updateで`_freshness.json`のVがREFRESHED（`checked_at` 2026-11-08T17:19:02Z）。warn_acknowledged.jsonのVの1件を削除。次回の確認手順5を閉じた
+
+---
+
 ## 2026-11-06（完了）
 
 ### ✅ [MARKETPULSE-HEADLINES-CNBC-STALE-1] CNBC Markets の見出しが10-27から stale（5回連続）。配信元が実質Googleだけで、保存される見出しは約6時間分
@@ -330,6 +387,11 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 - **元の発見（月末の1日の値で判定され、月中に揺れる）の確認**: 定義v2は倍率・実体・Lの月末の値で判定し、判定の結果が2か月の月末で続けて同じになったときだけstageを変える。段Cで、生の判定の往復（A→B→A）124回が、持続の条件の後は0（2024-12〜2026-10、98銘柄）。月中の揺れは生の判定で11.7%の日（今の定義 7,269日）で、持続の条件がかかったstageは月中に変わらない。今の定義からの切り替えは[[STAGE-V2-ROLLOUT-1]]
 - 決定（チャット側、2026-11-06）: 後の段階の12か月の並びは並行計算を始めた月から記録し、2027-11ごろに評価（切り替えの条件にはしない）。§0でS3・S4を売りの判断に使うなら根拠は6か月の並び。Layer3の保持期間を延ばす案は採らない
 
+#### 確認（2026-11-11、次回の確認手順28、段B-1・B-2）
+- 2026-11-08のSEC_Data_Update（run `42504087662`、commit `399f841882`）とMarket Data Weekly（run `42509734675`、commit `e890e3805b`）で、段「Rebuild sector master」「Rebuild profitability」がどちらも成功
+- `config/sector_master.json`（generated_at 2026-11-08T18:38:51Z）: 98銘柄でsicの欠け0。Vはsic 7389・`financial.value` false（basis `sector+sic`）、SOFIはsic 6199・true。区分（景気循環株・金融）が変わった銘柄は11-05（`9dbb2fa974`）→11-09の差分でV（金融true→false）の1件だけ。`docs/common/profitability.json`でVは黒字
+- Market Data Weeklyの`changes`（yfinanceの業種の変化）は空で、System Healthの[P]に`sector_change`は出ていない
+
 ---
 
 ## 2026-11-05（完了）
@@ -465,6 +527,11 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
   ログに「キャッシュ（予備）の声明を使う」は無い（「新しいFOMC声明なし（最新の行の声明 2026-10-28）」）。
   **残り**: `05_fed_context.csv`の`fomc_date_source`の列は週1回（土曜）の回で書かれるので、2026-11-07（土）の回で確かめる（次回の確認手順26）
 - チャット側の指示（2026-11-05 夜）で移設
+
+#### 確認（2026-11-11、次回の確認手順25・26）
+- 手順26: `05_fed_context.csv`の2026-11-07の行の`fomc_date_source`は空（予定のページから取得。`cache`は予備のときだけ）で合格（チャット側の確認）
+- 手順25のB1・B2: 2026-11-08のSEC_Data_Update（run `42504087662`）のログに「CIKの照合: 食い違い 0件」「取得元の変化の検知: 5件」、`common/sec_data/data/_source_watch.json`がcommit `399f841882`に入った。「取得エラー」の行は0
+- 手順25・26はこれで済み。次回の確認手順から削除
 
 ---
 
@@ -753,6 +820,11 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
   rcc の WARN-47・CHECK-64 から CapEx を外した。派生ファイル quarterly 3,030・normalized 98（違いはこのキーが消えたことだけ）
 - 試算（手元、TANUKI→HypeCore→TANUKI→Stonks）: 段5cの公開と96銘柄同じ、scope 0銘柄（計算方法の変更の印は付けない、公開の手順は不要）
 - ゲート: pytest 2807件成功・4件スキップ、audit 0、rcc NG 0・WARN 208（237→208: WARN-47のCapExの21銘柄分、CHECK-64のCapExの10件〈normalizedにCapExが無くなり、CapExの年次の組み替えはこの検査の対象外に〉）
+
+#### 確認（2026-11-11、次回の確認手順25、段5a・5b）
+- 2026-11-08のSEC_Data_Update（run `42504087662`、成功・7分57秒）: ログの「cf_lines: 新しい申告 n件」が36銘柄、「cf_lines の取得エラー」・SystemExitなし。SECへのリクエスト数は328（上限3,000に届かず）、実行時間128.3秒
+- commit `399f841882`のcf_linesは新規ファイル37件（すべてA＝追加）で、既存ファイルの変更・削除は0（取り直さない）。37件はすべてstatus ok（チャット側の確認）
+- 取得元の変化の検知（B1・B2）の分は`[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]`の「確認」に書いた
 
 ---
 

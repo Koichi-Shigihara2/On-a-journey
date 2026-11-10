@@ -386,7 +386,6 @@
     },
  {"check": "WARN-59", "ticker": "LOAR", "acknowledged_date": "2026-10-10", "comment": "annual_2023・quarterly_2024Q1のshares=204は上場（2024年4月）前の株数（LOAR Holdingsの上場前の発行済株式）で、単位誤りではない。上場後の千株単位の申告はfact_overrides.jsonの\"share_unit\"で×1000補正済み（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]）。"},
  {"check": "WARN-59", "ticker": "SOUN", "acknowledged_date": "2026-10-10", "comment": "quarterly_2022Q1のshares_basic=4,161,000はSPAC合併（2022年4月）前の株数で、単位誤りではない（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]の調査で確認）。"},
- {"check": "WARN-60", "ticker": "V", "match": "0001403161-26-000104", "acknowledged_date": "2026-10-10", "comment": "SEC_LAG: 2026-07-29提出の10-Q（0001403161-26-000104、isXBRL=1）がEDGARのcompanyfacts APIに入っていない（SEC側の未反映、[[SEC-COMPANYFACTS-API-LAG-1]]）。手元の取得の問題ではない。"},
  {"check": "WARN-45", "ticker": "APP", "match": "2024(5M)→2025(0M)", "acknowledged_date": "2026-11-04", "comment": "2023〜2025年の10-KのCF計算書にCapExの行が無く、cf_linesの規則で0（FCF-DEFINITION-SINGLE-SOURCE-1 段5b、2026-11-04）"}
 ]
 }
