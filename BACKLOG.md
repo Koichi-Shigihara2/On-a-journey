@@ -2361,6 +2361,7 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 
 #### 規模の見込み
 中〜大
+- 2026-11-11 SITM（TTM 2026-09-30で営業利益が黒字に転じ、手で書くstonks_siloのフラグと食い違う）。`cik_lookup.csv`は変えない。寄せるときに、フラグを手で書く値からprofitabilityの部品の判定に置き換えるかを決める（それまで`test_stonks_flag_rule`のSITMの失敗・rccのWARN-51はCHAT_RULES 事例18のゲートの例外）
 
 ---
 
