@@ -676,3 +676,14 @@ def test_compare_saved_inventory_detail_difference_is_not_ng(tmp_path, monkeypat
     now["outputs"][0]["readers"][0]["line"] = 99            # 行番号だけ違う
     ng, warn, differs = inv.compare_saved_inventory(now, _json.dumps(now, ensure_ascii=False, indent=1) + "\n")
     assert ng == [] and differs is True
+
+
+def test_json_keys_covers_all_items_of_long_list():
+    """リストが100件を超えても、全件のキーの和集合を取る（先頭50・末尾50だけだと、日付つきのリストが増えるたびに
+    古い件にだけ残るキー〈roll_suspect〉が窓から外れて、画面のキーに書き手なし NG-INV-5 が出た。FINDINGS 2026-11-11）"""
+    rows = [{"date": str(i), "keep": 1} for i in range(300)]
+    rows[120]["only_in_middle"] = 1
+    assert "only_in_middle" in inv.json_keys(rows)
+    assert "only_in_middle" in inv.json_parents(rows)
+    for n in (150, 300, 301):          # 件数が増えても結果が変わらない
+        assert inv.json_keys(rows[:n] + [{"date": "x"}] * 5) == inv.json_keys(rows)

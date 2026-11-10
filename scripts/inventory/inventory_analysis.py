@@ -2037,7 +2037,7 @@ def json_keys(obj, depth: int = 0, max_depth: int = 8, out: Optional[Set[str]] =
                 out.add(k)
             json_keys(v, depth + 1, max_depth, out)
     elif isinstance(obj, list):
-        for v in (obj[:50] + obj[-50:] if len(obj) > 100 else obj):
+        for v in obj:  # 全件のキーの和集合。先頭50・末尾50だけでは日付つきのリストで古い件のキーが窓から外れた（FINDINGS 2026-11-11 roll_suspect）
             json_keys(v, depth + 1, max_depth, out)
     return out
 
@@ -2058,7 +2058,7 @@ def data_file_obj(rel: str):
 # 一覧の時間の大半は、出力のJSON（TANUKI の history 約2.9万ファイル等）を読んでキーを集めること。ファイルごとのキーの要約
 # （最上位のキー・入れ子8段までのキー・キーごとの親のキー）を、ファイルの中身の git の blob の hash で控えて使い回す。
 # hash は index の blob（git ls-files -s）で、作業ツリーで変えたファイルは git hash-object で今の中身から作る（中身が変われば別の控え）。
-KEY_CACHE_FILE = ".cache/output_inventory/file_keys.json"   # .gitignore 済み。無ければ作り直す
+KEY_CACHE_FILE = ".cache/output_inventory/file_keys_v2.json"   # .gitignore 済み。無ければ作り直す。要約の作り方を変えたら名前の版を上げる（v2: リストは全件のキー、2026-11-11）
 _KEY_CACHE: Dict[str, dict] = {}       # blob → 要約
 _KEY_CACHE_STATE = {"loaded": False, "dirty": False}
 _BLOBS: Dict[str, str] = {}            # パス → blob（このプロセスで1回）
@@ -2097,7 +2097,7 @@ def json_parents(obj, parent: str = "", depth: int = 0, out: Optional[Dict[str, 
                 out[kk].add(parent)
             json_parents(vv, kk if isinstance(kk, str) else parent, depth + 1, out)
     elif isinstance(obj, list):
-        for vv in (obj[:50] + obj[-50:] if len(obj) > 100 else obj):
+        for vv in obj:
             json_parents(vv, parent, depth + 1, out)
     return out
 
