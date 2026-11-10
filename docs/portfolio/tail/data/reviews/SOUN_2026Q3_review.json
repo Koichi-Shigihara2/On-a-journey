@@ -1,0 +1,219 @@
+{
+  "ticker": "SOUN",
+  "quarter": "2026Q3",
+  "generated_at": "2026-11-11T01:06:41.843258+09:00",
+  "data_version": "0001840856-26-000028",
+  "filed_date": "2026-11-09",
+  "data_as_of": "2026-11-09",
+  "backfilled": false,
+  "backfilled_note": null,
+  "layer1_complete": true,
+  "layer2_complete": true,
+  "layer2_missing_kpis": [],
+  "stage2_json_valid": true,
+  "grok_call1_success": true,
+  "grok_call2_success": true,
+  "transcript_available": false,
+  "stage1": {
+    "health_score": 62,
+    "health_label": "WATCH",
+    "summary": "Hosted Servicesの成長は堅調だがLicensing売上の急減と営業赤字拡大が目立つ。テーゼ方向と部分的に一致するが想定外の変化あり。",
+    "positives": [
+      "Hosted Services売上 YoY +56.5%・QoQ +34.5%と継続成長",
+      "米国売上 YoY +47.2%で安定拡大"
+    ],
+    "concerns": [
+      "Licensing売上 YoY -28.6%・QoQ -65.3%と大幅減",
+      "営業利益率 QoQ -91.0%と赤字拡大"
+    ],
+    "recommendation": "WATCH",
+    "recommendation_reason": "成長KPIにばらつきあり、次四半期でLicensingと利益率の動向を確認する必要",
+    "next_kpis": [
+      "総売上高成長率",
+      "営業利益率",
+      "Licensing売上成長率"
+    ],
+    "exit_distance": "中程度",
+    "exit_distance_reason": "Hosted Services成長は維持されているがLicensing低迷が続けばエグジット条件に近づく",
+    "optimism_bias_warning": "楽観的バイアス警告: Licensing減少を一時的と過小評価せず、持続的悪化の可能性を考慮すべき"
+  },
+  "stage2": {
+    "ticker": "SOUN",
+    "quarter": "2026Q3",
+    "scenarios": {
+      "bear": {
+        "revenue_growth_y1": 0.12,
+        "revenue_growth_y2": 0.1,
+        "revenue_growth_y3": 0.08,
+        "terminal_growth": 0.025,
+        "operating_margin_terminal": 0.08,
+        "rationale": "Licensing売上の大幅減が継続し、Hosted Servicesの成長も鈍化。営業利益率は4四半期連続改善傾向を考慮しつつ、赤字脱却は遅れ、terminal marginは低水準に留まる。",
+        "kpi_forecasts": {
+          "1年後": {
+            "Hosted Services売上成長率": 48500000,
+            "Licensing売上成長率": 5500000,
+            "米国売上成長率": 49000000,
+            "総売上高成長率": 54000000,
+            "研究開発費比率": 15500000,
+            "営業利益率": -0.45,
+            "SBC": 22000000,
+            "希薄化後EPS": -0.12
+          },
+          "3年後": {
+            "Hosted Services売上成長率": 58000000,
+            "Licensing売上成長率": 4800000,
+            "米国売上成長率": 60000000,
+            "総売上高成長率": 63000000,
+            "研究開発費比率": 17000000,
+            "営業利益率": -0.05,
+            "SBC": 24000000,
+            "希薄化後EPS": -0.03
+          }
+        }
+      },
+      "base": {
+        "revenue_growth_y1": 0.22,
+        "revenue_growth_y2": 0.18,
+        "revenue_growth_y3": 0.15,
+        "terminal_growth": 0.03,
+        "operating_margin_terminal": 0.15,
+        "rationale": "Hosted Servicesの成長が主軸となりLicensingの落ち込みを一部相殺。営業利益率改善は継続するが、terminal marginは保守的に15%程度に設定。",
+        "kpi_forecasts": {
+          "1年後": {
+            "Hosted Services売上成長率": 53000000,
+            "Licensing売上成長率": 7200000,
+            "米国売上成長率": 54000000,
+            "総売上高成長率": 60000000,
+            "研究開発費比率": 16000000,
+            "営業利益率": -0.25,
+            "SBC": 23000000,
+            "希薄化後EPS": -0.07
+          },
+          "3年後": {
+            "Hosted Services売上成長率": 72000000,
+            "Licensing売上成長率": 7500000,
+            "米国売上成長率": 75000000,
+            "総売上高成長率": 80000000,
+            "研究開発費比率": 19000000,
+            "営業利益率": 0.08,
+            "SBC": 28000000,
+            "希薄化後EPS": 0.02
+          }
+        }
+      },
+      "bull": {
+        "revenue_growth_y1": 0.32,
+        "revenue_growth_y2": 0.26,
+        "revenue_growth_y3": 0.22,
+        "terminal_growth": 0.035,
+        "operating_margin_terminal": 0.22,
+        "rationale": "Hosted Servicesの成長加速とLicensingの底入れを想定。営業利益率は改善ペースを維持しterminal marginは22%まで上昇するが、経営者発言は10%割り引いて評価。",
+        "kpi_forecasts": {
+          "1年後": {
+            "Hosted Services売上成長率": 57000000,
+            "Licensing売上成長率": 8200000,
+            "米国売上成長率": 58000000,
+            "総売上高成長率": 65000000,
+            "研究開発費比率": 16500000,
+            "営業利益率": -0.1,
+            "SBC": 24000000,
+            "希薄化後EPS": -0.04
+          },
+          "3年後": {
+            "Hosted Services売上成長率": 85000000,
+            "Licensing売上成長率": 9500000,
+            "米国売上成長率": 88000000,
+            "総売上高成長率": 95000000,
+            "研究開発費比率": 21000000,
+            "営業利益率": 0.15,
+            "SBC": 32000000,
+            "希薄化後EPS": 0.08
+          }
+        }
+      }
+    },
+    "key_assumptions": [
+      "Hosted Servicesの成長が全体を牽引し、Licensingは構造的に低迷",
+      "営業利益率は直近の改善トレンドを継続するが、terminal到達までは時間を要する",
+      "SBCは売上規模拡大に伴い緩やかに増加"
+    ],
+    "risk_factors": [
+      "Licensing売上のさらなる急減リスク",
+      "競合激化によるHosted Services成長率の低下",
+      "赤字継続による資金調達リスクと希薄化"
+    ]
+  },
+  "call2": {
+    "five_perspectives": {
+      "business_model": "Hosted Services売上が2026Q3に$43.3M（QoQ +34.5%）へ拡大した一方、Licensing売上が$7.4M（QoQ -65.3%）へ急減した数値は、収益の大部分がHosted Servicesの継続利用に依存する構造へ移行しつつある実態を示す。経営陣がこの変動を契約タイミングのずれと説明する場合、Licensingの収益認識が一過性契約に依存していた可能性をKPIの連続した変動パターンが裏付けるため、ナラティブとの整合性確認が必要。",
+      "growth": "Hosted ServicesのYoY +56.5%（$27.7M→$43.3M）と米国売上YoY +47.2%（$30.0M→$44.2M）が継続する一方、LicensingがYoY -28.6%で3四半期ぶりに前年割れした数値は、成長加速部分と減速部分の乖離を明確に示す。LicensingのQoQ -65.3%が次期以降も繰り返される場合、総売上成長率の持続可能性に直接影響する構造的要因として、Hosted Services単独の成長ペースがどこまで補えるかを数値で追う必要がある。",
+      "competitive_advantage": "研究開発費が2026Q2で$27.1M（YoY +5.1%）と微増する中、Licensing売上の急減が技術優位性の維持を疑問視させる。競合他社の音声AI分野での新機能投入速度を確認する必要があり、SOUNの米国売上成長率YoY +47.2%が競合侵食を免れている根拠がKPIだけでは不足するため、外部動向の追加確認が求められる。",
+      "management": "営業利益率が2026Q2で$-43.3M（QoQ -91.0%）へ悪化した数値は、研究開発費増加（$26.2M→$27.1M）とLicensing急減が同時に進行した結果として、資本配分判断の即応性が問われる。過去の急変（2025Q4の黒字$42.6Mから2026Q1の赤字転落）との連続性を踏まえ、コスト構造変更の有無を具体的な数値で検証する必要がある。",
+      "market": "マクロ景気スコア27（拡張）のもとでMichigan Consumer Sentimentが48.1と低迷する中、SOUNの米国売上$44.2M（YoY +47.2%）が企業向け契約に支えられている可能性を示す。ただしHY Spreadの拡大（3.48、+0.22）とBuilding Permitsの低下傾向が企業投資意欲に与える影響を、KPIの米国売上成長率と紐づけて解釈する必要がある。"
+    },
+    "entry_story_progress": "既存保有の前提であるHosted Servicesの安定成長は2026Q3でも$43.3M（QoQ +34.5%）で継続しているが、Licensingの大幅減が収益構造の安定性を損なう方向に作用しているため、テーゼの3年保有期間における進捗は部分的に停滞している状況を確認する必要がある。",
+    "market_attention": "アナリストはSOUNの音声AIプラットフォームの企業導入事例拡大と、競合他社との差別化ポイントに注目している（Bloomberg、2026年10月時点）。",
+    "historical_analogy": {
+      "company": "Tellme Networks",
+      "similarity": "音声認識をHosted ServicesとLicensingの二本柱で展開し、Licensingの変動が収益を左右した点でSOUNと類似",
+      "outcome": "Microsoftへの買収に至ったが、Licensing依存の収益変動が買収交渉を複雑化させた",
+      "implication": "SOUNの場合、Licensingの継続率低下がHosted Servicesの成長を上回る速度で進行すれば、類似の買収圧力や事業再編リスクがテーゼの3年保有期間内に顕在化する可能性を考慮する必要がある"
+    },
+    "macro_implications": "景気スコア27（拡張）下でInitial Claimsの改善が続いている一方、HY Spread拡大が企業投資意欲を抑制する可能性があり、SOUNの米国売上成長率YoY +47.2%がこのマクロ変数にどの程度連動するかを追う必要がある。",
+    "thesis_questions": [
+      "Licensing売上の急減がHosted Servicesの契約獲得速度に間接的に影響を及ぼす構造的メカニズムを、現在のテーゼではどのように想定しているか",
+      "研究開発費の微増が競合の技術進化に追いつかない場合、米国売上以外の地域での成長がどの程度の遅れを生むかを、KPIの地域別内訳なしでどのように評価しているか",
+      "ステルス流動性シグナルがsupplyを示す環境下で、企業向け音声AI投資の先送りがSOUNの総売上成長率に与える影響を、現在のマクロ前提でどのように織り込んでいるか"
+    ],
+    "next_review_focus": [
+      "Licensing売上の減少がHosted Servicesの新規契約獲得に与えた具体的な影響の有無",
+      "競合他社との技術比較におけるSOUNの差別化ポイントの更新状況",
+      "米国売上成長率の内訳における業種別・企業規模別の変化"
+    ]
+  },
+  "kpi_snapshot": {
+    "Hosted Services売上成長率": {
+      "2026Q3": 43297000,
+      "2026Q2": 32183000,
+      "2026Q1": 32009000,
+      "2025Q4": null
+    },
+    "Licensing売上成長率": {
+      "2026Q3": 7423000,
+      "2026Q2": 21370000,
+      "2026Q1": 7683000,
+      "2025Q4": null
+    },
+    "米国売上成長率": {
+      "2026Q3": 44151000,
+      "2026Q2": 36420000,
+      "2026Q1": 32495000,
+      "2025Q4": null
+    },
+    "総売上高成長率": {
+      "2026Q3": null,
+      "2026Q2": 61897000,
+      "2026Q1": 44195000,
+      "2025Q4": 55059000
+    },
+    "研究開発費比率": {
+      "2026Q3": null,
+      "2026Q2": 27130000,
+      "2026Q1": 26200000,
+      "2025Q4": 24841000
+    },
+    "営業利益率": {
+      "2026Q3": null,
+      "2026Q2": -43298000,
+      "2026Q1": -22671000,
+      "2025Q4": 42573000
+    }
+  },
+  "layer3_snapshot": {},
+  "macro_snapshot": {
+    "score": "27",
+    "phase": "拡張",
+    "stealth_signal": "supply"
+  },
+  "thesis_version": 1
+}
