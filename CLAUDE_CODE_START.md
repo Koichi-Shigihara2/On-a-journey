@@ -41,6 +41,7 @@
    - 日時: 2026-11-15（日）のSEC_Data_Update（ttm・normalizedを日曜に作り直す）と、次のMarket Data Weekly（`common/multiples.py --all`が倍率の履歴を作り直す）の後
    - 確認の手順: ①日曜の作り直しで`common/sec_data/ttm/`の19銘柄のD&A・`normalized/`の年次11年が、コミットした値のまま（新しい四半期の分だけ増える）②`docs/common/multiples/`は12か月より前の月だけが変わり（64銘柄、`net_income_5y_*`・`pe_5y_avg_earnings`）、直近12か月は変わらない ③`latest.json`の`method_change`が付かない
    - 期限: 2026-11-16。次の段は`PARSER_LAYER3_STAGE0.md`の§7（段1の前に、動く銘柄の理由を原本の申告で確かめた一覧）
+   - 段1（`-1`、未公開）のcommit（2026-11-11 push）の影響: 日曜11-15のSEC_Data_Updateは段1の定義でttm/・normalized/を作り直す。①の想定内の変化に`ttm/`の4ファイル（APP・IONQ・ONDSのcapex、HWMの1株配当）を加える。段1の公開（手動）は①〜③が済んでから。内容は`PARSER_LAYER3_STAGE1.md`
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

@@ -1,0 +1,15 @@
+﻿読み手,読み方,読む項目,値が変わるセルを読むか,印（val_guard_marks）が届くか
+TANUKI VALUATION（pipeline.py・data_fetcher.py・core_calculator.py）,Layer3を直接（build_ticker_store・get_quarterly_series）＋SECReader経由でparserの四半期＋ttm/,long_term_debt・short_term_debt・stockholders_equity・total_liabilities・total_assets・capex・D&A,あり: 借入金24銘柄(短期)・9銘柄(長期)、capex 3銘柄(APP・IONQ・ONDS)、純資産5銘柄,届く: latest.json の val_guard_marks・report.txt の「Layer3の値の守り」行・stock.html の注意の枠（直近3年の期のみ。MOの無形資産2024-06で確認）
+SECReader.get_net_cash（TANUKI・STONKSの現金とRunway）,parserの四半期 quarterly_*.json（段1の置き換え対象）→bs_linesの補い,cash・短期投資・借入金（長期・短期）,あり（段1の置き換え）: ADSK・CAKE・HWM・KO ほか。現金は不変,値の変更は latest.json の net_cash に出る。印は上と同じ経路
+HypeCore（hypecore.py）,Layer3を直接（basis_mix・売上・営業利益など）,BS項目は読まない,なし（HypeCoreの出力に差0）,—
+STONKS SILO（analyzer.py・pipeline.py）,parserの年次＋get_net_cash の現金,capex（年次）・現金（runway）,年次は段1で変えない。現金は不変。対象外の4銘柄,印は渡さない（年次のparserを使うため値が変わらない）
+TAIL（quarterly_review_generator.py）,Layer3を直接。期の時点の値 first_val で読む（TAIL-REVIEW-PERIOD-FILTER-1）,stockholders_equity・total_assets,純資産5銘柄（ASTS・VZ・CPRT・BSY・CAT。非支配持分を引く）。first_val も同じ差だけずれる,渡さない（first_val＝その時点の値で読むため、最新の申告の val の守りの対象でない）
+TAIL の KPI（kpi_proposer.py）,タグ→項目の対応の提案（値は読まない）,—,なし,—
+倍率の履歴（common/multiples.py）,Layer3を直接,long_term_debt・short_term_debt（EV）・純資産（P/B・P/TBV）,あり（次のMarket Data Weeklyで直近12か月と過去の月が変わる。下の試算の multiples 差を参照）,渡さない（履歴の表）
+収益の段階（common/profitability.py）,Layer3を直接,capex（FCF）,APP・IONQ・ONDS の capex の月（試算で確認）,渡さない
+ROTCE（common/sec_data/rotce.py）,Layer3を直接,stockholders_equity・minority_interest,純資産を非支配持分引きにした。source_tag を別の名前にして二重に引かない（TCEは不変）,渡さない
+ROIC（common/sec_data/roic.py）,parserの年次,long_term_debt・short_term_debt・equity,年次は段1で変えない,—
+screening（dcf_validity_checker.py）,parserの年次 annual_*.json,long_term_debt・short_term_debt・stockholders_equity,年次は段1で変えない → なし,—
+rcc（report_consistency_check.py）,派生の ttm/・normalized/ と parser,借入金・純資産・capex・D&A ほか,ttm の4ファイル（APP・HWM・IONQ・ONDS）が変わる。NG 0・WARN 214 のまま（ゲートで確認）,rcc自身が印を読む検査は無い（FINDINGSに登録しない。範囲外）
+画面（stock.html・tanuki_score/index.html・portfolio/index.html）,TANUKIの latest.json／report.txt,net_cash・total_debt の表示（BS項目を直接は読まない）,借入金が変わる銘柄の表示の純現金,stock.html に注意の枠を追加（val_guard_marks があるときだけ）。index.html 2つは読まない
+portfolio/snapshot.py,portfolio.json（保有）と株価,total_assets はコード内の別の意味（資産総額）,なし,—
