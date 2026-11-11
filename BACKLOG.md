@@ -2529,6 +2529,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 - 束ねた行: (1) 年次がSPACの合併の年に器の会社の値を採る（SOUN 2021年 OCF −0.86M、正しくは−66.2M。VRT 2018・2019年） (2) ZSのD&A（2024・2025年）でparserとLayer3が別のタグを採る（14.6M対66.3M等） (3) 四半期が10-Qの貸借対照表の前年度末の列の値を当期にする（CAKEの短期借入金68.815M、理論株価 約−1.38ドル〈約3%〉）
 - 方針: parserの年次・四半期をcompanyfactsから独自に選ぶのをやめ、Layer3（cf_lines・bs_linesを正）から作る。**読み手（TANUKI・Stonks・EPS・TAIL・screening・rcc）は変えない**（出力の形はそのまま）
 - 計算方法の変更の手順（`CLAUDE_CODE_PROCEDURES.md`）で行う: scope・派生ファイル・読み合い・印。関連: [[FCF-DEFINITION-SINGLE-SOURCE-1]]（cf_linesの導入）・[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]（bs_linesの試算でCAKEを発見）
+- **STEP 0（2026-11-11、`docs/architecture/PARSER_LAYER3_STEP0.md`）**: parserの値のうちLayer3と違うのは2,884セル（比べた約6.8万セルの4%）。parserの値をLayer3に置き換えた試算（S1）で理論株価が変わる24銘柄・判定3（ABBV・DDOG・HQY）・保有0。束ねた3件は直る（SOUNのSPACは`first_val`でなく最新の`val`でないと直らない）。Layer3側の定義にも誤りがある（total_liabilities・D&A・capex）ので、Layer3の定義を先に直す段0を置き、四半期BS→四半期CF・PL→年次PL→年次CF→年次BS→parser廃止の段に分ける案。先に決めること: 置き換えの値は`val`か`first_val`か・Layer3の保持期間（年次8年）を10年に延ばすか・parserに無い項目を足すか
 
 #### 投資判断への影響
 あり（小さい）。CAKEの理論株価が約3%小さい。SOUN（保有）はFCFの履歴の表示だけで理論株価は不変。ZSは未試算
