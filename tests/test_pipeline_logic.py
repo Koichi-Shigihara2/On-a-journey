@@ -664,7 +664,7 @@ class TestRecommendedGrowth:
         )
 
         assert "Growth_Rate_Original: 93.4% (TTM実績)" in report
-        assert "Growth_Rate_Adjusted: 6.1% (推奨値・中央値ベース)" in report
+        assert "Growth_Rate_Adjusted: 6.1% (推奨値・重み付き平均)" in report
         assert "（推奨値ベース）" in report
 
     def test_segment_xbrl_source_shows_parallel_reference_line(self, tmp_path):

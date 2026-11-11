@@ -70,7 +70,7 @@ def test_q4_without_first_values_falls_back_to_latest_with_mark():
     annual = [{"start": _FY[0], "end": _FY[1], "val": 300, "filed": "2027-02-20", "is_annual": True}]
     quarters = [{"start": s, "end": e, "val": v, "filed": "2025-11-01", "is_annual": False}
                 for (s, e), v in ((_Q1, 100), (_Q2, 110), (_Q3, 120))]
-    q4 = build_q4_implied_entries(annual, quarters, "revenue")[0]
+    q4 = build_q4_implied_entries(annual, quarters, "gross_profit")[0]
     assert q4["val"] == -30
     assert q4["q4_basis"] == "latest"
     assert "first_val" not in q4

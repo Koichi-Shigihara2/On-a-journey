@@ -44,6 +44,7 @@
     },
     "stock_based_compensation": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "ShareBasedCompensation",
@@ -53,6 +54,7 @@
     },
     "depreciation_and_amortization": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "DepreciationAndAmortization",
@@ -64,6 +66,7 @@
     },
     "revenue": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "Revenues",
@@ -170,6 +173,7 @@
     },
     "research_and_development": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "_note": "2026-08-06 [[LAYER3-CONFIG-RD-TAG-PRIORITY-1]]対応。[[JNJ-RD-TAG-PRIORITY-1]]（tag_definitions.py::TAG_CANDIDATES[\"RESEARCH_AND_DEVELOPMENT\"]）と同じ誤りがLayer3側にも独立して存在していたため同一の優先順位に修正。ExcludingAcquiredInProcessCostを先頭に：JNJは両タグを2023年以降並存報告しており、ResearchAndDevelopmentExpense単体はキャッシュフロー計算書の非資金調整項目「Charge for purchase of in-process research and development assets」（M&A時のIPR&D即時費用化、通常のR&D活動とは無関係の一時的項目）を指すため、損益計算書本体の主要R&D科目である前者を優先する必要がある（10-K原本R5.htm/R10.htm、FY2023-2025の3期で確認済み）。",
       "candidates": [
@@ -181,6 +185,7 @@
     },
     "selling_and_marketing": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "MarketingAndAdvertisingExpense",
@@ -221,6 +226,7 @@
     },
     "buyback": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "PaymentsForRepurchaseOfCommonStock"
@@ -333,6 +339,7 @@
     },
     "cost_of_revenue": {
       "category": "excluded",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "CostOfRevenue",
@@ -346,6 +353,7 @@
     },
     "selling_general_and_administrative": {
       "category": "flow",
+      "non_negative": true,
       "unit": "USD",
       "candidates": [
         "SellingGeneralAndAdministrativeExpense"
