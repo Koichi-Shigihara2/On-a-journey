@@ -1098,11 +1098,6 @@ function render(d) {
         ⚠️ <strong>ベースが混在（事業の分離・売却等による組み替え）</strong><br>
         <span style="font-size:12px">${d.basis_mix.note || ''}。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして判定をWATCHに丸め、Funda_Scoreの売上の伸び・Rule40・EPSの伸びは使っていません。</span>
       </div>` : ''}
-      ${d.val_guard_marks && d.val_guard_marks.length ? `
-      <div style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
-        ⚠️ <strong>SECの申告の値に注意が要る期があります（直近3年）</strong><br>
-        <span style="font-size:12px">${d.val_guard_marks.slice(0, 5).map(m => `${m.field} ${m.end}（${m.kind}）: ${m.rule.startsWith('suspect') ? '最新の申告の値が隣の期から大きく外れます（値は変えていません。再表示の可能性もあります）' : m.rule.startsWith('components') ? '最新の申告で内訳の行が減っているため、内訳の揃った申告の値を使っています' : '最新の申告の値が単位の誤りのため、最初の申告の値を使っています'}`).join('<br>')}</span>
-      </div>` : ''}
       ${fcfLowReliability ? `
       <div style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
         ⚠️ <strong>FCF信頼性注意（${industryName || sectorName}）</strong><br>
