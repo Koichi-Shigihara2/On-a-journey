@@ -61,6 +61,7 @@ FINANCIAL_EXCLUDED_INDUSTRIES = ["Financial Data & Stock Exchanges"]   # デー�
 FINANCIAL_SIC_RANGE = (6000, 6799)
 
 # EPS ANALYZER の9区分（config/sectors.yaml の name）への写像: industry が先、無ければ sector
+EPS_CATEGORY_NOT_FINANCIAL = "Technology"   # 金融でない Financial Services（決済・指数提供。V・MSCI）
 EPS_CATEGORY_BY_INDUSTRY = {
     "Aerospace & Defense": "宇宙・航空",
     "Airports & Air Services": "宇宙・航空",
@@ -192,7 +193,11 @@ def financial(sector: Optional[str], industry: Optional[str], sic: Optional[int]
     return {"value": in_sector and lo <= sic <= hi, "basis": "sector+sic"}
 
 
-def eps_category(sector: Optional[str], industry: Optional[str]) -> Optional[str]:
+def eps_category(sector: Optional[str], industry: Optional[str], financial_value: Optional[bool] = None) -> Optional[str]:
+    """EPS ANALYZERの区分。金融（financial）に従う: sector が Financial Services でも financial が false（SIC 7389のV・MSCI、段3）なら
+    Technology（[[SECTOR-MASTER-ADOPT-1]] 段4）。financial_value を渡さない呼び出しは今までどおり industry・sector だけ。"""
+    if financial_value is False and sector in FINANCIAL_SECTORS:
+        return EPS_CATEGORY_NOT_FINANCIAL
     if industry and industry in EPS_CATEGORY_BY_INDUSTRY:
         return EPS_CATEGORY_BY_INDUSTRY[industry]
     return EPS_CATEGORY_BY_SECTOR.get(sector or "")
@@ -221,6 +226,7 @@ def build_entry(ticker: str, attr_dir: str = ATTR_DIR, sec_dir: str = SEC_DIR) -
     subs = _load_json(os.path.join(sec_dir, t, "submissions.json")) or {}
     sector, industry = attrs.get("sector") or None, attrs.get("industry") or None
     sic = _sic_of(subs)
+    fin = financial(sector, industry, sic)
     return {
         "sector": sector,
         "industry": industry,
@@ -230,9 +236,9 @@ def build_entry(ticker: str, attr_dir: str = ATTR_DIR, sec_dir: str = SEC_DIR) -
         "entity_name": subs.get("entity_name") or None,
         "cyclical": is_cyclical(industry),
         "mega_tech": is_mega_tech(industry, attrs.get("market_cap")),
-        "financial": financial(sector, industry, sic),
+        "financial": fin,
         "unclassified": unclassified_reason(sector, industry),
-        "eps_category": eps_category(sector, industry),
+        "eps_category": eps_category(sector, industry, fin["value"]),
         "damodaran_industry": DAMODARAN_BY_INDUSTRY.get(industry or ""),
         "etf": ETF_BY_SECTOR.get(sector or ""),
     }

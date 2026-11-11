@@ -1,25 +1,10 @@
+# EPS ANALYZERの区分別の調整項目の除外（name・exclusions だけ）。銘柄の区分は業種のマスター（config/sector_master.json の eps_category、
+# common/sector_master.py の写像）で決める（[[SECTOR-MASTER-ADOPT-1]] 段4、2026-11-11。以前の keywords・sic_codes・cik_lookup.csv の eps_sector は廃止）。
 sectors:
 # =============================================
 # テクノロジー / 半導体（新規追加）
 # =============================================
 - name: Technology
-  keywords:
-  - NVDA
-  - AMD
-  - INTC
-  - MSFT
-  - GOOGL
-  - GOOG
-  - META
-  - AAPL
-  - TECH
-  - SEMICONDUCTOR
-  sic_codes:
-  - '3674'   # Semiconductors
-  - '7370'   # Computer programming services
-  - '7371'   # Computer programming services
-  - '7372'   # Prepackaged software
-  - '7373'   # Computer integrated systems design
   exclusions:
   # テクノロジー企業は SBC + 無形資産償却 のみ調整
   # 以下の項目は調整対象外（除外）とする
@@ -48,19 +33,6 @@ sectors:
 # ハイパーグロース / SaaS
 # =============================================
 - name: ハイパーグロース / SaaS
-  keywords:
-  - PLTR
-  - SNOW
-  - CRWD
-  - DDOG
-  - CLOUD
-  - APP
-  - SAAS
-  - SOUN
-  sic_codes:
-  - '7370'
-  - '7372'
-  - '7373'
   exclusions:
   - item_id: sbc
     reason: 株式報酬費用 - 現金支出を伴わず、将来の希薄化は株式数で調整済み
@@ -86,19 +58,6 @@ sectors:
 # フィンテック / 銀行
 # =============================================
 - name: フィンテック / 銀行
-  keywords:
-  - SOFI
-  - NU
-  - AFRM
-  - UPST
-  - FINTECH
-  - BANK
-  sic_codes:
-  - '6020'
-  - '6021'
-  - '6022'
-  - '6199'
-  - '6159'
   exclusions:
   - item_id: loan_fair_value
     reason: ローン公正価値評価損益 - 市場金利変動による一時的評価替え
@@ -115,17 +74,6 @@ sectors:
 # ヘルスケア / バイオ
 # =============================================
 - name: ヘルスケア / バイオ
-  keywords:
-  - VRTX
-  - PFE
-  - REGN
-  - BMRN
-  - BIO
-  - PHARMA
-  sic_codes:
-  - '2834'
-  - '2835'
-  - '2836'
   exclusions:
   - item_id: ma_integration
     reason: M&A統合費用 - 一過性の買収関連コスト
@@ -142,18 +90,6 @@ sectors:
 # 一般消費財 / 製造 / EV
 # =============================================
 - name: 一般消費財 / 製造 / EV
-  keywords:
-  - TSLA
-  - CELH
-  - RIVN
-  - LCID
-  - INDUSTRIAL
-  - EV
-  - CONSUMER
-  sic_codes:
-  - '3711'   # Motor vehicles
-  - '2080'   # Beverages
-  - '2086'   # Bottled soft drinks
   exclusions:
   - item_id: inventory_writeoff
     reason: 在庫評価損・減損 - サプライチェーン混乱による一過性コスト
@@ -168,15 +104,6 @@ sectors:
 # 宇宙・航空
 # =============================================
 - name: 宇宙・航空
-  keywords:
-  - RKLB
-  - SPCE
-  - ASTR
-  - SPACE
-  - AEROSPACE
-  sic_codes:
-  - '3760'   # Guided missiles and space vehicles
-  - '3761'
   exclusions:
   - item_id: sbc
     reason: 株式報酬費用 - 非現金費用
@@ -192,14 +119,6 @@ sectors:
 # 不動産 (REITs)
 # =============================================
 - name: 不動産 (REITs)
-  keywords:
-  - O
-  - AMT
-  - PLD
-  - REIT
-  - PROPERTY
-  sic_codes:
-  - '6798'
   exclusions:
   - item_id: depreciation
     reason: 減価償却費 - 不動産の実態価値維持のため会計上の減価を除外（FFO/AFFO基準）
@@ -215,12 +134,6 @@ sectors:
 # 暗号資産 / ブロックチェーン
 # =============================================
 - name: 暗号資産 / ブロックチェーン
-  keywords:
-  - COIN
-  - MSTR
-  - MARA
-  - RIOT
-  - CRYPTO
   exclusions:
   - item_id: crypto_fair_value
     reason: 暗号資産公正価値変動損益 - 非営業性の評価変動
@@ -237,13 +150,6 @@ sectors:
 # 通信・インフラ
 # =============================================
 - name: 通信・インフラ
-  keywords:
-  - ONDS
-  - INFRASTRUCTURE
-  - TELECOM
-  sic_codes:
-  - '4812'
-  - '4813'
   exclusions:
   - item_id: sbc
     reason: 株式報酬費用

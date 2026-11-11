@@ -854,7 +854,7 @@ BACKLOG.mdのアクティブ項目は12件（`grep -c "^### \["`で確認）。�
 |---|---|---|
 | 〇〇を登録して | 銘柄管理「新規銘柄登録」・EPSの管理「追加」 | 「新規銘柄登録時の必須手順」（Step 0・0.5の後に`common/registration/register_ticker.py`）。CIKはSECの`company_tickers.json`で確かめて`config/cik_lookup.csv`の新しい行に書く |
 | 〇〇を監視から外して | 銘柄管理「選択銘柄を削除」 | `config/monitor_tickers.yaml`からその行を消す（単純リスト。yaml.dumpは使わず、コメントを残してテキストで消す）。前のページもこのファイルから消すだけで、`cik_lookup.csv`は変えなかった |
-| 〇〇の対象のシステム・EPSセクターを変えて | 銘柄管理の行の編集・EPSの管理「EPSセクター手動設定」 | `config/cik_lookup.csv`のその行の列（`tanuki`・`eps`・`hypecore`・`stonks_silo`・`eps_sector`）を直接編集する。`eps_sector`は`config/sectors.yaml`の`name`から選ぶ（空は自動） |
+| 〇〇の対象のシステム・EPSセクターを変えて | 銘柄管理の行の編集・EPSの管理「EPSセクター手動設定」 | `config/cik_lookup.csv`のその行の列（`tanuki`・`eps`・`hypecore`・`stonks_silo`）を直接編集する。EPSの区分は業種のマスター（`config/sector_master.json`の`eps_category`）で決まり、手で変えない（`eps_sector`列は2026-11-11に廃止〈[[SECTOR-MASTER-ADOPT-1]] 段4〉。例外が要るときは理由つきで`config/sector_exceptions.json`へ） |
 | 〇〇のβを変えて | β設定タブ | `config/beta_config.json`の`overrides.{T}`（`beta`・`sector`・`industry`・`reason`）を直接編集する（`config/BETA_POLICY.md`の手順）。月次の自動の取得は`Beta_Config_Update.yml`（`beta_fetcher.py`） |
 | 〇〇のセグメント・成熟プロファイル・成長オプションを変えて | 銘柄設定タブ | `config/segment_config.json`・`config/maturity_config.json`・`config/growth_options_config.json`を直接編集する（セグメントは下の「新規銘柄のセグメント設定判断ルール」に従い10-Kから。根拠を`comment`に書く） |
 | Phase2成長率のセクター別の上限を変えて | 銘柄設定タブ「上限テーブル」 | `config/maturity_config.json`のセクター別の上限の表を直接編集する |

@@ -209,7 +209,6 @@ Market Pulse/PORTFOLIO。特にPORTFOLIOの旧記載`docs/management/portfolio/`
 | カラム | 役割 |
 |---|---|
 | ticker / cik / name | 銘柄コード・CIK・会社名 |
-| eps_sector | EPS ANALYZERのセクター分類上書き（`sector_classifier_v2.py`が参照。多くの銘柄で空欄） |
 | stonks_silo / tanuki / eps / hypecore | 各システムの対象可否フラグ（後述） |
 | status | active / candidate / retired / provisioning / dormant。新規登録手順Step 0.5で記録（詳細はCLAUDE_CODE_START.md参照）。各システムから外れるのは retired・provisioning だけ。dormant（休眠）は人が見る印で各システムには通す（2026-10-23に discover_config.json の区分「休眠」から移した、[[HOLDINGS-SINGLE-SOURCE-1]]） |
 | registered_date / registration_source / registration_note | 登録日・登録経緯（moomoo_screening/manual_thesis等）・登録理由の要約 |

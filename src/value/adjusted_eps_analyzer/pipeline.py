@@ -650,11 +650,7 @@ def process_one_ticker(ticker, adjustment_config, classifier, ticker_to_name,
         if cik:
             metadata = get_company_metadata(cik)
 
-        sector = classifier.classify(
-            ticker,
-            sic_code=metadata.get('sic', ''),
-            company_name=metadata.get('name', ''),
-        )
+        sector = classifier.classify(ticker)   # 業種のマスターの eps_category（[[SECTOR-MASTER-ADOPT-1]] 段4）
 
         print(f"  Sector: {sector or 'Unknown（除外項目なしで処理）'}")
 
@@ -980,11 +976,7 @@ def run(ticker_filter: str = None, force: bool = False, data_root: Optional[str]
     with open(os.path.join(config_base, "adjustment_items.json"), 'r', encoding='utf-8') as f:
         adjustment_config = json.load(f)
 
-    cik_lookup_path = os.path.join(PROJECT_ROOT, "config", "cik_lookup.csv")
-    classifier = SectorClassifierV2(
-        os.path.join(PROJECT_ROOT, "config", "sectors.yaml"),
-        cik_lookup_path=cik_lookup_path,
-    )
+    classifier = SectorClassifierV2(os.path.join(PROJECT_ROOT, "config", "sectors.yaml"))
 
     cik_data = load_cik_data()
     ticker_to_name = {row['ticker']: row.get('name', '') for row in cik_data}
