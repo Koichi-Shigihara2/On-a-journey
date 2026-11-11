@@ -37,6 +37,10 @@
    - 期限: 2026-11-16
    - 確認の手順: 各銘柄の`latest.json`の`method_change`が`SECTOR-MASTER-ADOPT-1-1`〜`-4`で付いていない（`method_change_applied`に4つとも入っている）こと。EPSの`quarterly.json`の`sector`が95銘柄とも付いたままであること
    - 付かなければ、BACKLOG.mdの`[[SECTOR-MASTER-ADOPT-1]]`をBACKLOG_DONE.mdへ移設する（残る段は無い。アクティブ13→12）。付けば原因を報告する
+31. **PARSER-LAYER3-SINGLE-SOURCE-1 段0（`-0`）の次の定時の実行の確認**（公開は2026-11-11 手動: TANUKI `42960814475`→HypeCore `42962427012`→TANUKI `42962625921`。1回目の印はscopeの9銘柄だけ・3回目は0件を確認済み）
+   - 日時: 2026-11-15（日）のSEC_Data_Update（ttm・normalizedを日曜に作り直す）と、次のMarket Data Weekly（`common/multiples.py --all`が倍率の履歴を作り直す）の後
+   - 確認の手順: ①日曜の作り直しで`common/sec_data/ttm/`の19銘柄のD&A・`normalized/`の年次11年が、コミットした値のまま（新しい四半期の分だけ増える）②`docs/common/multiples/`は12か月より前の月だけが変わり（64銘柄、`net_income_5y_*`・`pe_5y_avg_earnings`）、直近12か月は変わらない ③`latest.json`の`method_change`が付かない
+   - 期限: 2026-11-16。次の段は`PARSER_LAYER3_STAGE0.md`の§7（段1の前に、動く銘柄の理由を原本の申告で確かめた一覧）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
