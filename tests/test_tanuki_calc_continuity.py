@@ -122,3 +122,24 @@ def test_b9_eight_items_negative_q4_missing_and_gross_profit_kept():
     g = q4_implied.build_q4_implied_entries([_e("2025-01-01", "2025-12-31", 299.0, True)], qs, "gross_profit")
     assert g and g[0]["val"] == -1.0
     assert "GrossProfit" not in q4_implied.non_negative_fields()
+
+
+def test_b9_rounding_negative_is_kept_and_larger_negative_is_missing():
+    """丸めの許容幅（案1）: 逆算に使う値がすべて1,000の倍数なら粒度1,000。|負のQ4| ≤ 粒度 は丸めとして値を残す（0で埋めない）"""
+    qs = [_e("2025-01-01", "2025-03-31", 9_684_000.0), _e("2025-04-01", "2025-06-30", 18_099_000.0),
+          _e("2025-07-01", "2025-09-30", 0.0)]
+    # TASK型: 年間27,782K＜9か月27,783K → Q4 = −1,000（丸め）
+    kept = q4_implied.build_q4_implied_entries([_e("2025-01-01", "2025-12-31", 27_782_000.0, True)], qs, "buyback")
+    assert kept and kept[0]["val"] == -1_000.0 and kept[0]["q4_rounded"] == 1000
+    # 粒度を超える負（−2,000ドル）は欠け（丸めた年間と丸めた累計の差は最大で粒度1つぶん）
+    marks = []
+    assert q4_implied.build_q4_implied_entries([_e("2025-01-01", "2025-12-31", 27_781_000.0, True)], qs, "buyback",
+                                               marks_out=marks) == []
+    assert marks[0]["implied_val"] == -2_000.0
+    # 値が1つでも1,000の倍数でなければ粒度なし（−1 でも欠け）
+    qs2 = [_e("2025-01-01", "2025-03-31", 9_684_001.0)] + qs[1:]
+    marks = []
+    assert q4_implied.build_q4_implied_entries([_e("2025-01-01", "2025-12-31", 27_782_000.0, True)], qs2, "buyback",
+                                               marks_out=marks) == []
+    assert q4_implied.rounding_grain([1000.0, 0.0, -5000.0]) == 1000 and q4_implied.rounding_grain([1000.0, 0.5]) is None
+    assert q4_implied.rounding_grain([10.0]) is None
