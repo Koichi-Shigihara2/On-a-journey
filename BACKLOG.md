@@ -2555,7 +2555,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 - 束ねた行: (1) fcf_baseの方法がCVの境目0.5で5年平均と直近2年平均に切り替わる（HQY: CV 0.48→0.58で基準のFCF +26%・理論株価+24.7%・HOLD→BUY。DOCNも同じ型） (2) 既存の9項目（自社株買い・SBC・R&D・販売費・SG&A・売上・売上原価・粗利・D&A）の逆算したQ4が負の所が19か所、うち4か所（TASKの自社株買い・FRSHのSBC・APPの販売費・KULRの粗利、2025-12-31）は今のTTMの窓に入る (3) `check_growth_sanity`の段1の後の残り: ①画面・report.txt・stock.htmlの表示名「中央値モデル」（中身は重み付き平均） ②CHECK-52の文言「推奨成長率が算出できずfloorに転落」 ③taperが s>0 で常にかかり、BULLシナリオ（growth_rate > 終点）が s=0 と s=0+ で飛ぶ
 - 方針: 境目で方法を切り替えず、なだらかにする（[[GROWTH-SANITY-CONTINUITY-1]]と同じ考え方）。新しい5項目に入れた「非負の項目の逆算のQ4が負なら欠け」の規則を既存の9項目にも当てる。連続性のテストを足す（境目の前後で値が飛ばないこと）
 - 計算方法の変更の手順で行う
-- **STEP 0（2026-11-12、`docs/architecture/TANUKI_CALC_CONTINUITY_STEP0.md`、手元の試算のみ）**: 境目11か所（B1 CV 0.5〜B9 逆算Q4）。(1)案A（CV 0.40〜0.60の傾斜）で理論株価11銘柄（5%超 CAKE −22.6%・DOCN −13.1%・LOAR −10.8%・KO +7.5%）・判定0・保有±0.0%・stage／STONKS／調整後EPS 0、(2)(3)だけでは理論株価0（FRSHのRICE・max_epsは動く）。(2)は粗利を除く・千ドル丸めの許容幅の決定が要る。PARSER-LAYER3段1とはCAKEで掛け合わせにならず（+6.5%）、後に出す方は試算し直し。決定待ち
+- **STEP 0（2026-11-12、`docs/architecture/TANUKI_CALC_CONTINUITY_STEP0.md`、手元の試算のみ）**: 境目11か所（B1 CV 0.5〜B9 逆算Q4）。(1)案A（CV 0.40〜0.60の傾斜）で理論株価11銘柄（5%超 CAKE −22.6%・DOCN −13.1%・LOAR −10.8%・KO +7.5%）・判定0・保有±0.0%・stage／STONKS／調整後EPS 0、(2)(3)だけでは理論株価0（FRSHのRICE・max_epsは動く）。(2)は粗利を除く・千ドル丸めの許容幅の決定が要る。PARSER-LAYER3段1とはCAKEで掛け合わせにならず（+6.5%）、後に出す方は試算し直し。**実装済み（2026-11-12、ローカルブランチ `tanuki-calc-continuity-1`・commit `1a6f23f12c`・kaihatsuには未反映・未公開）**: 決定は案A・(2)は8項目（粗利を除く）・B5は入れない。試算はSTEP 0の全部入りと一致。丸めの許容幅は decimals が無く未実装（案は同文書§6）。公開は段1の公開の後に rebase→試算し直し→(a)の一覧→公開
 
 #### 投資判断への影響
 あり（理論株価・判定）。HQY・DOCNの判定、4銘柄のTTM。(3)はBULL/BEARの表示のみ

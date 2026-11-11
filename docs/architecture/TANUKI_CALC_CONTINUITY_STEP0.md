@@ -95,3 +95,25 @@
 ## 5. 範囲外の発見（FINDINGS.md）
 - BEARの再計算が推奨成長率の上書きを引き継がない（B5）。
 - 逆算Q4の非負の規則の項目選び: 粗利は実際に負になる／千ドルの丸め。
+
+## 6. 実装済み（ブランチ・未公開）— 2026-11-12
+ローカルブランチ `tanuki-calc-continuity-1`（`f35ef8ec90` から、commit `1a6f23f12c`）。kaihatsu・originには**入れていない**（このdocsだけ kaihatsu）。決定（§4）: (1)は案A（CV 0.40〜0.60、B1'も同じ重み）・(2)は8項目（粗利を除く）・(3)はSTEP 0のとおり・B5は入れない。
+- 実装: `adjustments.py`（`CV_RAMP_LO/HI`・`cv_weight`・`determine_fcf_base`の最後を傾斜に・外れ値の閾値を同じ重みで）・`sec_concept_definitions.json`（8項目に`non_negative`）・`pipeline.py`（表示名・taperを s=0 でも終点=推奨成長率）・`stock.html`・`report_consistency_check.py`（CHECK-52の文言）・`q4_implied.py`（コメント）。既存テスト3か所を直した（`test_layer3_capital_allocation`の非負の項目・負のQ4の例を粗利に、`test_first_filed`の負のQ4の例を粗利に、`test_pipeline_logic`の表示名）。
+- 連続性のテスト `tests/test_tanuki_calc_continuity.py`（6件。B1・B1'・B8・B9、`test_growth_sanity_continuity.py`と同じ物差し〈1刻みあたりの動きの上限を理論上の上限の10倍〉）。今の規則に戻すと5件が失敗する（B1×3・B8の配線・B9）。
+- 試算（STEP 0と同じ chain。前＝`f35ef8ec90`）: **STEP 0の全部入りと一致**。理論株価の変化11・判定0・保有±0.0%・stage 0・STONKS 0・調整後EPS 0・scope 19銘柄。理論株価・判定は全96銘柄で STEP 0 と同じ値、latest.json 全体の差は ASTS だけ（粗利を非負から外したため）。ttm/・normalized/ の実質の変更は11ファイル（STEP 0と同じ。作り直した派生ファイルは戻した）。
+- **丸めの許容幅は実装していない**。申告の `decimals` は `company_facts.json` に入っておらず（SECのcompanyfacts APIが返さない）、Layer3にも無い。決定（decimals が無いときは案を出して止める）に従い、今は千ドル単位の丸めの負も欠けになる。
+  | 銘柄 | 厳密（今の実装） | 丸めを許したときの値 |
+  |---|---|---|
+  | FICO | `buyback_ttm` 欠け（TTM 2026-09-30） | 3,045,991,000（旧と同じ） |
+  | TASK | `buyback_ttm` 欠け | 1,000（旧と同じ） |
+  | ASTS | 売上のTTM（2023-06-30の点）6,561,000が欠け、HypeCoreの rev_yoy 等が34か月ぶん動く（−82.7→−88.1。stage不変） | 旧と同じ |
+  理論株価・判定はどちらでも同じ（FICO 1,370.64・TASK 16.18・ASTS 3.60）。
+  - **案**（実装しない）: (案1・推奨) 申告の粒度を値から決める。年次とQ1〜Q3の値がすべて1,000の倍数なら粒度1,000とし、`|逆算Q4| < 粒度`は丸めとみなして逆算の値（−1,000ドル）を残す（0で埋めない。decimals=−3 と同じ意味で、手元のデータだけで決まる）。TASK・FICO・ASTSの値は全て1,000の倍数。(案2) XBRLインスタンスから decimals を取る（SECの取得が要り、FCF段5の枠）。(案3) `|Q4| ≤ 年間の0.01%`（粒度の根拠がなく恣意的）。
+- ゲート: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`、ブランチ上）。2,954件が通り、失敗は SITM の1件（既知の例外）。rcc は NG 0・WARN 215、audit は通過。
+
+### 公開の手順（段1の公開の後）
+1. 段1の公開（手順31の確認の後）が済んでから、ブランチを `kaihatsu` に rebase（`git rebase kaihatsu tanuki-calc-continuity-1`）。衝突しやすいのは `pipeline.py`・`config/sec_concept_definitions.json`・`stock.html`（段1も触る）
+2. **段1の上で試算し直す**（`sim.py chain`、前＝段1の公開後のHEAD。§3のとおりCAKE・KO・HWM・APPは掛け合わせにならない）。派生ファイルは `tools/sim/regen_derived.py` → `tools/sim/revert_noise.py` で作り直す
+3. 決定(a)の一覧（5%超・判定が変わる・保有・HQY/DOCN/TASK/FRSH/APP/KULR・CAKE/KO）を段1の上の値で作り直し、原本の申告で理由を確かめる
+4. 出力の一覧（INV-5）・派生ファイルをcommit→`sim.py scope --write`（ID `TANUKI-CALC-CONTINUITY-1-1`）→TANUKI→HypeCore→TANUKI の順で公開
+5. 丸めの許容幅は案の決定の後に別のcommitで足す（決める前に公開するなら、FICO・TASK・ASTSの欠けを注記する）
