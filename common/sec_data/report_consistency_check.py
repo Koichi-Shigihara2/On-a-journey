@@ -1216,8 +1216,8 @@ def _check_recommended_g_candidates(ticker: str, latest: dict) -> list[str]:
         return []
     return [
         f"  [WARN-52 recommended_g候補不足] 候補数={len(present)}件"
-        f"（Noneでない候補: {', '.join(present) or 'なし'}）→ recommended_gが"
-        f"算出できずfcf_cagr floor(15%)に転落するおそれ（JNJ-XOM-PM-FLOOR-RISK-1）"
+        f"（Noneでない候補: {', '.join(present) or 'なし'}）→ 推奨成長率は候補が少なく"
+        f"不足分を max(過去のFCF成長率, 0) で埋めた値になる（JNJ-XOM-PM-FLOOR-RISK-1、GROWTH-SANITY-CONTINUITY-1）"
     ]
 
 

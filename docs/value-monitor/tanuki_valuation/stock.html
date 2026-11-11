@@ -2217,10 +2217,10 @@ function render(d) {
     let recBlock = '';
     if (recG != null) {
       let rows = '';
-      if (recM != null) rows += `<div style="display:flex;justify-content:space-between;font-size:11px;padding:2px 0"><span style="color:#64748b">中央値ベース</span><span style="font-family:var(--mono);color:#94a3b8">${(recM*100).toFixed(1)}%</span></div>`;
+      if (recM != null) rows += `<div style="display:flex;justify-content:space-between;font-size:11px;padding:2px 0"><span style="color:#64748b">重み付き平均</span><span style="font-family:var(--mono);color:#94a3b8">${(recM*100).toFixed(1)}%</span></div>`;
       rows += `<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-top:1px solid #1e2a3a;margin-top:3px"><span style="color:#94a3b8;font-weight:600">最終推奨値</span><span style="font-family:var(--mono);color:#c4d0ff;font-weight:700">${(recG*100).toFixed(1)}%</span></div>`;
       const adjBanner = autoAdjusted
-        ? `<div style="margin-top:6px;padding:4px 8px;background:rgba(196,208,255,0.1);border:1px solid rgba(196,208,255,0.3);border-radius:4px;font-size:11px;color:#c4d0ff">✓ DCFに自動適用済（推奨値・中央値ベース）</div>`
+        ? `<div style="margin-top:6px;padding:4px 8px;background:rgba(196,208,255,0.1);border:1px solid rgba(196,208,255,0.3);border-radius:4px;font-size:11px;color:#c4d0ff">✓ DCFに自動適用済（推奨値・重み付き平均）</div>`
         : '';
       recBlock = `<div style="margin-top:8px;padding:8px 10px;background:#0a0f1a;border:1px solid #1e2a3a;border-radius:4px"><div style="font-size:10px;color:#475569;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">推奨成長率内訳</div>${rows}${adjBanner}</div>`;
     }

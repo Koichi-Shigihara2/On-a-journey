@@ -39,8 +39,10 @@ def test_definitions_in_one_place():
 def test_q4_implied_fields_and_non_negative():
     for f in FIELDS:
         assert q4_implied._SNAKE_TO_PASCAL[f] in q4_implied.Q4_IMPLIED_FIELDS
-    # 非負の欄は今は段B-3の5項目だけ（既存の項目に当てると公開の値が変わるため当てていない）。CapExは対象外
-    assert q4_implied.non_negative_fields() == frozenset(q4_implied._SNAKE_TO_PASCAL[f] for f in FIELDS)
+    # 非負の欄は段B-3の5項目＋既存の8項目（TANUKI-CALC-CONTINUITY-1 (2)。粗利・CapExは対象外）
+    existing8 = ("buyback", "stock_based_compensation", "research_and_development", "selling_and_marketing",
+                 "selling_general_and_administrative", "revenue", "cost_of_revenue", "depreciation_and_amortization")
+    assert q4_implied.non_negative_fields() == frozenset(q4_implied._SNAKE_TO_PASCAL[f] for f in list(FIELDS) + list(existing8))
 
 
 def test_negative_q4_of_non_negative_field_is_missing_with_mark():
@@ -51,8 +53,8 @@ def test_negative_q4_of_non_negative_field_is_missing_with_mark():
     marks = []
     assert q4_implied.build_q4_implied_entries(annual, qs, "dividends_per_share", marks_out=marks) == []
     assert marks and marks[0]["mark"] == q4_implied.Q4_NEGATIVE_MARK and marks[0]["implied_val"] == -1.0
-    # 非負でない項目（buyback）は今までどおり負のQ4も作る
-    assert q4_implied.build_q4_implied_entries(annual, qs, "buyback")[0]["val"] == -1.0
+    # 非負でない項目（粗利は実際に負になる）は負のQ4も作る
+    assert q4_implied.build_q4_implied_entries(annual, qs, "gross_profit")[0]["val"] == -1.0
 
 
 ACC = {"Q1": "0000000001-25-000001", "Q2": "0000000001-25-000002", "Q3": "0000000001-25-000003", "FY": "0000000001-26-000001"}

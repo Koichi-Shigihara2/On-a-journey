@@ -113,8 +113,9 @@ _SNAKE_TO_PASCAL = {
 # 逆算したQ4が負なら、そのQ4は作らない（欠け）。呼び出し元が marks_out を渡せば印（Q4_NEGATIVE_MARK と元の値）を残す。
 # 項目の性質は config/sec_concept_definitions.json の各項目の "non_negative": true の1つの欄（PascalCase に直して持つ）。
 # 理由: 10-Kの年間の欄に1四半期分の額を申告する会社がある（CEGの1株配当 FY2025 は0.3878＝Q1〜Q3と同じ額で、年次−Q1〜Q3＝−0.78）。
-# 今の対象は段B-3の5項目だけ。既存の項目（buyback・SBC等）に当てると、今のTTMの窓に入る負のQ4（TASKのbuyback・FRSHのSBC・
-# APPの販売費 2025-12-31 等）が欠けになり公開の値が変わるため、当てていない（2026-11-05の全銘柄の試算）。
+# [[TANUKI-CALC-CONTINUITY-1]] (2)（2026-11-12の決定）: 既存の8項目（buyback・SBC・R&D・販売費・SG&A・売上・売上原価・D&A）にも当てた。
+# 粗利は実際に負になる（KULR 2025年のQ4）ので対象外。千ドル単位の丸めの負（TASK・FICO・ASTSの−1,000ドル）は今は欠けになる
+# （申告の decimals が company_facts に無いため許容幅は未実装。案は docs/architecture/TANUKI_CALC_CONTINUITY_STEP0.md）。
 # CapEx は段2の規則（四半期は符号つき・TTMが負なら欠け）のままで対象外
 Q4_NEGATIVE_MARK = "q4_implied_negative"
 _NON_NEGATIVE = None

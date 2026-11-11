@@ -1125,12 +1125,11 @@ class TanukiValuationPipeline:
         # [[GROWTH-SANITY-CONTINUITY-1]] 段1: 逓減モデルとの混ぜ具合sで終点を連続に（tapering_g_end = rec − s·(rec − 業種)、
         # 業種が0以下なら0）。s=0なら逓減なし（None）。今までは growth_model が "decay" の二値で業種の値をそのまま終点にしていた
         _tapering_g_end: float | None = None
-        if (_growth_sanity
-                and (_growth_sanity.get("growth_blend_s") or 0.0) > 0.0
-                and _recommended_g is not None
-                and _growth_sanity.get("industry_benchmark") is not None):
+        # [[TANUKI-CALC-CONTINUITY-1]] (3)③: s=0 でも終点=推奨成長率で渡す（BULLが推奨成長率より高いときだけ逓減が効く。
+        # s=0 と s=0+ でBULLが飛ばない）。業種がNoneのときは tapering_g_end が DECAY_END_DEFAULT を使う
+        if _growth_sanity and _recommended_g is not None:
             _tapering_g_end = tapering_g_end_continuous(
-                _recommended_g, _growth_sanity["growth_blend_s"], _growth_sanity["industry_benchmark"]
+                _recommended_g, _growth_sanity.get("growth_blend_s") or 0.0, _growth_sanity.get("industry_benchmark")
             )
 
         if _is_seg_unconfigured and _recommended_g is not None and financials is not None:
@@ -1898,7 +1897,7 @@ class TanukiValuationPipeline:
         if _phase1_auto_adjusted and _phase1_growth_original is not None and _recommended_g is not None:
             L.append(f"Growth_Rate_Original: {_phase1_growth_original*100:.1f}% (TTM実績)")
             _gs_model_here = growth_sanity.get("growth_model") if growth_sanity else None
-            _model_suffix = "逓減モデル" if _gs_model_here == "decay" else "中央値ベース"
+            _model_suffix = "逓減モデル" if _gs_model_here == "decay" else "重み付き平均"
             L.append(f"Growth_Rate_Adjusted: {_recommended_g*100:.1f}% (推奨値・{_model_suffix})")
         L.append("Scenarios:")
         if _phase1_auto_adjusted:
@@ -2450,7 +2449,7 @@ class TanukiValuationPipeline:
             seg_wg = sum(s.get("weight", 0) * s.get("growth", 0) for s in segments) / max(total_w, 1e-9)
             if not _seg_configured:
                 if _phase1_auto_adjusted:
-                    _seg_suffix = " (推奨値・中央値を自動適用)"
+                    _seg_suffix = " (推奨値・重み付き平均を自動適用)"
                 elif _seg_ttm_applied:
                     _seg_suffix = " (TTM実績値を自動適用)"
                 else:
@@ -2594,12 +2593,12 @@ class TanukiValuationPipeline:
                     L.append(f"推奨成長率: {_gs_rec_g * 100:.1f}%（Layer 2 参考値・DCF未適用）")
             else:
                 if _gs_growth_model:
-                    _model_label = "逓減モデル" if _gs_growth_model == "decay" else "中央値モデル"
+                    _model_label = "逓減モデル" if _gs_growth_model == "decay" else "重み付き平均モデル"
                     L.append(f"成長モデル: {_model_label}（{_gs_growth_model_reason}）{_phase_suffix}")
                 if _gs_rec_g is not None:
                     L.append("推奨成長率内訳:")
                     if _gs_growth_model == "median" and _gs_rec_median is not None:
-                        L.append(f"  中央値ベース:          {_gs_rec_median*100:.1f}%")
+                        L.append(f"  重み付き平均:          {_gs_rec_median*100:.1f}%")
                     L.append(f"  最終推奨値:            {_gs_rec_g*100:.1f}%")
             # 段2（GROWTH-SANITY-CONTINUITY-1）: 推奨成長率の候補に入れた会社の今の伸びと2年CAGR
             _gs_ttm_yoy = growth_sanity.get("ttm_rev_yoy")

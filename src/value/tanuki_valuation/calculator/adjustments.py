@@ -179,7 +179,19 @@ class FCFBaseResult:
 # FCFベース自動判定 v6.3（CV方式）
 # ========================================
 
-DEFAULT_FCF_CV_THRESHOLD = 0.5  # CV≤この値なら安定→avg_5yr
+DEFAULT_FCF_CV_THRESHOLD = 0.5  # CV≤この値なら安定→avg_5yr（互換用。方法の選択は下の傾斜 CV_RAMP_LO〜CV_RAMP_HI で連続）
+
+# [[TANUKI-CALC-CONTINUITY-1]] (1): CVの境目で5年平均↔直近2年平均が飛ばないよう、傾斜で混ぜる（決定: 案A、CV 0.40〜0.60）。
+# base = (1-w)·5年平均 + w·直近2年平均、w = smoothstep((CV-LO)/(HI-LO))。外れ値の閾値も同じ w で mature→growth
+CV_RAMP_LO = 0.40
+CV_RAMP_HI = 0.60
+
+
+def cv_weight(cv: float) -> float:
+    """CVから直近2年平均の重み w（0〜1）。CV≤LOで0、CV≥HIで1、間は smoothstep"""
+    t = min(1.0, max(0.0, (cv - CV_RAMP_LO) / (CV_RAMP_HI - CV_RAMP_LO)))
+    return t * t * (3.0 - 2.0 * t)
+
 
 def determine_fcf_base(
     fcf_5yr_avg: float,
@@ -303,27 +315,16 @@ def determine_fcf_base(
                 cv_threshold=threshold,
             )
 
-    # ── CV判定 ──
-    if cv <= threshold:
-        # 安定 → avg_5yr（成熟企業）
-        return FCFBaseResult(
-            base_fcf=fcf_5yr_avg,
-            method="avg_5yr",
-            fcf_5yr_avg=fcf_5yr_avg,
-            fcf_2yr_avg=fcf_2yr_avg,
-            cv=cv,
-            cv_threshold=threshold
-        )
-    else:
-        # 不安定・成長 → recent_2yr
-        return FCFBaseResult(
-            base_fcf=fcf_2yr_avg,
-            method="recent_2yr",
-            fcf_5yr_avg=fcf_5yr_avg,
-            fcf_2yr_avg=fcf_2yr_avg,
-            cv=cv,
-            cv_threshold=threshold
-        )
+    # ── CV判定（連続）: 5年平均と直近2年平均を重み w で混ぜる。method は近い方の名前 ──
+    w = cv_weight(cv)
+    return FCFBaseResult(
+        base_fcf=(1.0 - w) * fcf_5yr_avg + w * fcf_2yr_avg,
+        method="recent_2yr" if w >= 0.5 else "avg_5yr",
+        fcf_5yr_avg=fcf_5yr_avg,
+        fcf_2yr_avg=fcf_2yr_avg,
+        cv=cv,
+        cv_threshold=threshold
+    )
 
 
 # ========================================
@@ -1115,8 +1116,9 @@ def analyze_fcf_outlier(
         deviation_pct = None  # DCF-REL-SYNC-1: マイナスFCF型は乖離%の概念が成立しないためNone
     else:
         # ── ルール2: 5年平均からの乖離が閾値超 ──
-        is_mature = cv <= cv_threshold
-        threshold_pct = FCF_OUTLIER_THRESHOLDS["mature"] if is_mature else FCF_OUTLIER_THRESHOLDS["growth"]
+        # (1) B1': 外れ値の閾値も CV の傾斜で mature→growth に連続（cv=999 の特殊ケースは w=1＝growth）
+        w_cv = cv_weight(cv)
+        threshold_pct = FCF_OUTLIER_THRESHOLDS["mature"] + w_cv * (FCF_OUTLIER_THRESHOLDS["growth"] - FCF_OUTLIER_THRESHOLDS["mature"])
         deviation = abs(latest_fcf - fcf_5yr_avg) / abs(fcf_5yr_avg)
         if deviation > threshold_pct:
             rule = "deviation_large"
