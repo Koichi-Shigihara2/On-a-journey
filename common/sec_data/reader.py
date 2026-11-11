@@ -8,6 +8,7 @@ import os
 from typing import Optional, Dict, Any, List, Tuple
 
 from .config import TICKERS, get_ticker_info
+from .retention import ROE_AVG_YEARS
 
 
 # =========================================
@@ -229,12 +230,12 @@ class SECReader:
         
         return sum(fcf_list) / len(fcf_list) if fcf_list else 0.0
     
-    def get_roe_avg(self, ticker: str, years: int = 10) -> float:
+    def get_roe_avg(self, ticker: str, years: int = ROE_AVG_YEARS) -> float:
         """後方互換ラッパー: get_roe_avg_detail() の value のみを返す"""
         avg, _, _ = self.get_roe_avg_detail(ticker, years)
         return avg
 
-    def get_roe_avg_detail(self, ticker: str, years: int = 10):
+    def get_roe_avg_detail(self, ticker: str, years: int = ROE_AVG_YEARS):
         """
         ROE平均を取得（純利益÷株主資本）
         損失年度を含む全期間を使用し、|ROE|>80%はwinsorize。

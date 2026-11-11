@@ -439,8 +439,9 @@ _FIELD_FALLBACKS["FinanceLeasePmts"] = TAG_CANDIDATES["FINANCE_LEASE_PAYMENTS"][
 # TTMの6点目（最新の四半期末から約5年前の点）の4四半期は、今日から約6.1〜6.75年前に
 # 及ぶ（提出の遅れ分を含む）。全98銘柄の試算で6.75年あれば97銘柄が最大の点数に届く。
 # 余裕を見て四半期7年、年次はQ4の推計に要るため四半期＋1年の8年
-_QUARTERLY_YEARS = 7
-_ANNUAL_YEARS = 8
+# [[PARSER-LAYER3-SINGLE-SOURCE-1]] 段0（2026-11-11）: 年数は手で書かず、読み手が要る長さから決める（retention.py）。
+# 今は四半期7年・年次11年（ROE平均の10年＋1年）
+from .retention import ANNUAL_YEARS as _ANNUAL_YEARS, QUARTERLY_YEARS as _QUARTERLY_YEARS  # noqa: E402
 
 # [[NORMALIZED-FALLBACK-WINDOW-DEPENDENT-1]]（2026-10-14）: normalizedの候補タグの選び直しの判定
 # （主の候補の四半期の件数・最新の期末、_select_best_candidate()の件数）を数える期間。

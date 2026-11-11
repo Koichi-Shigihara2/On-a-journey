@@ -562,9 +562,55 @@ def _merge_candidate_entries(
     if not per_tag_normalized:
         return [], None
 
+    if field_name in PARTIAL_SUM_FIELDS:
+        per_tag_normalized, used_concepts = _add_partial_sum_series(
+            per_tag_normalized, used_concepts, PARTIAL_SUM_FIELDS[field_name])
+
     merged = _merge_normalized_by_priority(per_tag_normalized)
     source_tag = "+".join(used_concepts) if len(used_concepts) > 1 else used_concepts[0]
     return merged, source_tag
+
+
+# 部分概念のタグ2つを足して1つの系列にする項目（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段0、2026-11-11）。
+# D&Aの候補のうち Depreciation（有形固定資産の減価償却）・AmortizationOfIntangibleAssets（無形資産の償却）は
+# 合計ではなく部分。合計のタグ（DepreciationAndAmortization・DepreciationDepletionAndAmortization）が無い期に
+# 片方だけを採ると、D&Aが過小になる（ABBV: 減価償却だけ4.7億に対し償却12.9億）。両方ある期は足し、
+# 優先順位は「合計のタグ ＞ 2つの合計 ＞ 片方だけ」。片方しか無い期は今までどおり（値は変えない）
+PARTIAL_SUM_FIELDS = {"depreciation_and_amortization": ("Depreciation", "AmortizationOfIntangibleAssets")}
+
+
+def _add_partial_sum_series(per_tag_normalized: list, used_concepts: list, pair: tuple) -> tuple:
+    a_tag, b_tag = pair
+    if a_tag not in used_concepts or b_tag not in used_concepts:
+        return per_tag_normalized, used_concepts
+    sa = per_tag_normalized[used_concepts.index(a_tag)]
+    sb = per_tag_normalized[used_concepts.index(b_tag)]
+    bk = {(e["end"], bool(e.get("is_annual"))): e for e in sb if not e.get("is_ytd") and e.get("val") is not None}
+    out = []
+    for e in sa:
+        if e.get("is_ytd") or e.get("val") is None:
+            continue
+        o = bk.get((e["end"], bool(e.get("is_annual"))))
+        if o is None:
+            continue
+        n = dict(e)
+        n.pop("_asof", None)
+        n["val"] = e["val"] + o["val"]
+        n["first_val"] = (e["first_val"] + o["first_val"]
+                          if e.get("first_val") is not None and o.get("first_val") is not None else n["val"])
+        n["first_filed"] = max(x for x in (e.get("first_filed"), o.get("first_filed")) if x) if (
+            e.get("first_filed") or o.get("first_filed")) else None
+        n["source_tag"] = a_tag + "+" + b_tag
+        n["partial_sum"] = True
+        out.append(n)
+    if not out:
+        return per_tag_normalized, used_concepts
+    pos = min(used_concepts.index(a_tag), used_concepts.index(b_tag))
+    per_tag_normalized = list(per_tag_normalized)
+    used_concepts = list(used_concepts)
+    per_tag_normalized.insert(pos, out)
+    used_concepts.insert(pos, a_tag + "+" + b_tag)
+    return per_tag_normalized, used_concepts
 
 
 # [[LAYER3-MISSING-QUARTER-IMPLIED-GAP-1]]対応: 標準的な単四半期として
@@ -1460,6 +1506,10 @@ def build_ticker_store(ticker: str) -> dict | None:
     from .bs_lines import fill_layer3_bs
     fill_layer3_bs(ticker, fields_out)
 
+    # 負債合計（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段0、2026-11-11）: 候補から LiabilitiesAndStockholdersEquity（負債・純資産の合計＝資産合計）を
+    # 外した。Liabilities が無い期末日は、貸借対照表の恒等式（資産合計 − 純資産 − 非支配持分）で埋める
+    _derive_total_liabilities(fields_out, company_facts)
+
     # 申告の履歴（_asof）はQ4の逆算・補完のためのメモリの中だけのキー。読み手に渡す前に消す（[[LAYER3-FIRST-FILED-DATE-1]]）
     for f in fields_out.values():
         strip_asof(f["entries"])
@@ -1484,6 +1534,60 @@ def build_ticker_store(ticker: str) -> dict | None:
 # 絞り込める（[[LAYER3-SHARESDILUTED-TAG-GAP-1]]でpipeline.py側の
 # 分割検知に個別実装されていたフィルタを、共通アクセサへ統合したもの）。
 WEIGHTED_AVG_DILUTED_SHARES_TAG = "WeightedAverageNumberOfDilutedSharesOutstanding"
+
+
+TEMPORARY_EQUITY_CONCEPTS = (
+    "TemporaryEquityCarryingAmountAttributableToParent",
+    "TemporaryEquityCarryingAmountIncludingPortionAttributableToNoncontrollingInterests",
+)
+
+
+def _derive_total_liabilities(fields_out: dict, company_facts: dict | None = None) -> None:
+    """Liabilities の値が無い期末日の total_liabilities を、total_assets − stockholders_equity − minority_interest
+    （− 一時的持分〈mezzanine、TEMPORARY_EQUITY_CONCEPTS〉があれば）で埋める（その場で書き換え）。
+    純資産か資産合計が無い期・結果が0以下の期は作らない。minority_interest が無い期は0。
+    印: source_tag="identity:Assets-StockholdersEquity-MinorityInterest"・derived=True。
+    検証: Liabilities のある期末日（約2,100点）では恒等式の値が0.5%以内で一致するのが約90%、残りはほぼ一時的持分のある会社（ASTS等）"""
+    ta = (fields_out.get("total_assets") or {}).get("entries") or []
+    se = (fields_out.get("stockholders_equity") or {}).get("entries") or []
+    if not ta or not se:
+        return
+    tl_f = fields_out.setdefault("total_liabilities", {"source_tag": None, "category": "stock", "entries": []})
+    have = {e["end"] for e in tl_f["entries"] if e.get("val") is not None}
+    se_by = {e["end"]: e for e in se if e.get("val") is not None and not e.get("is_ytd")}
+    mi_by = {e["end"]: e for e in (fields_out.get("minority_interest") or {}).get("entries") or []
+             if e.get("val") is not None and not e.get("is_ytd")}
+    temp_by_end: dict = {}
+    for c in TEMPORARY_EQUITY_CONCEPTS:
+        for e in _get_concept_units(company_facts or {}, c, "USD"):
+            if e.get("val") and e.get("end"):
+                temp_by_end[e["end"]] = max(temp_by_end.get(e["end"], 0), e["val"])
+    added = []
+    for a in ta:
+        if a.get("is_ytd") or a.get("val") is None or a["end"] in have:
+            continue
+        s_ = se_by.get(a["end"])
+        if s_ is None:
+            continue
+        m_ = mi_by.get(a["end"])
+        temp = temp_by_end.get(a["end"], 0)
+        val = a["val"] - s_["val"] - (m_["val"] if m_ else 0) - temp
+        if val <= 0:
+            continue
+        first = None
+        if a.get("first_val") is not None and s_.get("first_val") is not None and (m_ is None or m_.get("first_val") is not None):
+            first = a["first_val"] - s_["first_val"] - (m_["first_val"] if m_ else 0) - temp
+        n = dict(a)
+        n["val"] = val
+        n["first_val"] = first if first is not None else val
+        ff = [x for x in (a.get("first_filed"), s_.get("first_filed"), m_.get("first_filed") if m_ else None) if x]
+        if ff:
+            n["first_filed"] = max(ff)
+        n["source_tag"] = "identity:Assets-StockholdersEquity-MinorityInterest"
+        n["derived"] = True
+        added.append(n)
+    if added:
+        tl_f["entries"] = sorted(tl_f["entries"] + added, key=lambda x: (x["end"], bool(x.get("is_annual"))))
 
 
 def get_field_entries(store: dict, field_name: str) -> list:

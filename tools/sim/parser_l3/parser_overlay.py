@@ -1,5 +1,5 @@
 """parser_vs_l3.py の all.json から、parser の値を Layer3 の値に置き換えた annual_*.json・quarterly_*.json を作る（試算用）。
-使い方: python parser_overlay.py S1|S2|S3 OUT
+使い方: python parser_overlay.py S1|S2|S2nz|S3 OUT
   S1: 違う値（diff＝parserの値がLayer3のval・first_valのどちらとも違う）だけ Layer3 の値（first_val、無ければval）に置き換える
   S3: Layer3 の最新の値（val）で、parser と違う値（diff 全部。原本の値と同じものを含む）を置き換える
   S2: S1 ＋ parser に無い項目（l3_only）を Layer3 の値で足す（0も足す）
@@ -17,7 +17,9 @@ for x in rows:
         continue            # 原本の値（first_val）と同じ＝定義の違いではなく改訂の違い。置き換えない
     if flt is not None and f"{x['kind']}:{x['sec']}" not in flt:
         continue
-    if st == "diff" or (mode == "S2" and st == "l3_only"):
+    if st == "l3_only" and mode == "S2nz" and x.get("l3") == 0:
+        continue            # S2nz: S2から0の値の追加だけを除いた試算（0埋めが原因かの切り分け、[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段0）
+    if st == "diff" or (mode in ("S2", "S2nz") and st == "l3_only"):
         by[(x["t"], x["kind"], x["period"])].append(x)
 n = 0
 for (t, kind, period), xs in by.items():

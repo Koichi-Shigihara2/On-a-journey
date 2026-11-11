@@ -15,6 +15,7 @@ import os
 from datetime import date, datetime
 
 from .contracts import validate_field_classification
+from .retention import TTM_POINTS
 from .layer3_builder import load_concept_definitions, get_field_entries
 from .q4_implied import build_q4_implied_entries
 from .fcf import CAPEX_TTM_NEGATIVE_MARK, free_cash_flow, ttm_capex
@@ -238,7 +239,7 @@ def _last4_reaches_anchor(last4: list[dict], anchor: str) -> bool:
 def calc_ttm_series(
     ticker: str,
     store: dict,
-    n_periods: int = 6,
+    n_periods: int = TTM_POINTS,
 ) -> list[dict]:
     """
     Rolling TTM系列を生成する。
@@ -388,7 +389,7 @@ def mark_basis_mix(series: list[dict], basis_mix: dict | None) -> list[dict]:
     return series
 
 
-def save_ttm_series(ticker: str, series: list[dict], n_periods: int = 6,
+def save_ttm_series(ticker: str, series: list[dict], n_periods: int = TTM_POINTS,
                     basis_mix: dict | None = None) -> str:
     """TTM系列をJSONファイルに保存し、パスを返す。basis_mix（混在の判定）があればファイルの先頭に置く"""
     os.makedirs(TTM_DIR, exist_ok=True)

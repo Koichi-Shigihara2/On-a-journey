@@ -641,7 +641,7 @@ class TanukiDataFetcher:
                 if sec_diluted > 0:
                     print(f"   [{ticker}] SEC shares: {sec_diluted:,.0f}")
                 
-                roe_avg, roe_years_used, roe_outlier_adj = self.sec_reader.get_roe_avg_detail(ticker, years=10)
+                roe_avg, roe_years_used, roe_outlier_adj = self.sec_reader.get_roe_avg_detail(ticker)
                 _roe_str = f"{roe_avg:.1%}" if roe_avg is not None else "N/A (負債超過)"
                 print(f"   [{ticker}] SEC ROE avg: {_roe_str} ({roe_years_used}yr)")
                 

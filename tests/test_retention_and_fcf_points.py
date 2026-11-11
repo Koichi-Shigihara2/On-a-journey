@@ -43,9 +43,10 @@ _SIX = [_point(90 + 365 * i, 100.0 - 10 * i) for i in range(6)]  # 100, 90, 80, 
 
 
 class TestRetentionPeriod:
-    def test_quarterly_7_years_annual_8_years(self):
+    def test_quarterly_7_years_annual_11_years(self):
+        # 年数は retention.py で読み手（TTM6点・ROE平均10年）から導く（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段0、2026-11-11）。年次は8→11年
         assert qmod._QUARTERLY_YEARS == 7
-        assert qmod._ANNUAL_YEARS == 8
+        assert qmod._ANNUAL_YEARS == 11
 
     def test_process_entries_keeps_6_5_year_old_quarter(self):
         def q(end):
