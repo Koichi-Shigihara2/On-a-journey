@@ -28,11 +28,6 @@
    - 期限: 起きた回（10-16・10-22の実行はRSS 取得エラー0件で、この経路は通っていない）
    - 確認の手順: 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている。確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
 
-15. **TAILのレビューを対象の期のデータで作る**（`[[TAIL-REVIEW-PERIOD-FILTER-1]]`、2026-10-30 実装 `f9a7563010`・移設済み）
-   - 日時: 保有銘柄の次のTANUKI TAILのレビューの生成（Q3の10-Qの後、11月上旬の見込み。`gh run list --workflow TANUKI_TAIL_RSS_Monitor.yml`で先に確かめる）の後
-   - 期限: 2026-11-30
-   - 確認の手順: 新しいレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）に`data_as_of`（キューのfiled）が入り、`backfilled`がfalse、`kpi_snapshot`・`layer3_snapshot`の期が対象の期まで（対象より後の期が無い）、SECの財務の値が対象の期の申告日以前の値（Layer3の`first_val`）であること。確かめたらBACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」に書き足す
-
 30. **SECTOR-MASTER-ADOPT-1 の印が次の定時の実行で付かないこと**（`[[SECTOR-MASTER-ADOPT-1]]` 段1〜4、段4の公開は2026-11-11 手動のEPS ANALYZER run `42941456669`→TANUKI `42942898607`）
    - 日時: 2026-11-12（木）06:30 JST ごろのTANUKI VALUATIONの定時の実行（`gh run list --workflow TANUKI_VALUATION_Update.yml`で先に確かめる）と、2026-11-15（日）のSEC_Data_Updateの連鎖のEPS ANALYZER・TANUKI
    - 期限: 2026-11-16

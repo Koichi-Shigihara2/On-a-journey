@@ -1356,6 +1356,9 @@ Discordの1行の本文（ログに出ない）と、⚠️・🔴が出た日�
 - Playwright（手元のdocs/、tail_authで通す、1440px）: SOFIのdetail.htmlでスコア推移の点は2026Q1・Q2だけ、過去レビュー履歴の7本に「後付け」、TSLAの前期比は2026Q2（−5）だけ、NVDAは2026Q1に印。
   index.htmlで SOFI 2024Q1 を開くと見出しに「後付け」「データの時点: 2026-06-06」、過去のレビューの一覧に印7つ。ページのエラー0
 - 新しいレビューを作るときの確かめは、次のTAILのレビュー生成（新しい10-Q・10-Kの後）で`data_as_of`・`backfilled: false`・kpi_snapshotの期が対象の期まで
+#### 確認（2026-11-12、本番のレビュー・手順15）
+- 対象5本（APP・CELH・PLTR・SOFI・SOUN の 2026Q3）: `data_as_of`あり（11-03〜11-09）・`backfilled: false`・`kpi_snapshot`/`layer3_snapshot`の期は2025Q4〜2026Q3で対象の期より後は無し。合格。Layer2のkpiには`first_val`の欄は無い（設計どおり、Layer3のSOFIの2項目は`quarter`2026Q3）
+- ADBE（生成09-23）・NVDA（09-01）・TSLA（10-22）の2026Q3は`data_as_of`なし。いずれも作られたのが直し（`f9a7563010`、10-30）より前で対象外。11-08以降にこの3本を触ったcommitは無く、11-09の変更は作り直しではない（11-11の変更はSOUNの新規生成だけ）
 
 ---
 
