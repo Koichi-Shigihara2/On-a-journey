@@ -32,6 +32,12 @@
    - 期限: 2026-11-30
    - 確認の手順: 新しいレビュー（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）に`data_as_of`（キューのfiled）が入り、`backfilled`がfalse、`kpi_snapshot`・`layer3_snapshot`の期が対象の期まで（対象より後の期が無い）、SECの財務の値が対象の期の申告日以前の値（Layer3の`first_val`）であること。確かめたらBACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」に書き足す
 
+30. **SECTOR-MASTER-ADOPT-1 の印が次の定時の実行で付かないこと**（`[[SECTOR-MASTER-ADOPT-1]]` 段1〜4、段4の公開は2026-11-11 手動のEPS ANALYZER run `42941456669`→TANUKI `42942898607`）
+   - 日時: 2026-11-12（木）06:30 JST ごろのTANUKI VALUATIONの定時の実行（`gh run list --workflow TANUKI_VALUATION_Update.yml`で先に確かめる）と、2026-11-15（日）のSEC_Data_Updateの連鎖のEPS ANALYZER・TANUKI
+   - 期限: 2026-11-16
+   - 確認の手順: 各銘柄の`latest.json`の`method_change`が`SECTOR-MASTER-ADOPT-1-1`〜`-4`で付いていない（`method_change_applied`に4つとも入っている）こと。EPSの`quarterly.json`の`sector`が95銘柄とも付いたままであること
+   - 付かなければ、BACKLOG.mdの`[[SECTOR-MASTER-ADOPT-1]]`をBACKLOG_DONE.mdへ移設する（残る段は無い。アクティブ13→12）。付けば原因を報告する
+
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |
