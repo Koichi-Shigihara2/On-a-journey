@@ -60,6 +60,11 @@
 | ASTS・VZ | 0.0% | 純資産から非支配持分を引く（ASTS 2.398B→1.894B〈21%〉、VZ 107.29B→105.99B）。理論株価はBSの純資産を使わない |
 
 ## 4. 公開の前に（段1）
-1. 公開は手順31（段0の定時の確認、期限11-16）が済んでから。**注意: このcommitをpushすると、2026-11-15（日）のSEC_Data_Updateが段1の定義で ttm/・normalized/ を作り直す**（APP・IONQ・ONDS・HWMの4ファイルが変わる）。手順31の①は「19銘柄のD&A」に加えてこの4ファイルの変化を想定内として確認する
+1. 公開は手順31（段0の定時の確認、期限11-16）が済んでから。**注意: Layer3はその場で計算されるため、定義のコードをpushするとそのまま公開になる**（日曜のSEC_Data_Updateがttm/・normalized/を作り直し、TANUKI等も次の実行で読む）。そのため実装のcommitは2026-11-11に戻した（下の「戻したcommit」）。公開のcommitで戻し直す
 2. 公開の手順: ttm/・normalized/ を `tools/sim/regen_derived.py` で作り直してcommit→`sim.py scope --write`→TANUKI→HypeCore→TANUKI
 3. 取り込めなかったもの（FINDINGSに登録）: bs_lines の記録2,214件のうち328件（15%）は借入金の行が保存されていない古い記録で、貸借対照表の行を正にできない期（HON・ABBV・ELF等の一部）はタグのまま。取り直しにはSECの取得が要る
+
+### 戻したcommit（実装は公開のときまで戻してある）
+- 実装: `6a9786cebd`（Layer3の守りと定義）・`a02135a4f6`（印の表示）。2026-11-11に revert（`0544696ddc`＝6a9786cebd、`1ebce36a25`＝a02135a4f6）。docsのcommit（`3e7eea9dc9`・`01eab47f89`）は残した
+- 公開のとき: 先に `git revert 1ebce36a25` と `git revert 0544696ddc`（revertのrevert。順は古い方から戻すと衝突しにくい: 0544696ddc→1ebce36a25）で実装を戻し、出力の一覧（`build_output_inventory.py --layer tanuki`・`--layer sec`）を作り直し、ttm/・normalized/ を `tools/sim/regen_derived.py` で作り直してcommit→`sim.py scope --write`→TANUKI→HypeCore→TANUKI
+- 出力の一覧（sec・tanuki）は戻したあとの実物に合わせて作り直した（`val_guard_marks`は一覧から消えている。公開のときに再び作り直す）
