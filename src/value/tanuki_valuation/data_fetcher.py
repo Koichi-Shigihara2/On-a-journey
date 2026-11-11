@@ -709,6 +709,15 @@ class TanukiDataFetcher:
         if basis_mix:
             print(f"   [{ticker}] ⚠️ {basis_mix['note']}")
 
+        # Layer3 の値の守りの印（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1、common/sec_data/val_guard.py。直近3年の期だけ。無ければ空）
+        val_guard_marks = []
+        if HAS_SEC:
+            try:
+                from common.sec_data.val_guard import load_marks as _load_val_marks
+                val_guard_marks = _load_val_marks(ticker)
+            except Exception as e:
+                print(f"   [{ticker}] 値の守りの印の取得エラー: {e}")
+
         ttm_series_data = ttm_reader.get_series()
         rice_annual_data = build_rice_annual_shape(ttm_series_data) if ttm_series_data else []
         if rice_annual_data:
@@ -1039,6 +1048,7 @@ class TanukiDataFetcher:
             "fcf_ttm_periods": fcf_ttm_periods,
             "latest_period_missing": latest_period_missing,
             "basis_mix": basis_mix,
+            "val_guard_marks": val_guard_marks,
             "rice_annual_data": rice_annual_data,
             "rice_data_source": rice_data_source,
             "rice_sector": self._get_rice_sector(ticker, sector),
