@@ -3,10 +3,11 @@
 > 2026-11-06 から細くした。**今の状態・未済の確認手順・決まりへの参照だけ**を置く（行数の上限は `tests/test_claude_code_start_thin.py`）。
 > 日付つきの記録・件数の推移・済んだ手順は `docs/history/CLAUDE_CODE_START_HISTORY.md`。終業のまとめは `PROJECT_STATUS.md`。
 
-## 今の状態（2026-11-06 終業）
+## 今の状態（2026-11-11 終業）
 
-- BACKLOG.md のアクティブは **13件**（`^### [` の機械カウント）。rcc NG 0・WARN 207、pytest 2922件
-- 次の作業の順と注記（週の使用量が91%に達したため、判断の要る作業は枠が戻るまで止める）は `PROJECT_STATUS.md` の「次の作業」が正
+- BACKLOG.md のアクティブは **13件**（`^### [` の機械カウント）。rcc NG 0・WARN 217、pytest 2948件通過・失敗1（SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
+- **未公開のコードの置き場所**: PARSER-LAYER3 段1は`0544696ddc`・`1ebce36a25`でrevert済み（公開の時にrevertの戻し）、TANUKI-CALC-CONTINUITY-1はローカルブランチ`tanuki-calc-continuity-1`（kaihatsu・originには無い）。Layer3の定義のコードをpushするとそのまま公開になる
+- 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
 - 報告は20行以内（結論・変わった数・判定の変化・決めてほしいこと）。詳しい表はファイルに置き、場所だけ書く（`CHAT_RULES.md`「報告の形」）
 - 範囲外の発見は直さず、BACKLOGにも入れず、`FINDINGS.md` に1行で記録する（`CHAT_RULES.md`「発見の溜め方と根治の判断」・事例41）。

@@ -11,7 +11,18 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-11 束ねの後 更新〈それまでは2026-11-06 終業の2回目〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+**次の作業（2026-11-11 終業 更新〈それまでは2026-11-11 束ねの後〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+1. 11-12（木）朝: 手順30（`[[SECTOR-MASTER-ADOPT-1]]`の印が定時の実行で付かないこと。付かなければBACKLOG_DONE.mdへ移設、アクティブ13→12）【Sonnet】
+2. 11-15（日）〜11-16: 手順31（`[[PARSER-LAYER3-SINGLE-SOURCE-1]]`段0の次の定時の確認）→ 段1の公開【Opus】。段1の実装は公開の時までrevert済み（`PARSER_LAYER3_STAGE1.md` §4: `0544696ddc`→`1ebce36a25`の順にrevertの戻し→出力の一覧→派生ファイル→`sim.py scope --write`→TANUKI→HypeCore→TANUKI）
+3. `[[TANUKI-CALC-CONTINUITY-1]]`の公開【Opus】: ローカルブランチ`tanuki-calc-continuity-1`を段1の公開の後にrebase→段1の上で試算し直し→決定(a)の一覧→公開（`TANUKI_CALC_CONTINUITY_STEP0.md` §6）
+4. `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`【Opus】（優先: 中。`[[MULTIPLES-ADOPT-1]]`と`[[STAGE-V2-ROLLOUT-1]]`の切り替えより前）
+5. `[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`【Opus】
+6. `[[STAGE-V2-ROLLOUT-1]]` の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）【Opus】。②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
+7. `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）
+8. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+**注記（2026-11-11）**: 未公開のコードの置き場所は2つ（段1は`git revert`で戻してあり、CONTINUITYはローカルブランチ）。Layer3はその場で計算されるため、定義のコードをpushするとそのまま公開になる（FINDINGS 2026-11-11）。モデルの使い分けは`CHAT_RULES.md`「モデルの使い分け」（依頼文の見出しの【Opus】【Sonnet】）
+
+**（旧）次の作業（2026-11-11 束ねの後。2026-11-11 終業に上へ置き換えた。記録として残す）**:
 1. `[[SECTOR-MASTER-ADOPT-1]]` の段3（金融。11-08のSICの保存は済み、Vは金融から外れた）・段4（EPS ANALYZERの区分。別の計算方法の変更）【Opus】
 2. `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`【Opus】（2026-11-11 束ねで登録、優先: 高）
 3. `[[TANUKI-CALC-CONTINUITY-1]]`【Opus】（同、優先: 高）
@@ -38,6 +49,12 @@
 3. `[[STAGE-V2-ROLLOUT-1]]` の並行計算（定義v2は2026-11-06に確定。定義v2のstageを今の定義と並べて毎月記録、公開の値は変えない。寄せる件を待たずに始める。12か月の並びの評価は2027-11ごろ）
 4. 寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+
+**2026-11-11 の作業（終業、アクティブ13件）**:
+- `[[SECTOR-MASTER-ADOPT-1]]` 段3（金融）・段4（EPS ANALYZERの区分）を公開（段4: 手動のEPS ANALYZER run `42941456669`→TANUKI `42942898607`）。印が定時の実行で付かないことは手順30（11-12朝）で確かめる
+- `[[PARSER-LAYER3-SINGLE-SOURCE-1]]` 段0を公開（`PARSER_LAYER3_STAGE0.md`。TANUKI `42960814475`→HypeCore `42962427012`→TANUKI `42962625921`、印はscopeの9銘柄だけ・3回目は0件）。段1のSTEP 0（`966abdc22d`、`PARSER_LAYER3_STAGE1_STEP0.md`）→段1の実装（`6a9786cebd`・`a02135a4f6`、試算: 理論株価10銘柄・5%超はCAKEのみ・判定0・保有APP −0.1%）。**実装をkaihatsuにpushした後、Layer3がその場で計算するためpushがそのまま公開になる恐れに気づき、`0544696ddc`・`1ebce36a25`でrevert**（公開の時にrevertの戻し。`PARSER_LAYER3_STAGE1.md`末尾）。FINDINGSに1行
+- `[[TANUKI-CALC-CONTINUITY-1]]` のSTEP 0（`d16da801c4`、境目11か所・案A/B・段1との重ね合わせ。理論株価11銘柄・判定0）→実装（**ローカルブランチ`tanuki-calc-continuity-1`、kaihatsuには未反映・未公開**。CVの傾斜0.40〜0.60・非負の規則を8項目・taper連続・文言・丸めの許容幅〈粒度1,000〉、連続性のテスト）。FINDINGSにBEAR再計算の食い違い・非負の規則の項目選びの2行
+- 終業の数: BACKLOGアクティブ13件（重複なし、BACKLOG_DONE 576件）、rcc NG 0・WARN 217、pytest 2,948件（kaihatsu。ブランチは2,955件）。コマンドと内訳はCLAUDE_CODE_START.md「今の状態」
 
 **2026-11-06 の作業（終業の2回目、アクティブ9件）**:
 - アクティブは**9件**（`^### [`の機械カウント。`[[GROWTH-SANITY-CONTINUITY-1]]`の登録で10件→移設で9件）。rcc NG 0・WARN 207、pytest 2922件

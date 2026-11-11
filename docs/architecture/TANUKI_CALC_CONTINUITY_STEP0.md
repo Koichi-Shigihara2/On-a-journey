@@ -101,7 +101,7 @@
 - 実装: `adjustments.py`（`CV_RAMP_LO/HI`・`cv_weight`・`determine_fcf_base`の最後を傾斜に・外れ値の閾値を同じ重みで）・`sec_concept_definitions.json`（8項目に`non_negative`）・`pipeline.py`（表示名・taperを s=0 でも終点=推奨成長率）・`stock.html`・`report_consistency_check.py`（CHECK-52の文言）・`q4_implied.py`（コメント）。既存テスト3か所を直した（`test_layer3_capital_allocation`の非負の項目・負のQ4の例を粗利に、`test_first_filed`の負のQ4の例を粗利に、`test_pipeline_logic`の表示名）。
 - 連続性のテスト `tests/test_tanuki_calc_continuity.py`（6件。B1・B1'・B8・B9、`test_growth_sanity_continuity.py`と同じ物差し〈1刻みあたりの動きの上限を理論上の上限の10倍〉）。今の規則に戻すと5件が失敗する（B1×3・B8の配線・B9）。
 - 試算（STEP 0と同じ chain。前＝`f35ef8ec90`）: **STEP 0の全部入りと一致**。理論株価の変化11・判定0・保有±0.0%・stage 0・STONKS 0・調整後EPS 0・scope 19銘柄。理論株価・判定は全96銘柄で STEP 0 と同じ値、latest.json 全体の差は ASTS だけ（粗利を非負から外したため）。ttm/・normalized/ の実質の変更は11ファイル（STEP 0と同じ。作り直した派生ファイルは戻した）。
-- **丸めの許容幅は実装していない**。申告の `decimals` は `company_facts.json` に入っておらず（SECのcompanyfacts APIが返さない）、Layer3にも無い。決定（decimals が無いときは案を出して止める）に従い、今は千ドル単位の丸めの負も欠けになる。
+- **丸めの許容幅は、この時点では実装していなかった（6.1で案1を実装）**。申告の `decimals` は `company_facts.json` に入っておらず（SECのcompanyfacts APIが返さない）、Layer3にも無い。決定（decimals が無いときは案を出して止める）に従い、今は千ドル単位の丸めの負も欠けになる。
   | 銘柄 | 厳密（今の実装） | 丸めを許したときの値 |
   |---|---|---|
   | FICO | `buyback_ttm` 欠け（TTM 2026-09-30） | 3,045,991,000（旧と同じ） |
@@ -116,4 +116,13 @@
 2. **段1の上で試算し直す**（`sim.py chain`、前＝段1の公開後のHEAD。§3のとおりCAKE・KO・HWM・APPは掛け合わせにならない）。派生ファイルは `tools/sim/regen_derived.py` → `tools/sim/revert_noise.py` で作り直す
 3. 決定(a)の一覧（5%超・判定が変わる・保有・HQY/DOCN/TASK/FRSH/APP/KULR・CAKE/KO）を段1の上の値で作り直し、原本の申告で理由を確かめる
 4. 出力の一覧（INV-5）・派生ファイルをcommit→`sim.py scope --write`（ID `TANUKI-CALC-CONTINUITY-1-1`）→TANUKI→HypeCore→TANUKI の順で公開
-5. 丸めの許容幅は案の決定の後に別のcommitで足す（決める前に公開するなら、FICO・TASK・ASTSの欠けを注記する）
+5. （丸めの許容幅は 6.1 のとおりブランチに入れた）
+
+### 6.1 丸めの許容幅（案1）を足した — 2026-11-12（ブランチ commit `7b8a432d2b`）
+- 規則（`q4_implied.rounding_grain`）: 逆算に実際に使う年次・Q1〜Q3の値がすべて1,000の倍数なら粒度1,000。負のQ4が非負の項目で `|Q4| ≤ 粒度` なら、逆算の値のまま残す（0で埋めない。印 `q4_rounded: 1000`）。倍数でない値が1つでもあれば粒度なし。
+- **決定の文言（`|Q4| < 粒度`）から1か所変えた: `≤`**。TASK・FICO・ASTSの負のQ4はちょうど −1,000ドル（10-K年間27,782K＜10-Q 9か月27,783K）で、`<` では残らず「旧と同じ」にならない。丸めた年間と丸めた累計の差は最大で粒度1つぶん（各±0.5）なので `≤` が丸めの範囲。粒度を超える負（−2,000ドル）は欠け。
+- テスト（`tests/test_tanuki_calc_continuity.py`）: 丸めの負は残る（TASK型 −1,000）／粒度を超える負は欠け（−2,000）／1,000の倍数でない値があれば −1 でも欠け。
+- 試算（STEP 0と同じ chain。前＝`f35ef8ec90`）: 理論株価・判定は全96銘柄で STEP 0 の全部入りと一致（11銘柄・判定0・保有±0.0%）、HypeCore stage 0、STONKS 0、調整後EPS 0、scope 16銘柄（19→16。FICO・TASK・ASTSの3銘柄の表示が旧に戻った）。ttm/・normalized/ の実質の変更は9ファイル（11→9。FICO・TASKが旧と同じ）。
+- **FICO・TASK・ASTSは旧と同じ**: TASKは latest.json 全体が旧と一致。ASTSも latest.json・HypeCoreの出力（34か月ぶんの rev_yoy 等）が旧と一致。FICOは `buyback_ttm` 3,045,991,000 が旧のままで、latest.json の差は BULL の理論株価（(3)のtaper）だけ。
+- ゲート（ブランチ上）: 同じコマンドで2,955件が通り、失敗は SITM の1件（既知の例外）。rcc は NG 0・WARN 215、audit は通過。
+- 公開の手順（上）の5は不要になった（許容幅は同じブランチに入っている）。
