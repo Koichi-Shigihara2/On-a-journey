@@ -7,17 +7,20 @@
 - 投資判断: 読み手（その場で計算を含む、テストを除く）に`src/value/tanuki_score/`・`src/value/hypecore/`・`src/tail/`・`docs/value-monitor/tanuki_valuation/`・`docs/value-monitor/tanuki_score/`があれば「効く」
 - 残す／消す: 段階2の判断（2026-10-20）。画面の区画はKoichiさんの判断で「今日の特選銘柄」だけ消し、ほかは残す。出力・キー・本番外のコードはチャット側の判断。スクリプトの`DECISIONS`に写す。消したものは下の「消したもの」に記録だけ残す
 
-**件数**: 出力 11（ファイル 9・人が見るもの 2）／読み手0件 0／テストだけ 0／1件 4／2件以上 5／規則の二重 9（検出式 11種のうち。TANUKIのファイルを含むもの 4）
+**件数**: 出力 11（ファイル 9・人が見るもの 2）／読み手0件 0／テストだけ 0／1件 2／2件以上 7／規則の二重 9（検出式 11種のうち。TANUKIのファイルを含むもの 4）
 
-**画面の項目**: 画面が読むキー 388（この段階の書き手あり 345・ほかの書き手あり 29・画面の中で作る値 6・**書き手なし 8**）／書き手があるのに誰も読まないキー **12**（今の書き手のコードに無いキー 67 は数えない）
+**画面の項目**: 画面が読むキー 394（この段階の書き手あり 351・ほかの書き手あり 29・画面の中で作る値 6・**書き手なし 8**）／書き手があるのに誰も読まないキー **13**（今の書き手のコードに無いキー 67 は数えない）
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 3件＋ファイル名で当たった行 2件／解決できた読み込み 31件＋ファイル名で当たった行 67件（4.9%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 5件＋ファイル名で当たった行 5件／解決できた読み込み 32件＋ファイル名で当たった行 67件（9.2%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
 フォルダを決めきれない行（ファイル名で当たった行）:
 - `common/method_change.py` 行 43（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: `"tanuki": ("docs/value-monitor/tanuki_valuation/data", "{T}/latest.json"),`
 - `scripts/method_change_scope.py` 行 145（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: `p = os.path.join(src, t, "latest.json")`
+- `tools/sim/sim.py` 行 109（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: `tickers = sorted(d for d in os.listdir(tanuki_dir) if os.path.isfile(os.path.join(tanuki_dir, d, "latest.json")))`
+- `tools/sim/sim.py` 行 153（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: `p = os.path.join(base, sub, ticker, "latest.json")`
+- `tools/sim/sim.py` 行 165（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: `ts = sorted(t for t in os.listdir(d) if os.path.isfile(os.path.join(d, t, "latest.json")))`
 
 ## 消したもの（段階2、2026-10-20）
 
@@ -32,11 +35,11 @@
 |---|---|---|---|---|---|---|---|---|
 | 1件 | `docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>（1ファイル） | score_watcherが前回の判定を覚えておく控え（判定の変化の通知に使う） | `score_watcher.py:save_state` | 1 | — | — | — | 残す（2026-10-20） |
 | 1件 | `docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>（99ファイル） | 銘柄ごとのHypeCoreのライフサイクル・ステージ・フェーズの推移（TANUKIの実行のたびに1行） | `pipeline.py:TanukiValuationPipeline._save_hypecore_history` | 1 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | — | 残す（2026-10-20） |
-| 1件 | `docs/value-monitor/tanuki_valuation/data/{T}/history.json`<br>（96ファイル） | 銘柄ごとの理論株価・上振れ余地・成長率などの推移（実行ごとに1行） | `pipeline.py:TanukiValuationPipeline._save_result` | 1 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | — | 残す（2026-10-20） |
-| 1件 | `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>（31289ファイル） | 銘柄ごとの、実行の日時ごとの評価の全体のスナップショット | `pipeline.py:TanukiValuationPipeline._save_result` | 1 | index.html（経由）<br>portfolio/index.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: HypeCore（TANUKI のtiming・判定の入力） | AS-IS-047・AS-IS-116・AS-IS-258・AS-IS-297・AS-IS-298・AS-IS-299・AS-IS-438・AS-IS-439・AS-IS-506 | 残す（2026-10-20） |
 | 2件以上 | `config/beta_config.json`<br>（1ファイル） | 銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う | `beta_fetcher.py:save_config` | 9・テスト10 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | — | AS-IS-013 | 残す（2026-10-20） |
 | 2件以上 | `docs/value-monitor/tanuki_valuation/data/tickers.json`<br>（1ファイル） | 一覧のページ用の、全銘柄の理論株価・判定の要約 | `pipeline.py:TanukiValuationPipeline._save_tickers_index` | 9・テスト4 | common/ticker-links.js（直接）<br>portfolio/index.html（直接）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面・TANUKI SCOREの画面 | — | 残す（2026-10-20） |
-| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`<br>（96ファイル） | 銘柄ごとの最新の評価の全体（理論株価・判定・DCF・RICE・各指標）。個別ページが読む | `pipeline.py:TanukiValuationPipeline._save_result`<br>`pipeline.py:TanukiValuationPipeline._save_result` | 27・テスト19 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/hypecore/detail.html（直接）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（直接）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL）・TANUKI VALUATIONの画面・TANUKI SCOREの画面 | AS-IS-056・AS-IS-071 | 残す（2026-10-20） |
+| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/history.json`<br>（96ファイル） | 銘柄ごとの理論株価・上振れ余地・成長率などの推移（実行ごとに1行） | `pipeline.py:TanukiValuationPipeline._save_result` | 3 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | — | 残す（2026-10-20） |
+| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>（33593ファイル） | 銘柄ごとの、実行の日時ごとの評価の全体のスナップショット | `pipeline.py:TanukiValuationPipeline._save_result` | 2 | index.html（経由）<br>portfolio/index.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: HypeCore（TANUKI のtiming・判定の入力） | AS-IS-047・AS-IS-116・AS-IS-258・AS-IS-297・AS-IS-298・AS-IS-299・AS-IS-438・AS-IS-439・AS-IS-506 | 残す（2026-10-20） |
+| 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`<br>（96ファイル） | 銘柄ごとの最新の評価の全体（理論株価・判定・DCF・RICE・各指標）。個別ページが読む | `pipeline.py:TanukiValuationPipeline._save_result`<br>`pipeline.py:TanukiValuationPipeline._save_result` | 28・テスト19 | index.html（経由）<br>market-monitor/market-pulse/index.html（経由）<br>portfolio/index.html（直接）<br>portfolio/tail/detail.html（直接）<br>portfolio/tail/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/hypecore/detail.html（直接）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（直接）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（直接）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL）・TANUKI VALUATIONの画面・TANUKI SCOREの画面 | AS-IS-056・AS-IS-071 | 残す（2026-10-20） |
 | 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/report.txt`<br>（96ファイル） | 銘柄ごとの評価の計算の説明（人が読む文の形式のレポート） | `pipeline.py:TanukiValuationPipeline._save_report` | 3・テスト3 | value-monitor/tanuki_valuation/stock.html（直接） | 効く: TANUKI VALUATIONの画面 | AS-IS-045・AS-IS-056・AS-IS-057・AS-IS-058・AS-IS-060 | 残す（2026-10-20） |
 | 2件以上 | `docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`<br>（98ファイル） | 銘柄ごとのTANUKI SCORE（funda等）・判定時の株価と、その後30・60・90日の値動きの推移 | `pipeline.py:TanukiValuationPipeline._save_result`<br>`score_verifier.py:verify_ticker` | 2・テスト2 | value-monitor/tanuki_score/index.html（直接） | 効く: TANUKI SCOREの画面 | — | 残す（2026-10-20） |
 
@@ -58,21 +61,6 @@
 - 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 531
 
-### `docs/value-monitor/tanuki_valuation/data/{T}/history.json`（1件）
-- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 761
-
-### `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`（1件）
-- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(0)・`alpha_was_capped`(0)・`approx_value`(0)・`basis_mix`(1)・`beta`(0)・`bs_adjustment`(0)・`calculation_date`(1)・`calculation_steps`(0)・`components`(0)・`dcf_components`(0)・`dcf_type`(0)・`fcf_base`(0)・`fcf_estimation`(0)・`fcf_outlier`(0)・`fcf_source`(0)・`fcf_ttm_end`(0)・`fcf_ttm_periods`(0)・`formula`(0)・`future_values`(0)・`growth`(0)・`growth_options`(0)・`growth_scenarios`(0)・`implied_irr`(0)・`intrinsic_value_beta`(0)・`intrinsic_value_per_share`(1)・`intrinsic_value_pt`(0)・`intrinsic_value_rf`(0)・`intrinsic_value_rf_rate`(0)・`invalid`(0)・`invalid_reason`(0)・`kpi_data`(0)・`latest_period_missing`(0)・`m_total`(0)・`maturity_profile`(0)・`method_change`(0)・`method_change_applied`(0)・`phase1_growth`(0)・`rd_capitalization`(0)・`required_growth_rf_base`(0)・`required_growth_rf_live`(0) ほか20
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 336・534・1076・1285（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/portfolio/index.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/hypecore/detail.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/hypecore/index.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/tanuki_score/index.html`
-- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/tanuki_valuation/stock.html`
-
 ### `config/beta_config.json`（2件以上）
 - 起動元: .github/workflows/Beta_Config_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `_comment`(0)・`_damodaran_ref_2025`(0)・`_update_note`(0)・`_updated_at`(1)・`overrides`(8)
@@ -80,19 +68,19 @@
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 33・310・390・468（経由 `common/sec_data/audit.py::audit_beta_drift`）
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 52・81・103・110・196・224・241・289・350・467・483・496 ほか5（経由 `common/sec_data/registration_validator.py::_load_json`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 311
-- Python・保存済みファイル: `common/system_health.py` 行 208・299・1220・1302（経由 `common/system_health.py::check_h_config`）
+- Python・保存済みファイル: `common/system_health.py` 行 208・299・1221・1303（経由 `common/system_health.py::check_h_config`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 40・71・155・288・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::load_config`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 300・1039（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 301・1046（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 501・507・521・576（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 479・515・1068・1109・1177・1410・1942・1943・3913・3915・3971（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_beta_sector`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 502・538・1140・1208・1441・1974・1975・4019（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 87・95・99・104・111（経由 `common/sec_data/audit.py::audit_beta_drift`）
 - テスト・保存済みファイル: `tests/test_core_calculator_rf_reference.py` 行 23（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
 - テスト・保存済みファイル: `tests/test_core_calculator_v0_note.py` 行 47・54・63・72（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
 - テスト・保存済みファイル: `tests/test_dcf_phase1_taper.py` 行 91（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96・102・108（経由 `common/sec_data/audit.py::audit_beta_drift`）
-- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 211・233・253・266・285・289・294・299・304・309・637・657 ほか22（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
+- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 211・233・253・266・285・289・294・299・304・309・642・662 ほか22（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_policy_a_floor_end_to_end.py` 行 55（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 494（経由 `common/system_health.py::check_h_config`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::check_h_config`）
 - テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 60・65（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/system_health.py::check_h_config`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
@@ -110,38 +98,57 @@
 - 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `count`(3)・`tickers`(11)・`updated_at`(0)
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 56・59・359・468（経由 `common/sec_data/audit.py::get_registered_tickers`）
-- Python・保存済みファイル: `common/system_health.py` 行 162・1207・1216・1302（経由 `common/sec_data/audit.py::get_registered_tickers`、`common/system_health.py::check_d_actions`）
+- Python・保存済みファイル: `common/system_health.py` 行 162・1208・1217・1303（経由 `common/sec_data/audit.py::get_registered_tickers`、`common/system_health.py::check_d_actions`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 83・86・279・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::get_registered_tickers`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 56・59・331・381（経由 `src/value/tanuki_valuation/score_watcher.py::get_tickers`）
 - JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 28
 - JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 271
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 417
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 418
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/index.html` 行 535
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2720
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2728
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96・102・108（経由 `common/sec_data/audit.py::get_registered_tickers`）
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 215
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 494（経由 `common/sec_data/audit.py::get_registered_tickers`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/sec_data/audit.py::get_registered_tickers`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/sec_data/audit.py::get_registered_tickers`）
+
+### `docs/value-monitor/tanuki_valuation/data/{T}/history.json`（2件以上）
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
+- Python・保存済みファイル: `common/multiples.py` 行 68・75・135・147・154・309・310・313・314・316・317・318 ほか8（経由 `common/multiples.py::_load`、`common/multiples.py::recorded_prices`）
+- Python・保存済みファイル: `common/stage_v2.py` 行 339・344・355（経由 `common/multiples.py::_load`）
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 761
+
+### `docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`（2件以上）
+- 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(0)・`alpha_was_capped`(0)・`approx_value`(0)・`basis_mix`(1)・`beta`(0)・`bs_adjustment`(0)・`calculation_date`(1)・`calculation_steps`(0)・`components`(1)・`dcf_components`(0)・`dcf_type`(0)・`fcf_base`(0)・`fcf_estimation`(0)・`fcf_outlier`(0)・`fcf_source`(0)・`fcf_ttm_end`(0)・`fcf_ttm_periods`(0)・`formula`(0)・`future_values`(0)・`growth`(0)・`growth_options`(0)・`growth_scenarios`(0)・`implied_irr`(0)・`intrinsic_value_beta`(0)・`intrinsic_value_per_share`(2)・`intrinsic_value_pt`(0)・`intrinsic_value_rf`(0)・`intrinsic_value_rf_rate`(0)・`invalid`(1)・`invalid_reason`(0)・`kpi_data`(0)・`latest_period_missing`(0)・`m_total`(0)・`maturity_profile`(0)・`method_change`(0)・`method_change_applied`(0)・`phase1_growth`(0)・`rd_capitalization`(0)・`required_growth_rf_base`(0)・`required_growth_rf_live`(0) ほか20
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 336・534・1076・1285（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
+- Python・保存済みファイル: `tools/sim/sim.py` 行 114（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/portfolio/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/hypecore/detail.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/value-monitor/hypecore/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/tanuki_score/index.html`
+- 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/value-monitor/tanuki_valuation/stock.html`
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/latest.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(4)・`alpha_was_capped`(2)・`basis_mix`(4)・`breakeven_estimate`(2)・`breakeven_reason`(2)・`bs_adjustment`(5)・`calculation_date`(9)・`components`(24)・`computed_runway_months`(3)・`dcf_components`(7)・`dcf_type`(4)・`dilution_comment`(2)・`dilution_severity`(2)・`dupont`(5)・`erp`(2)・`fcf_base`(6)・`fcf_estimation`(4)・`fcf_history`(7)・`fcf_margin_bear_mult_applied`(1)・`fcf_margin_note`(1)・`fcf_outlier`(5)・`fcf_source`(0)・`fcf_ttm_end`(2)・`fcf_ttm_periods`(0)・`fcfe_valuation`(1)・`financial_health`(7)・`formula`(2)・`funda_score`(7)・`future_values`(4)・`growth`(12)・`growth_options`(4)・`growth_sanity`(6)・`growth_scenarios`(6)・`intrinsic_value_beta`(3)・`intrinsic_value_per_share`(17)・`intrinsic_value_rf`(3)・`intrinsic_value_rf_rate`(3)・`latest_period_missing`(5)・`matrix`(4)・`maturity_profile`(2) ほか40
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `alpha`(4)・`alpha_was_capped`(2)・`basis_mix`(4)・`breakeven_estimate`(2)・`breakeven_reason`(2)・`bs_adjustment`(5)・`calculation_date`(9)・`components`(25)・`computed_runway_months`(3)・`dcf_components`(7)・`dcf_type`(4)・`dilution_comment`(2)・`dilution_severity`(2)・`dupont`(5)・`erp`(2)・`fcf_base`(6)・`fcf_estimation`(4)・`fcf_history`(7)・`fcf_margin_bear_mult_applied`(1)・`fcf_margin_note`(1)・`fcf_outlier`(5)・`fcf_source`(0)・`fcf_ttm_end`(2)・`fcf_ttm_periods`(0)・`fcfe_valuation`(1)・`financial_health`(7)・`formula`(2)・`funda_score`(7)・`future_values`(4)・`growth`(12)・`growth_options`(4)・`growth_sanity`(6)・`growth_scenarios`(6)・`intrinsic_value_beta`(3)・`intrinsic_value_per_share`(18)・`intrinsic_value_rf`(3)・`intrinsic_value_rf_rate`(3)・`latest_period_missing`(5)・`matrix`(4)・`maturity_profile`(2) ほか40
 - Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 66・175・206（経由 `browser_checks/check_signal_consistency_section.py::pick_sparse_ticker`）
 - Python・保存済みファイル: `browser_checks/check_tanuki_score_undetermined.py` 行 39・86（経由 `browser_checks/check_tanuki_score_undetermined.py::main`）
 - Python・保存済みファイル: `browser_checks/check_valuation_chart_basis.py` 行 106・107・184・197・213（経由 `browser_checks/check_valuation_chart_basis.py::check_ticker`、`browser_checks/check_valuation_chart_basis.py::main`）
 - Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・166・203・226・254・361・364・367・368・369・370 ほか2（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_ticker`）
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 127・138・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 81・103・110・168・196・224・241・289・350・442・467・483 ほか8（経由 `common/sec_data/registration_validator.py::_latest_json`、`common/sec_data/registration_validator.py::_load_json`、`common/sec_data/registration_validator.py::check_p1_registration_completeness` ほか）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1662・1666・1907・2311・2315・2377・2380・2677・2874・2903・2914・3492 ほか4（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/sec_data/report_consistency_check.py::_check_dcf_validation_failures`、`common/sec_data/report_consistency_check.py::_check_latest_period_missing` ほか）
-- Python・保存済みファイル: `common/system_health.py` 行 89・135・140・1213・1215・1302（経由 `common/sec_data/audit.py::audit_ticker`、`common/system_health.py::check_c_latest`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1662・1666・1907・2311・2315・2377・2380・2677・2875・2904・2915・3493 ほか4（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/sec_data/report_consistency_check.py::_check_dcf_validation_failures`、`common/sec_data/report_consistency_check.py::_check_latest_period_missing` ほか）
+- Python・保存済みファイル: `common/system_health.py` 行 89・135・140・1214・1216・1303（経由 `common/sec_data/audit.py::audit_ticker`、`common/system_health.py::check_c_latest`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1517・1554・1911・1913（経由 `src/market/market_pulse/market_calendar.py::earnings_events`、`src/market/market_pulse/sector_rotation.py::_tanuki_score`）
 - Python・保存済みファイル: `src/market/market_pulse/market_calendar.py` 行 122・125・215（経由 `src/market/market_pulse/market_calendar.py::earnings_events`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 231・265（経由 `src/market/market_pulse/sector_rotation.py::_tanuki_score`）
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 146・148・150・325・327・1636・1637・1844・1856・1880（経由 `src/tail/quarterly_review_generator.py::load_layer1_financials`、`src/tail/quarterly_review_generator.py::load_tanuki_valuation`、`src/tail/tail_dcf_bridge.py::_load_latest_valuation`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 73・76・159・161・194・207・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_latest_valuation`、`src/tail/tail_dcf_bridge.py::_load_layer1_financials`）
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 348・350・534・1076・1285（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 542・3956・3971（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 565・4004・4019（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 79・82・113・344・381（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
+- Python・保存済みファイル: `tools/sim/sim.py` 行 114（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
 - JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 335
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 365
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 1005
@@ -149,9 +156,9 @@
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/stock.html` 行 643
 - JS・HTML・保存済みファイル: `docs/value-monitor/hypecore/detail.html` 行 408・652
 - JS・HTML・保存済みファイル: `docs/value-monitor/stonks-silo/index.html` 行 446・619
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 426
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 427
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/index.html` 行 550
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 751・2726
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 751・2734
 - ワークフロー・保存済みファイル: `.github/workflows/TANUKI_VALUATION_Update.yml` 行 108
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 66・71・78（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_latest_period_missing`）
@@ -164,9 +171,9 @@
 - テスト・保存済みファイル: `tests/test_market_pulse_sector_rotation.py` 行 162
 - テスト・保存済みファイル: `tests/test_method_change.py` 行 78・88・197・211・218（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 95・106・113・122・130・138・151・160（経由 `tests/test_output_inventory_check.py::_tanuki_inventory`）
-- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 2870・2880・2905・2912・3040・3044
+- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 2875・2885・2910・2917・3045・3049
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_check_latest_period_missing`）
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 494（経由 `common/system_health.py::check_c_latest`）
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::check_c_latest`）
 - テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 93・96
 - テスト・保存済みファイル: `tests/test_stock_html_waterfall_rm.py` 行 62
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/system_health.py::check_c_latest`）
@@ -179,17 +186,17 @@
 ### `docs/value-monitor/tanuki_valuation/data/{T}/report.txt`（2件以上）
 - 起動元: .github/workflows/TANUKI_VALUATION_Update.yml
 - Python・保存済みファイル: `common/screening/report_txt_parser.py` 行 245・248・265・275・280・305（経由 `common/screening/report_txt_parser.py::_all_tickers_with_report`、`common/screening/report_txt_parser.py::parse_ticker_report`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2369・2372・2673・3456・3492・3778（経由 `common/sec_data/report_consistency_check.py::_read_report`、`common/sec_data/report_consistency_check.py::run_checks`）
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2844
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2369・2372・2673・3457・3493・3779（経由 `common/sec_data/report_consistency_check.py::_read_report`、`common/sec_data/report_consistency_check.py::run_checks`）
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2852
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::run_checks`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::run_checks`）
 - テスト・保存済みファイル: `tests/test_report_txt_parser.py` 行 25・35・36・37・43・49・50（経由 `common/screening/report_txt_parser.py::_all_tickers_with_report`、`tests/test_report_txt_parser.py::_make_report`）
 
 ### `docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`（2件以上）
 - 起動元: .github/workflows/Score_Verifier.yml・.github/workflows/TANUKI_VALUATION_Update.yml
-- Python・保存済みファイル: `common/system_health.py` 行 104・109・1214・1302（経由 `common/system_health.py::check_b_score_history`）
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 720
-- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 494（経由 `common/system_health.py::check_b_score_history`）
+- Python・保存済みファイル: `common/system_health.py` 行 104・109・1215・1303（経由 `common/system_health.py::check_b_score_history`）
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 728
+- テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::check_b_score_history`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/system_health.py::check_b_score_history`）
 
 ## 画面の項目
@@ -198,14 +205,14 @@
 
 ### 書き手なし（画面が読むのに、今の書き手のコードにもどのJSONにも無いキー）
 
-- `market_data`（`docs/value-monitor/tanuki_score/index.html` 行 819）: が
+- `market_data`（`docs/value-monitor/tanuki_score/index.html` 行 827）: が
 - `adj_net_income`（`docs/value-monitor/tanuki_valuation/stock.html` 行 836）
-- `conversion_rate`（`docs/value-monitor/tanuki_valuation/stock.html` 行 837・934）
-- `divergence_ratio`（`docs/value-monitor/tanuki_valuation/stock.html` 行 838・926）
+- `conversion_rate`（`docs/value-monitor/tanuki_valuation/stock.html` 行 837・937）
+- `divergence_ratio`（`docs/value-monitor/tanuki_valuation/stock.html` 行 838・929）
 - `divergence_warning`（`docs/value-monitor/tanuki_valuation/stock.html` 行 839）
 - `ma_addback_detected_but_not_applied`（`docs/value-monitor/tanuki_valuation/stock.html` 行 846）
 - `ma_addback_excluded`（`docs/value-monitor/tanuki_valuation/stock.html` 行 845）
-- `rate_is_sector_default`（`docs/value-monitor/tanuki_valuation/stock.html` 行 933）
+- `rate_is_sector_default`（`docs/value-monitor/tanuki_valuation/stock.html` 行 936）
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
@@ -218,6 +225,7 @@
 - `max_eps_ttm_end`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
 - `method_change_applied`（`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/history.json`）
 - `pt_shares_consistency`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: validator の検証の結果（validation.checks。overall の判定に入る）
+- `rec_evidence_weight`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）
 - `segment_quarter`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
 - `segment_xbrl_status`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
 - `v0_note`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
@@ -256,8 +264,8 @@
 - `input`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
 - `inputs`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
 - `intrinsic_value_pt`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
-- `invalid`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
-- `invalid_reason`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json`）
+- `invalid`（`docs/value-monitor/tanuki_valuation/data/{T}/history.json`、`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
+- `invalid_reason`（`docs/value-monitor/tanuki_valuation/data/{T}/history.json`、`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
 - `is_provisional`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
 - `kpi_data`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
 - `last_updated`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
@@ -294,109 +302,110 @@
 - `v0_adjusted`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
 - `validated_at`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）
 
-### `docs/value-monitor/tanuki_score/index.html`（99項目）
+### `docs/value-monitor/tanuki_score/index.html`（100項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
-| — | `all` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 422・717 | 残す（2026-10-20） |
-| — | `asset_turnover` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 909・1179 | 残す（2026-10-20） |
-| — | `available` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 482 | 残す（2026-10-20） |
-| — | `base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 480 | 残す（2026-10-20） |
-| — | `base_fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 462 | 残す（2026-10-20） |
-| — | `buyback_ttm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 516 | 残す（2026-10-20） |
-| — | `components` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 463・464・483・484 | 残す（2026-10-20） |
-| VIX指数 | `credit` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 398 | 残す（2026-10-20） |
-| VIX指数 | `date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 399・400・792・793 | 残す（2026-10-20） |
-| 銘柄 | `desc` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 610・632 | 残す（2026-10-20） |
-| — | `detected` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 510 | 残す（2026-10-20） |
-| — | `dilution_3yr_annual_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 506 | 残す（2026-10-20） |
-| — | `dividend_yield` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 513 | 残す（2026-10-20） |
-| DuPont信頼性LOW(${s.dupont?.reliability_rea | `dupont` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 504・852・856・856 | 残す（2026-10-20） |
-| — | `entries` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1020・1027 | 残す（2026-10-20） |
-| — | `excluded` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 856 | 残す（2026-10-20） |
-| △床 | `fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 338・339・1057・1062 | 残す（2026-10-20） |
-| — | `fcf_base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 462 | 残す（2026-10-20） |
-| — | `fcf_floor_applied` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 464 | 残す（2026-10-20） |
-| — | `fcf_history` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 509 | 残す（2026-10-20） |
-| — | `fcf_outlier` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 510 | 残す（2026-10-20） |
-| — | `fear_greed` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 396 | 残す（2026-10-20） |
-| — | `fields` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 512 | 残す（2026-10-20） |
-| 判定なし（比較できる四半期が | `filled_components` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1007 | 残す（2026-10-20） |
-| 判定なし（比較できる四半期が | `filled_from_annual` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1002・1007・1026 | 残す（2026-10-20） |
-| — | `financial_health` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 506・516・517 | 残す（2026-10-20） |
-| — | `financial_leverage` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 910 | 残す（2026-10-20） |
-| 銘柄なし | `funda` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json` | 344・344・535・535 | 残す（2026-10-20） |
-| — | `funda_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 474 | 残す（2026-10-20） |
-| 更新: （common/sec_data/rotce.py） | `generated_at` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1049 | 残す（2026-10-20） |
-| — | `growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 505 | 残す（2026-10-20） |
-| VIX指数 | `indicators` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 397 | 残す（2026-10-20） |
-| 景気敏感() | `industry` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 508・1122・1134 | 残す（2026-10-20） |
-| — | `invalid` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 743 | 残す（2026-10-20） |
-| \n目安: ${sig ? sig.label : r.signal_reaso | `label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 343・555・607・629 | 残す（2026-10-20） |
-| — | `latest_period_missing` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 512・512 | 残す（2026-10-20） |
-| 銘柄 | `length` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 393・457・512・569 | 残す（2026-10-20） |
-| が | `market_data` | 書き手なし | 819 | 残す（2026-10-20） |
-| — | `matrix` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 478・549 | 残す（2026-10-20） |
-| — | `max_eps_per` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 487 | 残す（2026-10-20） |
-| — | `max_eps_reliability` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 488 | 残す（2026-10-20） |
-| — | `max_eps_shares` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 492 | 残す（2026-10-20） |
-| — | `max_eps_shares_basis` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 490 | 残す（2026-10-20） |
-| — | `monthly` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 457・457 | 残す（2026-10-20） |
-| 判定なし（比較できる四半期が | `n_quarters` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1005 | 残す（2026-10-20） |
-| — | `net_current_assets_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 515 | 残す（2026-10-20） |
-| — | `net_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 517 | 残す（2026-10-20） |
-| — | `net_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 908・1180 | 残す（2026-10-20） |
-| — | `no_data` | 画面の中で作る値 | 1019 | 残す（2026-10-20） |
-| FCFは年次の値で評価（判定は通常どおり） | `note` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 575 | 残す（2026-10-20） |
-| — | `payout_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 514 | 残す（2026-10-20） |
-| — | `peg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 485・561・562・562 | 残す（2026-10-20） |
-| 低PER(x) | `per` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 351・351・484・560 | 残す（2026-10-20） |
-| — | `per_is_forward` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 501 | 残す（2026-10-20） |
-| — | `price_at_judgment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 800・800 | 残す（2026-10-20） |
-| — | `ps` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 486・565・566・567 | 残す（2026-10-20） |
-| — | `ptbv` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 972・972・973・973 | 残す（2026-10-20） |
-| 判定なし（比較できる四半期が | `ptbv_pctl` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1006・1006 | 残す（2026-10-20） |
-| \n直近の四半期: | `quarter_end` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1008 | 残す（2026-10-20） |
-| — | `qx` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 551・552・553 | 残す（2026-10-20） |
-| — | `qy` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 551・552・553 | 残す（2026-10-20） |
-| — | `rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 505 | 残す（2026-10-20） |
-| — | `reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1018 | 残す（2026-10-20） |
-| — | `reliability` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 892・1141 | 残す（2026-10-20） |
-| 一過性要因の可能性あり | `reliability_reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 894・1147 | 残す（2026-10-20） |
-| — | `return_30d` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 747・747・747・801 | 残す（2026-10-20） |
-| — | `return_60d` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 748・748・748・802 | 残す（2026-10-20） |
-| — | `return_90d` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 749・750・750・803 | 残す（2026-10-20） |
-| — | `rev_yoy` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 458 | 残す（2026-10-20） |
-| — | `rice` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 480・480・482・507 | 残す（2026-10-20） |
-| VIX指数 | `risk_off_score` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 398 | 残す（2026-10-20） |
-| DuPont ROEと実績ROEの乖離が | `roe` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 851・901・901・903 | 残す（2026-10-20） |
-| — | `roe_10yr_avg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 483 | 残す（2026-10-20） |
-| DuPont ROEと実績ROEの乖離が | `roe_decomposed` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 886・887・891・901 | 残す（2026-10-20） |
-| — | `roic_wacc_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 507 | 残す（2026-10-20） |
-| — | `rotce` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 972・973・1000・1001 | 残す（2026-10-20） |
-| 判定なし（比較できる四半期が | `rotce_pctl` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1006 | 残す（2026-10-20） |
-| — | `rule40` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 347・347・347・347 | 残す（2026-10-20） |
-| — | `rule40_yoy_netmargin` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 459 | 残す（2026-10-20） |
-| — | `score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 396 | 残す（2026-10-20） |
-| — | `sell_reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 477 | 残す（2026-10-20） |
-| P/TBV（対数） | `signal` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json`<br>`docs/market-monitor/market-pulse/data/market_data.json` | 998・1023・1024・1025 | 残す（2026-10-20） |
-| \n目安: ${sig ? sig.label : r.signal_reaso | `signal_reason` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1004・1025 | 残す（2026-10-20） |
-| — | `stage` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 354・460・1102・1102 | 残す（2026-10-20） |
-| — | `stage_label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 469 | 残す（2026-10-20） |
-| — | `structural_deficit` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 463 | 残す（2026-10-20） |
-| — | `substage_label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 468 | 残す（2026-10-20） |
-| FCFは年次の値で評価（判定は通常どおり） | `substituted_by_annual` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 575 | 残す（2026-10-20） |
-| — | `tanuki_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 476・742・792・799 | 残す（2026-10-20） |
-| 銘柄なし | `ticker` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 342・342・442・598 | 残す（2026-10-20） |
-| — | `tickers` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 418・442・447・969 | 残す（2026-10-20） |
-| 銘柄なし | `timing` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 345・345・600・622 | 残す（2026-10-20） |
-| — | `timing_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 475 | 残す（2026-10-20） |
-| — | `total` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 746・780 | 残す（2026-10-20） |
-| 割安+% | `upside` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json` | 350・581・581・583 | 残す（2026-10-20） |
-| — | `upside_percent` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 461 | 残す（2026-10-20） |
-| VIX指数 | `value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 397・430・438 | 残す（2026-10-20） |
-| — | `year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1056・1056 | 残す（2026-10-20） |
-| — | `yoy_growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json` | 465 | 残す（2026-10-20） |
+| — | `all` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 423・725 | 残す（2026-10-20） |
+| — | `asset_turnover` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 917・1182 | 残す（2026-10-20） |
+| — | `available` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 488 | 残す（2026-10-20） |
+| — | `base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 486 | 残す（2026-10-20） |
+| — | `base_fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 468 | 残す（2026-10-20） |
+| — | `buyback_ttm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 524 | 残す（2026-10-20） |
+| — | `components` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 469・470・489・490 | 残す（2026-10-20） |
+| VIX指数 | `credit` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 399 | 残す（2026-10-20） |
+| — | `cyclical` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 516・1125 | 残す（2026-10-20） |
+| VIX指数 | `date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 400・401・800・801 | 残す（2026-10-20） |
+| 銘柄 | `desc` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 618・640 | 残す（2026-10-20） |
+| — | `detected` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 518 | 残す（2026-10-20） |
+| — | `dilution_3yr_annual_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 512 | 残す（2026-10-20） |
+| — | `dividend_yield` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 521 | 残す（2026-10-20） |
+| DuPont信頼性LOW(${s.dupont?.reliability_rea | `dupont` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 510・860・864・864 | 残す（2026-10-20） |
+| — | `entries` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1028・1035 | 残す（2026-10-20） |
+| — | `excluded` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 864 | 残す（2026-10-20） |
+| △床 | `fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 339・340・1065・1070 | 残す（2026-10-20） |
+| — | `fcf_base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 468 | 残す（2026-10-20） |
+| — | `fcf_floor_applied` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 470 | 残す（2026-10-20） |
+| — | `fcf_history` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 517 | 残す（2026-10-20） |
+| — | `fcf_outlier` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 518 | 残す（2026-10-20） |
+| — | `fear_greed` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 397 | 残す（2026-10-20） |
+| — | `fields` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 520 | 残す（2026-10-20） |
+| 判定なし（比較できる四半期が | `filled_components` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1015 | 残す（2026-10-20） |
+| 判定なし（比較できる四半期が | `filled_from_annual` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1010・1015・1034 | 残す（2026-10-20） |
+| — | `financial_health` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 512・524・525 | 残す（2026-10-20） |
+| — | `financial_leverage` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 918 | 残す（2026-10-20） |
+| 銘柄なし | `funda` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json` | 345・345・543・543 | 残す（2026-10-20） |
+| — | `funda_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 480 | 残す（2026-10-20） |
+| 更新: （common/sec_data/rotce.py） | `generated_at` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1057 | 残す（2026-10-20） |
+| — | `growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 511 | 残す（2026-10-20） |
+| VIX指数 | `indicators` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 398 | 残す（2026-10-20） |
+| 景気敏感() | `industry` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 514・1137 | 残す（2026-10-20） |
+| — | `invalid` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 751 | 残す（2026-10-20） |
+| \n目安: ${sig ? sig.label : r.signal_reaso | `label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 344・563・615・637 | 残す（2026-10-20） |
+| — | `latest_period_missing` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 520・520 | 残す（2026-10-20） |
+| 銘柄 | `length` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 394・463・520・577 | 残す（2026-10-20） |
+| が | `market_data` | 書き手なし | 827 | 残す（2026-10-20） |
+| — | `matrix` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 484・557 | 残す（2026-10-20） |
+| — | `max_eps_per` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 493 | 残す（2026-10-20） |
+| — | `max_eps_reliability` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 494 | 残す（2026-10-20） |
+| — | `max_eps_shares` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 498 | 残す（2026-10-20） |
+| — | `max_eps_shares_basis` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 496 | 残す（2026-10-20） |
+| — | `monthly` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 463・463 | 残す（2026-10-20） |
+| 判定なし（比較できる四半期が | `n_quarters` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1013 | 残す（2026-10-20） |
+| — | `net_current_assets_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 523 | 残す（2026-10-20） |
+| — | `net_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 525 | 残す（2026-10-20） |
+| — | `net_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 916・1183 | 残す（2026-10-20） |
+| — | `no_data` | 画面の中で作る値 | 1027 | 残す（2026-10-20） |
+| FCFは年次の値で評価（判定は通常どおり） | `note` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 583 | 残す（2026-10-20） |
+| — | `payout_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 522 | 残す（2026-10-20） |
+| — | `peg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 491・569・570・570 | 残す（2026-10-20） |
+| 低PER(x) | `per` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 352・352・490・568 | 残す（2026-10-20） |
+| — | `per_is_forward` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 507 | 残す（2026-10-20） |
+| — | `price_at_judgment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 808・808 | 残す（2026-10-20） |
+| — | `ps` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 492・573・574・575 | 残す（2026-10-20） |
+| — | `ptbv` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 980・980・981・981 | 残す（2026-10-20） |
+| 判定なし（比較できる四半期が | `ptbv_pctl` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1014・1014 | 残す（2026-10-20） |
+| \n直近の四半期: | `quarter_end` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1016 | 残す（2026-10-20） |
+| — | `qx` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 559・560・561 | 残す（2026-10-20） |
+| — | `qy` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 559・560・561 | 残す（2026-10-20） |
+| — | `rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 511 | 残す（2026-10-20） |
+| — | `reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1026 | 残す（2026-10-20） |
+| — | `reliability` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 900・1144 | 残す（2026-10-20） |
+| 一過性要因の可能性あり | `reliability_reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 902・1150 | 残す（2026-10-20） |
+| — | `return_30d` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 755・755・755・809 | 残す（2026-10-20） |
+| — | `return_60d` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 756・756・756・810 | 残す（2026-10-20） |
+| — | `return_90d` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 757・758・758・811 | 残す（2026-10-20） |
+| — | `rev_yoy` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 464 | 残す（2026-10-20） |
+| — | `rice` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 486・486・488・513 | 残す（2026-10-20） |
+| VIX指数 | `risk_off_score` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 399 | 残す（2026-10-20） |
+| DuPont ROEと実績ROEの乖離が | `roe` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 859・909・909・911 | 残す（2026-10-20） |
+| — | `roe_10yr_avg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 489 | 残す（2026-10-20） |
+| DuPont ROEと実績ROEの乖離が | `roe_decomposed` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 894・895・899・909 | 残す（2026-10-20） |
+| — | `roic_wacc_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 513 | 残す（2026-10-20） |
+| — | `rotce` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 980・981・1008・1009 | 残す（2026-10-20） |
+| 判定なし（比較できる四半期が | `rotce_pctl` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1014 | 残す（2026-10-20） |
+| — | `rule40` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 348・348・348・348 | 残す（2026-10-20） |
+| — | `rule40_yoy_netmargin` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 465 | 残す（2026-10-20） |
+| — | `score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 397 | 残す（2026-10-20） |
+| — | `sell_reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 483 | 残す（2026-10-20） |
+| P/TBV（対数） | `signal` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json`<br>`docs/market-monitor/market-pulse/data/market_data.json` | 1006・1031・1032・1033 | 残す（2026-10-20） |
+| \n目安: ${sig ? sig.label : r.signal_reaso | `signal_reason` | ほかの書き手あり<br>`docs/common/sec_data/rotce/_summary.json` | 1012・1033 | 残す（2026-10-20） |
+| — | `stage` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 355・466・1110・1110 | 残す（2026-10-20） |
+| — | `stage_label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 475 | 残す（2026-10-20） |
+| — | `structural_deficit` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 469 | 残す（2026-10-20） |
+| — | `substage_label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 474 | 残す（2026-10-20） |
+| FCFは年次の値で評価（判定は通常どおり） | `substituted_by_annual` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 583 | 残す（2026-10-20） |
+| — | `tanuki_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 482・750・800・807 | 残す（2026-10-20） |
+| 銘柄なし | `ticker` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 343・343・443・606 | 残す（2026-10-20） |
+| — | `tickers` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 419・443・448・453 | 残す（2026-10-20） |
+| 銘柄なし | `timing` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 346・346・608・630 | 残す（2026-10-20） |
+| — | `timing_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 481 | 残す（2026-10-20） |
+| — | `total` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 754・788 | 残す（2026-10-20） |
+| 割安+% | `upside` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json` | 351・589・589・591 | 残す（2026-10-20） |
+| — | `upside_percent` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 467 | 残す（2026-10-20） |
+| VIX指数 | `value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 398・431・439 | 残す（2026-10-20） |
+| — | `year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1064・1064 | 残す（2026-10-20） |
+| — | `yoy_growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json` | 471 | 残す（2026-10-20） |
 
 ### `docs/value-monitor/tanuki_valuation/index.html`（38項目）
 
@@ -441,7 +450,7 @@
 | — | `value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 402 | 残す（2026-10-20） |
 | — | `wacc` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 402・495・495 | 残す（2026-10-20） |
 
-### `docs/value-monitor/tanuki_valuation/stock.html`（251項目）
+### `docs/value-monitor/tanuki_valuation/stock.html`（256項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
@@ -453,249 +462,254 @@
 | — | `action` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 850 | 残す（2026-10-20） |
 | — | `adj_net_income` | 書き手なし | 836 | 残す（2026-10-20） |
 | — | `ai_concerns` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 879 | 残す（2026-10-20） |
-| — | `alpha` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 802・2384 | 残す（2026-10-20） |
+| — | `alpha` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 802・2392 | 残す（2026-10-20） |
 | — | `alpha_uncapped` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 804 | 残す（2026-10-20） |
 | — | `alpha_was_capped` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 803 | 残す（2026-10-20） |
-| — | `amount` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1774 | 残す（2026-10-20） |
-| — | `analyst_count` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1015 | 残す（2026-10-20） |
-| — | `analyst_rec_key` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1016 | 残す（2026-10-20） |
-| — | `analyst_target_high` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1014 | 残す（2026-10-20） |
-| — | `analyst_target_low` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1013 | 残す（2026-10-20） |
-| — | `analyst_target_mean` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1012 | 残す（2026-10-20） |
-| — | `analyst_target_median` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1011 | 残す（2026-10-20） |
-| — | `analyst_vs_iv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1017 | 残す（2026-10-20） |
-| — | `applied` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 833・861・925・933 | 残す（2026-10-20） |
-| 資産回転率（Asset Turnover） | `asset_turnover` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1652 | 残す（2026-10-20） |
-| — | `available` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 870・2747 | 残す（2026-10-20） |
-| — | `base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 574・871・1282・1282 | 残す（2026-10-20） |
+| — | `amount` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1782 | 残す（2026-10-20） |
+| — | `analyst_count` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1018 | 残す（2026-10-20） |
+| — | `analyst_rec_key` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1019 | 残す（2026-10-20） |
+| — | `analyst_target_high` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1017 | 残す（2026-10-20） |
+| — | `analyst_target_low` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1016 | 残す（2026-10-20） |
+| — | `analyst_target_mean` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1015 | 残す（2026-10-20） |
+| — | `analyst_target_median` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1014 | 残す（2026-10-20） |
+| — | `analyst_vs_iv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1020 | 残す（2026-10-20） |
+| — | `applied` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 833・861・928・936 | 残す（2026-10-20） |
+| 資産回転率（Asset Turnover） | `asset_turnover` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1660 | 残す（2026-10-20） |
+| — | `available` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 870・2755 | 残す（2026-10-20） |
+| — | `base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 574・871・1290・1290 | 残す（2026-10-20） |
 | — | `base_fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 508・817 | 残す（2026-10-20） |
-| （Ke ・高成長年 ＝ 表の中央） | `base_wacc` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1157 | 残す（2026-10-20） |
-| （Ke ・高成長年 ＝ 表の中央） | `base_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1157 | 残す（2026-10-20） |
-| FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT | `basis_mix` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1093・1093・1096 | 残す（2026-10-20） |
-| — | `bear` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 872・1283・1283 | 残す（2026-10-20） |
-| Bear乗数 | `bear_multiplier` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1688 | 残す（2026-10-20） |
-| — | `beta` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 971 | 残す（2026-10-20） |
-| — | `bs_adjustment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 858・2386 | 残す（2026-10-20） |
-| — | `bull` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 873・1281・1281 | 残す（2026-10-20） |
-| Bull乗数 | `bull_multiplier` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1689 | 残す（2026-10-20） |
+| （Ke ・高成長年 ＝ 表の中央） | `base_wacc` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1165 | 残す（2026-10-20） |
+| （Ke ・高成長年 ＝ 表の中央） | `base_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1165 | 残す（2026-10-20） |
+| FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT | `basis_mix` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1096・1096・1099 | 残す（2026-10-20） |
+| — | `bear` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 872・1291・1291 | 残す（2026-10-20） |
+| Bear乗数 | `bear_multiplier` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1696 | 残す（2026-10-20） |
+| — | `beta` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 974 | 残す（2026-10-20） |
+| — | `bs_adjustment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 858・2394 | 残す（2026-10-20） |
+| — | `bull` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 873・1289・1289 | 残す（2026-10-20） |
+| Bull乗数 | `bull_multiplier` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1697 | 残す（2026-10-20） |
 | — | `calculation_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 797 | 残す（2026-10-20） |
 | — | `cash` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 862 | 残す（2026-10-20） |
-| — | `cash_and_equivalents` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1593 | 残す（2026-10-20） |
-| — | `category` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1773 | 残す（2026-10-20） |
-| 参考: 実績CAGR等 | `clipped` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1390・1700 | 残す（2026-10-20） |
+| — | `cash_and_equivalents` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1601 | 残す（2026-10-20） |
+| — | `category` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1781 | 残す（2026-10-20） |
+| 参考: 実績CAGR等 | `clipped` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1398・1708 | 残す（2026-10-20） |
 | 最新年度 | `components` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 795・804・809・810 | 残す（2026-10-20） |
-| — | `conversion_rate` | 書き手なし | 837・934 | 残す（2026-10-20） |
+| — | `conversion_rate` | 書き手なし | 837・937 | 残す（2026-10-20） |
 | — | `count` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 826 | 残す（2026-10-20） |
-| — | `current_price` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 795・2514 | 残す（2026-10-20） |
+| — | `current_price` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 795・2522 | 残す（2026-10-20） |
 | — | `cv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 821 | 残す（2026-10-20） |
-| — | `damodaran_industry` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2237・2237 | 残す（2026-10-20） |
-| — | `damodaran_year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2238・2238 | 残す（2026-10-20） |
-| — | `date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 547・2512 | 残す（2026-10-20） |
-| Koichi式 v6.2 | `dcf_components` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 801・808・2381 | 残す（2026-10-20） |
+| — | `damodaran_industry` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2245・2245 | 残す（2026-10-20） |
+| — | `damodaran_year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2246・2246 | 残す（2026-10-20） |
+| — | `date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 547・2520 | 残す（2026-10-20） |
+| Koichi式 v6.2 | `dcf_components` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 801・808・2389 | 残す（2026-10-20） |
 | — | `dcf_type` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 807 | 残す（2026-10-20） |
-| — | `deficit_quality` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2759 | 残す（2026-10-20） |
-| — | `delay_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1993 | 残す（2026-10-20） |
+| — | `deficit_quality` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2767 | 残す（2026-10-20） |
+| — | `delay_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2001 | 残す（2026-10-20） |
 | — | `detected` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 847 | 残す（2026-10-20） |
-| 最新年度 | `diluted_shares` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 892・999・2385 | 残す（2026-10-20） |
-| — | `dilution_3yr_annual_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1573 | 残す（2026-10-20） |
-| — | `dilution_comment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1576 | 残す（2026-10-20） |
-| — | `dilution_severity` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1575 | 残す（2026-10-20） |
-| — | `divergence_ratio` | 書き手なし | 838・926 | 残す（2026-10-20） |
+| 最新年度 | `diluted_shares` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 892・1002・2393 | 残す（2026-10-20） |
+| — | `dilution_3yr_annual_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1581 | 残す（2026-10-20） |
+| — | `dilution_comment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1584 | 残す（2026-10-20） |
+| — | `dilution_severity` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1583 | 残す（2026-10-20） |
+| — | `divergence_ratio` | 書き手なし | 838・929 | 残す（2026-10-20） |
 | — | `divergence_warning` | 書き手なし | 839 | 残す（2026-10-20） |
-| — | `dupont` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1618 | 残す（2026-10-20） |
-| — | `end` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 346・346・358・361 | 残す（2026-10-20） |
+| — | `dupont` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1626 | 残す（2026-10-20） |
+| SECの申告の値に注意が要る期があります（直近3年） | `end` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 346・346・358・361 | 残す（2026-10-20） |
 | — | `erp` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 659 | 残す（2026-10-20） |
-| — | `error` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2733・2824 | 残す（2026-10-20） |
+| — | `error` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2741・2832 | 残す（2026-10-20） |
 | — | `estimated_fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 508・835 | 残す（2026-10-20） |
-| — | `estimated_revenue` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1368 | 残す（2026-10-20） |
-| — | `excluded` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1623 | 残す（2026-10-20） |
+| — | `estimated_revenue` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1376 | 残す（2026-10-20） |
+| — | `excluded` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1631 | 残す（2026-10-20） |
 | — | `expectation_score` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 590・593 | 残す（2026-10-20） |
-| — | `expected_return_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1322 | 残す（2026-10-20） |
-| — | `fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2136・2146・2160・2160 | 残す（2026-10-20） |
+| — | `expected_return_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1330 | 残す（2026-10-20） |
+| — | `fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2144・2154・2168・2168 | 残す（2026-10-20） |
 | — | `fcf_2yr_avg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 819・819 | 残す（2026-10-20） |
 | — | `fcf_5yr_avg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 818・818 | 残す（2026-10-20） |
 | — | `fcf_base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 508・815 | 残す（2026-10-20） |
 | — | `fcf_base_method` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 816 | 残す（2026-10-20） |
-| — | `fcf_base_used` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 817・2773 | 残す（2026-10-20） |
-| — | `fcf_estimation` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 508・832・2771 | 残す（2026-10-20） |
-| FCF CAGR 上限 | `fcf_growth_cap` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1687 | 残す（2026-10-20） |
-| FCF CAGR 下限 | `fcf_growth_floor` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1686 | 残す（2026-10-20） |
-| — | `fcf_history` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2134 | 残す（2026-10-20） |
-| — | `fcf_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1993・2771 | 残す（2026-10-20） |
+| — | `fcf_base_used` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 817・2781 | 残す（2026-10-20） |
+| — | `fcf_estimation` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 508・832・2779 | 残す（2026-10-20） |
+| FCF CAGR 上限 | `fcf_growth_cap` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1695 | 残す（2026-10-20） |
+| FCF CAGR 下限 | `fcf_growth_floor` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1694 | 残す（2026-10-20） |
+| — | `fcf_history` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2142 | 残す（2026-10-20） |
+| — | `fcf_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2001・2779 | 残す（2026-10-20） |
 | — | `fcf_outlier` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 829 | 残す（2026-10-20） |
-| 財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー | `fcf_ttm_end` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2191 | 残す（2026-10-20） |
+| 財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー | `fcf_ttm_end` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2199 | 残す（2026-10-20） |
 | — | `fcf_value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 855 | 残す（2026-10-20） |
-| — | `fields` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 340・1086 | 残す（2026-10-20） |
-| — | `financial_health` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1501・1569 | 残す（2026-10-20） |
-| 財務レバレッジ（Financial Leverage） | `financial_leverage` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1653 | 残す（2026-10-20） |
+| SECの申告の値に注意が要る期があります（直近3年） | `field` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1104 | 残す（2026-10-20） |
+| — | `fields` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 340・1089 | 残す（2026-10-20） |
+| — | `financial` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 899・899 | 残す（2026-10-20） |
+| — | `financial_health` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1509・1577 | 残す（2026-10-20） |
+| 財務レバレッジ（Financial Leverage） | `financial_leverage` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1661 | 残す（2026-10-20） |
 | — | `fiscal_year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 854・866 | 残す（2026-10-20） |
-| — | `floor` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2142 | 残す（2026-10-20） |
-| Koichi式 v6.2 | `formula` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 798・1068・1068 | 残す（2026-10-20） |
+| — | `floor` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2150 | 残す（2026-10-20） |
+| Koichi式 v6.2 | `formula` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 798・1071・1071 | 残す（2026-10-20） |
 | — | `found` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 851 | 残す（2026-10-20） |
 | — | `from_peak` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 557 | 残す（2026-10-20） |
-| 5年後 | `future_value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1325・1338 | 残す（2026-10-20） |
-| — | `future_values` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 988 | 残す（2026-10-20） |
-| 年 @ | `growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1370・1388・1514・1514 | 残す（2026-10-20） |
-| 上限 | `growth_cap` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1703・1703 | 残す（2026-10-20） |
-| 上限 | `growth_floor` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1703 | 残す（2026-10-20） |
-| — | `growth_options` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 824・2383 | 残す（2026-10-20） |
-| — | `growth_rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1281・1282・1283・1418 | 残す（2026-10-20） |
-| — | `growth_sanity` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 990 | 残す（2026-10-20） |
-| — | `growth_scenarios` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 980 | 残す（2026-10-20） |
-| — | `growth_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 977 | 残す（2026-10-20） |
+| 5年後 | `future_value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1333・1346 | 残す（2026-10-20） |
+| — | `future_values` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 991 | 残す（2026-10-20） |
+| 年 @ | `growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1378・1396・1522・1522 | 残す（2026-10-20） |
+| 上限 | `growth_cap` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1711・1711 | 残す（2026-10-20） |
+| 上限 | `growth_floor` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1711 | 残す（2026-10-20） |
+| — | `growth_options` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 824・2391 | 残す（2026-10-20） |
+| — | `growth_rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1289・1290・1291・1426 | 残す（2026-10-20） |
+| — | `growth_sanity` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 993 | 残す（2026-10-20） |
+| — | `growth_scenarios` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 983 | 残す（2026-10-20） |
+| — | `growth_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 980 | 残す（2026-10-20） |
 | — | `high_growth_rate_used` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 887 | 残す（2026-10-20） |
 | — | `high_growth_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 889 | 残す（2026-10-20） |
 | — | `industry` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 894 | 残す（2026-10-20） |
-| — | `insider_buy_count` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1027 | 残す（2026-10-20） |
-| 財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー | `insider_latest_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1030・2191 | 残す（2026-10-20） |
-| — | `insider_net_direction` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1029 | 残す（2026-10-20） |
-| — | `insider_sell_count` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1028 | 残す（2026-10-20） |
+| — | `insider_buy_count` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1030 | 残す（2026-10-20） |
+| 財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー | `insider_latest_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1033・2199 | 残す（2026-10-20） |
+| — | `insider_net_direction` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1032 | 残す（2026-10-20） |
+| — | `insider_sell_count` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1031 | 残す（2026-10-20） |
 | — | `intrinsic_value_beta` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 791 | 残す（2026-10-20） |
-| — | `intrinsic_value_per_share` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 788・1281・1282・1283 | 残す（2026-10-20） |
+| — | `intrinsic_value_per_share` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 788・1289・1290・1291 | 残す（2026-10-20） |
 | — | `intrinsic_value_rf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 792 | 残す（2026-10-20） |
-| — | `intrinsic_value_rf_rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2262・2264 | 残す（2026-10-20） |
-| — | `invalid` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 2509 | 残す（2026-10-20） |
+| — | `intrinsic_value_rf_rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2270・2272 | 残す（2026-10-20） |
+| — | `invalid` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/score_history.json` | 2517 | 残す（2026-10-20） |
 | — | `is_annual` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 345 | 残す（2026-10-20） |
-| — | `item_name` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1773 | 残す（2026-10-20） |
+| — | `item_name` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1781 | 残す（2026-10-20） |
 | — | `items` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 853 | 残す（2026-10-20） |
-| — | `key` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2857 | 残す（2026-10-20） |
-| ERP（株式リスクプレミアム、現在値） | `label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 385・686・1078・1310 | 残す（2026-10-20） |
-| — | `latest_period_missing` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1086・1086・1088・1089 | 残す（2026-10-20） |
-| — | `latest_revenue` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 997・1362・2774 | 残す（2026-10-20） |
+| — | `key` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2865 | 残す（2026-10-20） |
+| SECの申告の値に注意が要る期があります（直近3年） | `kind` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1104 | 残す（2026-10-20） |
+| ERP（株式リスクプレミアム、現在値） | `label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 385・686・1081・1318 | 残す（2026-10-20） |
+| — | `latest_period_missing` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1089・1089・1091・1092 | 残す（2026-10-20） |
+| — | `latest_revenue` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1000・1370・2782 | 残す（2026-10-20） |
 | 直近件（新しい順） | `length` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 356・535・562・586 | 残す（2026-10-20） |
 | — | `lifecycle` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 548 | 残す（2026-10-20） |
 | — | `long_term_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 864 | 残す（2026-10-20） |
-| — | `ma200` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2515 | 残す（2026-10-20） |
+| — | `ma200` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2523 | 残す（2026-10-20） |
 | — | `ma200_dev` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 556 | 残す（2026-10-20） |
 | — | `ma_addback_detected_but_not_applied` | 書き手なし | 846 | 残す（2026-10-20） |
 | — | `ma_addback_excluded` | 書き手なし | 845 | 残す（2026-10-20） |
-| Rm基準（βなし %） | `market_return` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 973・1131・1503・1959 | 残す（2026-10-20） |
-| — | `matrix` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 978 | 残す（2026-10-20） |
+| Rm基準（βなし %） | `market_return` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 976・1139・1511・1967 | 残す（2026-10-20） |
+| — | `match` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1071・1071 | 残す（2026-10-20） |
+| — | `matrix` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 981 | 残す（2026-10-20） |
 | — | `maturity_profile` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 885・889 | 残す（2026-10-20） |
-| — | `method` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 816・1792 | 残す（2026-10-20） |
-| FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT | `mixed` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1093 | 残す（2026-10-20） |
-| Phase1: 年（Moat Score由来${d.components?.mo | `moat_phase1_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1948 | 残す（2026-10-20） |
-| Phase1: 年（Moat Score由来${d.components?.mo | `moat_score_source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1948 | 残す（2026-10-20） |
+| — | `method` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 816・1800 | 残す（2026-10-20） |
+| FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT | `mixed` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1096 | 残す（2026-10-20） |
+| Phase1: 年（Moat Score由来${d.components?.mo | `moat_phase1_years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1956 | 残す（2026-10-20） |
+| Phase1: 年（Moat Score由来${d.components?.mo | `moat_score_source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1956 | 残す（2026-10-20） |
 | — | `model` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 881 | 残す（2026-10-20） |
 | 表示期間: history記録開始以降（' + pivPoints[0].mon | `month` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 672・702・702・709 | 残す（2026-10-20） |
 | — | `monthly` | ほかの書き手あり<br>`docs/value-monitor/hypecore/data/AAPL_poc.json`<br>`docs/value-monitor/hypecore/data/ABBV_poc.json` | 585・666 | 残す（2026-10-20） |
-| — | `name` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1374・1989 | 残す（2026-10-20） |
+| — | `name` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1382・1997 | 残す（2026-10-20） |
 | — | `net_cash` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 859 | 残す（2026-10-20） |
-| — | `net_cash_per_share` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 860・2386 | 残す（2026-10-20） |
-| — | `net_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1501・1571 | 残す（2026-10-20） |
-| 純利益率（Net Margin） | `net_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1651 | 残す（2026-10-20） |
-| 財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー | `next_earnings_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1068・1068・1574・2191 | 残す（2026-10-20） |
-| 減収（構造的変化・継続）: | `ni_ocf_divergence` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1118 | 残す（2026-10-20） |
-| 。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして | `note` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 840・849・874・1088 | 残す（2026-10-20） |
-| 営業利益率 | `op_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1933 | 残す（2026-10-20） |
-| 未実現の成長機会を「仮説セグメント」として定量化。TAM × 侵入率で期待売上、 | `options` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1986 | 残す（2026-10-20） |
+| — | `net_cash_per_share` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 860・2394 | 残す（2026-10-20） |
+| — | `net_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1509・1579 | 残す（2026-10-20） |
+| 純利益率（Net Margin） | `net_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1659 | 残す（2026-10-20） |
+| 財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー | `next_earnings_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1071・1071・1582・2199 | 残す（2026-10-20） |
+| 減収（構造的変化・継続）: | `ni_ocf_divergence` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1126 | 残す（2026-10-20） |
+| 。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして | `note` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 840・849・874・1091 | 残す（2026-10-20） |
+| 営業利益率 | `op_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1941 | 残す（2026-10-20） |
+| 未実現の成長機会を「仮説セグメント」として定量化。TAM × 侵入率で期待売上、 | `options` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1994 | 残す（2026-10-20） |
 | — | `overall` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 880 | 残す（2026-10-20） |
 | D&A比率 | `paper_bgcolor` | 画面の中で作る値 | 432・461・488 | 残す（2026-10-20） |
-| — | `penetration` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1993 | 残す（2026-10-20） |
-| — | `per` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 993 | 残す（2026-10-20） |
-| — | `per_adjusted` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 994 | 残す（2026-10-20） |
-| — | `period_label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1754 | 残す（2026-10-20） |
+| — | `penetration` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2001 | 残す（2026-10-20） |
+| — | `per` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 996 | 残す（2026-10-20） |
+| — | `per_adjusted` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 997 | 残す（2026-10-20） |
+| — | `period_label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1762 | 残す（2026-10-20） |
 | — | `phase` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 550 | 残す（2026-10-20） |
-| 年 @ | `phase1` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>`docs/value-monitor/tanuki_valuation/data/{T}/latest.json` | 889・1884・1884 | 残す（2026-10-20） |
-| — | `phase1_growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2236 | 残す（2026-10-20） |
-| — | `phase1_growth_auto_adjusted` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2210 | 残す（2026-10-20） |
-| 年 @ | `phase2` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>`docs/value-monitor/tanuki_valuation/data/{T}/latest.json` | 1890・1890 | 残す（2026-10-20） |
+| 年 @ | `phase1` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>`docs/value-monitor/tanuki_valuation/data/{T}/latest.json` | 889・1892・1892 | 残す（2026-10-20） |
+| — | `phase1_growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2244 | 残す（2026-10-20） |
+| — | `phase1_growth_auto_adjusted` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2218 | 残す（2026-10-20） |
+| 年 @ | `phase2` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>`docs/value-monitor/tanuki_valuation/data/{T}/latest.json` | 1898・1898 | 残す（2026-10-20） |
 | D&A比率 | `plot_bgcolor` | 画面の中で作る値 | 433・462・489 | 残す（2026-10-20） |
 | — | `price` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 552 | 残す（2026-10-20） |
 | price/IV 推移（表示期間中） | `price_iv_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 553・672・675・675 | 残す（2026-10-20） |
-| — | `primary` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 981・982 | 残す（2026-10-20） |
-| — | `probability` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1993 | 残す（2026-10-20） |
-| — | `pv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1990 | 残す（2026-10-20） |
-| — | `pv_fcf_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2426 | 残す（2026-10-20） |
+| — | `primary` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 984・985 | 残す（2026-10-20） |
+| — | `probability` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2001 | 残す（2026-10-20） |
+| — | `pv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1998 | 残す（2026-10-20） |
+| — | `pv_fcf_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2434 | 残す（2026-10-20） |
 | — | `pv_high` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 809 | 残す（2026-10-20） |
 | — | `pv_phase1` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 811 | 残す（2026-10-20） |
-| — | `pv_phase1_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2417 | 残す（2026-10-20） |
+| — | `pv_phase1_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2425 | 残す（2026-10-20） |
 | — | `pv_phase2` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 812 | 残す（2026-10-20） |
-| — | `pv_phase2_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2417 | 残す（2026-10-20） |
+| — | `pv_phase2_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2425 | 残す（2026-10-20） |
 | — | `pv_terminal` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 810 | 残す（2026-10-20） |
-| — | `pv_tv_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2417・2426 | 残す（2026-10-20） |
-| — | `rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 982・1306・1311・1514 | 残す（2026-10-20） |
-| — | `rate_is_sector_default` | 書き手なし | 933 | 残す（2026-10-20） |
+| — | `pv_tv_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2425・2434 | 残す（2026-10-20） |
+| — | `rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 985・1314・1319・1522 | 残す（2026-10-20） |
+| — | `rate_is_sector_default` | 書き手なし | 936 | 残す（2026-10-20） |
 | — | `ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 820・821 | 残す（2026-10-20） |
 | — | `raw_fcf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 834 | 残す（2026-10-20） |
-| 売上(推定=最新Revenue×weight) \| 構成比 \| 成長率シナリオ（ | `raw_weighted_growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1386・1387・1702・1703 | 残す（2026-10-20） |
-| 算出不能（reason: ${dp.reason \|\| | `reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1632・1632 | 残す（2026-10-20） |
+| 売上(推定=最新Revenue×weight) \| 構成比 \| 成長率シナリオ（ | `raw_weighted_growth` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1394・1395・1710・1711 | 残す（2026-10-20） |
+| 算出不能（reason: ${dp.reason \|\| | `reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1640・1640 | 残す（2026-10-20） |
 | — | `recommendation` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 551 | 残す（2026-10-20） |
-| ターミナル成長率 | `recommended_g` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1389・1697・1698・2211 | 残す（2026-10-20） |
-| — | `recommended_g_median` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2212 | 残す（2026-10-20） |
-| — | `required_growth_rf_base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2295 | 残す（2026-10-20） |
-| — | `required_growth_rf_live` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2296 | 残す（2026-10-20） |
-| — | `return_metrics` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 989 | 残す（2026-10-20） |
+| ターミナル成長率 | `recommended_g` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1397・1705・1706・2219 | 残す（2026-10-20） |
+| — | `recommended_g_median` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2220 | 残す（2026-10-20） |
+| — | `required_growth_rf_base` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2303 | 残す（2026-10-20） |
+| — | `required_growth_rf_live` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2304 | 残す（2026-10-20） |
+| — | `return_metrics` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 992 | 残す（2026-10-20） |
 | — | `rev_yoy` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 554 | 残す（2026-10-20） |
-| 減収（構造的変化・継続）: | `revenue_decline` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1118 | 残す（2026-10-20） |
-| — | `revenue_growth_pct` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2759 | 残す（2026-10-20） |
-| — | `revenue_ttm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 996 | 残す（2026-10-20） |
-| 最新年度 | `revenue_ttm_end` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 998 | 残す（2026-10-20） |
-| RICE_adj: R&D資本化想定（CapExのみ投資強度）参考値 | `rice` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 574・574・869・1419 | 残す（2026-10-20） |
-| — | `rice_adj` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1420・1420・1420・1427 | 残す（2026-10-20） |
-| — | `rice_na_reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1419・1419・1426・1426 | 残す（2026-10-20） |
-| — | `rice_per_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1421・1421・1428・1428 | 残す（2026-10-20） |
-| — | `risk_free_rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 972・2262・2299 | 残す（2026-10-20） |
-| 固定値 | `risk_free_rate_live` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 691・2297 | 残す（2026-10-20） |
-| 固定値 | `risk_free_rate_live_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 689・690・2265・2266 | 残す（2026-10-20） |
-| — | `risk_free_rate_live_source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 688・689・2265 | 残す（2026-10-20） |
-| セクター除外 | `roe_10yr_avg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2751 | 残す（2026-10-20） |
-| ROE（分解値） | `roe_decomposed` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1641・1641・1641・1654 | 残す（2026-10-20） |
+| 減収（構造的変化・継続）: | `revenue_decline` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1126 | 残す（2026-10-20） |
+| — | `revenue_growth_pct` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2767 | 残す（2026-10-20） |
+| — | `revenue_ttm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 999 | 残す（2026-10-20） |
+| 最新年度 | `revenue_ttm_end` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1001 | 残す（2026-10-20） |
+| RICE_adj: R&D資本化想定（CapExのみ投資強度）参考値 | `rice` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 574・574・869・1427 | 残す（2026-10-20） |
+| — | `rice_adj` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1428・1428・1428・1435 | 残す（2026-10-20） |
+| — | `rice_na_reason` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1427・1427・1434・1434 | 残す（2026-10-20） |
+| — | `rice_per_ratio` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1429・1429・1436・1436 | 残す（2026-10-20） |
+| — | `risk_free_rate` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 975・2270・2307 | 残す（2026-10-20） |
+| 固定値 | `risk_free_rate_live` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 691・2305 | 残す（2026-10-20） |
+| 固定値 | `risk_free_rate_live_date` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 689・690・2273・2274 | 残す（2026-10-20） |
+| — | `risk_free_rate_live_source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 688・689・2273 | 残す（2026-10-20） |
+| セクター除外 | `roe_10yr_avg` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2759 | 残す（2026-10-20） |
+| ROE（分解値） | `roe_decomposed` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1649・1649・1649・1662 | 残す（2026-10-20） |
 | — | `roe_used` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 891 | 残す（2026-10-20） |
-| — | `rpo` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 966 | 残す（2026-10-20） |
-| 非連続RPO | `rpo_adjustment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1932・1933 | 残す（2026-10-20） |
-| 非連続RPO | `rpo_incremental` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1932 | 残す（2026-10-20） |
-| — | `rpo_pv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 967・2382 | 残す（2026-10-20） |
-| — | `rule` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 848 | 残す（2026-10-20） |
+| — | `rpo` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 969 | 残す（2026-10-20） |
+| 非連続RPO | `rpo_adjustment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1940・1941 | 残す（2026-10-20） |
+| 非連続RPO | `rpo_incremental` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1940 | 残す（2026-10-20） |
+| — | `rpo_pv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 970・2390 | 残す（2026-10-20） |
+| SECの申告の値に注意が要る期があります（直近3年） | `rule` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 848・1104・1104 | 残す（2026-10-20） |
 | — | `rule40` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 555 | 残す（2026-10-20） |
-| Q異常値 | `runway` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2756 | 残す（2026-10-20） |
-| Q異常値 | `runway_months` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2756 | 残す（2026-10-20） |
-| — | `sbc_ttm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1572 | 残す（2026-10-20） |
-| — | `scenario_bear` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2516 | 残す（2026-10-20） |
-| — | `scenario_bull` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2517 | 残す（2026-10-20） |
-| — | `scenario_valuations` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 987・1497 | 残す（2026-10-20） |
-| — | `score_comment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1078・1078 | 残す（2026-10-20） |
+| Q異常値 | `runway` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2764 | 残す（2026-10-20） |
+| Q異常値 | `runway_months` | ほかの書き手あり<br>`docs/value-monitor/stonks-silo/data/results.json` | 2764 | 残す（2026-10-20） |
+| — | `sbc_ttm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1580 | 残す（2026-10-20） |
+| — | `scenario_bear` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2524 | 残す（2026-10-20） |
+| — | `scenario_bull` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2525 | 残す（2026-10-20） |
+| — | `scenario_valuations` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 990・1505 | 残す（2026-10-20） |
+| — | `score_comment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1081・1081 | 残す（2026-10-20） |
 | — | `sector` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 893 | 残す（2026-10-20） |
-| — | `segment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 985 | 残す（2026-10-20） |
-| DCF採用値（クリップ後）: % | `segment_growth_quarter` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1394・1394 | 残す（2026-10-20） |
-| 売上(推定=最新Revenue×weight) \| 構成比 \| 成長率シナリオ（ | `segment_growth_source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1385 | 残す（2026-10-20） |
-| — | `segments` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1360 | 残す（2026-10-20） |
-| — | `sensitivity` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 975 | 残す（2026-10-20） |
-| →年 | `shares_yr_3ago` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1605 | 残す（2026-10-20） |
-| →年 | `shares_yr_now` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1605 | 残す（2026-10-20） |
+| — | `segment` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 988 | 残す（2026-10-20） |
+| DCF採用値（クリップ後）: % | `segment_growth_quarter` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1402・1402 | 残す（2026-10-20） |
+| 売上(推定=最新Revenue×weight) \| 構成比 \| 成長率シナリオ（ | `segment_growth_source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1393 | 残す（2026-10-20） |
+| — | `segments` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1368 | 残す（2026-10-20） |
+| — | `sensitivity` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 978 | 残す（2026-10-20） |
+| →年 | `shares_yr_3ago` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1613 | 残す（2026-10-20） |
+| →年 | `shares_yr_now` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1613 | 残す（2026-10-20） |
 | — | `short_term_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 865 | 残す（2026-10-20） |
 | — | `short_term_investments` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 863 | 残す（2026-10-20） |
-| — | `signals` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2205 | 残す（2026-10-20） |
-| — | `source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 981 | 残す（2026-10-20） |
+| — | `signals` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2213 | 残す（2026-10-20） |
+| — | `source` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 984 | 残す（2026-10-20） |
 | — | `stage` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 549・588・711・715 | 残す（2026-10-20） |
 | — | `stage_label` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 589・711・722 | 残す（2026-10-20） |
-| — | `status` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2738 | 残す（2026-10-20） |
-| — | `substituted_by_annual` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1089 | 残す（2026-10-20） |
-| — | `tam` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1993 | 残す（2026-10-20） |
-| 判定不能（株価なし） | `tanuki_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 1050・1050・1078 | 残す（2026-10-20） |
+| — | `status` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2746 | 残す（2026-10-20） |
+| — | `substituted_by_annual` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1092 | 残す（2026-10-20） |
+| — | `tam` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2001 | 残す（2026-10-20） |
+| 判定不能（株価なし） | `tanuki_score` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 1053・1053・1081 | 残す（2026-10-20） |
 | — | `terminal_growth_used` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 890 | 残す（2026-10-20） |
-| — | `ticker` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2623・2637・2647・2665 | 残す（2026-10-20） |
-| — | `tickers` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2723・2732 | 残す（2026-10-20） |
-| — | `total_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1593 | 残す（2026-10-20） |
-| — | `total_pv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 825・2383 | 残す（2026-10-20） |
+| — | `ticker` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2631・2645・2655・2673 | 残す（2026-10-20） |
+| — | `tickers` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2731・2740 | 残す（2026-10-20） |
+| — | `total_debt` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1601 | 残す（2026-10-20） |
+| — | `total_pv` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 825・2391 | 残す（2026-10-20） |
 | — | `total_transient_amount` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 852 | 残す（2026-10-20） |
 | — | `transient_evidence` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 851・852・853 | 残す（2026-10-20） |
-| — | `type` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 2637・2671 | 残す（2026-10-20） |
-| — | `upside_percent` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 575・796・2740 | 残す（2026-10-20） |
+| — | `type` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 2645・2679 | 残す（2026-10-20） |
+| — | `upside_percent` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/.watcher_state.json`<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json` | 575・796・2748 | 残す（2026-10-20） |
 | — | `upside_percent_beta` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 794 | 残す（2026-10-20） |
 | — | `upside_percent_rf` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 793 | 残す（2026-10-20） |
-| Koichi式 v6.2 | `v0` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 801・1866・1905・2196 | 残す（2026-10-20） |
-| Koichi式 v6.2 | `v0_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 801・2381 | 残す（2026-10-20） |
+| Koichi式 v6.2 | `v0` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 801・1874・1913・2204 | 残す（2026-10-20） |
+| Koichi式 v6.2 | `v0_rm` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 801・2389 | 残す（2026-10-20） |
 | — | `val` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 362 | 残す（2026-10-20） |
+| 。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして | `val_guard_marks` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1101・1101・1104 | 残す（2026-10-20） |
 | — | `validation` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 878 | 残す（2026-10-20） |
-| 、固定値 | `value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 970・2267・2738 | 残す（2026-10-20） |
-| — | `verdict` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2204・2234 | 残す（2026-10-20） |
-| Rm基準（βなし %） | `wacc` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 969・1131・1503・1959 | 残す（2026-10-20） |
-| — | `wacc_values` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 976 | 残す（2026-10-20） |
-| — | `warnings` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 875・2207 | 残す（2026-10-20） |
-| セグメント別売上構成（推定） | `weight` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1367・1388 | 残す（2026-10-20） |
-| — | `year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2154・2164・2164 | 残す（2026-10-20） |
-| 年 @ | `years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>`docs/value-monitor/tanuki_valuation/data/{T}/latest.json` | 889・1884・1890 | 残す（2026-10-20） |
+| 、固定値 | `value` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 973・2275・2746 | 残す（2026-10-20） |
+| — | `verdict` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2212・2242 | 残す（2026-10-20） |
+| Rm基準（βなし %） | `wacc` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 972・1139・1511・1967 | 残す（2026-10-20） |
+| — | `wacc_values` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 979 | 残す（2026-10-20） |
+| — | `warnings` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 875・2215 | 残す（2026-10-20） |
+| セグメント別売上構成（推定） | `weight` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1375・1396 | 残す（2026-10-20） |
+| — | `year` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2162・2172・2172 | 残す（2026-10-20） |
+| 年 @ | `years` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`<br>`docs/value-monitor/tanuki_valuation/data/{T}/latest.json` | 889・1892・1898 | 残す（2026-10-20） |
 
 ## 画面の区画
 
@@ -705,7 +719,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
-| （ページの先頭） | `all`（ほかの書き手あり）<br>`asset_turnover`（この段階の書き手あり）<br>`available`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`base_fcf`（この段階の書き手あり）<br>`buyback_ttm`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`credit`（ほかの書き手あり）<br>`date`（この段階の書き手あり）<br>`desc`（ほかの書き手あり）<br>`detected`（この段階の書き手あり）<br>`dilution_3yr_annual_pct`（この段階の書き手あり）<br>`dividend_yield`（この段階の書き手あり）<br>`dupont`（この段階の書き手あり）<br>`entries`（この段階の書き手あり）<br>`excluded`（この段階の書き手あり）<br>`fcf`（この段階の書き手あり）<br>`fcf_base`（この段階の書き手あり）<br>`fcf_floor_applied`（この段階の書き手あり）<br>`fcf_history`（この段階の書き手あり）<br>`fcf_outlier`（この段階の書き手あり）<br>`fear_greed`（ほかの書き手あり）<br>`fields`（この段階の書き手あり）<br>`filled_components`（ほかの書き手あり）<br>`filled_from_annual`（ほかの書き手あり）<br>`financial_health`（この段階の書き手あり）<br>`financial_leverage`（この段階の書き手あり）<br>`funda`（この段階の書き手あり）<br>`funda_score`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`indicators`（ほかの書き手あり）<br>`industry`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`latest_period_missing`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`matrix`（この段階の書き手あり）<br>`max_eps_per`（この段階の書き手あり）<br>`max_eps_reliability`（この段階の書き手あり）<br>`max_eps_shares`（この段階の書き手あり）<br>`max_eps_shares_basis`（この段階の書き手あり）<br>`monthly`（ほかの書き手あり）<br>`n_quarters`（ほかの書き手あり）<br>`net_current_assets_ratio`（この段階の書き手あり）<br>`net_debt`（この段階の書き手あり）<br>`net_margin`（この段階の書き手あり）<br>`no_data`（画面の中で作る値）<br>`note`（この段階の書き手あり）<br>`payout_ratio`（この段階の書き手あり）<br>`peg`（この段階の書き手あり）<br>`per`（この段階の書き手あり）<br>`per_is_forward`（この段階の書き手あり）<br>`ps`（この段階の書き手あり）<br>`ptbv`（ほかの書き手あり）<br>`ptbv_pctl`（ほかの書き手あり）<br>`quarter_end`（ほかの書き手あり）<br>`qx`（この段階の書き手あり）<br>`qy`（この段階の書き手あり）<br>`rate`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`reliability`（この段階の書き手あり）<br>`reliability_reason`（この段階の書き手あり）<br>`rev_yoy`（この段階の書き手あり）<br>`rice`（この段階の書き手あり）<br>`risk_off_score`（ほかの書き手あり）<br>`roe`（この段階の書き手あり）<br>`roe_10yr_avg`（この段階の書き手あり）<br>`roe_decomposed`（この段階の書き手あり）<br>`roic_wacc_ratio`（この段階の書き手あり）<br>`rotce`（この段階の書き手あり）<br>`rotce_pctl`（ほかの書き手あり）<br>`rule40`（この段階の書き手あり）<br>`rule40_yoy_netmargin`（ほかの書き手あり）<br>`score`（この段階の書き手あり）<br>`sell_reason`（この段階の書き手あり）<br>`signal`（ほかの書き手あり）<br>`signal_reason`（ほかの書き手あり）<br>`stage`（この段階の書き手あり）<br>`stage_label`（この段階の書き手あり）<br>`structural_deficit`（この段階の書き手あり）<br>`substage_label`（この段階の書き手あり）<br>`substituted_by_annual`（この段階の書き手あり）<br>`tanuki_score`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`tickers`（この段階の書き手あり）<br>`timing`（この段階の書き手あり）<br>`timing_score`（この段階の書き手あり）<br>`upside`（この段階の書き手あり）<br>`upside_percent`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`year`（この段階の書き手あり）<br>`yoy_growth`（この段階の書き手あり） |  |
+| （ページの先頭） | `all`（ほかの書き手あり）<br>`asset_turnover`（この段階の書き手あり）<br>`available`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`base_fcf`（この段階の書き手あり）<br>`buyback_ttm`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`credit`（ほかの書き手あり）<br>`cyclical`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`desc`（ほかの書き手あり）<br>`detected`（この段階の書き手あり）<br>`dilution_3yr_annual_pct`（この段階の書き手あり）<br>`dividend_yield`（この段階の書き手あり）<br>`dupont`（この段階の書き手あり）<br>`entries`（この段階の書き手あり）<br>`excluded`（この段階の書き手あり）<br>`fcf`（この段階の書き手あり）<br>`fcf_base`（この段階の書き手あり）<br>`fcf_floor_applied`（この段階の書き手あり）<br>`fcf_history`（この段階の書き手あり）<br>`fcf_outlier`（この段階の書き手あり）<br>`fear_greed`（ほかの書き手あり）<br>`fields`（この段階の書き手あり）<br>`filled_components`（ほかの書き手あり）<br>`filled_from_annual`（ほかの書き手あり）<br>`financial_health`（この段階の書き手あり）<br>`financial_leverage`（この段階の書き手あり）<br>`funda`（この段階の書き手あり）<br>`funda_score`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`indicators`（ほかの書き手あり）<br>`industry`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`latest_period_missing`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`matrix`（この段階の書き手あり）<br>`max_eps_per`（この段階の書き手あり）<br>`max_eps_reliability`（この段階の書き手あり）<br>`max_eps_shares`（この段階の書き手あり）<br>`max_eps_shares_basis`（この段階の書き手あり）<br>`monthly`（ほかの書き手あり）<br>`n_quarters`（ほかの書き手あり）<br>`net_current_assets_ratio`（この段階の書き手あり）<br>`net_debt`（この段階の書き手あり）<br>`net_margin`（この段階の書き手あり）<br>`no_data`（画面の中で作る値）<br>`note`（この段階の書き手あり）<br>`payout_ratio`（この段階の書き手あり）<br>`peg`（この段階の書き手あり）<br>`per`（この段階の書き手あり）<br>`per_is_forward`（この段階の書き手あり）<br>`ps`（この段階の書き手あり）<br>`ptbv`（ほかの書き手あり）<br>`ptbv_pctl`（ほかの書き手あり）<br>`quarter_end`（ほかの書き手あり）<br>`qx`（この段階の書き手あり）<br>`qy`（この段階の書き手あり）<br>`rate`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`reliability`（この段階の書き手あり）<br>`reliability_reason`（この段階の書き手あり）<br>`rev_yoy`（この段階の書き手あり）<br>`rice`（この段階の書き手あり）<br>`risk_off_score`（ほかの書き手あり）<br>`roe`（この段階の書き手あり）<br>`roe_10yr_avg`（この段階の書き手あり）<br>`roe_decomposed`（この段階の書き手あり）<br>`roic_wacc_ratio`（この段階の書き手あり）<br>`rotce`（この段階の書き手あり）<br>`rotce_pctl`（ほかの書き手あり）<br>`rule40`（この段階の書き手あり）<br>`rule40_yoy_netmargin`（ほかの書き手あり）<br>`score`（この段階の書き手あり）<br>`sell_reason`（この段階の書き手あり）<br>`signal`（ほかの書き手あり）<br>`signal_reason`（ほかの書き手あり）<br>`stage`（この段階の書き手あり）<br>`stage_label`（この段階の書き手あり）<br>`structural_deficit`（この段階の書き手あり）<br>`substage_label`（この段階の書き手あり）<br>`substituted_by_annual`（この段階の書き手あり）<br>`tanuki_score`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`tickers`（この段階の書き手あり）<br>`timing`（この段階の書き手あり）<br>`timing_score`（この段階の書き手あり）<br>`upside`（この段階の書き手あり）<br>`upside_percent`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`year`（この段階の書き手あり）<br>`yoy_growth`（この段階の書き手あり） |  |
 | ④ 判定実績バックテスト | `date`（この段階の書き手あり）<br>`invalid`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`market_data`（書き手なし）<br>`price_at_judgment`（この段階の書き手あり）<br>`return_30d`（この段階の書き手あり）<br>`return_60d`（この段階の書き手あり）<br>`return_90d`（この段階の書き手あり）<br>`tanuki_score`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`total`（この段階の書き手あり） |  |
 | （JSで作る要素 #cat-board-body） | `all`（ほかの書き手あり） |  |
 | （区画を決められない） | `desc`（ほかの書き手あり）<br>`entries`（この段階の書き手あり）<br>`fcf`（この段階の書き手あり）<br>`filled_from_annual`（ほかの書き手あり）<br>`funda`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`per`（この段階の書き手あり）<br>`signal`（ほかの書き手あり）<br>`signal_reason`（ほかの書き手あり）<br>`ticker`（この段階の書き手あり）<br>`timing`（この段階の書き手あり）<br>`upside`（この段階の書き手あり） |  |
@@ -720,14 +734,14 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
-| （ページの先頭） | `action`（この段階の書き手あり）<br>`adj_net_income`（書き手なし）<br>`ai_concerns`（この段階の書き手あり）<br>`alpha`（この段階の書き手あり）<br>`alpha_uncapped`（この段階の書き手あり）<br>`alpha_was_capped`（この段階の書き手あり）<br>`analyst_count`（この段階の書き手あり）<br>`analyst_rec_key`（この段階の書き手あり）<br>`analyst_target_high`（この段階の書き手あり）<br>`analyst_target_low`（この段階の書き手あり）<br>`analyst_target_mean`（この段階の書き手あり）<br>`analyst_target_median`（この段階の書き手あり）<br>`analyst_vs_iv`（この段階の書き手あり）<br>`applied`（この段階の書き手あり）<br>`available`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`base_fcf`（この段階の書き手あり）<br>`base_wacc`（この段階の書き手あり）<br>`base_years`（この段階の書き手あり）<br>`basis_mix`（この段階の書き手あり）<br>`bear`（この段階の書き手あり）<br>`beta`（この段階の書き手あり）<br>`bs_adjustment`（この段階の書き手あり）<br>`bull`（この段階の書き手あり）<br>`calculation_date`（この段階の書き手あり）<br>`cash`（この段階の書き手あり）<br>`cash_and_equivalents`（この段階の書き手あり）<br>`clipped`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`conversion_rate`（書き手なし）<br>`count`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`cv`（この段階の書き手あり）<br>`dcf_components`（この段階の書き手あり）<br>`dcf_type`（この段階の書き手あり）<br>`detected`（この段階の書き手あり）<br>`diluted_shares`（この段階の書き手あり）<br>`dilution_3yr_annual_pct`（この段階の書き手あり）<br>`dilution_comment`（この段階の書き手あり）<br>`dilution_severity`（この段階の書き手あり）<br>`divergence_ratio`（書き手なし）<br>`divergence_warning`（書き手なし）<br>`dupont`（この段階の書き手あり）<br>`end`（この段階の書き手あり）<br>`estimated_fcf`（この段階の書き手あり）<br>`estimated_revenue`（この段階の書き手あり）<br>`excluded`（この段階の書き手あり）<br>`expected_return_pct`（この段階の書き手あり）<br>`fcf_2yr_avg`（この段階の書き手あり）<br>`fcf_5yr_avg`（この段階の書き手あり）<br>`fcf_base`（この段階の書き手あり）<br>`fcf_base_method`（この段階の書き手あり）<br>`fcf_base_used`（この段階の書き手あり）<br>`fcf_estimation`（この段階の書き手あり）<br>`fcf_outlier`（この段階の書き手あり）<br>`fcf_value`（この段階の書き手あり）<br>`fields`（この段階の書き手あり）<br>`financial_health`（この段階の書き手あり）<br>`fiscal_year`（この段階の書き手あり）<br>`formula`（この段階の書き手あり）<br>`found`（この段階の書き手あり）<br>`future_value`（この段階の書き手あり）<br>`future_values`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`growth_options`（この段階の書き手あり）<br>`growth_rate`（この段階の書き手あり）<br>`growth_sanity`（この段階の書き手あり）<br>`growth_scenarios`（この段階の書き手あり）<br>`growth_years`（この段階の書き手あり）<br>`high_growth_rate_used`（この段階の書き手あり）<br>`high_growth_years`（この段階の書き手あり）<br>`industry`（この段階の書き手あり）<br>`insider_buy_count`（この段階の書き手あり）<br>`insider_latest_date`（この段階の書き手あり）<br>`insider_net_direction`（この段階の書き手あり）<br>`insider_sell_count`（この段階の書き手あり）<br>`intrinsic_value_beta`（この段階の書き手あり）<br>`intrinsic_value_per_share`（この段階の書き手あり）<br>`intrinsic_value_rf`（この段階の書き手あり）<br>`is_annual`（この段階の書き手あり）<br>`items`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`latest_period_missing`（この段階の書き手あり）<br>`latest_revenue`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`long_term_debt`（この段階の書き手あり）<br>`ma_addback_detected_but_not_applied`（書き手なし）<br>`ma_addback_excluded`（書き手なし）<br>`market_return`（この段階の書き手あり）<br>`matrix`（この段階の書き手あり）<br>`maturity_profile`（この段階の書き手あり）<br>`method`（この段階の書き手あり）<br>`mixed`（この段階の書き手あり）<br>`model`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`net_cash`（この段階の書き手あり）<br>`net_cash_per_share`（この段階の書き手あり）<br>`net_debt`（この段階の書き手あり）<br>`net_margin`（この段階の書き手あり）<br>`next_earnings_date`（この段階の書き手あり）<br>`ni_ocf_divergence`（この段階の書き手あり）<br>`note`（この段階の書き手あり）<br>`overall`（この段階の書き手あり）<br>`per`（この段階の書き手あり）<br>`per_adjusted`（この段階の書き手あり）<br>`phase1`（この段階の書き手あり）<br>`primary`（この段階の書き手あり）<br>`pv_high`（この段階の書き手あり）<br>`pv_phase1`（この段階の書き手あり）<br>`pv_phase2`（この段階の書き手あり）<br>`pv_terminal`（この段階の書き手あり）<br>`rate`（この段階の書き手あり）<br>`rate_is_sector_default`（書き手なし）<br>`ratio`（この段階の書き手あり）<br>`raw_fcf`（この段階の書き手あり）<br>`raw_weighted_growth`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`recommended_g`（この段階の書き手あり）<br>`return_metrics`（この段階の書き手あり）<br>`revenue_decline`（この段階の書き手あり）<br>`revenue_ttm`（この段階の書き手あり）<br>`revenue_ttm_end`（この段階の書き手あり）<br>`rice`（この段階の書き手あり）<br>`rice_adj`（この段階の書き手あり）<br>`rice_na_reason`（この段階の書き手あり）<br>`rice_per_ratio`（この段階の書き手あり）<br>`risk_free_rate`（この段階の書き手あり）<br>`roe_used`（この段階の書き手あり）<br>`rpo`（この段階の書き手あり）<br>`rpo_pv`（この段階の書き手あり）<br>`rule`（この段階の書き手あり）<br>`sbc_ttm`（この段階の書き手あり）<br>`scenario_valuations`（この段階の書き手あり）<br>`score_comment`（この段階の書き手あり）<br>`sector`（この段階の書き手あり）<br>`segment`（この段階の書き手あり）<br>`segment_growth_quarter`（この段階の書き手あり）<br>`segment_growth_source`（この段階の書き手あり）<br>`segments`（この段階の書き手あり）<br>`sensitivity`（この段階の書き手あり）<br>`shares_yr_3ago`（この段階の書き手あり）<br>`shares_yr_now`（この段階の書き手あり）<br>`short_term_debt`（この段階の書き手あり）<br>`short_term_investments`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`substituted_by_annual`（この段階の書き手あり）<br>`tanuki_score`（この段階の書き手あり）<br>`terminal_growth_used`（この段階の書き手あり）<br>`total_debt`（この段階の書き手あり）<br>`total_pv`（この段階の書き手あり）<br>`total_transient_amount`（この段階の書き手あり）<br>`transient_evidence`（この段階の書き手あり）<br>`upside_percent`（この段階の書き手あり）<br>`upside_percent_beta`（この段階の書き手あり）<br>`upside_percent_rf`（この段階の書き手あり）<br>`v0`（この段階の書き手あり）<br>`v0_rm`（この段階の書き手あり）<br>`val`（この段階の書き手あり）<br>`validation`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`wacc`（この段階の書き手あり）<br>`wacc_values`（この段階の書き手あり）<br>`warnings`（この段階の書き手あり）<br>`weight`（この段階の書き手あり）<br>`years`（この段階の書き手あり） |  |
+| （ページの先頭） | `action`（この段階の書き手あり）<br>`adj_net_income`（書き手なし）<br>`ai_concerns`（この段階の書き手あり）<br>`alpha`（この段階の書き手あり）<br>`alpha_uncapped`（この段階の書き手あり）<br>`alpha_was_capped`（この段階の書き手あり）<br>`analyst_count`（この段階の書き手あり）<br>`analyst_rec_key`（この段階の書き手あり）<br>`analyst_target_high`（この段階の書き手あり）<br>`analyst_target_low`（この段階の書き手あり）<br>`analyst_target_mean`（この段階の書き手あり）<br>`analyst_target_median`（この段階の書き手あり）<br>`analyst_vs_iv`（この段階の書き手あり）<br>`applied`（この段階の書き手あり）<br>`available`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`base_fcf`（この段階の書き手あり）<br>`base_wacc`（この段階の書き手あり）<br>`base_years`（この段階の書き手あり）<br>`basis_mix`（この段階の書き手あり）<br>`bear`（この段階の書き手あり）<br>`beta`（この段階の書き手あり）<br>`bs_adjustment`（この段階の書き手あり）<br>`bull`（この段階の書き手あり）<br>`calculation_date`（この段階の書き手あり）<br>`cash`（この段階の書き手あり）<br>`cash_and_equivalents`（この段階の書き手あり）<br>`clipped`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`conversion_rate`（書き手なし）<br>`count`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`cv`（この段階の書き手あり）<br>`dcf_components`（この段階の書き手あり）<br>`dcf_type`（この段階の書き手あり）<br>`detected`（この段階の書き手あり）<br>`diluted_shares`（この段階の書き手あり）<br>`dilution_3yr_annual_pct`（この段階の書き手あり）<br>`dilution_comment`（この段階の書き手あり）<br>`dilution_severity`（この段階の書き手あり）<br>`divergence_ratio`（書き手なし）<br>`divergence_warning`（書き手なし）<br>`dupont`（この段階の書き手あり）<br>`end`（この段階の書き手あり）<br>`estimated_fcf`（この段階の書き手あり）<br>`estimated_revenue`（この段階の書き手あり）<br>`excluded`（この段階の書き手あり）<br>`expected_return_pct`（この段階の書き手あり）<br>`fcf_2yr_avg`（この段階の書き手あり）<br>`fcf_5yr_avg`（この段階の書き手あり）<br>`fcf_base`（この段階の書き手あり）<br>`fcf_base_method`（この段階の書き手あり）<br>`fcf_base_used`（この段階の書き手あり）<br>`fcf_estimation`（この段階の書き手あり）<br>`fcf_outlier`（この段階の書き手あり）<br>`fcf_value`（この段階の書き手あり）<br>`field`（この段階の書き手あり）<br>`fields`（この段階の書き手あり）<br>`financial`（この段階の書き手あり）<br>`financial_health`（この段階の書き手あり）<br>`fiscal_year`（この段階の書き手あり）<br>`formula`（この段階の書き手あり）<br>`found`（この段階の書き手あり）<br>`future_value`（この段階の書き手あり）<br>`future_values`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`growth_options`（この段階の書き手あり）<br>`growth_rate`（この段階の書き手あり）<br>`growth_sanity`（この段階の書き手あり）<br>`growth_scenarios`（この段階の書き手あり）<br>`growth_years`（この段階の書き手あり）<br>`high_growth_rate_used`（この段階の書き手あり）<br>`high_growth_years`（この段階の書き手あり）<br>`industry`（この段階の書き手あり）<br>`insider_buy_count`（この段階の書き手あり）<br>`insider_latest_date`（この段階の書き手あり）<br>`insider_net_direction`（この段階の書き手あり）<br>`insider_sell_count`（この段階の書き手あり）<br>`intrinsic_value_beta`（この段階の書き手あり）<br>`intrinsic_value_per_share`（この段階の書き手あり）<br>`intrinsic_value_rf`（この段階の書き手あり）<br>`is_annual`（この段階の書き手あり）<br>`items`（この段階の書き手あり）<br>`kind`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`latest_period_missing`（この段階の書き手あり）<br>`latest_revenue`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`long_term_debt`（この段階の書き手あり）<br>`ma_addback_detected_but_not_applied`（書き手なし）<br>`ma_addback_excluded`（書き手なし）<br>`market_return`（この段階の書き手あり）<br>`match`（この段階の書き手あり）<br>`matrix`（この段階の書き手あり）<br>`maturity_profile`（この段階の書き手あり）<br>`method`（この段階の書き手あり）<br>`mixed`（この段階の書き手あり）<br>`model`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`net_cash`（この段階の書き手あり）<br>`net_cash_per_share`（この段階の書き手あり）<br>`net_debt`（この段階の書き手あり）<br>`next_earnings_date`（この段階の書き手あり）<br>`ni_ocf_divergence`（この段階の書き手あり）<br>`note`（この段階の書き手あり）<br>`overall`（この段階の書き手あり）<br>`per`（この段階の書き手あり）<br>`per_adjusted`（この段階の書き手あり）<br>`phase1`（この段階の書き手あり）<br>`primary`（この段階の書き手あり）<br>`pv_high`（この段階の書き手あり）<br>`pv_phase1`（この段階の書き手あり）<br>`pv_phase2`（この段階の書き手あり）<br>`pv_terminal`（この段階の書き手あり）<br>`rate`（この段階の書き手あり）<br>`rate_is_sector_default`（書き手なし）<br>`ratio`（この段階の書き手あり）<br>`raw_fcf`（この段階の書き手あり）<br>`raw_weighted_growth`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`recommended_g`（この段階の書き手あり）<br>`return_metrics`（この段階の書き手あり）<br>`revenue_decline`（この段階の書き手あり）<br>`revenue_ttm`（この段階の書き手あり）<br>`revenue_ttm_end`（この段階の書き手あり）<br>`rice`（この段階の書き手あり）<br>`rice_adj`（この段階の書き手あり）<br>`rice_na_reason`（この段階の書き手あり）<br>`rice_per_ratio`（この段階の書き手あり）<br>`risk_free_rate`（この段階の書き手あり）<br>`roe_used`（この段階の書き手あり）<br>`rpo`（この段階の書き手あり）<br>`rpo_pv`（この段階の書き手あり）<br>`rule`（この段階の書き手あり）<br>`sbc_ttm`（この段階の書き手あり）<br>`scenario_valuations`（この段階の書き手あり）<br>`score_comment`（この段階の書き手あり）<br>`sector`（この段階の書き手あり）<br>`segment`（この段階の書き手あり）<br>`segment_growth_quarter`（この段階の書き手あり）<br>`segment_growth_source`（この段階の書き手あり）<br>`segments`（この段階の書き手あり）<br>`sensitivity`（この段階の書き手あり）<br>`shares_yr_3ago`（この段階の書き手あり）<br>`shares_yr_now`（この段階の書き手あり）<br>`short_term_debt`（この段階の書き手あり）<br>`short_term_investments`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`substituted_by_annual`（この段階の書き手あり）<br>`tanuki_score`（この段階の書き手あり）<br>`terminal_growth_used`（この段階の書き手あり）<br>`total_debt`（この段階の書き手あり）<br>`total_pv`（この段階の書き手あり）<br>`total_transient_amount`（この段階の書き手あり）<br>`transient_evidence`（この段階の書き手あり）<br>`upside_percent`（この段階の書き手あり）<br>`upside_percent_beta`（この段階の書き手あり）<br>`upside_percent_rf`（この段階の書き手あり）<br>`v0`（この段階の書き手あり）<br>`v0_rm`（この段階の書き手あり）<br>`val`（この段階の書き手あり）<br>`val_guard_marks`（この段階の書き手あり）<br>`validation`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`wacc`（この段階の書き手あり）<br>`wacc_values`（この段階の書き手あり）<br>`warnings`（この段階の書き手あり）<br>`weight`（この段階の書き手あり）<br>`years`（この段階の書き手あり） |  |
 | 統合レポートモーダル | `key`（この段階の書き手あり） |  |
 | （JSで作る要素 #all-matrices-grid） | `available`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`deficit_quality`（ほかの書き手あり）<br>`error`（この段階の書き手あり）<br>`fcf_base_used`（この段階の書き手あり）<br>`fcf_estimation`（この段階の書き手あり）<br>`fcf_margin`（この段階の書き手あり）<br>`latest_revenue`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`note`（この段階の書き手あり）<br>`revenue_growth_pct`（ほかの書き手あり）<br>`rice`（この段階の書き手あり）<br>`roe_10yr_avg`（この段階の書き手あり）<br>`runway`（ほかの書き手あり）<br>`runway_months`（ほかの書き手あり）<br>`status`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`tickers`（この段階の書き手あり）<br>`type`（この段階の書き手あり）<br>`upside_percent`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
 | （JSで作る要素 #cf-margin-chart） | `paper_bgcolor`（画面の中で作る値）<br>`plot_bgcolor`（画面の中で作る値） |  |
 | （JSで作る要素 #cf-quality-chart） | `paper_bgcolor`（画面の中で作る値）<br>`plot_bgcolor`（画面の中で作る値） |  |
 | （JSで作る要素 #cf-waterfall-chart） | `base_fcf`（この段階の書き手あり）<br>`estimated_fcf`（この段階の書き手あり）<br>`fcf_base`（この段階の書き手あり）<br>`fcf_estimation`（この段階の書き手あり） |  |
 | （JSで作る要素 #cf-waterfall-section） | `CapEx`（この段階の書き手あり）<br>`DA`（ほかの書き手あり）<br>`OCF`（ほかの書き手あり）<br>`Revenue`（この段階の書き手あり）<br>`SBC`（ほかの書き手あり）<br>`label`（この段階の書き手あり） |  |
-| （JSで作る要素 #growth-sanity-container） | `amount`（この段階の書き手あり）<br>`asset_turnover`（この段階の書き手あり）<br>`bear_multiplier`（この段階の書き手あり）<br>`bull_multiplier`（この段階の書き手あり）<br>`category`（この段階の書き手あり）<br>`clipped`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`damodaran_industry`（この段階の書き手あり）<br>`damodaran_year`（この段階の書き手あり）<br>`delay_years`（この段階の書き手あり）<br>`fcf`（この段階の書き手あり）<br>`fcf_growth_cap`（この段階の書き手あり）<br>`fcf_growth_floor`（この段階の書き手あり）<br>`fcf_history`（この段階の書き手あり）<br>`fcf_margin`（この段階の書き手あり）<br>`fcf_ttm_end`（この段階の書き手あり）<br>`financial_leverage`（この段階の書き手あり）<br>`floor`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`growth_cap`（この段階の書き手あり）<br>`growth_floor`（この段階の書き手あり）<br>`insider_latest_date`（この段階の書き手あり）<br>`item_name`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`market_return`（この段階の書き手あり）<br>`method`（この段階の書き手あり）<br>`moat_phase1_years`（この段階の書き手あり）<br>`moat_score_source`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`next_earnings_date`（この段階の書き手あり）<br>`note`（この段階の書き手あり）<br>`op_margin`（この段階の書き手あり）<br>`options`（この段階の書き手あり）<br>`penetration`（この段階の書き手あり）<br>`period_label`（この段階の書き手あり）<br>`phase1`（この段階の書き手あり）<br>`phase1_growth`（この段階の書き手あり）<br>`phase1_growth_auto_adjusted`（この段階の書き手あり）<br>`phase2`（この段階の書き手あり）<br>`probability`（この段階の書き手あり）<br>`pv`（この段階の書き手あり）<br>`raw_weighted_growth`（この段階の書き手あり）<br>`recommended_g`（この段階の書き手あり）<br>`recommended_g_median`（この段階の書き手あり）<br>`roe_decomposed`（この段階の書き手あり）<br>`rpo_adjustment`（この段階の書き手あり）<br>`rpo_incremental`（この段階の書き手あり）<br>`signals`（この段階の書き手あり）<br>`tam`（この段階の書き手あり）<br>`v0`（この段階の書き手あり）<br>`verdict`（この段階の書き手あり）<br>`wacc`（この段階の書き手あり）<br>`warnings`（この段階の書き手あり）<br>`year`（この段階の書き手あり）<br>`years`（この段階の書き手あり） |  |
+| （JSで作る要素 #growth-sanity-container） | `amount`（この段階の書き手あり）<br>`asset_turnover`（この段階の書き手あり）<br>`bear_multiplier`（この段階の書き手あり）<br>`bull_multiplier`（この段階の書き手あり）<br>`category`（この段階の書き手あり）<br>`clipped`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`damodaran_industry`（この段階の書き手あり）<br>`damodaran_year`（この段階の書き手あり）<br>`delay_years`（この段階の書き手あり）<br>`fcf`（この段階の書き手あり）<br>`fcf_growth_cap`（この段階の書き手あり）<br>`fcf_growth_floor`（この段階の書き手あり）<br>`fcf_history`（この段階の書き手あり）<br>`fcf_margin`（この段階の書き手あり）<br>`fcf_ttm_end`（この段階の書き手あり）<br>`financial_leverage`（この段階の書き手あり）<br>`floor`（この段階の書き手あり）<br>`growth`（この段階の書き手あり）<br>`growth_cap`（この段階の書き手あり）<br>`growth_floor`（この段階の書き手あり）<br>`insider_latest_date`（この段階の書き手あり）<br>`item_name`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`market_return`（この段階の書き手あり）<br>`method`（この段階の書き手あり）<br>`moat_phase1_years`（この段階の書き手あり）<br>`moat_score_source`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`net_margin`（この段階の書き手あり）<br>`next_earnings_date`（この段階の書き手あり）<br>`note`（この段階の書き手あり）<br>`op_margin`（この段階の書き手あり）<br>`options`（この段階の書き手あり）<br>`penetration`（この段階の書き手あり）<br>`period_label`（この段階の書き手あり）<br>`phase1`（この段階の書き手あり）<br>`phase1_growth`（この段階の書き手あり）<br>`phase1_growth_auto_adjusted`（この段階の書き手あり）<br>`phase2`（この段階の書き手あり）<br>`probability`（この段階の書き手あり）<br>`pv`（この段階の書き手あり）<br>`raw_weighted_growth`（この段階の書き手あり）<br>`recommended_g`（この段階の書き手あり）<br>`recommended_g_median`（この段階の書き手あり）<br>`roe_decomposed`（この段階の書き手あり）<br>`rpo_adjustment`（この段階の書き手あり）<br>`rpo_incremental`（この段階の書き手あり）<br>`signals`（この段階の書き手あり）<br>`tam`（この段階の書き手あり）<br>`v0`（この段階の書き手あり）<br>`verdict`（この段階の書き手あり）<br>`wacc`（この段階の書き手あり）<br>`warnings`（この段階の書き手あり）<br>`year`（この段階の書き手あり）<br>`years`（この段階の書き手あり） |  |
 | （JSで作る要素 #history-chart-section） | `current_price`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`intrinsic_value_per_share`（この段階の書き手あり）<br>`invalid`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`ma200`（この段階の書き手あり）<br>`scenario_bear`（この段階の書き手あり）<br>`scenario_bull`（この段階の書き手あり） |  |
 | （JSで作る要素 #hype-history-body） | `date`（この段階の書き手あり）<br>`from_peak`（この段階の書き手あり）<br>`length`（ほかの書き手あり）<br>`lifecycle`（この段階の書き手あり）<br>`ma200_dev`（この段階の書き手あり）<br>`phase`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`price_iv_ratio`（この段階の書き手あり）<br>`recommendation`（この段階の書き手あり）<br>`rev_yoy`（この段階の書き手あり）<br>`rule40`（この段階の書き手あり）<br>`stage`（この段階の書き手あり） |  |
 | （JSで作る要素 #hype-history-section） | `length`（ほかの書き手あり） |  |
@@ -761,15 +775,15 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 規則 | ファイル数 | 場所 | TANUKIを含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:126`<br>`common/sec_data/q4_implied.py:135`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 9 | `common/sec_data/bs_lines.py:237`<br>`common/sec_data/bs_lines.py:256`<br>`common/sec_data/bs_lines.py:307`<br>`common/sec_data/cf_lines.py:438`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:871`<br>`common/sec_data/layer3_builder.py:1094`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/rotce.py:347`<br>`common/sec_data/share_unit_fix.py:104`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602` | いいえ |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:162`<br>`common/sec_data/q4_implied.py:171`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:245`<br>`common/sec_data/bs_lines.py:264`<br>`common/sec_data/bs_lines.py:396`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:920`<br>`common/sec_data/layer3_builder.py:1143`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:125`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | いいえ |
 | データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1588`<br>`common/sec_data/report_consistency_check.py:1785`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:235`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | いいえ |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:239`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | はい |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
-| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:581`<br>`docs/value-monitor/tanuki_score/index.html:1104`<br>`docs/value-monitor/tanuki_score/index.html:1333`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1140`<br>`docs/value-monitor/tanuki_valuation/stock.html:1141`<br>`src/value/tanuki_valuation/pipeline.py:647`<br>`src/value/tanuki_valuation/pipeline.py:649`<br>`src/value/tanuki_valuation/pipeline.py:651`<br>`src/value/tanuki_valuation/pipeline.py:922`<br>`src/value/tanuki_valuation/pipeline.py:935`<br>`src/value/tanuki_valuation/pipeline.py:955`<br>`src/value/tanuki_valuation/pipeline.py:957`<br>`src/value/tanuki_valuation/pipeline.py:1029`<br>`src/value/tanuki_valuation/pipeline.py:1030`<br>`src/value/tanuki_valuation/pipeline.py:1031`<br>`src/value/tanuki_valuation/pipeline.py:1032`<br>`src/value/tanuki_valuation/pipeline.py:1442`<br>`src/value/tanuki_valuation/pipeline.py:1469`<br>`src/value/tanuki_valuation/pipeline.py:1474`<br>`src/value/tanuki_valuation/pipeline.py:1520`<br>`src/value/tanuki_valuation/pipeline.py:1825`<br>`src/value/tanuki_valuation/pipeline.py:2003` | はい |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1153` | はい |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:220`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1137` | はい |
+| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:589`<br>`docs/value-monitor/tanuki_score/index.html:1112`<br>`docs/value-monitor/tanuki_score/index.html:1336`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1148`<br>`docs/value-monitor/tanuki_valuation/stock.html:1149`<br>`src/value/tanuki_valuation/pipeline.py:670`<br>`src/value/tanuki_valuation/pipeline.py:672`<br>`src/value/tanuki_valuation/pipeline.py:674`<br>`src/value/tanuki_valuation/pipeline.py:945`<br>`src/value/tanuki_valuation/pipeline.py:958`<br>`src/value/tanuki_valuation/pipeline.py:978`<br>`src/value/tanuki_valuation/pipeline.py:980`<br>`src/value/tanuki_valuation/pipeline.py:1052`<br>`src/value/tanuki_valuation/pipeline.py:1053`<br>`src/value/tanuki_valuation/pipeline.py:1054`<br>`src/value/tanuki_valuation/pipeline.py:1055`<br>`src/value/tanuki_valuation/pipeline.py:1473`<br>`src/value/tanuki_valuation/pipeline.py:1500`<br>`src/value/tanuki_valuation/pipeline.py:1505`<br>`src/value/tanuki_valuation/pipeline.py:1551`<br>`src/value/tanuki_valuation/pipeline.py:1857`<br>`src/value/tanuki_valuation/pipeline.py:2035` | はい |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1163` | はい |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:221`<br>`src/value/tanuki_valuation/calculator/adjustments.py:184`<br>`src/value/tanuki_valuation/data_fetcher.py:114`<br>`src/value/tanuki_valuation/data_fetcher.py:1147` | はい |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）
 
@@ -792,7 +806,9 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 - `outputs_with_writer_outside_layer`: 0件
 - `unresolved_write_sites`: 0件
-- `python_read_sites_unresolved_in_files_mentioning_sec_data`: 3件
+- `python_read_sites_unresolved_in_files_mentioning_sec_data`: 5件
   - `common/method_change.py:163` previous_output → `docs/value-monitor/tanuki_valuation/data/<?>`
   - `src/value/tanuki_valuation/data_fetcher.py:264` TTMReader._load → `<?>`
   - `src/value/tanuki_valuation/data_fetcher.py:524` _load_beta_config → `<?>`
+  - `tools/sim/sim.py:155` _latest → `<?>/<?>/tanuki2/{T}/latest.json`
+  - `tools/sim/sim.py:155` _latest → `<?>/<?>/tanuki/{T}/latest.json`
