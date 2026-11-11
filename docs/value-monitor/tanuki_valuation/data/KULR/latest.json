@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 139.3,
-  "calculation_date": "2026-11-11T09:28:41+09:00",
+  "calculation_date": "2026-11-11T11:09:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -207,7 +207,7 @@
       "total_transient_amount": 3503532,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金であり、事業構造や収益力の持続的悪化を示す内容ではない。"
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、事業運営上の一過性問題と判断される。"
       }
     },
     "action": "excluded",
@@ -409,7 +409,7 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.20619147389812942,
   "tanuki_score": "PASS",
-  "funda_score": 0,
+  "funda_score": 20,
   "score_comment": "割安圏(139%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
   "timing_score": 65,
   "sell_reason": null,
@@ -435,7 +435,8 @@
     "GROWTH-SANITY-CONTINUITY-1-2",
     "SECTOR-MASTER-ADOPT-1-1",
     "SECTOR-MASTER-ADOPT-1-2",
-    "SECTOR-MASTER-ADOPT-1-3"
+    "SECTOR-MASTER-ADOPT-1-3",
+    "SECTOR-MASTER-ADOPT-1-4"
   ],
   "fcf_history": [
     {
@@ -511,7 +512,7 @@
     "dupont_bs_period": "2026Q2"
   },
   "next_earnings_date": "2026-11-10",
-  "breakeven_reason": "NO_TREND",
+  "breakeven_reason": "ACHIEVED",
   "segment_configured": false,
   "phase1_growth_original": 0.25,
   "phase1_growth_auto_adjusted": true,
