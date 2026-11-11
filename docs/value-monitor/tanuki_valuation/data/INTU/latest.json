@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 93.9,
-  "calculation_date": "2026-11-11T11:08:38+09:00",
+  "calculation_date": "2026-11-11T13:49:00+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 293000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "事業再編に伴う一過性の費用として明記されており、通常のリストラ費用と判断されるため、構造的な収益力悪化の兆候とは言えない。"
       }
     },
     "action": "flagged",
@@ -231,7 +231,7 @@
     "capex": 221000000.0,
     "sbc": 2056000000,
     "ocf": 8838000000.0,
-    "da": 187000000.0,
+    "da": 672000000.0,
     "note": "OCF$8.84B - CapEx$0.22B（TTM 2026-07-31。5yr/2yr平均・外れ値除外後の採用値は$5.56B）"
   },
   "software_system_provisional": {
@@ -451,6 +451,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "PARSER-LAYER3-SINGLE-SOURCE-1-0",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -463,7 +464,8 @@
     "SECTOR-MASTER-ADOPT-1-1",
     "SECTOR-MASTER-ADOPT-1-2",
     "SECTOR-MASTER-ADOPT-1-3",
-    "SECTOR-MASTER-ADOPT-1-4"
+    "SECTOR-MASTER-ADOPT-1-4",
+    "PARSER-LAYER3-SINGLE-SOURCE-1-0"
   ],
   "fcf_history": [
     {
