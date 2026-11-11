@@ -1,7 +1,51 @@
 {
   "ticker": "RKLB",
-  "last_updated": "2026-11-08T17:29:40.985502",
+  "last_updated": "2026-11-11T01:52:57.770283",
   "quarters": [
+    {
+      "gaap_eps": -0.12215458556788208,
+      "adjusted_eps": -0.11972663822353566,
+      "gaap_net_income": -79677000.0,
+      "adjusted_net_income": -78093338.12061858,
+      "diluted_shares_used": 652263684.0,
+      "adjustments": [
+        {
+          "item_id": "inventory_writeoff",
+          "item_name": "在庫評価損・減損",
+          "amount": 1660000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "一過性の在庫評価損",
+          "extracted_from": "us-gaap:InventoryWriteDown",
+          "category": "在庫・サプライチェーン関連",
+          "net_amount": 1583661.8793814161,
+          "tax_rate_applied": 0.04598681964974926
+        }
+      ],
+      "net_adjustment_total": 1583661.8793814161,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "宇宙・航空",
+      "revenue": 267834000.0,
+      "diluted_shares": 652263684.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 3503000.0,
+      "pretax_income": -76174000.0,
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "調整項目は一過性の在庫評価損をadd_backしたもので、主に一過性と判断される。GAAP EPSは-0.122とAdjusted EPS(-0.120)よりやや悪化しており、市場がGAAPベースで評価する場合にコア損失の実態が過大に見え、企業の実力をやや過小評価するリスクがある。ただし調整額は166万ドルと小さくEPS影響は限定的で、過大調整の懸念は低い。投資家は今後の四半期で同様の在庫評価損が発生しないかを注視すべきであり、恒常化すれば実力評価の見直しが必要。",
+        "sources": [
+          {
+            "item": "inventory_writeoff",
+            "snippet": "一過性の在庫評価損として調整。reason: 一過性の在庫評価損、extracted_from: us-gaap:InventoryWriteDown、category: 在庫・サプライチェーン関連。",
+            "confidence": 0.75
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": -0.07822681196331158,
       "adjusted_eps": -0.07822681196331158,
@@ -19,12 +63,7 @@
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 5327000.0,
-      "pretax_income": -43931000.0,
-      "ai_analysis": {
-        "health": "Excellent",
-        "comment": "調整項目がゼロです。GAAP EPSがそのまま実質EPSと一致しており、最高水準の信頼性です。",
-        "sources": []
-      }
+      "pretax_income": -43931000.0
     },
     {
       "gaap_eps": -0.07436310524167199,
@@ -596,11 +635,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.08648505106190307,
+      "value": -0.00729249187208425,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.5227746900565883,
-      "prior_4q_avg_yoy": 0.6092597411184913
+      "recent_4q_avg_yoy": 0.5846276545655558,
+      "prior_4q_avg_yoy": 0.59192014643764
     },
     "roic_trend": {
       "years": [
@@ -630,7 +669,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

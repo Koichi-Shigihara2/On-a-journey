@@ -1,7 +1,69 @@
 {
   "ticker": "SPIR",
-  "last_updated": "2026-11-08T17:30:26.762310",
+  "last_updated": "2026-11-11T01:53:37.978894",
   "quarters": [
+    {
+      "gaap_eps": -0.5170548573706525,
+      "adjusted_eps": -0.4365053351099125,
+      "gaap_net_income": -20252000.0,
+      "adjusted_net_income": -17097037.037037037,
+      "diluted_shares_used": 39167991.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 2768000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 2756609.0534979426,
+          "tax_rate_applied": 0.00411522633744856
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 400000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 398353.9094650206,
+          "tax_rate_applied": 0.00411522633744856
+        }
+      ],
+      "net_adjustment_total": 3154962.962962963,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "一般消費財 / 製造 / EV",
+      "revenue": 17998000.0,
+      "diluted_shares": 39167991.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 83000.0,
+      "pretax_income": -20169000.0,
+      "ai_analysis": {
+        "health": "調整中",
+        "comment": "調整項目はSBCと無形資産償却費の両方とも恒常的に発生する非現金費用であり、一過性とは言えません。市場がGAAP EPS(-0.517)で判断する場合、これらの費用により実態より悪い業績に見え、企業の実力（キャッシュ生成力や調整後EPS-0.437）を過小評価するリスクがあります。特にSBCは株式希薄化を伴う実質コストのため、過大調整の側面もあり投資家は調整後数値の持続可能性と希薄化効果を注視すべきです。全体として過小評価リスクが中程度存在します。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用として毎期発生する株式報酬関連コスト。恒常的性質が強く、調整により実力が見えにくくなる可能性。",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で、複数年にわたり恒常的に発生する非現金項目。調整は実態を過度に良く見せるリスクあり。",
+            "confidence": 0.2
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": -0.5214510696679937,
       "adjusted_eps": -0.4327438298477969,
@@ -12,12 +74,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 3043000,
+          "amount": 3043000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 3002387.5469400184,
           "tax_rate_applied": 0.01334618897797625
@@ -39,30 +101,14 @@
       "net_adjustment_total": 3397049.071348828,
       "filing_date": "2026-06-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 18048000.0,
       "diluted_shares": 38295060.0,
       "period_end": "2026-06-30",
       "fiscal_year": 2026,
       "quarter": 2,
       "tax_expense": 263000.0,
-      "pretax_income": -19706000.0,
-      "ai_analysis": {
-        "health": "調整中",
-        "comment": "調整項目のSBCと無形資産償却はともに恒常的に発生する費用（SBCは毎期の報酬コスト、無形資産償却は買収後の定期償却）であり、一過性とは判断しにくい。GAAP EPS（-0.52）がAdjusted EPS（-0.43）より悪化しているため、市場がGAAPベースで評価する場合に非現金費用の影響で企業の実力（キャッシュベースの損失幅）が過小評価される可能性がある。ただし恒常的コストを加算調整しているため、Adjusted EPS依存は過大評価リスクを伴う。投資家は株主希薄化効果や将来の償却スケジュール、キャッシュフロー持続性を注視すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、継続的に発生する恒常的な報酬コストであり一過性ではない。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は定期的に発生する非現金費用であり、買収後の恒常的コストとして扱うべき。",
-            "confidence": 0.2
-          }
-        ]
-      }
+      "pretax_income": -19706000.0
     },
     {
       "gaap_eps": -0.7767740267781597,
@@ -101,7 +147,7 @@
       "net_adjustment_total": 4353694.702962618,
       "filing_date": "2026-03-31",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 15834000.0,
       "diluted_shares": 33269650.0,
       "period_end": "2026-03-31",
@@ -147,7 +193,7 @@
       "net_adjustment_total": 3486652.972351177,
       "filing_date": "2025-12-31",
       "form": "10-K",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 15825000.0,
       "diluted_shares": 31950850.0,
       "period_end": "2025-12-31",
@@ -158,9 +204,9 @@
     },
     {
       "gaap_eps": -0.6053889896554356,
-      "adjusted_eps": -0.4756539876543699,
+      "adjusted_eps": -0.47525404574637514,
       "gaap_net_income": -19676000.0,
-      "adjusted_net_income": -15459428.600467527,
+      "adjusted_net_income": -15446429.921740014,
       "diluted_shares_used": 32501417.0,
       "adjustments": [
         {
@@ -179,21 +225,21 @@
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
-          "amount": 387000,
+          "amount": 400000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "買収関連無形資産の償却",
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
-          "net_amount": 386960.66673442425,
+          "net_amount": 399959.3454619372,
           "tax_rate_applied": 0.00010163634515702815
         }
       ],
-      "net_adjustment_total": 4216571.399532473,
+      "net_adjustment_total": 4229570.078259986,
       "filing_date": "2025-09-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 12670000.0,
       "diluted_shares": 32501417.0,
       "period_end": "2025-09-30",
@@ -239,7 +285,7 @@
       "net_adjustment_total": 6523753.655542833,
       "filing_date": "2025-06-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 19182000.0,
       "diluted_shares": 32093646.0,
       "period_end": "2025-06-30",
@@ -285,7 +331,7 @@
       "net_adjustment_total": 5303459.565406766,
       "filing_date": "2025-03-31",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 23876000.0,
       "diluted_shares": 26787097.0,
       "period_end": "2025-03-31",
@@ -344,7 +390,7 @@
       "net_adjustment_total": 7986660.519732898,
       "filing_date": "2024-12-31",
       "form": "10-K",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 21659000.0,
       "diluted_shares": 24159770.0,
       "period_end": "2024-12-31",
@@ -403,7 +449,7 @@
       "net_adjustment_total": 8409125.030171374,
       "filing_date": "2024-09-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 28568000.0,
       "diluted_shares": 24921585.0,
       "period_end": "2024-09-30",
@@ -462,7 +508,7 @@
       "net_adjustment_total": 5679831.1302449675,
       "filing_date": "2024-06-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 25399000.0,
       "diluted_shares": 24487484.0,
       "period_end": "2024-06-30",
@@ -521,7 +567,7 @@
       "net_adjustment_total": 4546379.893132793,
       "filing_date": "2024-03-31",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 34825000.0,
       "diluted_shares": 21813045.0,
       "period_end": "2024-03-31",
@@ -580,7 +626,7 @@
       "net_adjustment_total": 4946512.592592593,
       "filing_date": "2023-12-31",
       "form": "10-K",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 27725000.0,
       "diluted_shares": 19580006.0,
       "period_end": "2023-12-31",
@@ -626,7 +672,7 @@
       "net_adjustment_total": 4410752.1353113055,
       "filing_date": "2023-09-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 22126000.0,
       "diluted_shares": 20756394.0,
       "period_end": "2023-09-30",
@@ -672,7 +718,7 @@
       "net_adjustment_total": 4114657.45647237,
       "filing_date": "2023-06-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 28065000.0,
       "diluted_shares": 18468949.0,
       "period_end": "2023-06-30",
@@ -718,7 +764,7 @@
       "net_adjustment_total": 3519407.8186968835,
       "filing_date": "2023-03-31",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 23217000.0,
       "diluted_shares": 18096363.0,
       "period_end": "2023-03-31",
@@ -764,7 +810,7 @@
       "net_adjustment_total": 4370326.255049048,
       "filing_date": "2022-12-31",
       "form": "10-K",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 22385000.0,
       "diluted_shares": 17484927.0,
       "period_end": "2022-12-31",
@@ -810,7 +856,7 @@
       "net_adjustment_total": 4842950.085030105,
       "filing_date": "2022-09-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 20418000.0,
       "diluted_shares": 17492871.0,
       "period_end": "2022-09-30",
@@ -856,7 +902,7 @@
       "net_adjustment_total": 4631879.508825786,
       "filing_date": "2022-06-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 19395000.0,
       "diluted_shares": 17460934.375,
       "period_end": "2022-06-30",
@@ -902,7 +948,7 @@
       "net_adjustment_total": 3971478.9567942685,
       "filing_date": "2022-03-31",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 18070000.0,
       "diluted_shares": 17409317.25,
       "period_end": "2022-03-31",
@@ -961,7 +1007,7 @@
       "net_adjustment_total": -15955660.837379944,
       "filing_date": "2021-12-31",
       "form": "10-K",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 14985000.0,
       "diluted_shares": 7767179.25,
       "period_end": "2021-12-31",
@@ -1029,7 +1075,7 @@
       "net_adjustment_total": 17635502.867538232,
       "filing_date": "2021-09-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 9561000.0,
       "diluted_shares": 8418533.625,
       "period_end": "2021-09-30",
@@ -1097,7 +1143,7 @@
       "net_adjustment_total": 4216708.2359224465,
       "filing_date": "2021-06-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 9113000.0,
       "diluted_shares": 18642269.0,
       "period_end": "2021-06-30",
@@ -1165,7 +1211,7 @@
       "net_adjustment_total": 7952723.722804733,
       "filing_date": "2021-03-31",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 9716000.0,
       "diluted_shares": 17750210.0,
       "period_end": "2021-03-31",
@@ -1207,7 +1253,7 @@
       "net_adjustment_total": 419490.0,
       "filing_date": "2020-09-30",
       "form": "10-Q",
-      "sector": "Technology",
+      "sector": "一般消費財 / 製造 / EV",
       "revenue": 7184000.0,
       "diluted_shares": 17605469.0,
       "period_end": "2020-09-30",
@@ -1219,11 +1265,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.18374503204864412,
+      "value": 0.2724212572590252,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": -0.3054487851384754,
-      "prior_4q_avg_yoy": -0.12170375308983128
+      "recent_4q_avg_yoy": -0.061194361347952045,
+      "prior_4q_avg_yoy": -0.33361561860697725
     },
     "roic_trend": {
       "years": [
@@ -1251,9 +1297,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.16860593971631205,
+      "value": 0.1537948660962329,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

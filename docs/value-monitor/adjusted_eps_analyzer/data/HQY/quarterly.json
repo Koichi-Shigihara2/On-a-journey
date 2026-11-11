@@ -1,12 +1,12 @@
 {
   "ticker": "HQY",
-  "last_updated": "2026-11-08T17:32:39.718957",
+  "last_updated": "2026-11-11T01:55:14.209149",
   "quarters": [
     {
       "gaap_eps": 0.781345966148499,
-      "adjusted_eps": 1.3565265094416312,
+      "adjusted_eps": 1.3478918206220762,
       "gaap_net_income": 65644000.0,
-      "adjusted_net_income": 113967218.16422921,
+      "adjusted_net_income": 113241783.41774312,
       "diluted_shares_used": 84014000.0,
       "adjustments": [
         {
@@ -34,25 +34,12 @@
           "category": "買収・統合関連",
           "net_amount": 31004677.63045581,
           "tax_rate_applied": 0.252899334205884
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 971000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 725434.7464860866,
-          "tax_rate_applied": 0.252899334205884
         }
       ],
-      "net_adjustment_total": 48323218.164229214,
+      "net_adjustment_total": 47597783.417743124,
       "filing_date": "2026-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 350732000.0,
       "diluted_shares": 84014000.0,
       "period_end": "2026-07-31",
@@ -61,32 +48,27 @@
       "tax_expense": 22221000.0,
       "pretax_income": 87865000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の大部分を占めるSBCと無形資産償却は恒常的に発生する非現金費用であり、M&A統合費用のみ一過性です。GAAP EPS 0.78に対しAdjusted EPS 1.36と大幅に加算されているため、市場がGAAPベースで評価する場合、企業の非現金費用控除後の真の収益力・キャッシュ生成能力が見えにくくなり、実力を過小評価している可能性があります。ただしSBCによる株式希薄化や継続的な償却を考慮すると、Adjusted使用時の過大評価リスクもあり、投資家は持続可能性と将来の現金流出を注視する必要があります。",
+        "health": "過大調整",
+        "comment": "SBCと無形資産償却はともに恒常的に発生する項目（非現金だが運用上または過去買収の継続コスト）であり、調整幅が大きくAdjusted EPSがGAAPの約1.7倍となっている。市場がGAAP EPSで判断する場合でも企業の実力は過度に隠蔽されているわけではなく、むしろAdjustedは持続可能な利益を過大に見せている可能性が高い。投資家としては過大評価リスクに注意すべきで、キャッシュフロー分析を併用しSBCの希薄化効果や償却の経済的意味を考慮する必要がある。過小評価の可能性は限定的。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬費用であり、実質的なコスト・希薄化要因",
+            "snippet": "株式報酬費用は非現金費用だが企業が継続的に発生させる恒常的な運用コストであり一過性ではない",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却で、過去のM&Aに起因する継続的な非現金費用",
+            "snippet": "買収関連無形資産の償却は過去M&Aに基づく定期的な非現金費用で恒常的性格が強い",
             "confidence": 0.2
-          },
-          {
-            "item": "ma_integration",
-            "snippet": "一過性の買収統合コストで非経常的",
-            "confidence": 0.8
           }
         ]
       }
     },
     {
       "gaap_eps": 0.8166247088440816,
-      "adjusted_eps": 1.3310877597589268,
+      "adjusted_eps": 1.3212525276926217,
       "gaap_net_income": 69418000.0,
-      "adjusted_net_income": 113150446.10606733,
+      "adjusted_net_income": 112314392.369039,
       "diluted_shares_used": 85006000.0,
       "adjustments": [
         {
@@ -114,25 +96,12 @@
           "category": "買収・統合関連",
           "net_amount": 28319160.724140543,
           "tax_rate_applied": 0.24882862800688216
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1113000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 836053.7370283402,
-          "tax_rate_applied": 0.24882862800688216
         }
       ],
-      "net_adjustment_total": 43732446.10606733,
+      "net_adjustment_total": 42896392.36903899,
       "filing_date": "2026-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 354641000.0,
       "diluted_shares": 85006000.0,
       "period_end": "2026-04-30",
@@ -143,9 +112,9 @@
     },
     {
       "gaap_eps": 0.5686326066329038,
-      "adjusted_eps": 1.0991436214603363,
+      "adjusted_eps": 1.0871861031403975,
       "gaap_net_income": 49740000.0,
-      "adjusted_net_income": 96145390.0,
+      "adjusted_net_income": 95099430.0,
       "diluted_shares_used": 87473000.0,
       "adjustments": [
         {
@@ -173,25 +142,12 @@
           "category": "買収・統合関連",
           "net_amount": 30257000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1324000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1045960.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 46405390.0,
+      "net_adjustment_total": 45359430.0,
       "filing_date": "2026-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 334586000.0,
       "diluted_shares": 87473000.0,
       "period_end": "2026-01-31",
@@ -202,9 +158,9 @@
     },
     {
       "gaap_eps": 0.5943658732896401,
-      "adjusted_eps": 1.123329673422624,
+      "adjusted_eps": 1.1131290271046903,
       "gaap_net_income": 51692000.0,
-      "adjusted_net_income": 97695981.6975656,
+      "adjusted_net_income": 96808831.48729491,
       "diluted_shares_used": 86970000.0,
       "adjustments": [
         {
@@ -232,25 +188,12 @@
           "category": "買収・統合関連",
           "net_amount": 29393069.952022746,
           "tax_rate_applied": 0.23455546999940768
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1159000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 887150.2102706865,
-          "tax_rate_applied": 0.23455546999940768
         }
       ],
-      "net_adjustment_total": 46003981.6975656,
+      "net_adjustment_total": 45116831.48729491,
       "filing_date": "2025-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 322164000.0,
       "diluted_shares": 86970000.0,
       "period_end": "2025-10-31",
@@ -261,9 +204,9 @@
     },
     {
       "gaap_eps": 0.6821279602489002,
-      "adjusted_eps": 1.1919584803539554,
+      "adjusted_eps": 1.1808938278622183,
       "gaap_net_income": 59854000.0,
-      "adjusted_net_income": 104589588.81713817,
+      "adjusted_net_income": 103618709.8195982,
       "diluted_shares_used": 87746000.0,
       "adjustments": [
         {
@@ -291,25 +234,12 @@
           "category": "買収・統合関連",
           "net_amount": 29141707.66707667,
           "tax_rate_applied": 0.2331129561295613
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1266000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 970878.9975399754,
-          "tax_rate_applied": 0.2331129561295613
         }
       ],
-      "net_adjustment_total": 44735588.81713817,
+      "net_adjustment_total": 43764709.8195982,
       "filing_date": "2025-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 325835000.0,
       "diluted_shares": 87746000.0,
       "period_end": "2025-07-31",
@@ -320,9 +250,9 @@
     },
     {
       "gaap_eps": 0.6097947180908216,
-      "adjusted_eps": 1.0714057014653955,
+      "adjusted_eps": 1.060447908763666,
       "gaap_net_income": 53915000.0,
-      "adjusted_net_income": 94728335.09506294,
+      "adjusted_net_income": 93759501.85333954,
       "diluted_shares_used": 88415000.0,
       "adjustments": [
         {
@@ -350,25 +280,12 @@
           "category": "買収・統合関連",
           "net_amount": 28951016.87032261,
           "tax_rate_applied": 0.2401307908051809
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1275000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 968833.2417233944,
-          "tax_rate_applied": 0.2401307908051809
         }
       ],
-      "net_adjustment_total": 40813335.095062934,
+      "net_adjustment_total": 39844501.85333954,
       "filing_date": "2025-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 330844000.0,
       "diluted_shares": 88415000.0,
       "period_end": "2025-04-30",
@@ -379,9 +296,9 @@
     },
     {
       "gaap_eps": 0.2968095645517179,
-      "adjusted_eps": 0.70072674726384,
+      "adjusted_eps": 0.686579967860968,
       "gaap_net_income": 26365000.0,
-      "adjusted_net_income": 62244155.50595238,
+      "adjusted_net_income": 60987525.38515406,
       "diluted_shares_used": 88828000.0,
       "adjustments": [
         {
@@ -409,25 +326,12 @@
           "category": "買収・統合関連",
           "net_amount": 22097765.668767504,
           "tax_rate_applied": 0.42303483893557425
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 2178000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1256630.1207983193,
-          "tax_rate_applied": 0.42303483893557425
         }
       ],
-      "net_adjustment_total": 35879155.50595238,
+      "net_adjustment_total": 34622525.38515406,
       "filing_date": "2025-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 311817000.0,
       "diluted_shares": 88828000.0,
       "period_end": "2025-01-31",
@@ -438,9 +342,9 @@
     },
     {
       "gaap_eps": 0.06434325428165263,
-      "adjusted_eps": 1.0500843933730373,
+      "adjusted_eps": 0.6937336941615109,
       "gaap_net_income": 5703000.0,
-      "adjusted_net_income": 93073180.12222579,
+      "adjusted_net_income": 61488392.248311356,
       "diluted_shares_used": 88634000.0,
       "adjustments": [
         {
@@ -468,25 +372,12 @@
           "category": "買収・統合関連",
           "net_amount": 36411884.85043422,
           "tax_rate_applied": 0.08282405918301705
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 34437000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 31584787.873914443,
-          "tax_rate_applied": 0.08282405918301705
         }
       ],
-      "net_adjustment_total": 87370180.12222579,
+      "net_adjustment_total": 55785392.248311356,
       "filing_date": "2024-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 300432000.0,
       "diluted_shares": 88634000.0,
       "period_end": "2024-10-31",
@@ -497,9 +388,9 @@
     },
     {
       "gaap_eps": 0.4041017079168829,
-      "adjusted_eps": 0.9732127690643704,
+      "adjusted_eps": 0.9578084286025482,
       "gaap_net_income": 35822000.0,
-      "adjusted_net_income": 86271419.12648018,
+      "adjusted_net_income": 84905885.96190149,
       "diluted_shares_used": 88646000.0,
       "adjustments": [
         {
@@ -527,25 +418,12 @@
           "category": "買収・統合関連",
           "net_amount": 32505375.83662262,
           "tax_rate_applied": 0.2315513986614038
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1777000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1365533.1645786853,
-          "tax_rate_applied": 0.2315513986614038
         }
       ],
-      "net_adjustment_total": 50449419.12648018,
+      "net_adjustment_total": 49083885.96190149,
       "filing_date": "2024-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 299928000.0,
       "diluted_shares": 88646000.0,
       "period_end": "2024-07-31",
@@ -556,9 +434,9 @@
     },
     {
       "gaap_eps": 0.3262193741225488,
-      "adjusted_eps": 1.0295455574537025,
+      "adjusted_eps": 1.0085133928655794,
       "gaap_net_income": 28813000.0,
-      "adjusted_net_income": 90933581.81654081,
+      "adjusted_net_income": 89075936.91145943,
       "diluted_shares_used": 88324000.0,
       "adjustments": [
         {
@@ -586,25 +464,12 @@
           "category": "買収・統合関連",
           "net_amount": 32506618.731008757,
           "tax_rate_applied": 0.13315683383976654
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 2143000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1857644.9050813804,
-          "tax_rate_applied": 0.13315683383976654
         }
       ],
-      "net_adjustment_total": 62120581.816540815,
+      "net_adjustment_total": 60262936.91145943,
       "filing_date": "2024-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 287597000.0,
       "diluted_shares": 88324000.0,
       "period_end": "2024-04-30",
@@ -615,9 +480,9 @@
     },
     {
       "gaap_eps": 0.3031843324861713,
-      "adjusted_eps": 0.668064540037046,
+      "adjusted_eps": 0.6529491170001138,
       "gaap_net_income": 26364000.0,
-      "adjusted_net_income": 58092888.208001405,
+      "adjusted_net_income": 56778496.3669789,
       "diluted_shares_used": 86957000.0,
       "adjustments": [
         {
@@ -645,25 +510,12 @@
           "category": "買収・統合関連",
           "net_amount": 20483279.34868248,
           "tax_rate_applied": 0.4230062155300709
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 2278000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1314391.8410224984,
-          "tax_rate_applied": 0.4230062155300709
         }
       ],
-      "net_adjustment_total": 31728888.2080014,
+      "net_adjustment_total": 30414496.366978902,
       "filing_date": "2024-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 262387000.0,
       "diluted_shares": 86957000.0,
       "period_end": "2024-01-31",
@@ -674,9 +526,9 @@
     },
     {
       "gaap_eps": 0.16841899864557747,
-      "adjusted_eps": 0.6501626673184706,
+      "adjusted_eps": 0.6289575437160612,
       "gaap_net_income": 14673000.0,
-      "adjusted_net_income": 56643471.9021198,
+      "adjusted_net_income": 54796039.12363068,
       "diluted_shares_used": 87122000.0,
       "adjustments": [
         {
@@ -704,25 +556,12 @@
           "category": "買収・統合関連",
           "net_amount": 25049935.979513448,
           "tax_rate_applied": 0.3041684450135154
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 2655000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1847432.7784891168,
-          "tax_rate_applied": 0.3041684450135154
         }
       ],
-      "net_adjustment_total": 41970471.9021198,
+      "net_adjustment_total": 40123039.12363068,
       "filing_date": "2023-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 249219000.0,
       "diluted_shares": 87122000.0,
       "period_end": "2023-10-31",
@@ -733,9 +572,9 @@
     },
     {
       "gaap_eps": 0.12254896283341633,
-      "adjusted_eps": 0.6258492132439677,
+      "adjusted_eps": 0.6082388307895594,
       "gaap_net_income": 10581000.0,
-      "adjusted_net_income": 54036446.92069741,
+      "adjusted_net_income": 52515948.88920135,
       "diluted_shares_used": 86341000.0,
       "adjustments": [
         {
@@ -763,25 +602,12 @@
           "category": "買収・統合関連",
           "net_amount": 27002973.847019125,
           "tax_rate_applied": 0.2561164229471316
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 2044000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1520498.031496063,
-          "tax_rate_applied": 0.2561164229471316
         }
       ],
-      "net_adjustment_total": 43455446.92069741,
+      "net_adjustment_total": 41934948.88920135,
       "filing_date": "2023-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 243549000.0,
       "diluted_shares": 86341000.0,
       "period_end": "2023-07-31",
@@ -792,9 +618,9 @@
     },
     {
       "gaap_eps": 0.047548256718775404,
-      "adjusted_eps": 0.5811941650600451,
+      "adjusted_eps": 0.5494664467724327,
       "gaap_net_income": 4094000.0,
-      "adjusted_net_income": 50041980.0,
+      "adjusted_net_income": 47310160.0,
       "diluted_shares_used": 86102000.0,
       "adjustments": [
         {
@@ -822,25 +648,12 @@
           "category": "買収・統合関連",
           "net_amount": 28835000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 3458000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 2731820.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 45947980.0,
+      "net_adjustment_total": 43216160.0,
       "filing_date": "2023-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 244432000.0,
       "diluted_shares": 86102000.0,
       "period_end": "2023-04-30",
@@ -851,9 +664,9 @@
     },
     {
       "gaap_eps": -0.0024750716468108286,
-      "adjusted_eps": 0.5112747211103479,
+      "adjusted_eps": 0.46346794249307216,
       "gaap_net_income": -209000.0,
-      "adjusted_net_income": 43173060.0,
+      "adjusted_net_income": 39136160.0,
       "diluted_shares_used": 84442000.0,
       "adjustments": [
         {
@@ -881,25 +694,12 @@
           "category": "買収・統合関連",
           "net_amount": 29625000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 5110000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 4036900.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 43382060.0,
+      "net_adjustment_total": 39345160.0,
       "filing_date": "2023-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 233841000.0,
       "diluted_shares": 84442000.0,
       "period_end": "2023-01-31",
@@ -910,9 +710,9 @@
     },
     {
       "gaap_eps": -0.019403585110911413,
-      "adjusted_eps": 0.5623540888237242,
+      "adjusted_eps": 0.5015525232937615,
       "gaap_net_income": -1641000.0,
-      "adjusted_net_income": 47559410.0,
+      "adjusted_net_income": 42417300.0,
       "diluted_shares_used": 84572000.0,
       "adjustments": [
         {
@@ -940,25 +740,12 @@
           "category": "買収・統合関連",
           "net_amount": 29704000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 6509000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationIntegrationRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 5142110.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 49200410.0,
+      "net_adjustment_total": 44058300.0,
       "filing_date": "2022-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 216086000.0,
       "diluted_shares": 84572000.0,
       "period_end": "2022-10-31",
@@ -969,9 +756,9 @@
     },
     {
       "gaap_eps": -0.12616794760963015,
-      "adjusted_eps": 0.38131404219538484,
+      "adjusted_eps": 0.3808866008677951,
       "gaap_net_income": -10654000.0,
-      "adjusted_net_income": 32199301.66510488,
+      "adjusted_net_income": 32163207.237079218,
       "diluted_shares_used": 84443000.0,
       "adjustments": [
         {
@@ -999,25 +786,12 @@
           "category": "買収・統合関連",
           "net_amount": 28875542.420529086,
           "tax_rate_applied": 0.23203344626252434
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 47000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 36094.42802566136,
-          "tax_rate_applied": 0.23203344626252434
         }
       ],
-      "net_adjustment_total": 42853301.66510488,
+      "net_adjustment_total": 42817207.23707922,
       "filing_date": "2022-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 206142000.0,
       "diluted_shares": 84443000.0,
       "period_end": "2022-07-31",
@@ -1028,9 +802,9 @@
     },
     {
       "gaap_eps": -0.1623265335269334,
-      "adjusted_eps": 0.2890331346789191,
+      "adjusted_eps": 0.2889791787096564,
       "gaap_net_income": -13639000.0,
-      "adjusted_net_income": 24285142.041992143,
+      "adjusted_net_income": 24280608.553542748,
       "diluted_shares_used": 84022000.0,
       "adjustments": [
         {
@@ -1058,25 +832,12 @@
           "category": "買収・統合関連",
           "net_amount": 27352046.97800676,
           "tax_rate_applied": 0.2444185917677691
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 6000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 4533.488449393386,
-          "tax_rate_applied": 0.2444185917677691
         }
       ],
-      "net_adjustment_total": 37924142.04199214,
+      "net_adjustment_total": 37919608.55354275,
       "filing_date": "2022-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 205679000.0,
       "diluted_shares": 84022000.0,
       "period_end": "2022-04-30",
@@ -1087,9 +848,9 @@
     },
     {
       "gaap_eps": -0.39476501509629147,
-      "adjusted_eps": -0.023605905100293843,
+      "adjusted_eps": -0.06585368987131907,
       "gaap_net_income": -32818000.0,
-      "adjusted_net_income": -1962429.7087027282,
+      "adjusted_net_income": -5474614.800072368,
       "diluted_shares_used": 83133000.0,
       "adjustments": [
         {
@@ -1117,25 +878,12 @@
           "category": "買収・統合関連",
           "net_amount": 20782160.30396237,
           "tax_rate_applied": 0.40622399131536097
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 5915000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 3512185.09136964,
-          "tax_rate_applied": 0.40622399131536097
         }
       ],
-      "net_adjustment_total": 30855570.29129727,
+      "net_adjustment_total": 27343385.19992763,
       "filing_date": "2022-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 203297000.0,
       "diluted_shares": 83133000.0,
       "period_end": "2022-01-31",
@@ -1146,9 +894,9 @@
     },
     {
       "gaap_eps": -0.06029850031717155,
-      "adjusted_eps": 0.18710046443620765,
+      "adjusted_eps": 0.20485630776248054,
       "gaap_net_income": -5038000.0,
-      "adjusted_net_income": 15632430.904109586,
+      "adjusted_net_income": 17115949.36986301,
       "diluted_shares_used": 83551000.0,
       "adjustments": [
         {
@@ -1178,19 +926,6 @@
           "tax_rate_applied": 0.4478904109589041
         },
         {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": -2687000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": -1483518.4657534247,
-          "tax_rate_applied": 0.4478904109589041
-        },
-        {
           "item_id": "contingent_consideration_fv",
           "item_name": "偶発対価公正価値変動損益",
           "amount": -3158000,
@@ -1204,10 +939,10 @@
           "tax_rate_applied": 0.4478904109589041
         }
       ],
-      "net_adjustment_total": 20670430.904109586,
+      "net_adjustment_total": 22153949.36986301,
       "filing_date": "2021-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 179954000.0,
       "diluted_shares": 83551000.0,
       "period_end": "2021-10-31",
@@ -1227,9 +962,9 @@
     },
     {
       "gaap_eps": -0.045734957655035276,
-      "adjusted_eps": 0.3969739222098442,
+      "adjusted_eps": 0.38121764233777744,
       "gaap_net_income": -3818000.0,
-      "adjusted_net_income": 33139780.0,
+      "adjusted_net_income": 31824430.0,
       "diluted_shares_used": 83481000.0,
       "adjustments": [
         {
@@ -1257,25 +992,12 @@
           "category": "買収・統合関連",
           "net_amount": 23305000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1665000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 1315350.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 36957780.0,
+      "net_adjustment_total": 35642430.0,
       "filing_date": "2021-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 189103000.0,
       "diluted_shares": 83481000.0,
       "period_end": "2021-07-31",
@@ -1286,9 +1008,9 @@
     },
     {
       "gaap_eps": -0.03198894149020759,
-      "adjusted_eps": 0.41871897439661393,
+      "adjusted_eps": 0.36132469693077424,
       "gaap_net_income": -2615000.0,
-      "adjusted_net_income": 34229020.0,
+      "adjusted_net_income": 29537210.0,
       "diluted_shares_used": 81747000.0,
       "adjustments": [
         {
@@ -1316,25 +1038,12 @@
           "category": "買収・統合関連",
           "net_amount": 22041000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 5939000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 4691810.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 36844020.0,
+      "net_adjustment_total": 32152210.0,
       "filing_date": "2021-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 184202000.0,
       "diluted_shares": 81747000.0,
       "period_end": "2021-04-30",
@@ -1377,19 +1086,6 @@
           "tax_rate_applied": 0.21
         },
         {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1039000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 820810.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
           "amount": -10066500.0,
@@ -1400,7 +1096,7 @@
       "net_adjustment_total": -10066500.0,
       "filing_date": "2021-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 188169000.0,
       "diluted_shares": 75679000.0,
       "period_end": "2021-01-31",
@@ -1411,9 +1107,9 @@
     },
     {
       "gaap_eps": 0.022981565932301367,
-      "adjusted_eps": 0.3963604598882394,
+      "adjusted_eps": 0.3962285310553022,
       "gaap_net_income": 1789000.0,
-      "adjusted_net_income": 30854680.0,
+      "adjusted_net_income": 30844410.0,
       "diluted_shares_used": 77845000.0,
       "adjustments": [
         {
@@ -1441,25 +1137,12 @@
           "category": "買収・統合関連",
           "net_amount": 19987000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 13000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 10270.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 29065680.0,
+      "net_adjustment_total": 29055410.0,
       "filing_date": "2020-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 179351000.0,
       "diluted_shares": 77845000.0,
       "period_end": "2020-10-31",
@@ -1470,9 +1153,9 @@
     },
     {
       "gaap_eps": -0.00204580954618968,
-      "adjusted_eps": 0.3900985582571914,
+      "adjusted_eps": 0.39040432384612195,
       "gaap_net_income": -148000.0,
-      "adjusted_net_income": 28220900.0,
+      "adjusted_net_income": 28243020.0,
       "diluted_shares_used": 72343000.0,
       "adjustments": [
         {
@@ -1500,25 +1183,12 @@
           "category": "買収・統合関連",
           "net_amount": 19355000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": -28000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": -22120.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 28368900.0,
+      "net_adjustment_total": 28391020.0,
       "filing_date": "2020-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 176039000.0,
       "diluted_shares": 72343000.0,
       "period_end": "2020-07-31",
@@ -1529,9 +1199,9 @@
     },
     {
       "gaap_eps": 0.02525867315885575,
-      "adjusted_eps": 0.40945248358391706,
+      "adjusted_eps": 0.4082908811979423,
       "gaap_net_income": 1826000.0,
-      "adjusted_net_income": 29600138.943248533,
+      "adjusted_net_income": 29516164.383561645,
       "diluted_shares_used": 72292000.0,
       "adjustments": [
         {
@@ -1559,25 +1229,12 @@
           "category": "買収・統合関連",
           "net_amount": 21082974.559686888,
           "tax_rate_applied": 0.10665362035225048
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 94000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 83974.55968688846,
-          "tax_rate_applied": 0.10665362035225048
         }
       ],
-      "net_adjustment_total": 27774138.943248533,
+      "net_adjustment_total": 27690164.383561645,
       "filing_date": "2020-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 190011000.0,
       "diluted_shares": 72292000.0,
       "period_end": "2020-04-30",
@@ -1588,9 +1245,9 @@
     },
     {
       "gaap_eps": -0.0027756270725899524,
-      "adjusted_eps": 0.36246650986808465,
+      "adjusted_eps": 0.361335514878822,
       "gaap_net_income": -190000.0,
-      "adjusted_net_income": 24811920.0,
+      "adjusted_net_income": 24734500.0,
       "diluted_shares_used": 68453000.0,
       "adjustments": [
         {
@@ -1618,25 +1275,12 @@
           "category": "買収・統合関連",
           "net_amount": 18091000.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 98000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 77420.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 25001920.0,
+      "net_adjustment_total": 24924500.0,
       "filing_date": "2020-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 201200000.0,
       "diluted_shares": 68453000.0,
       "period_end": "2020-01-31",
@@ -1647,9 +1291,9 @@
     },
     {
       "gaap_eps": -0.30250694798933697,
-      "adjusted_eps": 0.33836019691268604,
+      "adjusted_eps": 0.019591516150339744,
       "gaap_net_income": -21334000.0,
-      "adjusted_net_income": 23862514.52707027,
+      "adjusted_net_income": 1381672.08498656,
       "diluted_shares_used": 70524000.0,
       "adjustments": [
         {
@@ -1677,25 +1321,12 @@
           "category": "買収・統合関連",
           "net_amount": 10717515.678996544,
           "tax_rate_applied": 0.3173556892358889
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 32932000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 22480842.44208371,
-          "tax_rate_applied": 0.3173556892358889
         }
       ],
-      "net_adjustment_total": 45196514.52707027,
+      "net_adjustment_total": 22715672.08498656,
       "filing_date": "2019-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 157118000.0,
       "diluted_shares": 70524000.0,
       "period_end": "2019-10-31",
@@ -1706,9 +1337,9 @@
     },
     {
       "gaap_eps": 0.29528993794123476,
-      "adjusted_eps": 0.5215345794730555,
+      "adjusted_eps": 0.4394764217944076,
       "gaap_net_income": 19366000.0,
-      "adjusted_net_income": 34203802.325581394,
+      "adjusted_net_income": 28822182.170542635,
       "diluted_shares_used": 65583000.0,
       "adjustments": [
         {
@@ -1736,25 +1367,12 @@
           "category": "買収・統合関連",
           "net_amount": 3263565.891472868,
           "tax_rate_applied": 0.18410852713178294
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 6596000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 5381620.15503876,
-          "tax_rate_applied": 0.18410852713178294
         }
       ],
-      "net_adjustment_total": 14837802.325581394,
+      "net_adjustment_total": 9456182.170542635,
       "filing_date": "2019-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 86623000.0,
       "diluted_shares": 65583000.0,
       "period_end": "2019-07-31",
@@ -1765,9 +1383,9 @@
     },
     {
       "gaap_eps": 0.6544811505297257,
-      "adjusted_eps": 0.7963079484681459,
+      "adjusted_eps": 0.781196093828199,
       "gaap_net_income": 41822000.0,
-      "adjusted_net_income": 50884874.21506299,
+      "adjusted_net_income": 49919211.591715746,
       "diluted_shares_used": 63901000.0,
       "adjustments": [
         {
@@ -1795,25 +1413,12 @@
           "category": "買収・統合関連",
           "net_amount": 3180814.3843363626,
           "tax_rate_applied": 0.1844065681188814
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1184000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 965662.6233472445,
-          "tax_rate_applied": 0.1844065681188814
         }
       ],
-      "net_adjustment_total": 9062874.21506299,
+      "net_adjustment_total": 8097211.591715746,
       "filing_date": "2019-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 87052000.0,
       "diluted_shares": 63901000.0,
       "period_end": "2019-04-30",
@@ -1824,9 +1429,9 @@
     },
     {
       "gaap_eps": 0.20702225027615592,
-      "adjusted_eps": 0.3507869370452672,
+      "adjusted_eps": 0.33637329852690473,
       "gaap_net_income": 13119000.0,
-      "adjusted_net_income": 22229368.200558584,
+      "adjusted_net_income": 21315975.927649952,
       "diluted_shares_used": 63370000.0,
       "adjustments": [
         {
@@ -1854,25 +1459,12 @@
           "category": "買収・統合関連",
           "net_amount": 3315081.7927915948,
           "tax_rate_applied": 0.12761005452852772
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1047000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 913392.2729086315,
-          "tax_rate_applied": 0.12761005452852772
         }
       ],
-      "net_adjustment_total": 9110368.200558584,
+      "net_adjustment_total": 8196975.927649953,
       "filing_date": "2019-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 75777000.0,
       "diluted_shares": 63370000.0,
       "period_end": "2019-01-31",
@@ -1883,9 +1475,9 @@
     },
     {
       "gaap_eps": 0.2453889836209189,
-      "adjusted_eps": 0.3901503236802333,
+      "adjusted_eps": 0.37819832740382003,
       "gaap_net_income": 15686000.0,
-      "adjusted_net_income": 24939579.14061155,
+      "adjusted_net_income": 24175571.682634387,
       "diluted_shares_used": 63923000.0,
       "adjustments": [
         {
@@ -1913,25 +1505,12 @@
           "category": "買収・統合関連",
           "net_amount": 3329596.6955424245,
           "tax_rate_applied": 0.10010900120475016
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 849000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 764007.4579771671,
-          "tax_rate_applied": 0.10010900120475016
         }
       ],
-      "net_adjustment_total": 9253579.140611554,
+      "net_adjustment_total": 8489571.682634387,
       "filing_date": "2018-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 70495000.0,
       "diluted_shares": 63923000.0,
       "period_end": "2018-10-31",
@@ -1942,9 +1521,9 @@
     },
     {
       "gaap_eps": 0.3551745350726375,
-      "adjusted_eps": 0.4935227720467687,
+      "adjusted_eps": 0.4901586811780968,
       "gaap_net_income": 22517000.0,
-      "adjusted_net_income": 31287863.179448996,
+      "adjusted_net_income": 31074589.910647802,
       "diluted_shares_used": 63397000.0,
       "adjustments": [
         {
@@ -1972,25 +1551,12 @@
           "category": "買収・統合関連",
           "net_amount": 3332394.825018615,
           "tax_rate_applied": 0.04788719285182427
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 224000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 213273.26880119136,
-          "tax_rate_applied": 0.04788719285182427
         }
       ],
-      "net_adjustment_total": 8770863.179448996,
+      "net_adjustment_total": 8557589.910647804,
       "filing_date": "2018-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 71067000.0,
       "diluted_shares": 63397000.0,
       "period_end": "2018-07-31",
@@ -2001,9 +1567,9 @@
     },
     {
       "gaap_eps": 0.36011994959564864,
-      "adjusted_eps": 0.4742020105568515,
+      "adjusted_eps": 0.47418764253909823,
       "gaap_net_income": 22577000.0,
-      "adjusted_net_income": 29729146.647840694,
+      "adjusted_net_income": 29728245.873703685,
       "diluted_shares_used": 62693000.0,
       "adjustments": [
         {
@@ -2031,25 +1597,12 @@
           "category": "買収・統合関連",
           "net_amount": 3332864.3069282826,
           "tax_rate_applied": 0.099225862992356
-        },
-        {
-          "item_id": "ma_integration",
-          "item_name": "M&A統合費用",
-          "amount": 1000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の買収統合コスト",
-          "extracted_from": "us-gaap:BusinessCombinationAcquisitionRelatedCosts",
-          "category": "買収・統合関連",
-          "net_amount": 900.774137007644,
-          "tax_rate_applied": 0.099225862992356
         }
       ],
-      "net_adjustment_total": 7152146.647840694,
+      "net_adjustment_total": 7151245.873703686,
       "filing_date": "2018-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 69904000.0,
       "diluted_shares": 62693000.0,
       "period_end": "2018-04-30",
@@ -2095,7 +1648,7 @@
       "net_adjustment_total": 4314853.708535222,
       "filing_date": "2018-01-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 60436000.0,
       "diluted_shares": 61854000.0,
       "period_end": "2018-01-31",
@@ -2141,7 +1694,7 @@
       "net_adjustment_total": 5544704.944178628,
       "filing_date": "2017-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 56789000.0,
       "diluted_shares": 61868000.0,
       "period_end": "2017-10-31",
@@ -2187,7 +1740,7 @@
       "net_adjustment_total": 6591154.1593243,
       "filing_date": "2017-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 56879000.0,
       "diluted_shares": 61765000.0,
       "period_end": "2017-07-31",
@@ -2233,7 +1786,7 @@
       "net_adjustment_total": 5146712.7612552885,
       "filing_date": "2017-04-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "ヘルスケア / バイオ",
       "revenue": 55421000.0,
       "diluted_shares": 61400000.0,
       "period_end": "2017-04-30",

@@ -1,12 +1,12 @@
 {
   "ticker": "ENTG",
-  "last_updated": "2026-11-08T17:34:52.337832",
+  "last_updated": "2026-11-11T01:57:09.591853",
   "quarters": [
     {
       "gaap_eps": 1.0253411306042886,
-      "adjusted_eps": 1.4211832829019226,
+      "adjusted_eps": 1.39259468301376,
       "gaap_net_income": 157800000.0,
-      "adjusted_net_income": 218720107.2386059,
+      "adjusted_net_income": 214320321.7158177,
       "diluted_shares_used": 153900000.0,
       "adjustments": [
         {
@@ -36,19 +36,6 @@
           "tax_rate_applied": 0.15388739946380697
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 5200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 4399785.522788203,
-          "tax_rate_applied": 0.15388739946380697
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 1500000,
@@ -62,10 +49,10 @@
           "tax_rate_applied": 0.15388739946380697
         }
       ],
-      "net_adjustment_total": 60920107.238605894,
+      "net_adjustment_total": 56520321.71581769,
       "filing_date": "2026-09-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 1005700000.0,
       "diluted_shares": 153900000.0,
       "period_end": "2026-09-26",
@@ -74,27 +61,22 @@
       "tax_expense": 28700000.0,
       "pretax_income": 186500000.0,
       "ai_analysis": {
-        "health": "調整大",
-        "comment": "Adjusted EPSがGAAP EPSを約39%上回る大きな調整で、主に無形資産償却とSBCの加戻しが寄与。市場がGAAP EPSで判断する場合、非現金だが継続的なこれらの費用により企業の実力（キャッシュ生成力）が過小評価される可能性が高い。ただしSBC・償却は恒常的性質が強く完全な一過性とは言えず、過大調整のリスクもある。投資家は調整の持続可能性とコア収益性を注視すべきで、過小評価リスクが優勢だが慎重な判断が必要。",
+        "health": "過大調整",
+        "comment": "調整項目の大部分を占める株式報酬費用と無形資産償却費は恒常的に発生するコスト（SBCは従業員インセンティブとして継続、償却は買収後の定期費用）であり、リストラのみ一過性です。市場がGAAP EPS（1.03）で判断する場合、非現金項目を除いた保守的な実績を使用するため企業の実力（キャッシュフロー面）がやや見えにくくなり、過小評価の可能性はあります。ただし恒常的項目の大部分を加算したAdjusted EPS（1.39）は実態を過大に示しており、投資家は過大評価リスクに留意すべきです。SBCの希薄化効果や継続的なM&A償却を考慮した分析が重要で、調整の質は高くないと言えます。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与する恒常的なコストである。",
+            "snippet": "株式報酬費用は非現金費用としてadd_backされているが、技術企業で毎期継続的に発生する恒常的な運用コストであり、実質的な株主希薄化を伴う。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は買収後も複数年継続する非現金費用で恒常的。",
+            "snippet": "無形資産償却費は買収関連の定期的な非現金償却であり、事業継続に伴い毎期発生する可能性が高く、完全に一過性とは言えない。",
             "confidence": 0.2
           },
           {
-            "item": "inventory_writeoff",
-            "snippet": "一過性の在庫評価損であり、調整の根拠が強い。",
-            "confidence": 0.8
-          },
-          {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用でリストラ関連の非経常的項目。",
+            "snippet": "リストラ費用は一過性の事業再編費用としてadd_backされており、非経常的性格が強い。",
             "confidence": 0.8
           }
         ]
@@ -102,9 +84,9 @@
     },
     {
       "gaap_eps": 0.609375,
-      "adjusted_eps": 1.0416382833787465,
+      "adjusted_eps": 0.9973603542234334,
       "gaap_net_income": 93600000.0,
-      "adjusted_net_income": 159995640.32697546,
+      "adjusted_net_income": 153194550.40871936,
       "diluted_shares_used": 153600000.0,
       "adjustments": [
         {
@@ -134,19 +116,6 @@
           "tax_rate_applied": 0.14986376021798364
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 8000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 6801089.918256131,
-          "tax_rate_applied": 0.14986376021798364
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 5600000,
@@ -160,10 +129,10 @@
           "tax_rate_applied": 0.14986376021798364
         }
       ],
-      "net_adjustment_total": 66395640.32697548,
+      "net_adjustment_total": 59594550.408719346,
       "filing_date": "2026-06-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 883200000.0,
       "diluted_shares": 153600000.0,
       "period_end": "2026-06-27",
@@ -174,9 +143,9 @@
     },
     {
       "gaap_eps": 0.6005221932114883,
-      "adjusted_eps": 1.1235576518150425,
+      "adjusted_eps": 1.0338021842275191,
       "gaap_net_income": 92000000.0,
-      "adjusted_net_income": 172129032.2580645,
+      "adjusted_net_income": 158378494.62365592,
       "diluted_shares_used": 153200000.0,
       "adjustments": [
         {
@@ -206,19 +175,6 @@
           "tax_rate_applied": 0.010752688172043012
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 13900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 13750537.634408602,
-          "tax_rate_applied": 0.010752688172043012
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 4100000,
@@ -232,10 +188,10 @@
           "tax_rate_applied": 0.010752688172043012
         }
       ],
-      "net_adjustment_total": 80129032.25806452,
+      "net_adjustment_total": 66378494.623655915,
       "filing_date": "2026-03-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 811900000.0,
       "diluted_shares": 153200000.0,
       "period_end": "2026-03-28",
@@ -246,9 +202,9 @@
     },
     {
       "gaap_eps": 0.32457293035479634,
-      "adjusted_eps": 0.7550895471755499,
+      "adjusted_eps": 0.6977836440416912,
       "gaap_net_income": 49400000.0,
-      "adjusted_net_income": 114924629.08011869,
+      "adjusted_net_income": 106202670.6231454,
       "diluted_shares_used": 152200000.0,
       "adjustments": [
         {
@@ -278,19 +234,6 @@
           "tax_rate_applied": 0.26706231454005935
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 11900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 8721958.456973294,
-          "tax_rate_applied": 0.26706231454005935
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 12300000,
@@ -304,10 +247,10 @@
           "tax_rate_applied": 0.26706231454005935
         }
       ],
-      "net_adjustment_total": 65524629.08011869,
+      "net_adjustment_total": 56802670.6231454,
       "filing_date": "2025-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 823900000.0,
       "diluted_shares": 152200000.0,
       "period_end": "2025-12-31",
@@ -318,9 +261,9 @@
     },
     {
       "gaap_eps": 0.4629021667760998,
-      "adjusted_eps": 0.9290189319325891,
+      "adjusted_eps": 0.8878720726636025,
       "gaap_net_income": 70500000.0,
-      "adjusted_net_income": 141489583.3333333,
+      "adjusted_net_income": 135222916.66666666,
       "diluted_shares_used": 152300000.0,
       "adjustments": [
         {
@@ -350,19 +293,6 @@
           "tax_rate_applied": 0.020833333333333332
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 6400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 6266666.666666666,
-          "tax_rate_applied": 0.020833333333333332
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 1700000,
@@ -376,10 +306,10 @@
           "tax_rate_applied": 0.020833333333333332
         }
       ],
-      "net_adjustment_total": 70989583.33333333,
+      "net_adjustment_total": 64722916.666666664,
       "filing_date": "2025-09-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 807100000.0,
       "diluted_shares": 152300000.0,
       "period_end": "2025-09-27",
@@ -390,9 +320,9 @@
     },
     {
       "gaap_eps": 0.347597103357472,
-      "adjusted_eps": 0.8877479977834717,
+      "adjusted_eps": 0.8346081528457288,
       "gaap_net_income": 52800000.0,
-      "adjusted_net_income": 134848920.86330935,
+      "adjusted_net_income": 126776978.41726619,
       "diluted_shares_used": 151900000.0,
       "adjustments": [
         {
@@ -422,19 +352,6 @@
           "tax_rate_applied": 0.050359712230215826
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 8500000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 8071942.446043165,
-          "tax_rate_applied": 0.050359712230215826
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 13300000,
@@ -448,10 +365,10 @@
           "tax_rate_applied": 0.050359712230215826
         }
       ],
-      "net_adjustment_total": 82048920.86330935,
+      "net_adjustment_total": 73976978.41726619,
       "filing_date": "2025-06-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 792400000.0,
       "diluted_shares": 151900000.0,
       "period_end": "2025-06-28",
@@ -462,9 +379,9 @@
     },
     {
       "gaap_eps": 0.4138157894736842,
-      "adjusted_eps": 0.84276408320379,
+      "adjusted_eps": 0.7740857946554149,
       "gaap_net_income": 62900000.0,
-      "adjusted_net_income": 128100140.64697608,
+      "adjusted_net_income": 117661040.78762306,
       "diluted_shares_used": 152000000.0,
       "adjustments": [
         {
@@ -494,19 +411,6 @@
           "tax_rate_applied": 0.11533052039381153
         },
         {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 11800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 10439099.859353025,
-          "tax_rate_applied": 0.11533052039381153
-        },
-        {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
           "amount": 2400000,
@@ -520,10 +424,10 @@
           "tax_rate_applied": 0.11533052039381153
         }
       ],
-      "net_adjustment_total": 65200140.64697608,
+      "net_adjustment_total": 54761040.78762306,
       "filing_date": "2025-03-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 773200000.0,
       "diluted_shares": 152000000.0,
       "period_end": "2025-03-29",
@@ -534,9 +438,9 @@
     },
     {
       "gaap_eps": 0.6735375494071146,
-      "adjusted_eps": 1.043558936113375,
+      "adjusted_eps": 0.991961033706947,
       "gaap_net_income": 102243000.0,
-      "adjusted_net_income": 158412246.50201035,
+      "adjusted_net_income": 150579684.91671455,
       "diluted_shares_used": 151800000.0,
       "adjustments": [
         {
@@ -564,25 +468,12 @@
           "category": "買収・統合関連",
           "net_amount": 36192025.29580701,
           "tax_rate_applied": 0.21697874784606547
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 10003000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 7832561.585295808,
-          "tax_rate_applied": 0.21697874784606547
         }
       ],
-      "net_adjustment_total": 56169246.502010345,
+      "net_adjustment_total": 48336684.916714534,
       "filing_date": "2024-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 849837000.0,
       "diluted_shares": 151800000.0,
       "period_end": "2024-12-31",
@@ -593,9 +484,9 @@
     },
     {
       "gaap_eps": 0.5107439104674127,
-      "adjusted_eps": 0.9305706178754729,
+      "adjusted_eps": 0.8784137941164728,
       "gaap_net_income": 77582000.0,
-      "adjusted_net_income": 141353676.85528433,
+      "adjusted_net_income": 133431055.32629222,
       "diluted_shares_used": 151900000.0,
       "adjustments": [
         {
@@ -623,25 +514,12 @@
           "category": "買収・統合関連",
           "net_amount": 41783688.88578023,
           "tax_rate_applied": 0.0955911496584365
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 8760000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 7922621.528992096,
-          "tax_rate_applied": 0.0955911496584365
         }
       ],
-      "net_adjustment_total": 63771676.85528432,
+      "net_adjustment_total": 55849055.326292224,
       "filing_date": "2024-09-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 807700000.0,
       "diluted_shares": 151900000.0,
       "period_end": "2024-09-28",
@@ -652,9 +530,9 @@
     },
     {
       "gaap_eps": 0.44595520421607376,
-      "adjusted_eps": 0.9424007665846286,
+      "adjusted_eps": 0.891916402775986,
       "gaap_net_income": 67696000.0,
-      "adjusted_net_income": 143056436.36754662,
+      "adjusted_net_income": 135392909.9413947,
       "diluted_shares_used": 151800000.0,
       "adjustments": [
         {
@@ -682,25 +560,12 @@
           "category": "買収・統合関連",
           "net_amount": 43222216.24818538,
           "tax_rate_applied": 0.09005860530136028
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 8422000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 7663526.426151943,
-          "tax_rate_applied": 0.09005860530136028
         }
       ],
-      "net_adjustment_total": 75360436.36754663,
+      "net_adjustment_total": 67696909.94139469,
       "filing_date": "2024-06-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 812700000.0,
       "diluted_shares": 151800000.0,
       "period_end": "2024-06-29",
@@ -711,9 +576,9 @@
     },
     {
       "gaap_eps": 0.2983915622940013,
-      "adjusted_eps": 0.732495918732075,
+      "adjusted_eps": 0.6546269169416296,
       "gaap_net_income": 45266000.0,
-      "adjusted_net_income": 111119630.87165578,
+      "adjusted_net_income": 99306903.3000452,
       "diluted_shares_used": 151700000.0,
       "adjustments": [
         {
@@ -741,25 +606,12 @@
           "category": "買収・統合関連",
           "net_amount": 46692828.66888588,
           "tax_rate_applied": 0.0698639707393252
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 12700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 11812727.57161057,
-          "tax_rate_applied": 0.0698639707393252
         }
       ],
-      "net_adjustment_total": 65853630.87165578,
+      "net_adjustment_total": 54040903.30004521,
       "filing_date": "2024-03-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 771000000.0,
       "diluted_shares": 151700000.0,
       "period_end": "2024-03-30",
@@ -770,9 +622,9 @@
     },
     {
       "gaap_eps": 0.2516699801192843,
-      "adjusted_eps": 0.627358928331423,
+      "adjusted_eps": 0.5853054336677809,
       "gaap_net_income": 37977000.0,
-      "adjusted_net_income": 94668462.28521174,
+      "adjusted_net_income": 88322589.94046813,
       "diluted_shares_used": 150900000.0,
       "adjustments": [
         {
@@ -813,25 +665,12 @@
           "category": "買収・統合関連",
           "net_amount": 7463375.456636449,
           "tax_rate_applied": 0.2845690704911379
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 8870000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 6345872.344743607,
-          "tax_rate_applied": 0.2845690704911379
         }
       ],
-      "net_adjustment_total": 56691462.28521174,
+      "net_adjustment_total": 50345589.94046813,
       "filing_date": "2023-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 812291000.0,
       "diluted_shares": 150900000.0,
       "period_end": "2023-12-31",
@@ -842,9 +681,9 @@
     },
     {
       "gaap_eps": 0.21961396293039034,
-      "adjusted_eps": 0.733723651527361,
+      "adjusted_eps": 0.6965971691447067,
       "gaap_net_income": 33212000.0,
-      "adjusted_net_income": 110960294.09683128,
+      "adjusted_net_income": 105345693.29258485,
       "diluted_shares_used": 151229000.0,
       "adjustments": [
         {
@@ -885,25 +724,12 @@
           "category": "買収・統合関連",
           "net_amount": 14824148.431719478,
           "tax_rate_applied": 0.06842528550747949
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 6027000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 5614600.804246421,
-          "tax_rate_applied": 0.06842528550747949
         }
       ],
-      "net_adjustment_total": 77748294.09683128,
+      "net_adjustment_total": 72133693.29258485,
       "filing_date": "2023-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 888239000.0,
       "diluted_shares": 151229000.0,
       "period_end": "2023-09-30",
@@ -914,9 +740,9 @@
     },
     {
       "gaap_eps": 1.3103283677081883,
-      "adjusted_eps": 1.7691479171461304,
+      "adjusted_eps": 1.7088863461253598,
       "gaap_net_income": 197646000.0,
-      "adjusted_net_income": 266852964.37857085,
+      "adjusted_net_income": 257763289.7905109,
       "diluted_shares_used": 150837000.0,
       "adjustments": [
         {
@@ -944,25 +770,12 @@
           "category": "買収・統合関連",
           "net_amount": 49702340.647511795,
           "tax_rate_applied": 0.09103254119400514
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 10000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 9089674.588059949,
-          "tax_rate_applied": 0.09103254119400514
         }
       ],
-      "net_adjustment_total": 69206964.37857084,
+      "net_adjustment_total": 60117289.790510885,
       "filing_date": "2023-07-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 901000000.0,
       "diluted_shares": 150837000.0,
       "period_end": "2023-07-01",
@@ -973,9 +786,9 @@
     },
     {
       "gaap_eps": -0.590031186005113,
-      "adjusted_eps": 0.27407466621679827,
+      "adjusted_eps": 0.21377681336968057,
       "gaap_net_income": -88166000.0,
-      "adjusted_net_income": 40953881.0741113,
+      "adjusted_net_income": 31943814.11457789,
       "diluted_shares_used": 149426000.0,
       "adjustments": [
         {
@@ -1016,25 +829,12 @@
           "category": "買収・統合関連",
           "net_amount": 60265121.60966761,
           "tax_rate_applied": 0.32188854071397516
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 13287000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 9010066.959533412,
-          "tax_rate_applied": 0.32188854071397516
         }
       ],
-      "net_adjustment_total": 129119881.0741113,
+      "net_adjustment_total": 120109814.11457789,
       "filing_date": "2023-04-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 922396000.0,
       "diluted_shares": 149426000.0,
       "period_end": "2023-04-01",
@@ -1045,9 +845,9 @@
     },
     {
       "gaap_eps": 0.4011778184510919,
-      "adjusted_eps": 0.7109535578513936,
+      "adjusted_eps": 0.6634687969743325,
       "gaap_net_income": 57427000.0,
-      "adjusted_net_income": 101770157.99219559,
+      "adjusted_net_income": 94972904.41168779,
       "diluted_shares_used": 143146000.0,
       "adjustments": [
         {
@@ -1075,25 +875,12 @@
           "category": "買収・統合関連",
           "net_amount": 32119035.789385587,
           "tax_rate_applied": 0.3992174668103403
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 11314000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 6797253.580507809,
-          "tax_rate_applied": 0.3992174668103403
         }
       ],
-      "net_adjustment_total": 44343157.99219559,
+      "net_adjustment_total": 37545904.411687784,
       "filing_date": "2022-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 946070000.0,
       "diluted_shares": 143146000.0,
       "period_end": "2022-12-31",
@@ -1104,9 +891,9 @@
     },
     {
       "gaap_eps": -0.49608265464091,
-      "adjusted_eps": 0.3581262217668979,
+      "adjusted_eps": 0.3355954478142036,
       "gaap_net_income": -73703000.0,
-      "adjusted_net_income": 53206812.76790802,
+      "adjusted_net_income": 49859415.68175623,
       "diluted_shares_used": 148570000.0,
       "adjustments": [
         {
@@ -1147,25 +934,12 @@
           "category": "買収・統合関連",
           "net_amount": 29127650.58599073,
           "tax_rate_applied": 0.08690750514135633
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 3666000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 3347397.0861517875,
-          "tax_rate_applied": 0.08690750514135633
         }
       ],
-      "net_adjustment_total": 126909812.76790802,
+      "net_adjustment_total": 123562415.68175623,
       "filing_date": "2022-10-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 993828000.0,
       "diluted_shares": 148570000.0,
       "period_end": "2022-10-01",
@@ -1176,9 +950,9 @@
     },
     {
       "gaap_eps": 0.7291175048001525,
-      "adjusted_eps": 0.9209246112822177,
+      "adjusted_eps": 0.8704195400357625,
       "gaap_net_income": 99491000.0,
-      "adjusted_net_income": 125663846.90790373,
+      "adjusted_net_income": 118772227.91603993,
       "diluted_shares_used": 136454000.0,
       "adjustments": [
         {
@@ -1206,25 +980,12 @@
           "category": "買収・統合関連",
           "net_amount": 10623551.842609053,
           "tax_rate_applied": 0.14970771229317653
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 8105000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 6891618.991863805,
-          "tax_rate_applied": 0.14970771229317653
         }
       ],
-      "net_adjustment_total": 26172846.907903735,
+      "net_adjustment_total": 19281227.91603993,
       "filing_date": "2022-07-02",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 692489000.0,
       "diluted_shares": 136454000.0,
       "period_end": "2022-07-02",
@@ -1235,9 +996,9 @@
     },
     {
       "gaap_eps": 0.9205650594645264,
-      "adjusted_eps": 1.0960212945583732,
+      "adjusted_eps": 1.0592758380358538,
       "gaap_net_income": 125705000.0,
-      "adjusted_net_income": 149663899.81453496,
+      "adjusted_net_income": 144646234.2354719,
       "diluted_shares_used": 136552000.0,
       "adjustments": [
         {
@@ -1265,25 +1026,12 @@
           "category": "買収・統合関連",
           "net_amount": 10923849.120758345,
           "tax_rate_applied": 0.13652287402115676
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 5811000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 5017665.579063058,
-          "tax_rate_applied": 0.13652287402115676
         }
       ],
-      "net_adjustment_total": 23958899.814534962,
+      "net_adjustment_total": 18941234.235471904,
       "filing_date": "2022-04-02",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 649646000.0,
       "diluted_shares": 136552000.0,
       "period_end": "2022-04-02",
@@ -1294,9 +1042,9 @@
     },
     {
       "gaap_eps": 0.8656039949038616,
-      "adjusted_eps": 0.9899780161837521,
+      "adjusted_eps": 0.9576068216079268,
       "gaap_net_income": 118219000.0,
-      "adjusted_net_income": 135205257.58227977,
+      "adjusted_net_income": 130784194.054281,
       "diluted_shares_used": 136574000.0,
       "adjustments": [
         {
@@ -1324,25 +1072,12 @@
           "category": "買収・統合関連",
           "net_amount": 7689898.761219967,
           "tax_rate_applied": 0.37174029728595037
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 7037000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 4421063.527998767,
-          "tax_rate_applied": 0.37174029728595037
         }
       ],
-      "net_adjustment_total": 16986257.58227976,
+      "net_adjustment_total": 12565194.054280993,
       "filing_date": "2021-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 635204000.0,
       "diluted_shares": 136574000.0,
       "period_end": "2021-12-31",
@@ -1353,9 +1088,9 @@
     },
     {
       "gaap_eps": 0.8596950911579363,
-      "adjusted_eps": 1.0174254268109364,
+      "adjusted_eps": 0.989285900052947,
       "gaap_net_income": 117461000.0,
-      "adjusted_net_income": 139011853.49060506,
+      "adjusted_net_income": 135167121.8101342,
       "diluted_shares_used": 136631000.0,
       "adjustments": [
         {
@@ -1383,25 +1118,12 @@
           "category": "買収・統合関連",
           "net_amount": 10859326.804630721,
           "tax_rate_applied": 0.08305946089413822
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 4193000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 3844731.6804708787,
-          "tax_rate_applied": 0.08305946089413822
         }
       ],
-      "net_adjustment_total": 21550853.49060507,
+      "net_adjustment_total": 17706121.81013419,
       "filing_date": "2021-10-02",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 579493000.0,
       "diluted_shares": 136631000.0,
       "period_end": "2021-10-02",
@@ -1412,9 +1134,9 @@
     },
     {
       "gaap_eps": 0.6501724857726704,
-      "adjusted_eps": 0.7870871873455503,
+      "adjusted_eps": 0.770790331962142,
       "gaap_net_income": 88770000.0,
-      "adjusted_net_income": 107463374.94985002,
+      "adjusted_net_income": 105238316.39378713,
       "diluted_shares_used": 136533000.0,
       "adjustments": [
         {
@@ -1442,25 +1164,12 @@
           "category": "買収・統合関連",
           "net_amount": 10092472.154824905,
           "tax_rate_applied": 0.1520356112565195
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 2624000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 2225058.5560628925,
-          "tax_rate_applied": 0.1520356112565195
         }
       ],
-      "net_adjustment_total": 18693374.949850027,
+      "net_adjustment_total": 16468316.393787134,
       "filing_date": "2021-07-03",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 571352000.0,
       "diluted_shares": 136533000.0,
       "period_end": "2021-07-03",
@@ -1471,9 +1180,9 @@
     },
     {
       "gaap_eps": 0.6203279072834098,
-      "adjusted_eps": 0.7611220435403986,
+      "adjusted_eps": 0.7405703251156096,
       "gaap_net_income": 84676000.0,
-      "adjusted_net_income": 103894681.1873515,
+      "adjusted_net_income": 101089330.51893094,
       "diluted_shares_used": 136502000.0,
       "adjustments": [
         {
@@ -1501,25 +1210,12 @@
           "category": "買収・統合関連",
           "net_amount": 10250020.863287345,
           "tax_rate_applied": 0.1365495018711697
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 3249000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 2805350.6684205695,
-          "tax_rate_applied": 0.1365495018711697
         }
       ],
-      "net_adjustment_total": 19218681.187351502,
+      "net_adjustment_total": 16413330.518930934,
       "filing_date": "2021-04-03",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 512844000.0,
       "diluted_shares": 136502000.0,
       "period_end": "2021-04-03",
@@ -1530,9 +1226,9 @@
     },
     {
       "gaap_eps": 0.6356978263103048,
-      "adjusted_eps": 0.7303847522694763,
+      "adjusted_eps": 0.7153397323843453,
       "gaap_net_income": 86624000.0,
-      "adjusted_net_income": 99526608.65275246,
+      "adjusted_net_income": 97476483.9730852,
       "diluted_shares_used": 136266000.0,
       "adjustments": [
         {
@@ -1560,25 +1256,12 @@
           "category": "買収・統合関連",
           "net_amount": 7072752.079593264,
           "tax_rate_applied": 0.4064491373285278
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 3454000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 2050124.6796672652,
-          "tax_rate_applied": 0.4064491373285278
         }
       ],
-      "net_adjustment_total": 12902608.652752463,
+      "net_adjustment_total": 10852483.973085199,
       "filing_date": "2020-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 517594000.0,
       "diluted_shares": 136266000.0,
       "period_end": "2020-12-31",
@@ -1589,9 +1272,9 @@
     },
     {
       "gaap_eps": 0.5820318233860787,
-      "adjusted_eps": 0.7107003093471246,
+      "adjusted_eps": 0.6892069892120689,
       "gaap_net_income": 79303000.0,
-      "adjusted_net_income": 96834338.54916441,
+      "adjusted_net_income": 93905830.6941228,
       "diluted_shares_used": 136252000.0,
       "adjustments": [
         {
@@ -1619,25 +1302,12 @@
           "category": "買収・統合関連",
           "net_amount": 9719502.482735598,
           "tax_rate_applied": 0.1727378940560389
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 3540000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 2928507.855041622,
-          "tax_rate_applied": 0.1727378940560389
         }
       ],
-      "net_adjustment_total": 17531338.54916442,
+      "net_adjustment_total": 14602830.6941228,
       "filing_date": "2020-09-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 480987000.0,
       "diluted_shares": 136252000.0,
       "period_end": "2020-09-26",
@@ -1648,9 +1318,9 @@
     },
     {
       "gaap_eps": 0.5002389582889116,
-      "adjusted_eps": 0.6438746915578092,
+      "adjusted_eps": 0.6148063500855796,
       "gaap_net_income": 68036000.0,
-      "adjusted_net_income": 87571465.17470296,
+      "adjusted_net_income": 83617967.25608942,
       "diluted_shares_used": 136007000.0,
       "adjustments": [
         {
@@ -1678,25 +1348,12 @@
           "category": "買収・統合関連",
           "net_amount": 10912579.050208138,
           "tax_rate_applied": 0.17429032610410572
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 4788000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 3953497.9186135414,
-          "tax_rate_applied": 0.17429032610410572
         }
       ],
-      "net_adjustment_total": 19535465.17470296,
+      "net_adjustment_total": 15581967.25608942,
       "filing_date": "2020-06-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 448405000.0,
       "diluted_shares": 136007000.0,
       "period_end": "2020-06-27",
@@ -1707,9 +1364,9 @@
     },
     {
       "gaap_eps": 0.4473597371836708,
-      "adjusted_eps": 0.6067639291686032,
+      "adjusted_eps": 0.5836018125984427,
       "gaap_net_income": 61006000.0,
-      "adjusted_net_income": 82743790.25679325,
+      "adjusted_net_income": 79585195.58223704,
       "diluted_shares_used": 136369000.0,
       "adjustments": [
         {
@@ -1737,25 +1394,12 @@
           "category": "買収・統合関連",
           "net_amount": 14203600.074682599,
           "tax_rate_applied": 0.1238294938817717
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 3605000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 3158594.674556213,
-          "tax_rate_applied": 0.1238294938817717
         }
       ],
-      "net_adjustment_total": 21737790.256793246,
+      "net_adjustment_total": 18579195.58223703,
       "filing_date": "2020-03-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 412327000.0,
       "diluted_shares": 136369000.0,
       "period_end": "2020-03-28",
@@ -1766,9 +1410,9 @@
     },
     {
       "gaap_eps": 0.4205816882432195,
-      "adjusted_eps": 0.5798277048796204,
+      "adjusted_eps": 0.5405671899712964,
       "gaap_net_income": 57438000.0,
-      "adjusted_net_income": 79185910.0,
+      "adjusted_net_income": 73824180.0,
       "diluted_shares_used": 136568000.0,
       "adjustments": [
         {
@@ -1796,25 +1440,12 @@
           "category": "買収・統合関連",
           "net_amount": 12662120.0,
           "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 6787000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 5361730.0,
-          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 21747910.0,
+      "net_adjustment_total": 16386180.0,
       "filing_date": "2019-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 426998000.0,
       "diluted_shares": 136568000.0,
       "period_end": "2019-12-31",
@@ -1825,9 +1456,9 @@
     },
     {
       "gaap_eps": 0.2985937156668864,
-      "adjusted_eps": 0.4549712663951991,
+      "adjusted_eps": 0.44542756792120286,
       "gaap_net_income": 40767000.0,
-      "adjusted_net_income": 62117227.00093653,
+      "adjusted_net_income": 60814225.84828182,
       "diluted_shares_used": 136530000.0,
       "adjustments": [
         {
@@ -1855,25 +1486,12 @@
           "category": "買収・統合関連",
           "net_amount": 14833263.30955983,
           "tax_rate_applied": 0.021035948418701822
-        },
-        {
-          "item_id": "inventory_writeoff",
-          "item_name": "在庫評価損・減損",
-          "amount": 1331000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "一過性の在庫評価損",
-          "extracted_from": "us-gaap:InventoryWriteDown",
-          "category": "在庫・サプライチェーン関連",
-          "net_amount": 1303001.152654708,
-          "tax_rate_applied": 0.021035948418701822
         }
       ],
-      "net_adjustment_total": 21350227.00093653,
+      "net_adjustment_total": 20047225.848281823,
       "filing_date": "2019-09-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 394147000.0,
       "diluted_shares": 136530000.0,
       "period_end": "2019-09-28",
@@ -1919,7 +1537,7 @@
       "net_adjustment_total": 15961558.906190202,
       "filing_date": "2019-06-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 378874000.0,
       "diluted_shares": 136581000.0,
       "period_end": "2019-06-29",
@@ -1965,7 +1583,7 @@
       "net_adjustment_total": 19991018.38235294,
       "filing_date": "2019-03-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 391047000.0,
       "diluted_shares": 136692000.0,
       "period_end": "2019-03-30",
@@ -2011,7 +1629,7 @@
       "net_adjustment_total": 18331428.208466984,
       "filing_date": "2018-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 401642000.0,
       "diluted_shares": 142610000.0,
       "period_end": "2018-12-31",
@@ -2022,9 +1640,9 @@
     },
     {
       "gaap_eps": 0.3360063761509582,
-      "adjusted_eps": 0.48322098979942063,
+      "adjusted_eps": 0.4805432860527328,
       "gaap_net_income": 48060000.0,
-      "adjusted_net_income": 69116547.83398053,
+      "adjusted_net_income": 68733547.83398053,
       "diluted_shares_used": 143033000.0,
       "adjustments": [
         {
@@ -2052,25 +1670,12 @@
           "category": "買収・統合関連",
           "net_amount": 17304573.10000504,
           "tax_rate_applied": 0.19209238993393515
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 383000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 383000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 21056547.83398053,
+      "net_adjustment_total": 20673547.83398053,
       "filing_date": "2018-09-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 398597000.0,
       "diluted_shares": 143033000.0,
       "period_end": "2018-09-29",
@@ -2081,9 +1686,9 @@
     },
     {
       "gaap_eps": 0.37943143579217803,
-      "adjusted_eps": 0.47995590511555286,
+      "adjusted_eps": 0.4767165412595929,
       "gaap_net_income": 54349000.0,
-      "adjusted_net_income": 68747923.93694156,
+      "adjusted_net_income": 68283923.93694156,
       "diluted_shares_used": 143238000.0,
       "adjustments": [
         {
@@ -2111,25 +1716,12 @@
           "category": "買収・統合関連",
           "net_amount": 10181486.11435967,
           "tax_rate_applied": 0.1525315370101823
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 464000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 464000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 14398923.936941572,
+      "net_adjustment_total": 13934923.936941572,
       "filing_date": "2018-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 383059000.0,
       "diluted_shares": 143238000.0,
       "period_end": "2018-06-30",
@@ -2140,9 +1732,9 @@
     },
     {
       "gaap_eps": 0.40070448027176786,
-      "adjusted_eps": 0.4915468489089769,
+      "adjusted_eps": 0.4897229968219889,
       "gaap_net_income": 57562000.0,
-      "adjusted_net_income": 70611687.93947235,
+      "adjusted_net_income": 70349687.93947235,
       "diluted_shares_used": 143652000.0,
       "adjustments": [
         {
@@ -2170,25 +1762,12 @@
           "category": "買収・統合関連",
           "net_amount": 9446067.643584406,
           "tax_rate_applied": 0.19049895932947067
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 262000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 262000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 13049687.939472351,
+      "net_adjustment_total": 12787687.939472351,
       "filing_date": "2018-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 367199000.0,
       "diluted_shares": 143652000.0,
       "period_end": "2018-03-31",
@@ -2234,7 +1813,7 @@
       "net_adjustment_total": 11746510.0,
       "filing_date": "2017-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 350562000.0,
       "diluted_shares": 143518000.0,
       "period_end": "2017-12-31",
@@ -2245,9 +1824,9 @@
     },
     {
       "gaap_eps": 0.28484477067286934,
-      "adjusted_eps": 0.36702679376386765,
+      "adjusted_eps": 0.36776498616744996,
       "gaap_net_income": 40902000.0,
-      "adjusted_net_income": 52702845.42372881,
+      "adjusted_net_income": 52808845.42372881,
       "diluted_shares_used": 143594000.0,
       "adjustments": [
         {
@@ -2275,25 +1854,12 @@
           "category": "買収・統合関連",
           "net_amount": 9013120.677966101,
           "tax_rate_applied": 0.18440677966101696
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": -106000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": -106000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 11800845.423728812,
+      "net_adjustment_total": 11906845.423728812,
       "filing_date": "2017-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 345591000.0,
       "diluted_shares": 143594000.0,
       "period_end": "2017-09-30",
@@ -2304,9 +1870,9 @@
     },
     {
       "gaap_eps": 0.27866739136494134,
-      "adjusted_eps": 0.3620738912827328,
+      "adjusted_eps": 0.36082657405999957,
       "gaap_net_income": 39991000.0,
-      "adjusted_net_income": 51960499.99020242,
+      "adjusted_net_income": 51781499.99020242,
       "diluted_shares_used": 143508000.0,
       "adjustments": [
         {
@@ -2334,25 +1900,12 @@
           "category": "買収・統合関連",
           "net_amount": 8625417.612133326,
           "tax_rate_applied": 0.21636979993337643
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 179000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 179000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 11969499.99020242,
+      "net_adjustment_total": 11790499.99020242,
       "filing_date": "2017-07-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 329002000.0,
       "diluted_shares": 143508000.0,
       "period_end": "2017-07-01",
@@ -2363,9 +1916,9 @@
     },
     {
       "gaap_eps": 0.22687087883333915,
-      "adjusted_eps": 0.30865052569577567,
+      "adjusted_eps": 0.30761783546795585,
       "gaap_net_income": 32514000.0,
-      "adjusted_net_income": 44234250.09009009,
+      "adjusted_net_income": 44086250.09009009,
       "diluted_shares_used": 143315000.0,
       "adjustments": [
         {
@@ -2393,25 +1946,12 @@
           "category": "買収・統合関連",
           "net_amount": 8549326.846846847,
           "tax_rate_applied": 0.21888288288288288
-        },
-        {
-          "item_id": "tax_one_time",
-          "item_name": "一過性税効果",
-          "amount": 148000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": false,
-          "reason": "法人税率変更・過年度税額戻し等の一過性影響",
-          "extracted_from": "us-gaap:IncomeTaxReconciliationOtherReconcilingItems",
-          "category": "税効果関連",
-          "net_amount": 148000,
-          "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 11720250.09009009,
+      "net_adjustment_total": 11572250.09009009,
       "filing_date": "2017-04-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "Technology",
       "revenue": 317377000.0,
       "diluted_shares": 143315000.0,
       "period_end": "2017-04-01",

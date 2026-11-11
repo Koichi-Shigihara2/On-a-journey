@@ -1,7 +1,114 @@
 {
   "ticker": "SOUN",
-  "last_updated": "2026-11-08T17:30:24.602103",
+  "last_updated": "2026-11-11T01:53:37.716911",
   "quarters": [
+    {
+      "gaap_eps": -0.10081358439342965,
+      "adjusted_eps": -0.09128952426938977,
+      "gaap_net_income": -45821000.0,
+      "adjusted_net_income": -41492198.86105277,
+      "diluted_shares_used": 454512160.0,
+      "adjustments": [
+        {
+          "item_id": "sbc",
+          "item_name": "株式報酬費用",
+          "amount": 21852000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金費用",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
+          "category": "株式報酬関連",
+          "net_amount": 21680715.67459888,
+          "tax_rate_applied": 0.007838382088647337
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 6170000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 6121637.182513046,
+          "tax_rate_applied": 0.007838382088647337
+        },
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 316000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 313523.0712599875,
+          "tax_rate_applied": 0.007838382088647337
+        },
+        {
+          "item_id": "contingent_consideration_fv",
+          "item_name": "偶発対価公正価値変動損益",
+          "amount": -23975000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常の買収偶発対価時価変動",
+          "extracted_from": "us-gaap:BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1",
+          "category": "公正価値変動関連",
+          "net_amount": -23787074.78942468,
+          "tax_rate_applied": 0.007838382088647337
+        }
+      ],
+      "net_adjustment_total": 4328801.138947234,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "Technology",
+      "revenue": 62425000.0,
+      "diluted_shares": 454512160.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": -362000.0,
+      "pretax_income": -46183000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
+        }
+      },
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目にはSBCや無形資産償却のような恒常的・非現金費用が大きく含まれる一方、偶発対価FV変動や異常貸倒引当は一過性が高い。GAAP EPS(-0.1008)は調整後(-0.0913)より悪化して表示されるため、市場がGAAPのみで判断する場合、企業の実力(調整後ベースの運用力)を過小評価する可能性がある。特に非現金項目のadd-backが大きいSOUNのような成長企業では、投資家は希薄化リスクや継続的SBCコストを考慮する必要があり、過小評価リスクが優勢だがSBCの恒常性から完全な過小評価とは限らない。",
+        "sources": [
+          {
+            "item": "sbc",
+            "snippet": "非現金費用であり技術企業で継続的に発生する株式報酬コスト",
+            "confidence": 0.2
+          },
+          {
+            "item": "amortization_intangibles",
+            "snippet": "買収関連無形資産の償却で定期的に発生する非現金費用",
+            "confidence": 0.2
+          },
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響として異常変動分を調整",
+            "confidence": 0.75
+          },
+          {
+            "item": "contingent_consideration_fv",
+            "snippet": "非現金・非経常の買収偶発対価時価変動",
+            "confidence": 0.65
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": -0.09761119639200823,
       "adjusted_eps": -0.04994318592739823,
@@ -12,12 +119,12 @@
         {
           "item_id": "sbc",
           "item_name": "株式報酬費用",
-          "amount": 20622000,
+          "amount": 20622000.0,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
+          "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
           "net_amount": 19514649.095607236,
           "tax_rate_applied": 0.05369755137196998
@@ -68,27 +175,6 @@
           "flag": "FAIR_VALUE_ADJUSTED",
           "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: 偶発対価公正価値変動損益"
         }
-      },
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "調整項目の主力は恒常的なSBC（株式報酬）と無形資産償却であり、調整により損失が半減する水準でEPSが改善している。市場がGAAP EPSを基準に評価する場合、非現金費用の影響で企業の実力（調整後ベースの運用効率）が過小評価される可能性が高い。ただしSBCは実質的な報酬コストと希薄化要因であるため、調整依存が強まると過大評価リスクも伴う。投資家はコア収益の成長持続性とSBCの長期トレンドを注視し、調整の持続可能性を判断すべき。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用として毎期発生する恒常的な株式報酬コストであり、テック企業の事業運営に不可欠",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の継続的な償却費で、過去のM&Aに基づく恒常的性格が強い",
-            "confidence": 0.2
-          },
-          {
-            "item": "contingent_consideration_fv",
-            "snippet": "非現金・非経常の買収偶発対価の公正価値変動であり、一過性の調整として妥当",
-            "confidence": 0.75
-          }
-        ]
       }
     },
     {
@@ -1358,11 +1444,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.8379823372512114,
+      "value": -0.8318383542935261,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.5592395625293303,
-      "prior_4q_avg_yoy": 1.3972218997805417
+      "recent_4q_avg_yoy": 0.5114690616549968,
+      "prior_4q_avg_yoy": 1.343307415948523
     },
     "roic_trend": {
       "years": [
@@ -1390,9 +1476,9 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.3331663893241999,
+      "value": 0.35005206247496995,
       "reason": "ok",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

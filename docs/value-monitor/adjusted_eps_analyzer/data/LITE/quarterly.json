@@ -1,45 +1,18 @@
 {
   "ticker": "LITE",
-  "last_updated": "2026-11-08T17:28:58.047413",
+  "last_updated": "2026-11-11T01:51:32.246234",
   "quarters": [
     {
       "gaap_eps": 3.5427728613569323,
-      "adjusted_eps": 5.1242482974420005,
+      "adjusted_eps": 3.5427728613569323,
       "gaap_net_income": 360300000.0,
-      "adjusted_net_income": 521136051.8498515,
+      "adjusted_net_income": 360300000.0,
       "diluted_shares_used": 101700000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 132500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 128921820.14582771,
-          "tax_rate_applied": 0.027005130974885227
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 32800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 31914231.704023764,
-          "tax_rate_applied": 0.027005130974885227
-        }
-      ],
-      "net_adjustment_total": 160836051.8498515,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
       "filing_date": "2026-09-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 1262600000.0,
       "diluted_shares": 101700000.0,
       "period_end": "2026-09-26",
@@ -48,55 +21,18 @@
       "tax_expense": 10000000.0,
       "pretax_income": 370300000.0,
       "ai_analysis": {
-        "health": "過大調整",
-        "comment": "調整項目の株式報酬費用（SBC）と無形資産償却費はともに毎期発生する恒常的な非現金費用であり、一過性とはみなせません。特にSBCは運用上の実質コストで、株式希薄化も伴います。市場がGAAP EPS（3.54）のみで判断する場合、非現金項目を加回したAdjusted EPS（5.12）の企業実力が分かりにくくなり、実力を過小評価する可能性があります。ただし、これら恒常項目の調整は積極的すぎるため、過大評価リスクも高く、投資家は希薄化後EPSやFCFを重視すべきです。",
-        "sources": [
-          {
-            "item": "sbc",
-            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コスト（従業員インセンティブとして実質負担）",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の定期的な償却費で、恒常的に発生する非現金項目",
-            "confidence": 0.2
-          }
-        ]
+        "health": "Excellent",
+        "comment": "調整項目がゼロです。GAAP EPSがそのまま実質EPSと一致しており、最高水準の信頼性です。",
+        "sources": []
       }
     },
     {
       "gaap_eps": -96.00134048257372,
-      "adjusted_eps": -95.00362403487392,
+      "adjusted_eps": -95.96760754676073,
       "gaap_net_income": -7161700000.0,
-      "adjusted_net_income": -7087270353.001595,
+      "adjusted_net_income": -7159183522.988351,
       "diluted_shares_used": 74600000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 40800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 39489331.56742439,
-          "tax_rate_applied": 0.032124226288617996
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 33500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 32423838.419331297,
-          "tax_rate_applied": 0.032124226288617996
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -124,10 +60,10 @@
           "tax_rate_applied": 0.032124226288617996
         }
       ],
-      "net_adjustment_total": 74429646.99840528,
+      "net_adjustment_total": 2516477.0116495932,
       "filing_date": "2026-06-27",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 1006300000.0,
       "diluted_shares": 74600000.0,
       "period_end": "2026-06-27",
@@ -138,37 +74,11 @@
     },
     {
       "gaap_eps": 1.498960498960499,
-      "adjusted_eps": 2.1228477577770284,
+      "adjusted_eps": 1.5079314268650506,
       "gaap_net_income": 144200000.0,
-      "adjusted_net_income": 204217954.29815015,
+      "adjusted_net_income": 145063003.26441786,
       "diluted_shares_used": 96200000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 41600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 32637214.36343852,
-          "tax_rate_applied": 0.21545157780195864
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 33800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 26517736.670293797,
-          "tax_rate_applied": 0.21545157780195864
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -183,10 +93,10 @@
           "tax_rate_applied": 0.21545157780195864
         }
       ],
-      "net_adjustment_total": 60017954.29815016,
+      "net_adjustment_total": 863003.2644178454,
       "filing_date": "2026-03-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 808400000.0,
       "diluted_shares": 96200000.0,
       "period_end": "2026-03-28",
@@ -197,37 +107,11 @@
     },
     {
       "gaap_eps": 0.8906605922551253,
-      "adjusted_eps": 1.6198024242567304,
+      "adjusted_eps": 0.886968734877902,
       "gaap_net_income": 78200000.0,
-      "adjusted_net_income": 142218652.84974092,
+      "adjusted_net_income": 77875854.92227979,
       "diluted_shares_used": 87800000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 45400000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 36790466.321243525,
-          "tax_rate_applied": 0.18963730569948187
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 34000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 27552331.606217615,
-          "tax_rate_applied": 0.18963730569948187
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -242,10 +126,10 @@
           "tax_rate_applied": 0.18963730569948187
         }
       ],
-      "net_adjustment_total": 64018652.84974093,
+      "net_adjustment_total": -324145.0777202072,
       "filing_date": "2025-12-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 665500000.0,
       "diluted_shares": 87800000.0,
       "period_end": "2025-12-27",
@@ -256,37 +140,11 @@
     },
     {
       "gaap_eps": 0.05363984674329502,
-      "adjusted_eps": 0.9304450338933098,
+      "adjusted_eps": 0.1382257589154141,
       "gaap_net_income": 4200000.0,
-      "adjusted_net_income": 72853846.15384616,
+      "adjusted_net_income": 10823076.923076924,
       "diluted_shares_used": 78300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 42400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 34246153.84615385,
-          "tax_rate_applied": 0.19230769230769232
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 34400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 27784615.384615384,
-          "tax_rate_applied": 0.19230769230769232
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -314,10 +172,10 @@
           "tax_rate_applied": 0.19230769230769232
         }
       ],
-      "net_adjustment_total": 68653846.15384616,
+      "net_adjustment_total": 6623076.923076923,
       "filing_date": "2025-09-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 533800000.0,
       "diluted_shares": 78300000.0,
       "period_end": "2025-09-27",
@@ -333,32 +191,6 @@
       "adjusted_net_income": 2900000.0,
       "diluted_shares_used": 69600000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 40000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 31600000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 34600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 27334000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -383,7 +215,7 @@
       "net_adjustment_total": -210400000.0,
       "filing_date": "2025-06-28",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 480700000.0,
       "diluted_shares": 69600000.0,
       "period_end": "2025-06-28",
@@ -394,37 +226,11 @@
     },
     {
       "gaap_eps": -0.6363636363636364,
-      "adjusted_eps": 0.7247474747474747,
+      "adjusted_eps": -0.5025252525252525,
       "gaap_net_income": -44100000.0,
-      "adjusted_net_income": 50225000.0,
+      "adjusted_net_income": -34825000.0,
       "diluted_shares_used": 69300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 62800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 54950000.0,
-          "tax_rate_applied": 0.125
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 34400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 30100000.0,
-          "tax_rate_applied": 0.125
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -452,10 +258,10 @@
           "tax_rate_applied": 0.125
         }
       ],
-      "net_adjustment_total": 94325000.0,
+      "net_adjustment_total": 9275000.0,
       "filing_date": "2025-03-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 425200000.0,
       "diluted_shares": 69300000.0,
       "period_end": "2025-03-29",
@@ -466,37 +272,11 @@
     },
     {
       "gaap_eps": -0.8838896952104499,
-      "adjusted_eps": -0.24554035553634102,
+      "adjusted_eps": -0.8781974081050757,
       "gaap_net_income": -60900000.0,
-      "adjusted_net_income": -16917730.496453896,
+      "adjusted_net_income": -60507801.418439716,
       "diluted_shares_used": 68900000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 38800000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 21739007.092198584,
-          "tax_rate_applied": 0.4397163120567376
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 39000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 21851063.829787236,
-          "tax_rate_applied": 0.4397163120567376
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -511,10 +291,10 @@
           "tax_rate_applied": 0.4397163120567376
         }
       ],
-      "net_adjustment_total": 43982269.503546104,
+      "net_adjustment_total": 392198.5815602837,
       "filing_date": "2024-12-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 402200000.0,
       "diluted_shares": 68900000.0,
       "period_end": "2024-12-28",
@@ -525,37 +305,11 @@
     },
     {
       "gaap_eps": -1.2064421669106882,
-      "adjusted_eps": 0.015883579573184252,
+      "adjusted_eps": -1.0701598710383484,
       "gaap_net_income": -82400000.0,
-      "adjusted_net_income": 1084848.4848484844,
+      "adjusted_net_income": -73091919.1919192,
       "diluted_shares_used": 68300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 35600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 34161616.16161616,
-          "tax_rate_applied": 0.04040404040404041
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 41700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 40015151.515151516,
-          "tax_rate_applied": 0.04040404040404041
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -570,10 +324,10 @@
           "tax_rate_applied": 0.04040404040404041
         }
       ],
-      "net_adjustment_total": 83484848.48484848,
+      "net_adjustment_total": 9308080.808080807,
       "filing_date": "2024-09-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 336900000.0,
       "diluted_shares": 68300000.0,
       "period_end": "2024-09-28",
@@ -584,37 +338,11 @@
     },
     {
       "gaap_eps": -3.7518573551263,
-      "adjusted_eps": -2.474710252600297,
+      "adjusted_eps": -3.3245765230312037,
       "gaap_net_income": -252500000.0,
-      "adjusted_net_income": -166548000.0,
+      "adjusted_net_income": -223744000.0,
       "diluted_shares_used": 67300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 30500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 24095000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 41900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 33101000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -642,10 +370,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 85952000.0,
+      "net_adjustment_total": 28756000.0,
       "filing_date": "2024-06-29",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 308300000.0,
       "diluted_shares": 67300000.0,
       "period_end": "2024-06-29",
@@ -656,37 +384,11 @@
     },
     {
       "gaap_eps": -1.8814814814814815,
-      "adjusted_eps": -0.7563528519208221,
+      "adjusted_eps": -1.648946823918891,
       "gaap_net_income": -127000000.0,
-      "adjusted_net_income": -51053817.504655495,
+      "adjusted_net_income": -111303910.61452514,
       "diluted_shares_used": 67500000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 31600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 25833147.11359404,
-          "tax_rate_applied": 0.1824953445065177
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 42100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 34416945.996275604,
-          "tax_rate_applied": 0.1824953445065177
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -701,10 +403,10 @@
           "tax_rate_applied": 0.1824953445065177
         }
       ],
-      "net_adjustment_total": 75946182.4953445,
+      "net_adjustment_total": 15696089.38547486,
       "filing_date": "2024-03-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 366500000.0,
       "diluted_shares": 67500000.0,
       "period_end": "2024-03-30",
@@ -715,37 +417,11 @@
     },
     {
       "gaap_eps": -1.474702380952381,
-      "adjusted_eps": -0.34143355618109306,
+      "adjusted_eps": -1.3904336734693876,
       "gaap_net_income": -99100000.0,
-      "adjusted_net_income": -22944334.975369453,
+      "adjusted_net_income": -93437142.85714285,
       "diluted_shares_used": 67200000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 34600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 33781871.92118227,
-          "tax_rate_applied": 0.023645320197044337
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 37600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 36710935.96059113,
-          "tax_rate_applied": 0.023645320197044337
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -760,10 +436,10 @@
           "tax_rate_applied": 0.023645320197044337
         }
       ],
-      "net_adjustment_total": 76155665.02463055,
+      "net_adjustment_total": 5662857.142857143,
       "filing_date": "2023-12-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 366800000.0,
       "diluted_shares": 67200000.0,
       "period_end": "2023-12-30",
@@ -774,37 +450,11 @@
     },
     {
       "gaap_eps": -1.0179910044977512,
-      "adjusted_eps": 0.041130949676676895,
+      "adjusted_eps": -0.8564051307679493,
       "gaap_net_income": -67900000.0,
-      "adjusted_net_income": 2743434.3434343487,
+      "adjusted_net_income": -57122222.222222224,
       "diluted_shares_used": 66700000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 32100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 31451515.151515152,
-          "tax_rate_applied": 0.020202020202020204
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 29000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 28414141.414141413,
-          "tax_rate_applied": 0.020202020202020204
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -819,10 +469,10 @@
           "tax_rate_applied": 0.020202020202020204
         }
       ],
-      "net_adjustment_total": 70643434.34343435,
+      "net_adjustment_total": 10777777.777777778,
       "filing_date": "2023-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 317600000.0,
       "diluted_shares": 66700000.0,
       "period_end": "2023-09-30",
@@ -833,37 +483,11 @@
     },
     {
       "gaap_eps": -0.8814055636896047,
-      "adjusted_eps": -0.1318887262079063,
+      "adjusted_eps": -0.8432357247437775,
       "gaap_net_income": -60200000.0,
-      "adjusted_net_income": -9008000.0,
+      "adjusted_net_income": -57593000.0,
       "diluted_shares_used": 68300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 32100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 25359000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 29400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 23226000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -878,10 +502,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 51192000.0,
+      "net_adjustment_total": 2607000.0,
       "filing_date": "2023-07-01",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 370800000.0,
       "diluted_shares": 68300000.0,
       "period_end": "2023-07-01",
@@ -892,37 +516,11 @@
     },
     {
       "gaap_eps": -0.5728862973760933,
-      "adjusted_eps": 0.1882172640249999,
+      "adjusted_eps": -0.5540645709735933,
       "gaap_net_income": -39300000.0,
-      "adjusted_net_income": 12911704.312114991,
+      "adjusted_net_income": -38008829.5687885,
       "diluted_shares_used": 68600000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 33100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 26711088.295687884,
-          "tax_rate_applied": 0.19301848049281314
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 30000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 24209445.585215606,
-          "tax_rate_applied": 0.19301848049281314
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -937,10 +535,10 @@
           "tax_rate_applied": 0.19301848049281314
         }
       ],
-      "net_adjustment_total": 52211704.31211499,
+      "net_adjustment_total": 1291170.431211499,
       "filing_date": "2023-04-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 383400000.0,
       "diluted_shares": 68600000.0,
       "period_end": "2023-04-01",
@@ -951,37 +549,11 @@
     },
     {
       "gaap_eps": -0.46412884333821375,
-      "adjusted_eps": 0.5885851977114207,
+      "adjusted_eps": -0.2951597305138498,
       "gaap_net_income": -31700000.0,
-      "adjusted_net_income": 40200369.003690034,
+      "adjusted_net_income": -20159409.59409594,
       "diluted_shares_used": 68300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 36600000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 30387453.874538746,
-          "tax_rate_applied": 0.16974169741697417
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 36100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 29972324.72324723,
-          "tax_rate_applied": 0.16974169741697417
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -996,10 +568,10 @@
           "tax_rate_applied": 0.16974169741697417
         }
       ],
-      "net_adjustment_total": 71900369.00369003,
+      "net_adjustment_total": 11540590.405904058,
       "filing_date": "2022-12-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 506000000.0,
       "diluted_shares": 68300000.0,
       "period_end": "2022-12-31",
@@ -1010,37 +582,11 @@
     },
     {
       "gaap_eps": -0.005873715124816446,
-      "adjusted_eps": 1.0161380323054332,
+      "adjusted_eps": 0.10201174743024963,
       "gaap_net_income": -400000.0,
-      "adjusted_net_income": 69199000.0,
+      "adjusted_net_income": 6947000.0,
       "diluted_shares_used": 68100000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 46600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 36814000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 32200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 25438000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1055,10 +601,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 69599000.0,
+      "net_adjustment_total": 7347000.0,
       "filing_date": "2022-10-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 506800000.0,
       "diluted_shares": 68100000.0,
       "period_end": "2022-10-01",
@@ -1069,42 +615,15 @@
     },
     {
       "gaap_eps": 0.46765498652291104,
-      "adjusted_eps": 0.9882884097035041,
+      "adjusted_eps": 0.46765498652291104,
       "gaap_net_income": 34700000.0,
-      "adjusted_net_income": 73331000.0,
+      "adjusted_net_income": 34700000.0,
       "diluted_shares_used": 74200000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 27700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 21883000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 21200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 16748000.0,
-          "tax_rate_applied": 0.21
-        }
-      ],
-      "net_adjustment_total": 38631000.0,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
       "filing_date": "2022-07-02",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 422100000.0,
       "diluted_shares": 74200000.0,
       "period_end": "2022-07-02",
@@ -1115,37 +634,11 @@
     },
     {
       "gaap_eps": 0.348993288590604,
-      "adjusted_eps": 0.8802253934077009,
+      "adjusted_eps": 0.3478021852165747,
       "gaap_net_income": 26000000.0,
-      "adjusted_net_income": 65576791.80887372,
+      "adjusted_net_income": 25911262.798634812,
       "diluted_shares_used": 74500000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 23300000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 20675767.918088738,
-          "tax_rate_applied": 0.11262798634812286
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 21400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 18989761.09215017,
-          "tax_rate_applied": 0.11262798634812286
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1160,10 +653,10 @@
           "tax_rate_applied": 0.11262798634812286
         }
       ],
-      "net_adjustment_total": 39576791.80887372,
+      "net_adjustment_total": -88737.2013651877,
       "filing_date": "2022-04-02",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 395400000.0,
       "diluted_shares": 74500000.0,
       "period_end": "2022-04-02",
@@ -1174,37 +667,11 @@
     },
     {
       "gaap_eps": 0.7529880478087649,
-      "adjusted_eps": 1.2858551322928258,
+      "adjusted_eps": 0.7540777555479962,
       "gaap_net_income": 56700000.0,
-      "adjusted_net_income": 96824891.46164978,
+      "adjusted_net_income": 56782054.99276411,
       "diluted_shares_used": 75300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 27300000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 22401013.024602026,
-          "tax_rate_applied": 0.17945007235890015
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 21500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 17641823.44428365,
-          "tax_rate_applied": 0.17945007235890015
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1219,10 +686,10 @@
           "tax_rate_applied": 0.17945007235890015
         }
       ],
-      "net_adjustment_total": 40124891.46164978,
+      "net_adjustment_total": 82054.99276411,
       "filing_date": "2022-01-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 446700000.0,
       "diluted_shares": 75300000.0,
       "period_end": "2022-01-01",
@@ -1233,37 +700,11 @@
     },
     {
       "gaap_eps": 1.0809018567639257,
-      "adjusted_eps": 1.5703463722263058,
+      "adjusted_eps": 1.068964185655087,
       "gaap_net_income": 81500000.0,
-      "adjusted_net_income": 118404116.46586345,
+      "adjusted_net_income": 80599899.59839357,
       "diluted_shares_used": 75400000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 24800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 20293172.690763053,
-          "tax_rate_applied": 0.1817269076305221
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 21400000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 17511044.17670683,
-          "tax_rate_applied": 0.1817269076305221
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1278,10 +719,10 @@
           "tax_rate_applied": 0.1817269076305221
         }
       ],
-      "net_adjustment_total": 36904116.46586345,
+      "net_adjustment_total": -900100.4016064256,
       "filing_date": "2021-10-02",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 448400000.0,
       "diluted_shares": 75400000.0,
       "period_end": "2021-10-02",
@@ -1292,37 +733,11 @@
     },
     {
       "gaap_eps": 0.274234693877551,
-      "adjusted_eps": 0.7871301020408163,
+      "adjusted_eps": 0.32058673469387755,
       "gaap_net_income": 21500000.0,
-      "adjusted_net_income": 61711000.0,
+      "adjusted_net_income": 25134000.0,
       "diluted_shares_used": 78400000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 24200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 19118000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 22100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 17459000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1337,10 +752,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 40211000.0,
+      "net_adjustment_total": 3634000.0,
       "filing_date": "2021-07-03",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 392100000.0,
       "diluted_shares": 78400000.0,
       "period_end": "2021-07-03",
@@ -1351,37 +766,11 @@
     },
     {
       "gaap_eps": 2.8472222222222223,
-      "adjusted_eps": 3.4101368569043533,
+      "adjusted_eps": 2.879871271033786,
       "gaap_net_income": 225500000.0,
-      "adjusted_net_income": 270082839.0668248,
+      "adjusted_net_income": 228085804.66587585,
       "diluted_shares_used": 79200000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 25100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 22380585.211546063,
-          "tax_rate_applied": 0.10834321866350335
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 22000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 19616449.189402927,
-          "tax_rate_applied": 0.10834321866350335
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1396,10 +785,10 @@
           "tax_rate_applied": 0.10834321866350335
         }
       ],
-      "net_adjustment_total": 44582839.06682482,
+      "net_adjustment_total": 2585804.66587584,
       "filing_date": "2021-04-03",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 419500000.0,
       "diluted_shares": 79200000.0,
       "period_end": "2021-04-03",
@@ -1410,37 +799,11 @@
     },
     {
       "gaap_eps": 1.0612244897959184,
-      "adjusted_eps": 1.5501882710270651,
+      "adjusted_eps": 1.0633880463500385,
       "gaap_net_income": 83200000.0,
-      "adjusted_net_income": 121534760.44852191,
+      "adjusted_net_income": 83369622.83384302,
       "diluted_shares_used": 78400000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 24100000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 20439551.47808359,
-          "tax_rate_applied": 0.15188583078491336
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 20900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 17725586.136595313,
-          "tax_rate_applied": 0.15188583078491336
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1455,10 +818,10 @@
           "tax_rate_applied": 0.15188583078491336
         }
       ],
-      "net_adjustment_total": 38334760.44852192,
+      "net_adjustment_total": 169622.83384301732,
       "filing_date": "2020-12-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 478800000.0,
       "diluted_shares": 78400000.0,
       "period_end": "2020-12-26",
@@ -1469,42 +832,15 @@
     },
     {
       "gaap_eps": 0.8580562659846548,
-      "adjusted_eps": 1.2706622694844527,
+      "adjusted_eps": 0.8580562659846548,
       "gaap_net_income": 67100000.0,
-      "adjusted_net_income": 99365789.4736842,
+      "adjusted_net_income": 67100000.0,
       "diluted_shares_used": 78200000.0,
-      "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 19500000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 15651315.789473683,
-          "tax_rate_applied": 0.19736842105263158
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 20700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 16614473.684210526,
-          "tax_rate_applied": 0.19736842105263158
-        }
-      ],
-      "net_adjustment_total": 32265789.473684207,
+      "adjustments": [],
+      "net_adjustment_total": 0.0,
       "filing_date": "2020-09-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 452400000.0,
       "diluted_shares": 78200000.0,
       "period_end": "2020-09-26",
@@ -1515,37 +851,11 @@
     },
     {
       "gaap_eps": -0.059278350515463915,
-      "adjusted_eps": 0.3621907216494845,
+      "adjusted_eps": -0.027719072164948455,
       "gaap_net_income": -4600000.0,
-      "adjusted_net_income": 28106000.0,
+      "adjusted_net_income": -2151000.0,
       "diluted_shares_used": 77600000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 17100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 13509000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 21200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 16748000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1560,10 +870,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 32706000.0,
+      "net_adjustment_total": 2449000.0,
       "filing_date": "2020-06-27",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 368100000.0,
       "diluted_shares": 77600000.0,
       "period_end": "2020-06-27",
@@ -1574,37 +884,11 @@
     },
     {
       "gaap_eps": 0.56,
-      "adjusted_eps": 1.0427983539094652,
+      "adjusted_eps": 0.5911111111111111,
       "gaap_net_income": 43400000.0,
-      "adjusted_net_income": 80816872.42798355,
+      "adjusted_net_income": 45811111.11111111,
       "diluted_shares_used": 77500000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 19200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 17145679.01234568,
-          "tax_rate_applied": 0.10699588477366255
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 20000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 17860082.30452675,
-          "tax_rate_applied": 0.10699588477366255
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1619,10 +903,10 @@
           "tax_rate_applied": 0.10699588477366255
         }
       ],
-      "net_adjustment_total": 37416872.427983545,
+      "net_adjustment_total": 2411111.111111111,
       "filing_date": "2020-03-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 402800000.0,
       "diluted_shares": 77500000.0,
       "period_end": "2020-03-28",
@@ -1633,37 +917,11 @@
     },
     {
       "gaap_eps": 0.6294871794871795,
-      "adjusted_eps": 1.0626005421499356,
+      "adjusted_eps": 0.6393058703284007,
       "gaap_net_income": 49100000.0,
-      "adjusted_net_income": 82882842.28769498,
+      "adjusted_net_income": 49865857.88561525,
       "diluted_shares_used": 78000000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 20200000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 17189254.7660312,
-          "tax_rate_applied": 0.14904679376083188
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 18600000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 15827729.636048527,
-          "tax_rate_applied": 0.14904679376083188
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1678,10 +936,10 @@
           "tax_rate_applied": 0.14904679376083188
         }
       ],
-      "net_adjustment_total": 33782842.287694976,
+      "net_adjustment_total": 765857.8856152514,
       "filing_date": "2019-12-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 457800000.0,
       "diluted_shares": 78000000.0,
       "period_end": "2019-12-28",
@@ -1692,37 +950,11 @@
     },
     {
       "gaap_eps": 0.6134020618556701,
-      "adjusted_eps": 1.0361210857562069,
+      "adjusted_eps": 0.6283350708521565,
       "gaap_net_income": 47600000.0,
-      "adjusted_net_income": 80402996.25468165,
+      "adjusted_net_income": 48758801.49812734,
       "diluted_shares_used": 77600000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 16700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 14886142.322097378,
-          "tax_rate_applied": 0.10861423220973783
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 18800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 16758052.434456928,
-          "tax_rate_applied": 0.10861423220973783
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1737,10 +969,10 @@
           "tax_rate_applied": 0.10861423220973783
         }
       ],
-      "net_adjustment_total": 32802996.254681647,
+      "net_adjustment_total": 1158801.4981273408,
       "filing_date": "2019-09-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 449900000.0,
       "diluted_shares": 77600000.0,
       "period_end": "2019-09-28",
@@ -1751,37 +983,11 @@
     },
     {
       "gaap_eps": -0.3649222065063649,
-      "adjusted_eps": 0.03565353388705772,
+      "adjusted_eps": -0.3441606589859741,
       "gaap_net_income": -25800000.0,
-      "adjusted_net_income": 2520704.8458149806,
+      "adjusted_net_income": -24332158.59030837,
       "diluted_shares_used": 70700000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 12260792.95154185,
-          "tax_rate_applied": 0.13656387665198239
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 16900000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 14592070.484581498,
-          "tax_rate_applied": 0.13656387665198239
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1796,10 +1002,10 @@
           "tax_rate_applied": 0.13656387665198239
         }
       ],
-      "net_adjustment_total": 28320704.84581498,
+      "net_adjustment_total": 1467841.40969163,
       "filing_date": "2019-06-29",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 404600000.0,
       "diluted_shares": 70700000.0,
       "period_end": "2019-06-29",
@@ -1810,37 +1016,11 @@
     },
     {
       "gaap_eps": -0.9750656167979003,
-      "adjusted_eps": -0.161919987274318,
+      "adjusted_eps": -0.725685198441104,
       "gaap_net_income": -74300000.0,
-      "adjusted_net_income": -12338303.030303031,
+      "adjusted_net_income": -55297212.121212125,
       "diluted_shares_used": 76200000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 16000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 14409696.96969697,
-          "tax_rate_applied": 0.0993939393939394
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 31700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 28549212.12121212,
-          "tax_rate_applied": 0.0993939393939394
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1855,10 +1035,10 @@
           "tax_rate_applied": 0.0993939393939394
         }
       ],
-      "net_adjustment_total": 61961696.96969697,
+      "net_adjustment_total": 19002787.87878788,
       "filing_date": "2019-03-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 432900000.0,
       "diluted_shares": 76200000.0,
       "period_end": "2019-03-30",
@@ -1869,37 +1049,11 @@
     },
     {
       "gaap_eps": 0.24041297935103245,
-      "adjusted_eps": 0.5365148409246204,
+      "adjusted_eps": 0.1983067513291002,
       "gaap_net_income": 16300000.0,
-      "adjusted_net_income": 36375706.21468926,
+      "adjusted_net_income": 13445197.740112994,
       "diluted_shares_used": 67800000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 19700000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 18141807.90960452,
-          "tax_rate_applied": 0.07909604519774012
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 5200000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4788700.5649717515,
-          "tax_rate_applied": 0.07909604519774012
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -1927,10 +1081,10 @@
           "tax_rate_applied": 0.07909604519774012
         }
       ],
-      "net_adjustment_total": 20075706.214689262,
+      "net_adjustment_total": -2854802.259887006,
       "filing_date": "2018-12-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 373700000.0,
       "diluted_shares": 67800000.0,
       "period_end": "2018-12-29",
@@ -1950,37 +1104,11 @@
     },
     {
       "gaap_eps": 0.7417840375586855,
-      "adjusted_eps": 1.044984737321266,
+      "adjusted_eps": 0.8813973830307574,
       "gaap_net_income": 47400000.0,
-      "adjusted_net_income": 66774524.71482889,
+      "adjusted_net_income": 56321292.7756654,
       "diluted_shares_used": 63900000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 10800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 9732319.391634982,
-          "tax_rate_applied": 0.09885931558935361
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 720912.5475285172,
-          "tax_rate_applied": 0.09885931558935361
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -2008,10 +1136,10 @@
           "tax_rate_applied": 0.09885931558935361
         }
       ],
-      "net_adjustment_total": 19374524.714828897,
+      "net_adjustment_total": 8921292.7756654,
       "filing_date": "2018-09-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 354100000.0,
       "diluted_shares": 63900000.0,
       "period_end": "2018-09-29",
@@ -2036,32 +1164,6 @@
       "adjusted_net_income": -103762000.0,
       "diluted_shares_used": 63300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 11700000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 9243000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 632000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -2099,7 +1201,7 @@
       "net_adjustment_total": -137262000.0,
       "filing_date": "2018-06-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 301100000.0,
       "diluted_shares": 63300000.0,
       "period_end": "2018-06-30",
@@ -2119,37 +1221,11 @@
     },
     {
       "gaap_eps": 0.04265402843601896,
-      "adjusted_eps": 0.5576619273301737,
+      "adjusted_eps": 0.3712480252764613,
       "gaap_net_income": 2700000.0,
-      "adjusted_net_income": 35300000.0,
+      "adjusted_net_income": 23500000.0,
       "diluted_shares_used": 63300000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 11000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 11000000.0,
-          "tax_rate_applied": 0.0
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 800000.0,
-          "tax_rate_applied": 0.0
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -2177,10 +1253,10 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 32600000.0,
+      "net_adjustment_total": 20800000.0,
       "filing_date": "2018-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 298800000.0,
       "diluted_shares": 63300000.0,
       "period_end": "2018-03-31",
@@ -2200,37 +1276,11 @@
     },
     {
       "gaap_eps": 3.170278637770898,
-      "adjusted_eps": 3.2742260061919506,
+      "adjusted_eps": 3.083452012383901,
       "gaap_net_income": 204800000.0,
-      "adjusted_net_income": 211515000.0,
+      "adjusted_net_income": 199191000.0,
       "diluted_shares_used": 64600000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14800000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 11692000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 632000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -2258,10 +1308,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 6715000.0,
+      "net_adjustment_total": -5609000.0,
       "filing_date": "2017-12-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 404600000.0,
       "diluted_shares": 64600000.0,
       "period_end": "2017-12-30",
@@ -2281,37 +1331,11 @@
     },
     {
       "gaap_eps": 0.11007751937984496,
-      "adjusted_eps": 0.21786046511627907,
+      "adjusted_eps": 0.09415503875968992,
       "gaap_net_income": 7100000.0,
-      "adjusted_net_income": 14052000.0,
+      "adjusted_net_income": 6073000.0,
       "diluted_shares_used": 64500000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 9300000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 7347000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 632000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -2339,10 +1363,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 6952000.0,
+      "net_adjustment_total": -1027000.0,
       "filing_date": "2017-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 243200000.0,
       "diluted_shares": 64500000.0,
       "period_end": "2017-09-30",
@@ -2362,37 +1386,11 @@
     },
     {
       "gaap_eps": -0.9180327868852459,
-      "adjusted_eps": -0.0751439964554719,
+      "adjusted_eps": -0.19503766061143113,
       "gaap_net_income": -56000000.0,
-      "adjusted_net_income": -4583783.783783786,
+      "adjusted_net_income": -11897297.297297299,
       "diluted_shares_used": 61000000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 8100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 5983783.783783784,
-          "tax_rate_applied": 0.26126126126126126
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 1800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1329729.7297297297,
-          "tax_rate_applied": 0.26126126126126126
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -2420,10 +1418,10 @@
           "tax_rate_applied": 0.26126126126126126
         }
       ],
-      "net_adjustment_total": 51416216.216216214,
+      "net_adjustment_total": 44102702.7027027,
       "filing_date": "2017-04-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 255800000.0,
       "diluted_shares": 61000000.0,
       "period_end": "2017-04-01",
@@ -2443,37 +1441,11 @@
     },
     {
       "gaap_eps": 0.18819776714513556,
-      "adjusted_eps": 0.2943875687186478,
+      "adjusted_eps": 0.17978669375317421,
       "gaap_net_income": 11800000.0,
-      "adjusted_net_income": 18458100.55865922,
+      "adjusted_net_income": 11272625.698324023,
       "diluted_shares_used": 62700000.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 9100000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:AllocatedShareBasedCompensationExpense",
-          "category": "株式報酬関連",
-          "net_amount": 5998882.681564246,
-          "tax_rate_applied": 0.3407821229050279
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 1800000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 1186592.1787709498,
-          "tax_rate_applied": 0.3407821229050279
-        },
         {
           "item_id": "restructuring",
           "item_name": "リストラ費用",
@@ -2501,10 +1473,10 @@
           "tax_rate_applied": 0.3407821229050279
         }
       ],
-      "net_adjustment_total": 6658100.558659218,
+      "net_adjustment_total": -527374.3016759777,
       "filing_date": "2016-12-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 265000000.0,
       "diluted_shares": 62700000.0,
       "period_end": "2016-12-31",
@@ -2557,8 +1529,8 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.10494218279740218,
-      "reason": "ok",
+      "value": null,
+      "reason": "no_sbc_data",
       "period_end": "2026-09-26"
     }
   }

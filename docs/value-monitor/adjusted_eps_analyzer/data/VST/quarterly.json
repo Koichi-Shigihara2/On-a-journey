@@ -1,14 +1,98 @@
 {
   "ticker": "VST",
-  "last_updated": "2026-11-08T17:31:55.426445",
+  "last_updated": "2026-11-11T01:54:55.039634",
   "quarters": [
     {
+      "gaap_eps": 3.374251989381276,
+      "adjusted_eps": 2.235216391361527,
+      "gaap_net_income": 1140000000.0,
+      "adjusted_net_income": 755173796.7914438,
+      "diluted_shares_used": 337852657.0,
+      "adjustments": [
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 78000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 59438502.67379679,
+          "tax_rate_applied": 0.23796791443850268
+        },
+        {
+          "item_id": "derivative_fv_change",
+          "item_name": "デリバティブ公正価値変動損益",
+          "amount": -583000000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のデリバティブ時価評価変動",
+          "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
+          "category": "公正価値変動関連",
+          "net_amount": -444264705.8823529,
+          "tax_rate_applied": 0.23796791443850268
+        }
+      ],
+      "net_adjustment_total": -384826203.2085561,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "通信・インフラ",
+      "revenue": 6347000000.0,
+      "diluted_shares": 337852657.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 356000000.0,
+      "pretax_income": 1496000000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: デリバティブ公正価値変動損益"
+        }
+      },
+      "ai_analysis": {
+        "health": "調整大",
+        "comment": "調整項目のうちデリバティブ公正価値変動(-583M)が極めて大きく、Adjusted EPS(2.235)がGAAP EPS(3.374)を大幅に下回る結果となっている。市場がGAAP EPSで判断する場合、一時的な公正価値変動益を織り込んだ実力以上の数字を見ており、企業の実力が過大評価されやすい状況にある。貸倒引当異常分はマクロ要因による一過性が高いが、デリバティブ評価はエネルギー企業ではヘッジ目的で定期的に発生しうるため完全な一過性とは言い難い。投資家はAdjusted EPSを中心にコア収益力とデリバティブ変動の持続性を注視すべきで、過大評価リスクが高い銘柄と言える。",
+        "sources": [
+          {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響。貸倒引当金繰入（異常変動分）として非経常項目と分類",
+            "confidence": 0.75
+          },
+          {
+            "item": "derivative_fv_change",
+            "snippet": "非現金・非経常のデリバティブ時価評価変動。公正価値変動損益として調整対象",
+            "confidence": 0.55
+          }
+        ]
+      }
+    },
+    {
       "gaap_eps": 0.8990924225033035,
-      "adjusted_eps": 2.0192436671820913,
+      "adjusted_eps": 2.0045339255811356,
       "gaap_net_income": 305000000.0,
-      "adjusted_net_income": 684990000.0,
+      "adjusted_net_income": 680000000.0,
       "diluted_shares_used": 339230976.0,
       "adjustments": [
+        {
+          "item_id": "loan_loss_provision_abnormal",
+          "item_name": "貸倒引当金繰入（異常変動分）",
+          "amount": 44000000.0,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "マクロ変動による一時的影響",
+          "extracted_from": "us-gaap:ProvisionForDoubtfulAccounts",
+          "category": "金融関連",
+          "net_amount": 31428571.42857143,
+          "tax_rate_applied": 0.2857142857142857
+        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -19,14 +103,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": 379990000.0,
-          "tax_rate_applied": 0.21
+          "net_amount": 343571428.5714286,
+          "tax_rate_applied": 0.2857142857142857
         }
       ],
-      "net_adjustment_total": 379990000.0,
+      "net_adjustment_total": 375000000.0,
       "filing_date": "2026-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 4017000000.0,
       "diluted_shares": 339230976.0,
       "period_end": "2026-06-30",
@@ -42,39 +126,15 @@
           "flag": "FAIR_VALUE_ADJUSTED",
           "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: デリバティブ公正価値変動損益"
         }
-      },
-      "ai_analysis": {
-        "health": "調整大",
-        "comment": "当該調整項目は非現金・非経常的なデリバティブ公正価値変動であり、GAAP EPS 0.90をAdjusted EPS 2.02へ大幅に引き上げています。市場がGAAP EPS中心に評価する場合、コア事業の実力（エネルギー事業の収益力）が一時的損失により歪められ、企業実力が過小評価される可能性が高いです。過小評価リスクが顕著であり、投資家は調整後EPSやヘッジ会計の実態を注視して本源的価値を判断すべきです。",
-        "sources": [
-          {
-            "item": "derivative_fv_change",
-            "snippet": "非現金・非経常のデリバティブ時価評価変動。市場環境に左右される一時的公正価値変動であり、経営陣はこれを調整してコア業績を示している。",
-            "confidence": 0.7
-          }
-        ]
       }
     },
     {
       "gaap_eps": 3.0100324997509045,
-      "adjusted_eps": 1.3584882651516048,
+      "adjusted_eps": 1.2790154598776535,
       "gaap_net_income": 1029000000.0,
-      "adjusted_net_income": 464408415.8415842,
+      "adjusted_net_income": 437240099.00990105,
       "diluted_shares_used": 341856774.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 32000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 27168316.831683166,
-          "tax_rate_applied": 0.15099009900990099
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -102,10 +162,10 @@
           "tax_rate_applied": 0.15099009900990099
         }
       ],
-      "net_adjustment_total": -564591584.1584158,
+      "net_adjustment_total": -591759900.990099,
       "filing_date": "2026-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 5640000000.0,
       "diluted_shares": 341856774.0,
       "period_end": "2026-03-31",
@@ -125,24 +185,11 @@
     },
     {
       "gaap_eps": 0.674080458133547,
-      "adjusted_eps": 0.8049698674798667,
+      "adjusted_eps": 0.7542502213581679,
       "gaap_net_income": 233000000.0,
-      "adjusted_net_income": 278242718.4466019,
+      "adjusted_net_income": 260711165.0485437,
       "diluted_shares_used": 345656067.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 31000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 17531553.398058254,
-          "tax_rate_applied": 0.4344660194174757
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -157,10 +204,10 @@
           "tax_rate_applied": 0.4344660194174757
         }
       ],
-      "net_adjustment_total": 45242718.44660194,
+      "net_adjustment_total": 27711165.04854369,
       "filing_date": "2025-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 4584000000.0,
       "diluted_shares": 345656067.0,
       "period_end": "2025-12-31",
@@ -171,24 +218,11 @@
     },
     {
       "gaap_eps": 1.8896624912081423,
-      "adjusted_eps": 1.7285113675420276,
+      "adjusted_eps": 1.649039580528601,
       "gaap_net_income": 652000000.0,
-      "adjusted_net_income": 596397196.2616823,
+      "adjusted_net_income": 568976635.5140187,
       "diluted_shares_used": 345035160.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 36000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 27420560.747663554,
-          "tax_rate_applied": 0.2383177570093458
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -216,10 +250,10 @@
           "tax_rate_applied": 0.2383177570093458
         }
       ],
-      "net_adjustment_total": -55602803.73831776,
+      "net_adjustment_total": -83023364.48598132,
       "filing_date": "2025-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 4971000000.0,
       "diluted_shares": 345035160.0,
       "period_end": "2025-09-30",
@@ -239,24 +273,11 @@
     },
     {
       "gaap_eps": 0.9464402022235336,
-      "adjusted_eps": 1.1296221768474433,
+      "adjusted_eps": 1.070910005493626,
       "gaap_net_income": 327000000.0,
-      "adjusted_net_income": 390290322.58064514,
+      "adjusted_net_income": 370004962.7791563,
       "diluted_shares_used": 345505188.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 25000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 20285359.801488835,
-          "tax_rate_applied": 0.18858560794044665
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -284,10 +305,10 @@
           "tax_rate_applied": 0.18858560794044665
         }
       ],
-      "net_adjustment_total": 63290322.58064517,
+      "net_adjustment_total": 43004962.77915633,
       "filing_date": "2025-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 4250000000.0,
       "diluted_shares": 345505188.0,
       "period_end": "2025-06-30",
@@ -307,24 +328,11 @@
     },
     {
       "gaap_eps": -0.7886992603757853,
-      "adjusted_eps": 0.4192185257853274,
+      "adjusted_eps": 0.38191518238917554,
       "gaap_net_income": -268000000.0,
-      "adjusted_net_income": 142450450.45045048,
+      "adjusted_net_income": 129774774.77477485,
       "diluted_shares_used": 339799989.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 21000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 12675675.675675677,
-          "tax_rate_applied": 0.3963963963963964
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -352,10 +360,10 @@
           "tax_rate_applied": 0.3963963963963964
         }
       ],
-      "net_adjustment_total": 410450450.4504505,
+      "net_adjustment_total": 397774774.77477485,
       "filing_date": "2025-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3933000000.0,
       "diluted_shares": 339799989.0,
       "period_end": "2025-03-31",
@@ -375,24 +383,11 @@
     },
     {
       "gaap_eps": 1.2508258712541098,
-      "adjusted_eps": 1.4188790070178423,
+      "adjusted_eps": 1.3651020035734478,
       "gaap_net_income": 441000000.0,
-      "adjusted_net_income": 500250000.0,
+      "adjusted_net_income": 481290000.0,
       "diluted_shares_used": 352567060.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 24000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 18960000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -407,10 +402,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 59250000.0,
+      "net_adjustment_total": 40290000.0,
       "filing_date": "2024-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 4037000000.0,
       "diluted_shares": 352567060.0,
       "period_end": "2024-12-31",
@@ -421,24 +416,11 @@
     },
     {
       "gaap_eps": 5.391148189265806,
-      "adjusted_eps": 1.6661141559130919,
+      "adjusted_eps": 1.6153583604349446,
       "gaap_net_income": 1888000000.0,
-      "adjusted_net_income": 583479328.6942284,
+      "adjusted_net_income": 565704461.7273843,
       "diluted_shares_used": 350203692.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 23000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 17774866.966844045,
-          "tax_rate_applied": 0.2271796970937372
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -466,10 +448,10 @@
           "tax_rate_applied": 0.2271796970937372
         }
       ],
-      "net_adjustment_total": -1304520671.3057716,
+      "net_adjustment_total": -1322295538.2726157,
       "filing_date": "2024-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 6288000000.0,
       "diluted_shares": 350203692.0,
       "period_end": "2024-09-30",
@@ -489,24 +471,11 @@
     },
     {
       "gaap_eps": 1.0301207505003713,
-      "adjusted_eps": 1.0517454227436998,
+      "adjusted_eps": 0.9888372853085625,
       "gaap_net_income": 365000000.0,
-      "adjusted_net_income": 372662213.740458,
+      "adjusted_net_income": 350372137.4045802,
       "diluted_shares_used": 354327393.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 32000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 22290076.33587786,
-          "tax_rate_applied": 0.30343511450381677
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -534,10 +503,10 @@
           "tax_rate_applied": 0.30343511450381677
         }
       ],
-      "net_adjustment_total": 7662213.740458012,
+      "net_adjustment_total": -14627862.595419846,
       "filing_date": "2024-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3845000000.0,
       "diluted_shares": 354327393.0,
       "period_end": "2024-06-30",
@@ -557,24 +526,11 @@
     },
     {
       "gaap_eps": -0.10029624731818938,
-      "adjusted_eps": 0.23888742543059657,
+      "adjusted_eps": 0.20059249463637877,
       "gaap_net_income": -35000000.0,
-      "adjusted_net_income": 83363636.36363637,
+      "adjusted_net_income": 70000000.0,
       "diluted_shares_used": 348966197.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 21000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 13363636.363636363,
-          "tax_rate_applied": 0.36363636363636365
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -602,10 +558,10 @@
           "tax_rate_applied": 0.36363636363636365
         }
       ],
-      "net_adjustment_total": 118363636.36363637,
+      "net_adjustment_total": 105000000.0,
       "filing_date": "2024-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3054000000.0,
       "diluted_shares": 348966197.0,
       "period_end": "2024-03-31",
@@ -625,24 +581,11 @@
     },
     {
       "gaap_eps": -0.4904141230098815,
-      "adjusted_eps": 0.6234389538763119,
+      "adjusted_eps": 0.5939608006127831,
       "gaap_net_income": -184000000.0,
-      "adjusted_net_income": 233910000.0,
+      "adjusted_net_income": 222850000.0,
       "diluted_shares_used": 375193110.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 11060000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -670,10 +613,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 417910000.0,
+      "net_adjustment_total": 406850000.0,
       "filing_date": "2023-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3078000000.0,
       "diluted_shares": 375193110.0,
       "period_end": "2023-12-31",
@@ -693,24 +636,11 @@
     },
     {
       "gaap_eps": 1.3489217126923636,
-      "adjusted_eps": 3.5622790981980157,
+      "adjusted_eps": 3.5220727878346074,
       "gaap_net_income": 502000000.0,
-      "adjusted_net_income": 1325698956.780924,
+      "adjusted_net_income": 1310736214.6050673,
       "diluted_shares_used": 372149099.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 20000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 14962742.175856931,
-          "tax_rate_applied": 0.2518628912071535
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -738,10 +668,10 @@
           "tax_rate_applied": 0.2518628912071535
         }
       ],
-      "net_adjustment_total": 823698956.7809241,
+      "net_adjustment_total": 808736214.6050671,
       "filing_date": "2023-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 4086000000.0,
       "diluted_shares": 372149099.0,
       "period_end": "2023-09-30",
@@ -761,24 +691,11 @@
     },
     {
       "gaap_eps": 1.2632888901401464,
-      "adjusted_eps": 1.2864878513948068,
+      "adjusted_eps": 1.2421989253631824,
       "gaap_net_income": 476000000.0,
-      "adjusted_net_income": 484741235.3923205,
+      "adjusted_net_income": 468053422.3706177,
       "diluted_shares_used": 376794258.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 21000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 16687813.021702837,
-          "tax_rate_applied": 0.20534223706176963
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -806,10 +723,10 @@
           "tax_rate_applied": 0.20534223706176963
         }
       ],
-      "net_adjustment_total": 8741235.392320536,
+      "net_adjustment_total": -7946577.629382305,
       "filing_date": "2023-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3189000000.0,
       "diluted_shares": 376794258.0,
       "period_end": "2023-06-30",
@@ -829,24 +746,11 @@
     },
     {
       "gaap_eps": 1.803622514667844,
-      "adjusted_eps": 1.2092702834945182,
+      "adjusted_eps": 1.1640254769692129,
       "gaap_net_income": 699000000.0,
-      "adjusted_net_income": 468656784.4925884,
+      "adjusted_net_income": 451122006.84150517,
       "diluted_shares_used": 387553379.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 22000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 17534777.65108324,
-          "tax_rate_applied": 0.20296465222348917
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -874,10 +778,10 @@
           "tax_rate_applied": 0.20296465222348917
         }
       ],
-      "net_adjustment_total": -230343215.50741163,
+      "net_adjustment_total": -247877993.15849486,
       "filing_date": "2023-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 4425000000.0,
       "diluted_shares": 387553379.0,
       "period_end": "2023-03-31",
@@ -897,24 +801,11 @@
     },
     {
       "gaap_eps": -0.5799543068914711,
-      "adjusted_eps": 0.5364695696767923,
+      "adjusted_eps": 0.5084187185067354,
       "gaap_net_income": -245000000.0,
-      "adjusted_net_income": 226630000.0,
+      "adjusted_net_income": 214780000.0,
       "diluted_shares_used": 422447074.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 15000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 11850000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -942,10 +833,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 471630000.0,
+      "net_adjustment_total": 459780000.0,
       "filing_date": "2022-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3869000000.0,
       "diluted_shares": 422447074.0,
       "period_end": "2022-12-31",
@@ -965,24 +856,11 @@
     },
     {
       "gaap_eps": 1.6000670265203036,
-      "adjusted_eps": 2.5257695208456563,
+      "adjusted_eps": 2.500989721762377,
       "gaap_net_income": 668000000.0,
-      "adjusted_net_income": 1054464601.7699115,
+      "adjusted_net_income": 1044119469.0265486,
       "diluted_shares_used": 417482511.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 10345132.743362831,
-          "tax_rate_applied": 0.2610619469026549
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1010,10 +888,10 @@
           "tax_rate_applied": 0.2610619469026549
         }
       ],
-      "net_adjustment_total": 386464601.76991147,
+      "net_adjustment_total": 376119469.0265486,
       "filing_date": "2022-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 5146000000.0,
       "diluted_shares": 417482511.0,
       "period_end": "2022-09-30",
@@ -1033,24 +911,11 @@
     },
     {
       "gaap_eps": -3.180387148457683,
-      "adjusted_eps": 0.3212693564186937,
+      "adjusted_eps": 0.28537333894174477,
       "gaap_net_income": -1365000000.0,
-      "adjusted_net_income": 137886568.84875846,
+      "adjusted_net_income": 122480248.30699778,
       "diluted_shares_used": 429193031.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 20000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 15406320.541760722,
-          "tax_rate_applied": 0.22968397291196388
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1078,10 +943,10 @@
           "tax_rate_applied": 0.22968397291196388
         }
       ],
-      "net_adjustment_total": 1502886568.8487585,
+      "net_adjustment_total": 1487480248.3069978,
       "filing_date": "2022-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 1588000000.0,
       "diluted_shares": 429193031.0,
       "period_end": "2022-06-30",
@@ -1101,24 +966,11 @@
     },
     {
       "gaap_eps": -0.6310847726786369,
-      "adjusted_eps": 0.48506249814927144,
+      "adjusted_eps": 0.4615646608686838,
       "gaap_net_income": -285000000.0,
-      "adjusted_net_income": 219055851.06382978,
+      "adjusted_net_income": 208444148.93617016,
       "diluted_shares_used": 451603354.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 10611702.127659574,
-          "tax_rate_applied": 0.24202127659574468
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1146,10 +998,10 @@
           "tax_rate_applied": 0.24202127659574468
         }
       ],
-      "net_adjustment_total": 504055851.0638298,
+      "net_adjustment_total": 493444148.93617016,
       "filing_date": "2022-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3125000000.0,
       "diluted_shares": 451603354.0,
       "period_end": "2022-03-31",
@@ -1169,24 +1021,11 @@
     },
     {
       "gaap_eps": 1.5055539262208566,
-      "adjusted_eps": 1.345002982738737,
+      "adjusted_eps": 1.326981958470336,
       "gaap_net_income": 726000000.0,
-      "adjusted_net_income": 648580000.0,
+      "adjusted_net_income": 639890000.0,
       "diluted_shares_used": 482214544.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 11000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 8690000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1214,10 +1053,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -77420000.0,
+      "net_adjustment_total": -86110000.0,
       "filing_date": "2021-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3314000000.0,
       "diluted_shares": 482214544.0,
       "period_end": "2021-12-31",
@@ -1237,24 +1076,11 @@
     },
     {
       "gaap_eps": 0.014448047058098358,
-      "adjusted_eps": 0.9895261029419308,
+      "adjusted_eps": 0.9715898845226629,
       "gaap_net_income": 7000000.0,
-      "adjusted_net_income": 479420000.0,
+      "adjusted_net_income": 470730000.0,
       "diluted_shares_used": 484494546.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 11000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 8690000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1269,10 +1095,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 472420000.0,
+      "net_adjustment_total": 463730000.0,
       "filing_date": "2021-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2991000000.0,
       "diluted_shares": 484494546.0,
       "period_end": "2021-09-30",
@@ -1292,30 +1118,17 @@
     },
     {
       "gaap_eps": 0.07386642339881795,
-      "adjusted_eps": -0.31600466299033203,
+      "adjusted_eps": -0.3170305855375378,
       "gaap_net_income": 36000000.0,
-      "adjusted_net_income": -154010000.0,
+      "adjusted_net_income": -154510000.0,
       "diluted_shares_used": 487366226.0,
       "adjustments": [
         {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 9000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 7110000.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -293500000.0,
-          "net_amount": -293500000.0,
-          "note": "tax_expense=-115,000,000, median_normal_tax=178,500,000"
+          "amount": -294000000.0,
+          "net_amount": -294000000.0,
+          "note": "tax_expense=-115,000,000, median_normal_tax=179,000,000"
         },
         {
           "item_id": "derivative_fv_change",
@@ -1331,10 +1144,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -190010000.0,
+      "net_adjustment_total": -190510000.0,
       "filing_date": "2021-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2565000000.0,
       "diluted_shares": 487366226.0,
       "period_end": "2021-06-30",
@@ -1354,24 +1167,11 @@
     },
     {
       "gaap_eps": -4.21498471133442,
-      "adjusted_eps": -4.523438893136979,
+      "adjusted_eps": -4.542589910704363,
       "gaap_net_income": -2043000000.0,
-      "adjusted_net_income": -2192507515.822785,
+      "adjusted_net_income": -2201790000.0,
       "diluted_shares_used": 484699267.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 16000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 12930379.746835444,
-          "tax_rate_applied": 0.1918512658227848
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1382,14 +1182,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": -162437895.56962025,
-          "tax_rate_applied": 0.1918512658227848
+          "net_amount": -158790000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -149507515.8227848,
+      "net_adjustment_total": -158790000.0,
       "filing_date": "2021-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3207000000.0,
       "diluted_shares": 484699267.0,
       "period_end": "2021-03-31",
@@ -1409,24 +1209,11 @@
     },
     {
       "gaap_eps": -0.05905225592772043,
-      "adjusted_eps": 0.151682846346755,
+      "adjusted_eps": 0.12111821319244176,
       "gaap_net_income": -29000000.0,
-      "adjusted_net_income": 74490000.0,
+      "adjusted_net_income": 59480000.0,
       "diluted_shares_used": 491090468.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 19000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 15010000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1441,10 +1228,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 103490000.0,
+      "net_adjustment_total": 88480000.0,
       "filing_date": "2020-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2524000000.0,
       "diluted_shares": 491090468.0,
       "period_end": "2020-12-31",
@@ -1464,24 +1251,11 @@
     },
     {
       "gaap_eps": 0.9021926621636324,
-      "adjusted_eps": 0.6956158376495295,
+      "adjusted_eps": 0.6399458244507409,
       "gaap_net_income": 443000000.0,
-      "adjusted_net_income": 341565420.5607476,
+      "adjusted_net_income": 314230000.0,
       "diluted_shares_used": 491025940.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 16000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 11040498.442367602,
-          "tax_rate_applied": 0.3099688473520249
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1492,14 +1266,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": -112475077.88161995,
-          "tax_rate_applied": 0.3099688473520249
+          "net_amount": -128770000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -101434579.43925235,
+      "net_adjustment_total": -128770000.0,
       "filing_date": "2020-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3552000000.0,
       "diluted_shares": 491025940.0,
       "period_end": "2020-09-30",
@@ -1519,24 +1293,11 @@
     },
     {
       "gaap_eps": 0.3384517465725924,
-      "adjusted_eps": 0.3254343717044158,
+      "adjusted_eps": 0.2981841441942268,
       "gaap_net_income": 166000000.0,
-      "adjusted_net_income": 159615384.6153846,
+      "adjusted_net_income": 146250000.0,
       "diluted_shares_used": 490468735.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 16000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 11350427.35042735,
-          "tax_rate_applied": 0.2905982905982906
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1547,14 +1308,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": -17735042.735042732,
-          "tax_rate_applied": 0.2905982905982906
+          "net_amount": -19750000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -6384615.384615382,
+      "net_adjustment_total": -19750000.0,
       "filing_date": "2020-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2509000000.0,
       "diluted_shares": 490468735.0,
       "period_end": "2020-06-30",
@@ -1574,24 +1335,11 @@
     },
     {
       "gaap_eps": 0.11413695749262105,
-      "adjusted_eps": 0.17824127608436713,
+      "adjusted_eps": 0.15761090933757832,
       "gaap_net_income": 56000000.0,
-      "adjusted_net_income": 87452054.79452054,
+      "adjusted_net_income": 77330000.0,
       "diluted_shares_used": 490638626.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 10739726.02739726,
-          "tax_rate_applied": 0.2328767123287671
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1602,14 +1350,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": 20712328.767123286,
-          "tax_rate_applied": 0.2328767123287671
+          "net_amount": 21330000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 31452054.794520546,
+      "net_adjustment_total": 21330000.0,
       "filing_date": "2020-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2858000000.0,
       "diluted_shares": 490638626.0,
       "period_end": "2020-03-31",
@@ -1629,24 +1377,11 @@
     },
     {
       "gaap_eps": 0.4680603891514083,
-      "adjusted_eps": 0.37008774872134004,
+      "adjusted_eps": 0.3511253021864881,
       "gaap_net_income": 234000000.0,
-      "adjusted_net_income": 185020000.0,
+      "adjusted_net_income": 175540000.0,
       "diluted_shares_used": 499935490.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 12000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 9480000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1661,10 +1396,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -48980000.0,
+      "net_adjustment_total": -58460000.0,
       "filing_date": "2019-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2860000000.0,
       "diluted_shares": 499935490.0,
       "period_end": "2019-12-31",
@@ -1684,24 +1419,11 @@
     },
     {
       "gaap_eps": 0.2288977099584248,
-      "adjusted_eps": 1.041629452279161,
+      "adjusted_eps": 1.1090397894003325,
       "gaap_net_income": 113000000.0,
-      "adjusted_net_income": 514221518.98734176,
+      "adjusted_net_income": 547500000.0,
       "diluted_shares_used": 493670295.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 11000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 7867088.607594937,
-          "tax_rate_applied": 0.2848101265822785
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1712,14 +1434,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": 393354430.37974685,
-          "tax_rate_applied": 0.2848101265822785
+          "net_amount": 434500000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 401221518.98734176,
+      "net_adjustment_total": 434500000.0,
       "filing_date": "2019-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3194000000.0,
       "diluted_shares": 493670295.0,
       "period_end": "2019-09-30",
@@ -1739,24 +1461,11 @@
     },
     {
       "gaap_eps": 0.7014773031215624,
-      "adjusted_eps": 0.13779018454173542,
+      "adjusted_eps": 0.05235464029196604,
       "gaap_net_income": 356000000.0,
-      "adjusted_net_income": 69928571.4285714,
+      "adjusted_net_income": 26570000.0,
       "diluted_shares_used": 507500383.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 12000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 8476190.476190476,
-          "tax_rate_applied": 0.29365079365079366
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1767,14 +1476,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": -294547619.04761904,
-          "tax_rate_applied": 0.29365079365079366
+          "net_amount": -329430000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -286071428.5714286,
+      "net_adjustment_total": -329430000.0,
       "filing_date": "2019-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2832000000.0,
       "diluted_shares": 507500383.0,
       "period_end": "2019-06-30",
@@ -1794,24 +1503,11 @@
     },
     {
       "gaap_eps": 0.44192168225450795,
-      "adjusted_eps": 0.19901108869739437,
+      "adjusted_eps": 0.16573045132726838,
       "gaap_net_income": 225000000.0,
-      "adjusted_net_income": 101324503.3112583,
+      "adjusted_net_income": 84380000.0,
       "diluted_shares_used": 509139988.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 12000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 8940397.350993376,
-          "tax_rate_applied": 0.25496688741721857
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1822,14 +1518,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": -132615894.03973508,
-          "tax_rate_applied": 0.25496688741721857
+          "net_amount": -140620000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -123675496.6887417,
+      "net_adjustment_total": -140620000.0,
       "filing_date": "2019-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2923000000.0,
       "diluted_shares": 509139988.0,
       "period_end": "2019-03-31",
@@ -1849,24 +1545,11 @@
     },
     {
       "gaap_eps": -0.36835011375711013,
-      "adjusted_eps": 0.19613447615638335,
+      "adjusted_eps": 0.16357913653944783,
       "gaap_net_income": -186000000.0,
-      "adjusted_net_income": 99038961.03896105,
+      "adjusted_net_income": 82600000.0,
       "diluted_shares_used": 504954371.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 14000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 11272727.272727273,
-          "tax_rate_applied": 0.19480519480519481
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -1877,14 +1560,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": 273766233.7662338,
-          "tax_rate_applied": 0.19480519480519481
+          "net_amount": 268600000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 285038961.03896105,
+      "net_adjustment_total": 268600000.0,
       "filing_date": "2018-12-31",
       "form": "10-K",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2563000000.0,
       "diluted_shares": 504954371.0,
       "period_end": "2018-12-31",
@@ -1939,7 +1622,7 @@
       "net_adjustment_total": 120916030.53435114,
       "filing_date": "2018-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 3243000000.0,
       "diluted_shares": 540972802.0,
       "period_end": "2018-09-30",
@@ -1959,24 +1642,11 @@
     },
     {
       "gaap_eps": 0.2023279615459373,
-      "adjusted_eps": -0.42462644225927915,
+      "adjusted_eps": -0.4255631457849548,
       "gaap_net_income": 108000000.0,
-      "adjusted_net_income": -226660000.0,
+      "adjusted_net_income": -227160000.0,
       "diluted_shares_used": 533786824.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 53000000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 41870000.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -1993,9 +1663,9 @@
         {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
-          "amount": -252500000.0,
-          "net_amount": -252500000.0,
-          "note": "tax_expense=-74,000,000, median_normal_tax=178,500,000"
+          "amount": -253000000.0,
+          "net_amount": -253000000.0,
+          "note": "tax_expense=-74,000,000, median_normal_tax=179,000,000"
         },
         {
           "item_id": "derivative_fv_change",
@@ -2011,10 +1681,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -334660000.0,
+      "net_adjustment_total": -335160000.0,
       "filing_date": "2018-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 2574000000.0,
       "diluted_shares": 533786824.0,
       "period_end": "2018-06-30",
@@ -2034,37 +1704,11 @@
     },
     {
       "gaap_eps": -0.7142017172284761,
-      "adjusted_eps": 0.17900245571042825,
+      "adjusted_eps": 0.006745238440491163,
       "gaap_net_income": -306000000.0,
-      "adjusted_net_income": 76693670.88607597,
+      "adjusted_net_income": 2890000.0,
       "diluted_shares_used": 428450384.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 6000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 4648101.265822785,
-          "tax_rate_applied": 0.22531645569620254
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 97000000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 75144303.79746835,
-          "tax_rate_applied": 0.22531645569620254
-        },
         {
           "item_id": "derivative_fv_change",
           "item_name": "デリバティブ公正価値変動損益",
@@ -2075,14 +1719,14 @@
           "reason": "非現金・非経常のデリバティブ時価評価変動",
           "extracted_from": "us-gaap:DerivativeGainLossOnDerivativeNet",
           "category": "公正価値変動関連",
-          "net_amount": 302901265.82278484,
-          "tax_rate_applied": 0.22531645569620254
+          "net_amount": 308890000.0,
+          "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 382693670.886076,
+      "net_adjustment_total": 308890000.0,
       "filing_date": "2018-03-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 765000000.0,
       "diluted_shares": 428450384.0,
       "period_end": "2018-03-31",
@@ -2124,7 +1768,7 @@
       "net_adjustment_total": -135090000.0,
       "filing_date": "2017-09-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 1833000000.0,
       "diluted_shares": 428312438.0,
       "period_end": "2017-09-30",
@@ -2166,7 +1810,7 @@
       "net_adjustment_total": 25280000.0,
       "filing_date": "2017-06-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "通信・インフラ",
       "revenue": 1296000000.0,
       "diluted_shares": 427587401.0,
       "period_end": "2017-06-30",
@@ -2187,11 +1831,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": -0.23459594342804124,
+      "value": 0.07405704762420133,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 0.07631159845613272,
-      "prior_4q_avg_yoy": 0.31090754188417397
+      "recent_4q_avg_yoy": 0.19787460761152403,
+      "prior_4q_avg_yoy": 0.1238175599873227
     },
     "roic_trend": {
       "years": [
@@ -2221,7 +1865,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }

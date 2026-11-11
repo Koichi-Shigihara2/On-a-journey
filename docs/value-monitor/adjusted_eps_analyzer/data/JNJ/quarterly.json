@@ -1,6 +1,6 @@
 {
   "ticker": "JNJ",
-  "last_updated": "2026-11-08T17:34:09.278009",
+  "last_updated": "2026-11-11T01:56:27.468925",
   "quarters": [
     {
       "gaap_eps": 0.08576329331046312,
@@ -82,32 +82,32 @@
       "pretax_income": 34000000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "GAAP EPSは0.085と小幅プラスだが、Adjusted EPSは-0.405と大幅マイナス。これは主に税務上のone-time DTA認識益(-1.2B)を除外した影響が大きい。SBCや無形資産償却は恒常的コストでありながらadd_backされており、市場がGAAP EPSで判断する場合、税務特益により企業の実力(特にコア収益力)が過大評価されやすく、過小評価ではなく過大評価のリスクが高い。リストラや異常貸倒は一過性だが、調整全体として実力が見えにくく、投資家は調整の質を慎重に検証すべき。",
+        "comment": "調整項目のうちtax_one_time_dtaの-12億ドル規模の一時的DTA税務利益除外が支配的で、GAAP EPSを押し上げて実力以上に良く見せている。SBCや無形資産償却は恒常的コストであり加算調整の妥当性に疑問が残るが、全体としてAdjusted EPSが大幅に悪化（正→負）するため、市場がGAAP EPSで判断する場合に企業の実力が見えにくく、むしろ過大評価リスクが高い。過小評価の可能性は低い。投資家は税務の一時性の持続不可能性とリストラの再発リスクに注目すべき。",
         "sources": [
           {
+            "item": "tax_one_time_dta",
+            "snippet": "DTA認識（繰延税金資産）除外。一時的な税務利益を除外しGAAP EPSを押し上げていた要因。",
+            "confidence": 1.0
+          },
+          {
             "item": "sbc",
-            "snippet": "非現金費用だが毎期発生する恒常的な株式報酬コスト",
+            "snippet": "株式報酬費用は毎期発生する恒常的な非現金コストであり、調整で加算されている。",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は継続的に発生する非現金費用",
+            "snippet": "無形資産償却費は買収関連で継続的に発生する恒常的費用。",
             "confidence": 0.2
           },
           {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的影響の異常変動分",
-            "confidence": 0.75
-          },
-          {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用",
+            "snippet": "リストラ費用は一過性の事業再編費用として加算調整。",
             "confidence": 0.8
           },
           {
-            "item": "tax_one_time_dta",
-            "snippet": "DTA認識（繰延税金資産）除外はone-time tax benefitの調整",
-            "confidence": 0.9
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響。",
+            "confidence": 0.75
           }
         ]
       }

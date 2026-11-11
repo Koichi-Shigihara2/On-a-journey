@@ -1,40 +1,14 @@
 {
   "ticker": "AVAV",
-  "last_updated": "2026-11-08T17:26:58.949588",
+  "last_updated": "2026-11-11T01:50:14.092747",
   "quarters": [
     {
       "gaap_eps": -0.10168077355264213,
-      "adjusted_eps": 0.9632405991023861,
+      "adjusted_eps": 0.06454858551721819,
       "gaap_net_income": -5066000.0,
-      "adjusted_net_income": 47991146.25663555,
+      "adjusted_net_income": 3215978.0340472274,
       "diluted_shares_used": 49822595.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 4927000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 4568951.491854292,
-          "tax_rate_applied": 0.07267069375800841
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 43357000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 40206216.73073403,
-          "tax_rate_applied": 0.07267069375800841
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -75,10 +49,10 @@
           "tax_rate_applied": 0.07267069375800841
         }
       ],
-      "net_adjustment_total": 53057146.25663555,
+      "net_adjustment_total": 8281978.034047227,
       "filing_date": "2026-08-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 480490000.0,
       "diluted_shares": 49822595.0,
       "period_end": "2026-08-01",
@@ -88,69 +62,33 @@
       "pretax_income": -5463000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目の総額が大きく、GAAP EPSがマイナスから調整後EPSがプラスに転換している。SBCと無形資産償却は恒常的な性質が強く毎期発生するが、M&A統合費用や異常貸倒引当金、在庫評価損は一過性と判断される。市場がGAAP EPSのみで判断する場合、企業の実力（キャッシュ生成力や調整後収益性）が過小評価される可能性が高い。ただし恒常項目の調整依存度が高いため過大調整リスクもあり、投資家は各項目の継続性と真の経済的影響を慎重に検証する必要がある。",
+        "comment": "GAAP EPSがマイナス(-0.10)に対しAdjusted EPSがプラス(0.06)へ転換しており、M&A統合費用・異常貸倒引当金・在庫評価損の3項目がすべてadd_backされている。これらは主に一過性・異常変動と位置づけられるため、市場がGAAP EPSのみで判断する場合に企業の実力(収益力)が過小評価されている可能性が高い。投資家としては調整項目の真の一時性を検証すべきであり、過小評価リスクがある一方で調整依存が続くと過大評価リスクも生じる。",
         "sources": [
           {
-            "item": "sbc",
-            "snippet": "株式報酬費用は非現金費用だが、企業が継続的に付与するため恒常的な運用コストである。",
-            "confidence": 0.2
-          },
-          {
-            "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は過去のM&Aによる定期的な非現金費用で恒常的性格が強い。",
-            "confidence": 0.2
-          },
-          {
             "item": "ma_integration",
-            "snippet": "M&A統合費用は一過性の買収統合コストであり調整の妥当性が高い。",
+            "snippet": "一過性の買収統合コストとしてM&A統合費用をadd_back。M&A関連はほぼ一過性。",
             "confidence": 0.8
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "異常変動分の貸倒引当金はマクロ要因による一時的影響で一過性とみなせる。",
-            "confidence": 0.75
+            "snippet": "マクロ変動による一時的影響として異常貸倒引当金をadd_back。異常変動分に限定。",
+            "confidence": 0.7
           },
           {
             "item": "inventory_writeoff",
-            "snippet": "在庫評価損は一過性の事象による減損であり調整が適切と考えられる。",
-            "confidence": 0.7
+            "snippet": "一過性の在庫評価損としてadd_back。在庫減損は一時的とされるが業績変動で再発の可能性あり。",
+            "confidence": 0.65
           }
         ]
       }
     },
     {
       "gaap_eps": -0.49092081694536915,
-      "adjusted_eps": 1.217583981786658,
+      "adjusted_eps": 0.5724963099068366,
       "gaap_net_income": -24098000.0,
-      "adjusted_net_income": 59767966.198019385,
+      "adjusted_net_income": 28102324.448120117,
       "diluted_shares_used": 49087346.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 10269000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 5247627.329982824,
-          "tax_rate_applied": 0.4889836079479187
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 51697000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 26418014.41991645,
-          "tax_rate_applied": 0.4889836079479187
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -204,10 +142,10 @@
           "tax_rate_applied": 0.4889836079479187
         }
       ],
-      "net_adjustment_total": 83865966.19801939,
+      "net_adjustment_total": 52200324.44812012,
       "filing_date": "2026-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 641616000.0,
       "diluted_shares": 49087346.0,
       "period_end": "2026-04-30",
@@ -218,37 +156,11 @@
     },
     {
       "gaap_eps": -3.147295230148238,
-      "adjusted_eps": 2.2911324282848473,
+      "adjusted_eps": 1.2677363905033958,
       "gaap_net_income": -156551000.0,
-      "adjusted_net_income": 113964228.50471747,
+      "adjusted_net_income": 63059034.871777624,
       "diluted_shares_used": 49741441.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 8070000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 7090912.290154742,
-          "tax_rate_applied": 0.12132437544550899
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 49864000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 43814281.34278514,
-          "tax_rate_applied": 0.12132437544550899
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -302,10 +214,10 @@
           "tax_rate_applied": 0.12132437544550899
         }
       ],
-      "net_adjustment_total": 270515228.50471747,
+      "net_adjustment_total": 219610034.87177762,
       "filing_date": "2026-01-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 408045000.0,
       "diluted_shares": 49741441.0,
       "period_end": "2026-01-31",
@@ -316,37 +228,11 @@
     },
     {
       "gaap_eps": -0.34396363232674915,
-      "adjusted_eps": 0.8007504552652092,
+      "adjusted_eps": -0.13905289876523463,
       "gaap_net_income": -17103000.0,
-      "adjusted_net_income": 39815939.09727947,
+      "adjusted_net_income": -6914166.220115416,
       "diluted_shares_used": 49723280.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 8566000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 7548655.090684254,
-          "tax_rate_applied": 0.11876545754328112
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 44462000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 39181450.22671063,
-          "tax_rate_applied": 0.11876545754328112
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -387,10 +273,10 @@
           "tax_rate_applied": 0.11876545754328112
         }
       ],
-      "net_adjustment_total": 56918939.09727947,
+      "net_adjustment_total": 10188833.779884584,
       "filing_date": "2025-11-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 472508000.0,
       "diluted_shares": 49723280.0,
       "period_end": "2025-11-01",
@@ -401,37 +287,11 @@
     },
     {
       "gaap_eps": -1.4370013448557932,
-      "adjusted_eps": 0.21120032123536306,
+      "adjusted_eps": -1.0003593485996802,
       "gaap_net_income": -67370000.0,
-      "adjusted_net_income": 9901567.380268723,
+      "adjusted_net_income": -46899197.10682222,
       "diluted_shares_used": 46882350.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 11429000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 9328580.792110397,
-          "tax_rate_applied": 0.18377978894825475
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 58161000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 47472183.694980554,
-          "tax_rate_applied": 0.18377978894825475
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -472,10 +332,10 @@
           "tax_rate_applied": 0.18377978894825475
         }
       ],
-      "net_adjustment_total": 77271567.38026872,
+      "net_adjustment_total": 20470802.893177774,
       "filing_date": "2025-08-02",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 454676000.0,
       "diluted_shares": 46882350.0,
       "period_end": "2025-08-02",
@@ -486,37 +346,11 @@
     },
     {
       "gaap_eps": 0.5914780590887433,
-      "adjusted_eps": 1.3516753525180292,
+      "adjusted_eps": 0.8464952434616113,
       "gaap_net_income": 16664000.0,
-      "adjusted_net_income": 38081409.32406247,
+      "adjusted_net_income": 23848723.583722785,
       "diluted_shares_used": 28173488.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 5943000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 5644258.064516129,
-          "tax_rate_applied": 0.05026786732018694
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 9043000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 8588427.675823549,
-          "tax_rate_applied": 0.05026786732018694
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -570,10 +404,10 @@
           "tax_rate_applied": 0.05026786732018694
         }
       ],
-      "net_adjustment_total": 21417409.324062467,
+      "net_adjustment_total": 7184723.583722786,
       "filing_date": "2025-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 275050000.0,
       "diluted_shares": 28173488.0,
       "period_end": "2025-04-30",
@@ -593,37 +427,11 @@
     },
     {
       "gaap_eps": -0.0625715680145988,
-      "adjusted_eps": 0.43386313608087856,
+      "adjusted_eps": 0.16439956700062877,
       "gaap_net_income": -1754000.0,
-      "adjusted_net_income": 12162008.478168717,
+      "adjusted_net_income": 4608432.386604493,
       "diluted_shares_used": 28031901.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 5381000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 4000963.967782959,
-          "tax_rate_applied": 0.2564646036456125
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 4778000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 3552612.1237812634,
-          "tax_rate_applied": 0.2564646036456125
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -677,10 +485,10 @@
           "tax_rate_applied": 0.2564646036456125
         }
       ],
-      "net_adjustment_total": 13916008.478168717,
+      "net_adjustment_total": 6362432.386604493,
       "filing_date": "2025-01-25",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 167636000.0,
       "diluted_shares": 28031901.0,
       "period_end": "2025-01-25",
@@ -700,37 +508,11 @@
     },
     {
       "gaap_eps": 0.26799935620464876,
-      "adjusted_eps": 0.7305866776756095,
+      "adjusted_eps": 0.3723700822184693,
       "gaap_net_income": 7543000.0,
-      "adjusted_net_income": 20562793.08931986,
+      "adjusted_net_income": 10480575.662387326,
       "diluted_shares_used": 28145590.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 5601000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 5431944.960393336,
-          "tax_rate_applied": 0.030183010106528272
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 4795000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4650272.466539197,
-          "tax_rate_applied": 0.030183010106528272
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -784,10 +566,10 @@
           "tax_rate_applied": 0.030183010106528272
         }
       ],
-      "net_adjustment_total": 13019793.089319859,
+      "net_adjustment_total": 2937575.6623873264,
       "filing_date": "2024-10-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 188458000.0,
       "diluted_shares": 28145590.0,
       "period_end": "2024-10-26",
@@ -807,37 +589,11 @@
     },
     {
       "gaap_eps": 0.7483957807959153,
-      "adjusted_eps": 1.1513882905468218,
+      "adjusted_eps": 0.8437831199490569,
       "gaap_net_income": 21166000.0,
-      "adjusted_net_income": 32563364.443070948,
+      "adjusted_net_income": 23863728.223919474,
       "diluted_shares_used": 28281827.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 4536000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 4238619.751887334,
-          "tax_rate_applied": 0.06556001942519094
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 4774000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4461016.467264138,
-          "tax_rate_applied": 0.06556001942519094
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -878,10 +634,10 @@
           "tax_rate_applied": 0.06556001942519094
         }
       ],
-      "net_adjustment_total": 11397364.443070946,
+      "net_adjustment_total": 2697728.2239194736,
       "filing_date": "2024-07-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 189483000.0,
       "diluted_shares": 28281827.0,
       "period_end": "2024-07-27",
@@ -901,37 +657,11 @@
     },
     {
       "gaap_eps": 0.22123834706778503,
-      "adjusted_eps": 0.6678961867319134,
+      "adjusted_eps": 0.3925816908281069,
       "gaap_net_income": 6046000.0,
-      "adjusted_net_income": 18252262.315736424,
+      "adjusted_net_income": 10728469.69887867,
       "diluted_shares_used": 27327993.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 4644000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 3537561.295199698,
-          "tax_rate_applied": 0.23825122842383772
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 5233000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 3986231.321658057,
-          "tax_rate_applied": 0.23825122842383772
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -972,10 +702,10 @@
           "tax_rate_applied": 0.23825122842383772
         }
       ],
-      "net_adjustment_total": 12206262.315736424,
+      "net_adjustment_total": 4682469.69887867,
       "filing_date": "2024-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 196979000.0,
       "diluted_shares": 27327993.0,
       "period_end": "2024-04-30",
@@ -986,37 +716,11 @@
     },
     {
       "gaap_eps": 0.4951125774034613,
-      "adjusted_eps": 0.9181356650304678,
+      "adjusted_eps": 0.6034266271220078,
       "gaap_net_income": 13885000.0,
-      "adjusted_net_income": 25748313.1933439,
+      "adjusted_net_income": 16922572.966191232,
       "diluted_shares_used": 28044127.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 4181000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 3833411.5821447438,
-          "tax_rate_applied": 0.083135235076598
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 5445000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4992328.645007923,
-          "tax_rate_applied": 0.083135235076598
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -1057,10 +761,10 @@
           "tax_rate_applied": 0.083135235076598
         }
       ],
-      "net_adjustment_total": 11863313.193343898,
+      "net_adjustment_total": 3037572.966191231,
       "filing_date": "2024-01-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 186578000.0,
       "diluted_shares": 28044127.0,
       "period_end": "2024-01-27",
@@ -1071,37 +775,11 @@
     },
     {
       "gaap_eps": 0.6617994728307204,
-      "adjusted_eps": 1.1615056775096155,
+      "adjusted_eps": 0.8371098986050803,
       "gaap_net_income": 17840000.0,
-      "adjusted_net_income": 31310483.216525268,
+      "adjusted_net_income": 22565809.137376823,
       "diluted_shares_used": 26956806.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 5040000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 4738030.2471412765,
-          "tax_rate_applied": 0.05991463350371502
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 4262000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4006643.8320071665,
-          "tax_rate_applied": 0.05991463350371502
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1129,10 +807,10 @@
           "tax_rate_applied": 0.05991463350371502
         }
       ],
-      "net_adjustment_total": 13470483.216525268,
+      "net_adjustment_total": 4725809.137376824,
       "filing_date": "2023-10-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 180816000.0,
       "diluted_shares": 26956806.0,
       "period_end": "2023-10-28",
@@ -1143,37 +821,11 @@
     },
     {
       "gaap_eps": 0.8363560438919041,
-      "adjusted_eps": 1.1804623760528672,
+      "adjusted_eps": 0.9558148868192884,
       "gaap_net_income": 21895000.0,
-      "adjusted_net_income": 30903374.122107804,
+      "adjusted_net_income": 25022318.066267397,
       "diluted_shares_used": 26179042.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 3204000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 3022602.438709121,
-          "tax_rate_applied": 0.05661596794347021
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 3030000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 2858453.6171312854,
-          "tax_rate_applied": 0.05661596794347021
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1201,10 +853,10 @@
           "tax_rate_applied": 0.05661596794347021
         }
       ],
-      "net_adjustment_total": 9008374.122107802,
+      "net_adjustment_total": 3127318.066267396,
       "filing_date": "2023-07-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 152347000.0,
       "diluted_shares": 26179042.0,
       "period_end": "2023-07-29",
@@ -1215,37 +867,11 @@
     },
     {
       "gaap_eps": -6.407417148438437,
-      "adjusted_eps": -4.7014408692514955,
+      "adjusted_eps": -6.305819547595586,
       "gaap_net_income": -160473000.0,
-      "adjusted_net_income": -117747027.09894025,
+      "adjusted_net_income": -157928500.1770053,
       "diluted_shares_used": 25044881.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 3657000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 3350823.1374474694,
-          "tax_rate_applied": 0.08372350630367258
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 40196000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 36830649.940617576,
-          "tax_rate_applied": 0.08372350630367258
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1286,10 +912,10 @@
           "tax_rate_applied": 0.08372350630367258
         }
       ],
-      "net_adjustment_total": 42725972.90105974,
+      "net_adjustment_total": 2544499.8229947016,
       "filing_date": "2023-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 186041000.0,
       "diluted_shares": 25044881.0,
       "period_end": "2023-04-30",
@@ -1309,37 +935,11 @@
     },
     {
       "gaap_eps": -0.027026581842646762,
-      "adjusted_eps": 0.24464990324172206,
+      "adjusted_eps": 0.04807462403990272,
       "gaap_net_income": -676000.0,
-      "adjusted_net_income": 6119284.175642088,
+      "adjusted_net_income": 1202462.3032311513,
       "diluted_shares_used": 25012412.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 2706000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1515539.3537696768,
-          "tax_rate_applied": 0.43993371996686
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 6073000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 3401282.518641259,
-          "tax_rate_applied": 0.43993371996686
-        },
         {
           "item_id": "ma_integration",
           "item_name": "M&A統合費用",
@@ -1393,10 +993,10 @@
           "tax_rate_applied": 0.43993371996686
         }
       ],
-      "net_adjustment_total": 6795284.175642088,
+      "net_adjustment_total": 1878462.3032311513,
       "filing_date": "2023-01-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 134395000.0,
       "diluted_shares": 25012412.0,
       "period_end": "2023-01-28",
@@ -1416,37 +1016,11 @@
     },
     {
       "gaap_eps": -0.2662155660165007,
-      "adjusted_eps": 0.07651820078757882,
+      "adjusted_eps": -0.18261809535754028,
       "gaap_net_income": -6629000.0,
-      "adjusted_net_income": 1905370.0,
+      "adjusted_net_income": -4547350.0,
       "diluted_shares_used": 24900873.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 2185000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1726150.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 5983000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4726570.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1474,10 +1048,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 8534370.0,
+      "net_adjustment_total": 2081650.0,
       "filing_date": "2022-10-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 111584000.0,
       "diluted_shares": 24900873.0,
       "period_end": "2022-10-29",
@@ -1488,37 +1062,11 @@
     },
     {
       "gaap_eps": -0.33820841540266194,
-      "adjusted_eps": -0.15373614204693944,
+      "adjusted_eps": -0.33282640526633817,
       "gaap_net_income": -8389000.0,
-      "adjusted_net_income": -3813306.934117241,
+      "adjusted_net_income": -8255503.371952274,
       "diluted_shares_used": 24804232.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 2217000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1217950.717620612,
-          "tax_rate_applied": 0.4506311602974235
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 5869000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 3224245.720214421,
-          "tax_rate_applied": 0.4506311602974235
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1546,10 +1094,10 @@
           "tax_rate_applied": 0.4506311602974235
         }
       ],
-      "net_adjustment_total": 4575693.065882759,
+      "net_adjustment_total": 133496.62804772606,
       "filing_date": "2022-07-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 108516000.0,
       "diluted_shares": 24804232.0,
       "period_end": "2022-07-30",
@@ -1565,32 +1113,6 @@
       "adjusted_net_income": -4471000.0,
       "diluted_shares_used": 24685534.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1433000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1132070.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 6072000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4796880.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1615,7 +1137,7 @@
       "net_adjustment_total": -11683000.0,
       "filing_date": "2022-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 132622000.0,
       "diluted_shares": 24685534.0,
       "period_end": "2022-04-30",
@@ -1626,37 +1148,11 @@
     },
     {
       "gaap_eps": -0.0014067725971791476,
-      "adjusted_eps": 0.2697944661022668,
+      "adjusted_eps": -0.0009304795892770648,
       "gaap_net_income": -35000.0,
-      "adjusted_net_income": 6712390.0,
+      "adjusted_net_income": -23150.0,
       "diluted_shares_used": 24879643.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1615000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1275850.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 6911000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 5459690.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1671,10 +1167,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 6747390.0,
+      "net_adjustment_total": 11850.0,
       "filing_date": "2022-01-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 90093000.0,
       "diluted_shares": 24879643.0,
       "period_end": "2022-01-29",
@@ -1690,32 +1186,6 @@
       "adjusted_net_income": -8269000.0,
       "diluted_shares_used": 24885870.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 420000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 331800.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 6843000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 5405970.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1740,7 +1210,7 @@
       "net_adjustment_total": -10825000.0,
       "filing_date": "2021-10-30",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 122008000.0,
       "diluted_shares": 24885870.0,
       "period_end": "2021-10-30",
@@ -1751,37 +1221,11 @@
     },
     {
       "gaap_eps": -0.5653086208143077,
-      "adjusted_eps": -0.228023645370477,
+      "adjusted_eps": -0.5660686996322092,
       "gaap_net_income": -13918000.0,
-      "adjusted_net_income": -5613983.193277311,
+      "adjusted_net_income": -13936713.277310925,
       "diluted_shares_used": 24620180.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1922000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1798345.949579832,
-          "tax_rate_applied": 0.06433613445378152
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 6973000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 6524384.134453782,
-          "tax_rate_applied": 0.06433613445378152
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1796,10 +1240,10 @@
           "tax_rate_applied": 0.06433613445378152
         }
       ],
-      "net_adjustment_total": 8304016.806722689,
+      "net_adjustment_total": -18713.27731092437,
       "filing_date": "2021-07-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 101009000.0,
       "diluted_shares": 24620180.0,
       "period_end": "2021-07-31",
@@ -1810,37 +1254,11 @@
     },
     {
       "gaap_eps": 0.4503614055873054,
-      "adjusted_eps": 0.8330766579072623,
+      "adjusted_eps": 0.4512221432228645,
       "gaap_net_income": 10972000.0,
-      "adjusted_net_income": 20295960.03822431,
+      "adjusted_net_income": 10992969.85492138,
       "diluted_shares_used": 24362656.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 5337000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 5087096.168881939,
-          "tax_rate_applied": 0.046824776300929544
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 4423000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 4215894.014420989,
-          "tax_rate_applied": 0.046824776300929544
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1855,10 +1273,10 @@
           "tax_rate_applied": 0.046824776300929544
         }
       ],
-      "net_adjustment_total": 9323960.038224308,
+      "net_adjustment_total": 20969.854921379552,
       "filing_date": "2021-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 136015000.0,
       "diluted_shares": 24362656.0,
       "period_end": "2021-04-30",
@@ -1875,19 +1293,6 @@
       "diluted_shares_used": 24260874.0,
       "adjustments": [
         {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 622000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 491380.0,
-          "tax_rate_applied": 0.21
-        },
-        {
           "item_id": "tax_one_time_dta",
           "item_name": "DTA認識（繰延税金資産）除外",
           "amount": -2238000.0,
@@ -1898,7 +1303,7 @@
       "net_adjustment_total": -2238000.0,
       "filing_date": "2021-01-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 78782000.0,
       "diluted_shares": 24260874.0,
       "period_end": "2021-01-31",
@@ -1909,37 +1314,11 @@
     },
     {
       "gaap_eps": 0.08563076147898542,
-      "adjusted_eps": 0.17081146552915513,
+      "adjusted_eps": 0.08497778559512056,
       "gaap_net_income": 2072000.0,
-      "adjusted_net_income": 4133110.0,
+      "adjusted_net_income": 2056200.0,
       "diluted_shares_used": 24196912.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1914000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1512060.0,
-          "tax_rate_applied": 0.21
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 715000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 564850.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -1954,10 +1333,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 2061110.0,
+      "net_adjustment_total": -15800.0,
       "filing_date": "2020-10-31",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 92665000.0,
       "diluted_shares": 24196912.0,
       "period_end": "2020-10-31",
@@ -1968,37 +1347,11 @@
     },
     {
       "gaap_eps": 0.4152363072075563,
-      "adjusted_eps": 0.49525695734319913,
+      "adjusted_eps": 0.4102165616270916,
       "gaap_net_income": 10043000.0,
-      "adjusted_net_income": 11978397.688888889,
+      "adjusted_net_income": 9921591.288888888,
       "diluted_shares_used": 24186228.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1595000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1423874.2222222222,
-          "tax_rate_applied": 0.10728888888888889
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 709000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 632932.1777777778,
-          "tax_rate_applied": 0.10728888888888889
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2013,10 +1366,10 @@
           "tax_rate_applied": 0.10728888888888889
         }
       ],
-      "net_adjustment_total": 1935397.6888888888,
+      "net_adjustment_total": -121408.71111111112,
       "filing_date": "2020-08-01",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 87450000.0,
       "diluted_shares": 24186228.0,
       "period_end": "2020-08-01",
@@ -2027,37 +1380,11 @@
     },
     {
       "gaap_eps": 0.7262487012814217,
-      "adjusted_eps": 0.8555559415575587,
+      "adjusted_eps": 0.7872309416426412,
       "gaap_net_income": 17494000.0,
-      "adjusted_net_income": 20608774.398080714,
+      "adjusted_net_income": 18962950.389855195,
       "diluted_shares_used": 24088167.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1476000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1106209.5792991174,
-          "tax_rate_applied": 0.25053551538000174
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 720000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 539614.4289263987,
-          "tax_rate_applied": 0.25053551538000174
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2085,10 +1412,10 @@
           "tax_rate_applied": 0.25053551538000174
         }
       ],
-      "net_adjustment_total": 3114774.3980807126,
+      "net_adjustment_total": 1468950.3898551965,
       "filing_date": "2020-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 0.0,
       "diluted_shares": 24088167.0,
       "period_end": "2020-04-30",
@@ -2099,37 +1426,11 @@
     },
     {
       "gaap_eps": -0.043154936507040276,
-      "adjusted_eps": 0.08408330499542464,
+      "adjusted_eps": -0.018824620521363723,
       "gaap_net_income": -1028000.0,
-      "adjusted_net_income": 2002960.6003752346,
+      "adjusted_net_income": -448424.0150093809,
       "diluted_shares_used": 23821145.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1767000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1704011.2570356473,
-          "tax_rate_applied": 0.03564727954971857
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 775000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 747373.3583489681,
-          "tax_rate_applied": 0.03564727954971857
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2157,10 +1458,10 @@
           "tax_rate_applied": 0.03564727954971857
         }
       ],
-      "net_adjustment_total": 3030960.6003752346,
+      "net_adjustment_total": 579575.9849906191,
       "filing_date": "2020-01-25",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 61891000.0,
       "diluted_shares": 23821145.0,
       "period_end": "2020-01-25",
@@ -2171,37 +1472,11 @@
     },
     {
       "gaap_eps": 0.3119050478746196,
-      "adjusted_eps": 0.4852942698906046,
+      "adjusted_eps": 0.4066027954877776,
       "gaap_net_income": 7505000.0,
-      "adjusted_net_income": 11677058.516196448,
+      "adjusted_net_income": 9783599.210495763,
       "diluted_shares_used": 24061810.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1418000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1235584.5814466504,
-          "tax_rate_applied": 0.1286427493324045
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 755000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 657874.7242540346,
-          "tax_rate_applied": 0.1286427493324045
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2229,10 +1504,10 @@
           "tax_rate_applied": 0.1286427493324045
         }
       ],
-      "net_adjustment_total": 4172058.5161964474,
+      "net_adjustment_total": 2278599.2104957625,
       "filing_date": "2019-10-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 83271000.0,
       "diluted_shares": 24061810.0,
       "period_end": "2019-10-26",
@@ -2243,37 +1518,11 @@
     },
     {
       "gaap_eps": 0.7103883504785825,
-      "adjusted_eps": 0.7890289909823733,
+      "adjusted_eps": 0.7107946666108238,
       "gaap_net_income": 17099000.0,
-      "adjusted_net_income": 18991874.94800333,
+      "adjusted_net_income": 17108780.002079867,
       "diluted_shares_used": 24069933.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1566000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1392316.659733777,
-          "tax_rate_applied": 0.11090890183028286
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 552000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 490778.28618968383,
-          "tax_rate_applied": 0.11090890183028286
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2288,10 +1537,10 @@
           "tax_rate_applied": 0.11090890183028286
         }
       ],
-      "net_adjustment_total": 1892874.9480033275,
+      "net_adjustment_total": 9780.002079866888,
       "filing_date": "2019-07-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 86911000.0,
       "diluted_shares": 24069933.0,
       "period_end": "2019-07-27",
@@ -2302,37 +1551,11 @@
     },
     {
       "gaap_eps": 0.23691708188777424,
-      "adjusted_eps": 0.2709063461493227,
+      "adjusted_eps": 0.23677965898644723,
       "gaap_net_income": 5703000.0,
-      "adjusted_net_income": 6521179.814385151,
+      "adjusted_net_income": 5699691.995359628,
       "diluted_shares_used": 24071713.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1386000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 764149.071925754,
-          "tax_rate_applied": 0.4486658932714617
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 104000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 57338.74709976798,
-          "tax_rate_applied": 0.4486658932714617
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2347,10 +1570,10 @@
           "tax_rate_applied": 0.4486658932714617
         }
       ],
-      "net_adjustment_total": 818179.8143851508,
+      "net_adjustment_total": -3308.0046403712295,
       "filing_date": "2019-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 0.0,
       "diluted_shares": 24071713.0,
       "period_end": "2019-04-30",
@@ -2361,37 +1584,11 @@
     },
     {
       "gaap_eps": 0.34673460505620446,
-      "adjusted_eps": 0.46534648587362376,
+      "adjusted_eps": 0.34651080905466214,
       "gaap_net_income": 8350000.0,
-      "adjusted_net_income": 11206389.845094664,
+      "adjusted_net_income": 8344610.585197935,
       "diluted_shares_used": 24081819.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 3082000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 2768362.7366609294,
-          "tax_rate_applied": 0.10176419965576593
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 104000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 93416.52323580034,
-          "tax_rate_applied": 0.10176419965576593
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2406,10 +1603,10 @@
           "tax_rate_applied": 0.10176419965576593
         }
       ],
-      "net_adjustment_total": 2856389.845094664,
+      "net_adjustment_total": -5389.414802065405,
       "filing_date": "2019-01-26",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 75322000.0,
       "diluted_shares": 24081819.0,
       "period_end": "2019-01-26",
@@ -2420,37 +1617,11 @@
     },
     {
       "gaap_eps": 0.25104950102770535,
-      "adjusted_eps": 0.2970689041220279,
+      "adjusted_eps": 0.25177557725984717,
       "gaap_net_income": 6050000.0,
-      "adjusted_net_income": 7159013.909929762,
+      "adjusted_net_income": 6067497.589863655,
       "diluted_shares_used": 24098833.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1230000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1024858.8348712298,
-          "tax_rate_applied": 0.16678143506404078
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 80000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 66657.48519487675,
-          "tax_rate_applied": 0.16678143506404078
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2465,10 +1636,10 @@
           "tax_rate_applied": 0.16678143506404078
         }
       ],
-      "net_adjustment_total": 1109013.9099297617,
+      "net_adjustment_total": 17497.589863655143,
       "filing_date": "2018-10-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 72979000.0,
       "diluted_shares": 24098833.0,
       "period_end": "2018-10-27",
@@ -2479,37 +1650,11 @@
     },
     {
       "gaap_eps": 1.1376782708656363,
-      "adjusted_eps": 1.1874752517006346,
+      "adjusted_eps": 1.1358508587249023,
       "gaap_net_income": 27316000.0,
-      "adjusted_net_income": 28511640.5983335,
+      "adjusted_net_income": 27272123.2807951,
       "diluted_shares_used": 24010303.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1287000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1176444.5336813573,
-          "tax_rate_applied": 0.08590168323126861
-        },
-        {
-          "item_id": "amortization_intangibles",
-          "item_name": "無形資産償却費",
-          "amount": 69000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "買収関連無形資産の償却",
-          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
-          "category": "買収・統合関連",
-          "net_amount": 63072.78385704247,
-          "tax_rate_applied": 0.08590168323126861
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2524,10 +1669,10 @@
           "tax_rate_applied": 0.08590168323126861
         }
       ],
-      "net_adjustment_total": 1195640.5983335006,
+      "net_adjustment_total": -43876.719204899106,
       "filing_date": "2018-07-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 78043000.0,
       "diluted_shares": 24010303.0,
       "period_end": "2018-07-28",
@@ -2538,24 +1683,11 @@
     },
     {
       "gaap_eps": 0.7702685656014511,
-      "adjusted_eps": 0.7954400348560288,
+      "adjusted_eps": 0.7668925638237448,
       "gaap_net_income": 18343000.0,
-      "adjusted_net_income": 18942427.62973352,
+      "adjusted_net_income": 18262604.66339411,
       "diluted_shares_used": 23813772.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1057000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 679822.9663394109,
-          "tax_rate_applied": 0.35683730715287515
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2570,10 +1702,10 @@
           "tax_rate_applied": 0.35683730715287515
         }
       ],
-      "net_adjustment_total": 599427.6297335203,
+      "net_adjustment_total": -80395.3366058906,
       "filing_date": "2018-04-30",
       "form": "10-K",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 89526000.0,
       "diluted_shares": 23813772.0,
       "period_end": "2018-04-30",
@@ -2584,24 +1716,11 @@
     },
     {
       "gaap_eps": -0.03559336002254161,
-      "adjusted_eps": 0.013118938550721729,
+      "adjusted_eps": -0.030251804523818253,
       "gaap_net_income": -837000.0,
-      "adjusted_net_income": 308500.0,
+      "adjusted_net_income": -711390.0,
       "diluted_shares_used": 23515622.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1291000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 1019890.0,
-          "tax_rate_applied": 0.21
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2616,10 +1735,10 @@
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": 1145500.0,
+      "net_adjustment_total": 125610.0,
       "filing_date": "2018-01-27",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 54633000.0,
       "diluted_shares": 23515622.0,
       "period_end": "2018-01-27",
@@ -2630,24 +1749,11 @@
     },
     {
       "gaap_eps": 0.28582267103300096,
-      "adjusted_eps": 0.34248132440591444,
+      "adjusted_eps": 0.3064513672511153,
       "gaap_net_income": 6812000.0,
-      "adjusted_net_income": 8162343.362831859,
+      "adjusted_net_income": 7303642.871189774,
       "diluted_shares_used": 23832959.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1282000.0,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 858700.4916420846,
-          "tax_rate_applied": 0.3301868239921337
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2662,10 +1768,10 @@
           "tax_rate_applied": 0.3301868239921337
         }
       ],
-      "net_adjustment_total": 1350343.3628318585,
+      "net_adjustment_total": 491642.87118977384,
       "filing_date": "2017-10-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 65801000.0,
       "diluted_shares": 23832959.0,
       "period_end": "2017-10-28",
@@ -2676,24 +1782,11 @@
     },
     {
       "gaap_eps": -0.19137562694693955,
-      "adjusted_eps": -0.1531602519809512,
+      "adjusted_eps": -0.1861723609092252,
       "gaap_net_income": -4466000.0,
-      "adjusted_net_income": -3574194.3541043317,
+      "adjusted_net_income": -4344574.996747756,
       "diluted_shares_used": 23336305.0,
       "adjustments": [
-        {
-          "item_id": "sbc",
-          "item_name": "株式報酬費用",
-          "amount": 1326000,
-          "unit": "USD",
-          "direction": "add_back",
-          "pre_tax": true,
-          "reason": "非現金費用",
-          "extracted_from": "us-gaap:ShareBasedCompensation",
-          "category": "株式報酬関連",
-          "net_amount": 770380.642643424,
-          "tax_rate_applied": 0.41901912319500456
-        },
         {
           "item_id": "loan_loss_provision_abnormal",
           "item_name": "貸倒引当金繰入（異常変動分）",
@@ -2708,10 +1801,10 @@
           "tax_rate_applied": 0.41901912319500456
         }
       ],
-      "net_adjustment_total": 891805.6458956681,
+      "net_adjustment_total": 121425.00325224405,
       "filing_date": "2017-07-29",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 34361000.0,
       "diluted_shares": 23336305.0,
       "period_end": "2017-07-29",
@@ -2730,7 +1823,7 @@
       "net_adjustment_total": 0.0,
       "filing_date": "2017-01-28",
       "form": "10-Q",
-      "sector": null,
+      "sector": "宇宙・航空",
       "revenue": 53163000.0,
       "diluted_shares": 23082974.0,
       "period_end": "2017-01-28",
@@ -2774,8 +1867,8 @@
       "reason": "insufficient_data"
     },
     "sbc_ratio": {
-      "value": 0.010254115590334867,
-      "reason": "ok",
+      "value": null,
+      "reason": "no_sbc_data",
       "period_end": "2026-08-01"
     }
   }
