@@ -1641,7 +1641,8 @@ class TanukiValuationPipeline:
         rice_bull_d = rice.get("bull", {})
         sbc_adjusted = "SBC補正済み" in rice_note
         excl_reason = rice_note if not rice_available else "N/A"
-        is_financial = "Financial" in (sector or "") or "Financial" in (excl_reason or "")
+        from common.sector_master import is_financial_ticker as _is_fin_ticker   # SECTOR-MASTER-ADOPT-1 段3
+        is_financial = _is_fin_ticker(ticker, sector, industry)
 
         # --- EPS data ---
         eps_summary_entry = self._load_eps_map().get(ticker, {})
@@ -2486,7 +2487,7 @@ class TanukiValuationPipeline:
         L.append("Lease liabilities excluded (ASC842/IFRS16 operating leases are not")
         L.append("interest-bearing debt; excluded by design. Adjusted EV approach")
         L.append("must be stated explicitly if leases are included.)")
-        if sector == "Financial Services":
+        if _is_fin_ticker(ticker, sector, industry):
             L.append("⚠️ Financial_Institution_Note: For banks/fintech (e.g., SOFI), Total_Debt includes")
             L.append("customer deposits and funding liabilities — not comparable to corporate debt.")
             L.append("Net_Debt interpretation is limited; use equity-based metrics instead.")
@@ -2514,8 +2515,8 @@ class TanukiValuationPipeline:
         L.append("")
 
         # --- [3b. Equity_DCF] FCFEエクイティDCF（金融機関向け・参考情報） ---
-        # [[TANUKI-FIN-2]]: config/financial_institution_config.jsonの対象
-        # 銘柄（現状SOFIのみ）でのみ表示される。TANUKI SCORE・upside_percent・
+        # [[TANUKI-FIN-2]]: 業種のマスターの financial が true の銘柄（現状SOFIのみ。SECTOR-MASTER-ADOPT-1 段3）
+        # でのみ表示される。TANUKI SCORE・upside_percent・
         # verdict等の判定ロジックはこのセクションの値を一切参照しない
         # （latest.jsonのfcfe_valuationキーは参考表示専用として新設）。
         _fcfe_val = (extra or {}).get("fcfe_valuation")
@@ -2843,7 +2844,7 @@ class TanukiValuationPipeline:
             # A-6: yfinance PS と自社計算値の乖離検出（ステール値の可能性）
             _ps_shares = comps.get("diluted_shares") or comps.get("implied_shares") or 0
             _ps_rev    = comps.get("revenue_ttm") or comps.get("latest_revenue") or 0  # TTM優先（2026-09-26）
-            _is_fin    = "financial" in (sector or "").lower() or "bank" in (sector or "").lower()
+            _is_fin    = _is_fin_ticker(ticker, sector, industry) or "bank" in (sector or "").lower()
             if current_price and _ps_shares and _ps_rev and not _is_fin:
                 _ps_calc = (current_price * _ps_shares) / _ps_rev
                 if _ps_calc > 0:
@@ -3314,7 +3315,7 @@ class TanukiValuationPipeline:
                 }
 
                 # [[TANUKI-FIN-2]]: 金融機関向けFCFEエクイティDCF（参考表示専用）。
-                # config/financial_institution_config.jsonの対象ティッカーのみ計算する
+                # 業種のマスターの financial が true の銘柄のみ計算する
                 # （現状SOFIのみ）。TANUKI SCORE・upside_percent・verdict等の判定
                 # ロジックはこの結果を一切参照しない（latest.jsonへの新規トップレベル
                 # キー追加のみ、既存キーへの影響なし）。dupont（ROE）が計算できた

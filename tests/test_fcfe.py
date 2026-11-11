@@ -16,7 +16,6 @@ _PIPELINE_DIR = os.path.normpath(
 if _PIPELINE_DIR not in sys.path:
     sys.path.insert(0, _PIPELINE_DIR)
 
-from calculator import fcfe as fcfe_module  # noqa: E402
 from calculator.fcfe import (  # noqa: E402
     calculate_equity_reinvestment_rate,
     calculate_fcfe,
@@ -26,40 +25,41 @@ from calculator.fcfe import (  # noqa: E402
 
 
 class TestIsFinancialInstitutionTicker:
-    """config/financial_institution_config.jsonのスイッチ判定
-    （実ファイルに依存せずmonkeypatchで独立にテストする）"""
+    """FCFEの対象は業種のマスター（config/sector_master.json）の financial が true で保険でない銘柄
+    （[[SECTOR-MASTER-ADOPT-1]] 段3。以前の config/financial_institution_config.json は廃止）。
+    マスターは monkeypatch で差し替え、実ファイルに依存しない"""
 
-    def test_ticker_in_config_returns_true(self, monkeypatch):
-        monkeypatch.setattr(fcfe_module, "_load_financial_institution_config",
-                             lambda: {"tickers": ["SOFI"]})
+    @staticmethod
+    def _master(monkeypatch, entries):
+        from common import sector_master as sm
+        monkeypatch.setattr(sm, "master_entry", lambda t, path=sm.MASTER_PATH: entries.get((t or "").upper()))
+
+    def test_financial_true_returns_true(self, monkeypatch):
+        self._master(monkeypatch, {"SOFI": {"industry": "Credit Services", "financial": {"value": True}}})
         assert is_financial_institution_ticker("SOFI") is True
 
-    def test_ticker_not_in_config_returns_false(self, monkeypatch):
-        monkeypatch.setattr(fcfe_module, "_load_financial_institution_config",
-                             lambda: {"tickers": ["SOFI"]})
-        assert is_financial_institution_ticker("AAPL") is False
+    def test_financial_false_returns_false(self, monkeypatch):
+        self._master(monkeypatch, {"V": {"industry": "Credit Services", "financial": {"value": False}}})
+        assert is_financial_institution_ticker("V") is False
 
     def test_case_insensitive_match(self, monkeypatch):
-        monkeypatch.setattr(fcfe_module, "_load_financial_institution_config",
-                             lambda: {"tickers": ["SOFI"]})
+        self._master(monkeypatch, {"SOFI": {"industry": "Credit Services", "financial": {"value": True}}})
         assert is_financial_institution_ticker("sofi") is True
 
-    def test_empty_config_returns_false_for_all(self, monkeypatch):
-        monkeypatch.setattr(fcfe_module, "_load_financial_institution_config",
-                             lambda: {"tickers": []})
-        assert is_financial_institution_ticker("SOFI") is False
+    def test_insurance_is_excluded(self, monkeypatch):
+        self._master(monkeypatch, {"ALL": {"industry": "Insurance - Property & Casualty", "financial": {"value": True}}})
+        assert is_financial_institution_ticker("ALL") is False
 
-    def test_config_load_failure_defaults_to_no_tickers(self, monkeypatch):
-        """設定ファイル読み込み失敗時は対象銘柄なし（中立デフォルト）として扱う"""
-        monkeypatch.setattr(fcfe_module, "_load_financial_institution_config",
-                             lambda: {"tickers": []})
-        assert is_financial_institution_ticker("SOFI") is False
+    def test_not_in_master_follows_sector_only(self, monkeypatch):
+        """マスターに無い銘柄（登録の直後）は sector だけの判定。この関数は sector を持たないので False"""
+        self._master(monkeypatch, {})
+        assert is_financial_institution_ticker("ZZZZ") is False
 
-    def test_real_config_file_includes_sofi(self):
-        """実際のconfig/financial_institution_config.jsonにSOFIが登録済み
-        であることの回帰テスト（[[TANUKI-FIN-2]]実装完了の確認）"""
+    def test_real_master_includes_sofi_not_v_msci(self):
+        """実際のマスターで SOFI だけが対象（[[TANUKI-FIN-2]]の対象は変わらない。V・MSCIはSIC 7389で金融でない）"""
         assert is_financial_institution_ticker("SOFI") is True
-        assert is_financial_institution_ticker("AAPL") is False
+        for t in ("AAPL", "V", "MSCI"):
+            assert is_financial_institution_ticker(t) is False
 
 
 class TestCalculateEquityReinvestmentRate:

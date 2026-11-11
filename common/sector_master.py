@@ -247,6 +247,34 @@ def load(path: str = MASTER_PATH) -> Dict[str, Any]:
     return _load_json(path) or {}
 
 
+_FIN_CACHE: Dict[str, Any] = {}   # path → (mtime, tickers)
+
+
+def master_entry(ticker: str, path: str = MASTER_PATH) -> Optional[Dict[str, Any]]:
+    """マスターの1銘柄（無ければ None）。ファイルの更新時刻が変わったときだけ読み直す。"""
+    try:
+        mt = os.path.getmtime(path)
+    except OSError:
+        return None
+    hit = _FIN_CACHE.get(path)
+    if hit is None or hit[0] != mt:
+        hit = (mt, (load(path).get("tickers") or {}))
+        _FIN_CACHE[path] = hit
+    return hit[1].get((ticker or "").upper())
+
+
+def is_financial_ticker(ticker: str, sector: Optional[str] = None, industry: Optional[str] = None,
+                        path: str = MASTER_PATH) -> bool:
+    """金融・資産の重い業種か（[[SECTOR-MASTER-ADOPT-1]] 段3。yfinance の sector=="Financial Services" の直接比較をやめ、ここ1か所に）。
+    マスターにある銘柄はマスターの financial（sector＋SIC）。無い銘柄（登録の直後）は sector・industry だけの financial() と同じ。
+    保険の判定（industry・ticker の別の概念）とは別。"""
+    e = master_entry(ticker, path)
+    fin = (e or {}).get("financial")
+    if isinstance(fin, dict) and "value" in fin:
+        return bool(fin["value"])
+    return bool(financial(sector, industry, None)["value"])
+
+
 def _detect_changes(prev: Dict[str, Any], new: Dict[str, Any], ticker: str, now: str) -> List[Dict[str, str]]:
     """yfinance の sector・industry が前回から変わった（両方とも値がある）とき、[P] の件の形で返す"""
     out = []

@@ -474,8 +474,9 @@ def _get_rpo_application_rate(
     if _is_insurance(ticker, sector, industry):
         return 0.0, "Insurance", False
 
-    # Fintech
-    if sector == "Financial Services":
+    # Fintech（金融は業種のマスターの financial。SECTOR-MASTER-ADOPT-1 段3）
+    from common.sector_master import is_financial_ticker
+    if is_financial_ticker(ticker, sector, industry):
         return 0.5, "Fintech", False
 
     # industry文字列でSaaS/Tech系を追加判定（configキーワードのみ使用）

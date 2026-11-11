@@ -58,7 +58,6 @@ from .rice import (
 from .fcfe import (
     is_financial_institution_ticker, calculate_equity_reinvestment_rate,
     calculate_fcfe, calculate_fcfe_valuation,
-    resolve_financial_institution_config_path,
 )
 
 from .fcf_outlier_ai import (
@@ -100,7 +99,6 @@ __all__ = [
     # FCFE Equity DCF（[[TANUKI-FIN-2]]、金融機関向け参考評価）
     "is_financial_institution_ticker", "calculate_equity_reinvestment_rate",
     "calculate_fcfe", "calculate_fcfe_valuation",
-    "resolve_financial_institution_config_path",
     # FCF Outlier Qualitative Assessment（[[FCF-OUTLIER-QUAL-1]]、参考表示専用）
     "assess_transient_qualitative",
 ]

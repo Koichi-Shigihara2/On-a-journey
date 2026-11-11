@@ -754,12 +754,13 @@ class SECReader:
                 return True
             return s == "Insurance"
 
+        from common.sector_master import is_financial_ticker as _is_financial_ticker   # SECTOR-MASTER-ADOPT-1 段3
         sector_guard = "none"
         if _is_insurance_local(ticker, sector, industry):
             lt_debt = 0.0
             st_debt = 0.0
             sector_guard = "insurance_liabilities_excluded"
-        elif sector == "Financial Services":
+        elif _is_financial_ticker(ticker, sector, industry):   # 業種のマスターの financial（SECTOR-MASTER-ADOPT-1 段3）
             st_debt = 0.0
             sector_guard = "fintech_st_debt_excluded"
 

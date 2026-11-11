@@ -325,7 +325,7 @@ RICE_EXCLUDED_SECTORS = {
     "Insurance",           # 保険会社: R&D/CapExがほぼゼロ・FCFがフロート
     "Consumer Defensive",  # 飲食・日用品: R&D=0が多くCF膨張
     "Consumer Cyclical",   # 外食・小売: 同上（CAKE等）
-    "Financial Services",  # 銀行・金融: 投資強度の定義が異なる
+    # 金融（銀行・金融: 投資強度の定義が異なる）は sector の文字列でなく業種のマスターの financial で決める（SECTOR-MASTER-ADOPT-1 段3、下の calculate_rice）
     "Real Estate",         # REIT等: CapEx性質が異なる
     "Utilities",           # 公益: 設備投資の性質が異なる
 }
@@ -346,6 +346,7 @@ def calculate_rice(
     sector: str = "",
     industry: str = "",
     roic_wacc_ratio: Optional[float] = None,
+    ticker: str = "",
 ) -> RICEResult:
     """
     RICE計算メイン関数
@@ -363,7 +364,8 @@ def calculate_rice(
         RICEResult
     """
     # ── セクター・業種除外チェック ──
-    if sector and sector in RICE_EXCLUDED_SECTORS:
+    from common.sector_master import is_financial_ticker   # SECTOR-MASTER-ADOPT-1 段3
+    if (sector and sector in RICE_EXCLUDED_SECTORS) or is_financial_ticker(ticker, sector, industry):
         return RICEResult(
             q=0.0, cf_conversion=0.0, wacc=wacc,
             q_years=0, cf_years=0,

@@ -9,10 +9,9 @@ verdict等の判定ロジックには一切使わない。
 
 設計方針（[[TANUKI-FIN-2]]）:
 - 銘柄非依存の共通コードとして1つだけ実装する。ticker別に異なる計算式・
-  分岐は書かない。対象ティッカー（現状SOFIのみ、将来JPM/GS追加予定）は
-  config/financial_institution_config.jsonでの「どの銘柄をこの共通
-  ロジックに通すか」というスイッチとしてのみ機能させる（既存FCFFが
-  全99銘柄に対し「同じ式・違う入力データ」で動く構造と同じ）
+  分岐は書かない。対象ティッカー（現状SOFIのみ、JPM/GSは登録されると自動）は
+  業種のマスター（config/sector_master.json）の financial で決める
+  （[[SECTOR-MASTER-ADOPT-1]] 段3。以前の config/financial_institution_config.json は廃止）
 - DDM（配当割引モデル）は不採用（SOFIが無配のため原理的に適用不可）
 - Cost of Equityは既存のCAPM（calculate_wacc()）を再利用する。
   calculate_wacc()は実装上、負債/自己資本の加重平均を一切行わない
@@ -38,9 +37,6 @@ verdict等の判定ロジックには一切使わない。
     返しreasonで理由を明示する（マイナス値を無理にDCFへ通さない）。
 """
 
-import json
-import os
-from pathlib import Path
 from typing import Any, Dict, Optional
 
 from .dcf import calculate_two_stage_dcf, DCFResult
@@ -48,37 +44,17 @@ from .dcf import calculate_two_stage_dcf, DCFResult
 DEFAULT_TERMINAL_GROWTH = 0.03
 
 
-def resolve_financial_institution_config_path() -> Optional[str]:
-    """financial_institution_config.jsonのパス解決ロジック
-    （adjustments.py::resolve_rpo_config_path()と同型パターン）。
-
-    Returns:
-        解決できたパス（存在確認済み）、解決できなければNone
-    """
-    config_path = str(Path(__file__).parents[4] / "config" / "financial_institution_config.json")
-    return config_path if os.path.exists(config_path) else None
-
-
-def _load_financial_institution_config() -> Dict[str, Any]:
-    """financial_institution_config.jsonを読み込む
-    （存在しない・読み込み失敗の場合は対象銘柄なしのデフォルト値を返す）"""
-    config_path = resolve_financial_institution_config_path()
-    if config_path is None:
-        return {"tickers": []}
-    try:
-        with open(config_path, encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {"tickers": []}
-
-
 def is_financial_institution_ticker(ticker: str) -> bool:
-    """tickerがFCFEエクイティDCF計算パスの対象かを判定する
-    （config/financial_institution_config.jsonのスイッチのみで判定、
-    本関数・本モジュール自体は特定ティッカー名をハードコードしない）"""
-    cfg = _load_financial_institution_config()
-    tickers = cfg.get("tickers", []) or []
-    return ticker.upper() in [str(t).upper() for t in tickers]
+    """tickerがFCFEエクイティDCF計算パスの対象かを判定する。
+    業種のマスター（config/sector_master.json）の financial が true で、保険でない銘柄
+    （[[SECTOR-MASTER-ADOPT-1]] 段3。以前は config/financial_institution_config.json の手書きの一覧〈SOFIだけ〉で、廃止した）。
+    保険（industry が Insurance）は FCFE の想定外なので除く。JPM・GS は登録されるとマスターで自動的に対象になる
+    （登録後に FCFE の結果とマスターの区分を目視する）。"""
+    from common.sector_master import master_entry, is_financial_ticker
+    if not is_financial_ticker(ticker):
+        return False
+    industry = ((master_entry(ticker) or {}).get("industry") or "").lower()
+    return "insurance" not in industry
 
 
 def calculate_equity_reinvestment_rate(growth_rate: float, roe: float) -> Optional[float]:

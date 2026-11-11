@@ -186,6 +186,7 @@ class KoichiValuationCalculator:
         fcf_dates_raw  = financials.get("fcf_dates_raw")
         current_price  = financials.get("current_price")  # None=有効な終値なし（upside等は計算不能）
         ticker         = financials.get("eps_data", {}).get("ticker", "Unknown")
+        from common.sector_master import is_financial_ticker as _is_financial_ticker   # SECTOR-MASTER-ADOPT-1 段3
         rpo            = financials.get("rpo", 0.0)
         beta           = financials.get("beta")
         sector         = financials.get("sector")
@@ -760,6 +761,7 @@ class KoichiValuationCalculator:
                     sector=_rice_sector,
                     industry=industry or "",
                     roic_wacc_ratio=_roic_wacc_ratio,  # RICE-1
+                    ticker=ticker,  # 金融の判定は業種のマスター（SECTOR-MASTER-ADOPT-1 段3）
                 )
                 if rice_result.available:
                     _base_rice = rice_result.base.rice if rice_result.base else 0.0
@@ -917,6 +919,8 @@ class KoichiValuationCalculator:
                 "beta": wacc_result.beta,
                 "sector": sector,
                 "industry": industry or "",
+                # 金融か（業種のマスターの financial。画面の「FCFの信頼性」・RICE・RPO・純現金のガードと同じ判定。SECTOR-MASTER-ADOPT-1 段3）
+                "financial": _is_financial_ticker(ticker, sector, industry),
                 "eps_data": financials.get("eps_data"),
                 "_shares_source": financials.get("_shares_source"),
                 "_beta_source": financials.get("_beta_source"),

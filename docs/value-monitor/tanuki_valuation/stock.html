@@ -894,14 +894,17 @@ function render(d) {
   const industryName = d.components?.industry  || '';
 
   // FCF信頼性が低い業種の判定
-  const FCF_LOW_RELIABILITY_SECTORS   = ['Financial Services', 'Utilities'];
+  // 金融は業種のマスターの financial（TANUKIの出力 components.financial、SECTOR-MASTER-ADOPT-1 段3）。公開前の古い出力はキーが無いので sector の文字列で代える。
+  // Utilities と Healthcare Plans は金融の判定ではないので文字列のまま
+  const isFinancialInstitution = (typeof d.components?.financial === 'boolean') ? d.components.financial : (sectorName === 'Financial Services');
+  const FCF_LOW_RELIABILITY_SECTORS   = ['Utilities'];
   const FCF_LOW_RELIABILITY_INDUSTRIES= ['Healthcare Plans'];
-  const fcfLowReliability = FCF_LOW_RELIABILITY_SECTORS.includes(sectorName)
+  const fcfLowReliability = isFinancialInstitution || FCF_LOW_RELIABILITY_SECTORS.includes(sectorName)
     || FCF_LOW_RELIABILITY_INDUSTRIES.includes(industryName);
   const fcfLowReliabilityMsg = fcfLowReliability ? (() => {
     if (industryName === 'Healthcare Plans')
       return '保険会社のOCFには将来の保険金支払義務（負債増加）が含まれるため、FCFが実態より大きく見えます。理論株価の信頼性が低い可能性があります。';
-    if (sectorName === 'Financial Services')
+    if (isFinancialInstitution)
       return '金融・Fintechのキャッシュフローは貸付金の増減がOCFに影響するため、FCFベースのDCFが実態を反映しにくい場合があります。';
     if (sectorName === 'Utilities')
       return '公益事業は設備投資が巨大でFCFが慢性的にマイナスになりやすく、DCFの前提が成立しにくい場合があります。';
