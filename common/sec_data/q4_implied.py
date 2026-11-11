@@ -114,8 +114,8 @@ _SNAKE_TO_PASCAL = {
 # 項目の性質は config/sec_concept_definitions.json の各項目の "non_negative": true の1つの欄（PascalCase に直して持つ）。
 # 理由: 10-Kの年間の欄に1四半期分の額を申告する会社がある（CEGの1株配当 FY2025 は0.3878＝Q1〜Q3と同じ額で、年次−Q1〜Q3＝−0.78）。
 # [[TANUKI-CALC-CONTINUITY-1]] (2)（2026-11-12の決定）: 既存の8項目（buyback・SBC・R&D・販売費・SG&A・売上・売上原価・D&A）にも当てた。
-# 粗利は実際に負になる（KULR 2025年のQ4）ので対象外。千ドル単位の丸めの負（TASK・FICO・ASTSの−1,000ドル）は今は欠けになる
-# （申告の decimals が company_facts に無いため許容幅は未実装。案は docs/architecture/TANUKI_CALC_CONTINUITY_STEP0.md）。
+# 粗利は実際に負になる（KULR 2025年のQ4）ので対象外。千ドル単位の丸めの負（TASK・FICO・ASTSの−1,000ドル）は残す（rounding_grain、案1）
+# （decimals が company_facts に無いため、逆算に使う値がすべて1,000の倍数なら粒度1,000とみなす）。
 # CapEx は段2の規則（四半期は符号つき・TTMが負なら欠け）のままで対象外
 Q4_NEGATIVE_MARK = "q4_implied_negative"
 _NON_NEGATIVE = None
@@ -147,6 +147,28 @@ def non_negative_fields() -> frozenset:
 # その時点の値が無い期は、今までの計算（最新どうしの差）にし、印 Q4_BASIS_KEY = "latest" を付ける。
 Q4_BASIS_KEY = "q4_basis"
 Q4_BASIS_LATEST = "latest"
+
+
+ROUNDING_GRAIN = 1000
+Q4_ROUNDED_KEY = "q4_rounded"
+
+
+def q4_inputs(annual: dict, quarters: list) -> list:
+    """Q4の逆算に実際に使う値（年次とQ1〜Q3）。implied_q4_value と同じ分岐"""
+    as_of = annual.get("first_filed")
+    q_vals = [value_asof(q, as_of) for q in quarters] if as_of else [None]
+    if annual.get("first_val") is not None and all(v is not None for v in q_vals):
+        return [annual["first_val"]] + list(q_vals)
+    return [annual["val"]] + [q["val"] or 0 for q in quarters]
+
+
+def rounding_grain(values: list) -> int | None:
+    """[[TANUKI-CALC-CONTINUITY-1]] (2) 丸めの許容幅（2026-11-12の決定、案1）: 逆算に使う値がすべて1,000の倍数なら粒度1,000
+    （千ドル単位の申告＝decimals=-3 と同じ意味。company_facts に decimals が無いので値から決める）。倍数でない値が1つでもあれば None"""
+    for v in values:
+        if v is None or abs(v - round(v)) > 1e-9 or round(v) % ROUNDING_GRAIN:
+            return None
+    return ROUNDING_GRAIN
 
 
 def implied_q4_value(annual: dict, quarters: list, field_name: str) -> tuple[float, dict]:
@@ -247,11 +269,15 @@ def build_q4_implied_entries(
         q3_end = sorted(top3, key=lambda x: x["end"], reverse=True)[0]["end"]
         q4_val, extra = implied_q4_value(annual, top3, canonical_field_name)
         if q4_val is not None and q4_val < 0 and canonical_field_name in non_negative_fields():
-            # 性質上負にならない項目の負のQ4は作らない（欠け）。印は呼び出し元が残す（上の NON_NEGATIVE の規則）
-            if marks_out is not None:
-                marks_out.append({"end": fy_end, "mark": Q4_NEGATIVE_MARK, "implied_val": q4_val,
-                                  "annual_accn": annual.get("accn", ""), "source_tag": annual.get("source_tag")})
-            continue
+            grain = rounding_grain(q4_inputs(annual, top3))
+            if grain and abs(q4_val) <= grain:   # 丸めた年間と丸めた累計の差は最大で粒度1つぶん（TASK・FICO・ASTSの−1,000）
+                extra[Q4_ROUNDED_KEY] = grain      # 丸めの範囲の負: 逆算の値のまま残す（0で埋めない）
+            else:
+                # 性質上負にならない項目の負のQ4は作らない（欠け）。印は呼び出し元が残す（上の NON_NEGATIVE の規則）
+                if marks_out is not None:
+                    marks_out.append({"end": fy_end, "mark": Q4_NEGATIVE_MARK, "implied_val": q4_val,
+                                      "annual_accn": annual.get("accn", ""), "source_tag": annual.get("source_tag")})
+                continue
 
         try:
             period_days = (date.fromisoformat(fy_end) - date.fromisoformat(q3_end)).days
