@@ -5,12 +5,13 @@
   - 増資による資金調達（定義v2の`equity_raise_ratio`）= まだ作らない
 
 share_count_change:
-  直近の四半期の加重平均の希薄化後株数 ÷ 12四半期前（約3年前）の年率。
+  直近の四半期の加重平均の希薄化後株数 ÷ 約3年前（1,096日前±50日の四半期）の年率。Layer3の四半期の株数はQ4が無い（Q1〜Q3だけ）ので、
+  「12個前の点」ではなく**日付**で3年前の点を探す（12個前は約4年前になる）。年率は実際の日数で割る。
   - 分割は config/split_history.yaml（株数の比）で調整する（株価の調整の比は split_price_ledger.json の price_factor で別。
     POINT-IN-TIME-HISTORY-INTEGRITY-1 (b)）
   - 未登録の分割の安全網: 隣り合う四半期の比が2.5倍超・0.4倍未満なら、割り戻さずに印（split_suspect）を付ける。
     印が付いた銘柄は funda点の減点に使わない（分割か本当の希薄化かをここで決めない）
-  - 13点（12四半期前から直近まで）が無い、または窓が3年から外れるときは欠け（年次に落とさない＝12四半期の境目で値が飛ばない）
+  - 3年前の点が無いときは欠け（年次に落とさない＝窓の境目で値が飛ばない）
   - 発行済株数（期末、Layer3）との差（TSLA型: 制限付株式などで加重平均に入らない株）は表示だけの補助の印 outstanding_gap_pct
 
 dilution_penalty: funda点の減点。mode "step"（今: >20%で−15・>40%で−25）か "slope"（20〜40%で0→−25の直線）。
@@ -20,8 +21,8 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-QUARTERS_BACK = 12
-WINDOW_DAYS = (1000, 1200)        # 12四半期前〜直近の日数（約3年。決算期の変更・欠けで外れたら欠け）
+WINDOW_DAYS = 1096                # 3年前（直近の期末からの日数）
+WINDOW_TOLERANCE_DAYS = 50        # 3年前の点を探す幅。Q4が無いので同じ四半期の3年前が入る。無ければ欠け
 SPLIT_RATIO_UP = 2.5
 SPLIT_RATIO_DOWN = 0.4
 OUTSTANDING_GAP_MARK = 10.0       # 発行済株数との差がこれ（%）を超えたら表示の印
@@ -42,17 +43,19 @@ def share_count_change(quarters: Sequence[Tuple[str, float]], splits: Optional[L
     戻り値: {"cagr_pct", "shares_now", "shares_start", "end", "start_end", "n", "split_suspect", "outstanding_gap_pct"?}。出せなければ None"""
     from common.sec_data.split_adjust import adjust_share_points
     pts = sorted({(e, float(v)) for e, v in quarters if e and v and v > 0}, key=lambda x: x[0])
-    if len(pts) < QUARTERS_BACK + 1:
+    if len(pts) < 2:
         return None
     vals = adjust_share_points(pts, splits) if splits else [v for _, v in pts]
-    now_i, start_i = len(pts) - 1, len(pts) - 1 - QUARTERS_BACK
-    span = _days(pts[start_i][0], pts[now_i][0])
-    if not (WINDOW_DAYS[0] <= span <= WINDOW_DAYS[1]):
+    now_i = len(pts) - 1
+    cand = [(abs(_days(pts[i][0], pts[now_i][0]) - WINDOW_DAYS), i) for i in range(now_i)]
+    diff, start_i = min(cand)
+    if diff > WINDOW_TOLERANCE_DAYS:
         return None
+    span = _days(pts[start_i][0], pts[now_i][0])
     # 未登録の分割の安全網（窓の中だけ）: 割り戻さずに印
     suspect = [pts[i][0] for i in range(start_i + 1, now_i + 1)
                if vals[i - 1] > 0 and not (SPLIT_RATIO_DOWN <= vals[i] / vals[i - 1] <= SPLIT_RATIO_UP)]
-    cagr = ((vals[now_i] / vals[start_i]) ** (1 / 3) - 1) * 100
+    cagr = ((vals[now_i] / vals[start_i]) ** (365.25 / span) - 1) * 100
     out: Dict[str, Any] = {"cagr_pct": cagr, "shares_now": vals[now_i], "shares_start": vals[start_i],
                            "end": pts[now_i][0], "start_end": pts[start_i][0], "n": len(pts),
                            "split_suspect": suspect}

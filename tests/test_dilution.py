@@ -1,7 +1,8 @@
 """株数の変化（希薄化率）の部品 common/dilution.py（[[DILUTION-DEFINITION-UNIFY-1]]）。
 
-- 定義: 直近の四半期の加重平均の希薄化後株数 ÷ 12四半期前の年率。分割は split_history.yaml の比で調整
-- 連続性: 12四半期の境目（12点では欠け・13点で値・14点で窓が進む）で値が飛ばない。年次に落ちない。
+- 定義: 直近の四半期の加重平均の希薄化後株数 ÷ 約3年前（1,096日前±50日）の四半期の年率。分割は split_history.yaml の比で調整
+- Layer3の四半期にはQ4が無い（Q1〜Q3だけ）ので、点の個数ではなく日付で3年前を探す
+- 連続性: 3年の境目（3年前の点が無ければ欠け・あれば値・窓が進んでも飛ばない）。年次に落ちない。
   減点の傾斜は20%・40%の境目で連続（段は今の公開どおり）
 - 未登録の分割は割り戻さず印だけ
 """
@@ -39,7 +40,7 @@ def _series(n, growth_per_q=0.01, base=100e6):
 # ── 定義 ────────────────────────────────────────────
 def test_cagr_is_latest_over_12_quarters_back():
     r = dl.share_count_change(_series(13, 0.02))
-    assert r["cagr_pct"] == pytest.approx(((1.02 ** 12) ** (1 / 3) - 1) * 100)      # 12四半期＝3年
+    assert r["cagr_pct"] == pytest.approx(((1.02 ** 12) ** (1 / 3) - 1) * 100, rel=2e-3)      # 12四半期＝3年
     assert r["shares_start"] == pytest.approx(100e6) and r["n"] == 13
     assert r["split_suspect"] == []
 
@@ -53,7 +54,7 @@ def test_registered_split_is_adjusted_with_split_history_ratio():
     plain = dl.share_count_change(pts)
     adj = dl.share_count_change(pts, [{"date": split_date, "ratio": 0.125}])
     assert plain["cagr_pct"] < 0 and plain["split_suspect"] == [ends[5]]                 # 未登録＝割り戻さず印
-    assert adj["split_suspect"] == [] and adj["cagr_pct"] == pytest.approx(((112e6 / 100e6) ** (1 / 3) - 1) * 100)
+    assert adj["split_suspect"] == [] and adj["cagr_pct"] == pytest.approx(((112e6 / 100e6) ** (1 / 3) - 1) * 100, rel=2e-3)
 
 
 def test_unregistered_split_is_marked_not_adjusted():
@@ -73,11 +74,23 @@ def test_twelve_points_is_missing_not_annual_fallback():
 def test_continuity_when_the_window_moves_by_one_quarter():
     """13点→14点→15点で窓が1四半期ずつ進んでも、年率は直前の値から急に飛ばない（一定の伸びなら同じ値）"""
     vals = [dl.share_count_change(_series(n, 0.015))["cagr_pct"] for n in (13, 14, 15, 16)]
-    assert max(vals) - min(vals) < 1e-9
+    assert max(vals) - min(vals) < 0.05     # 一定の伸びなら窓が進んでも同じ（日数の1〜2日の差だけ）
     # 伸びが加速している系列でも、1四半期進むごとの変化は小さい（ゼロ円の飛びが無い）
     acc = [(e, 100e6 * (1 + 0.002 * i * i / 4)) for i, e in enumerate(_ends(16))]
     seq = [dl.share_count_change(acc[:n])["cagr_pct"] for n in (13, 14, 15, 16)]
     assert all(abs(b - a) < 3.0 for a, b in zip(seq, seq[1:]))
+
+
+def test_quarters_without_q4_use_the_point_three_years_back():
+    """Layer3の四半期の株数はQ1〜Q3だけ（Q4が無い）。12個前の点は約4年前なので使わず、日付で3年前の同じ四半期を探す"""
+    pts = []
+    for y in range(2022, 2027):
+        for m, d in ((3, 31), (6, 30), (9, 30)):
+            if (y, m) <= (2026, 9):
+                pts.append((date(y, m, d).isoformat(), 100e6 * 1.1 ** (y - 2022 + m / 12)))
+    r = dl.share_count_change(pts)
+    assert r["end"] == "2026-09-30" and r["start_end"] == "2023-09-30"
+    assert r["cagr_pct"] == pytest.approx(10.0, abs=0.05)           # 年率10%の伸び＝3年の年率も10%（4年で割らない）
 
 
 def test_window_out_of_range_is_missing():
