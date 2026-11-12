@@ -6,7 +6,7 @@
 ## 今の状態（2026-11-11 終業）
 
 - BACKLOG.md のアクティブは **13件**（`^### [` の機械カウント）。rcc NG 0・WARN 217、pytest 2948件通過・失敗1（SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
-- **未公開のコードの置き場所**: PARSER-LAYER3 段1は`0544696ddc`・`1ebce36a25`でrevert済み（公開の時にrevertの戻し）、TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（kaihatsuには無い。originにも控えあり〈7b8a432d2b〉）。Layer3の定義のコードをpushするとそのまま公開になる。**DILUTION-DEFINITION-UNIFY-1はブランチ`dilution-unify-1`（470d521ec1、kaihatsuには無い。originに控えあり）**。公開はPARSER段1→CONTINUITY→本件の順（各々の後にrebaseして試算し直す、手順は`DILUTION_UNIFY_STEP0.md`末尾）
+- **未公開のコードの置き場所**: PARSER-LAYER3 段1は`0544696ddc`・`1ebce36a25`でrevert済み（公開の時にrevertの戻し）、TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（kaihatsuには無い。originにも控えあり〈7b8a432d2b〉）。Layer3の定義のコードをpushするとそのまま公開になる。**DILUTION-DEFINITION-UNIFY-1はブランチ`dilution-unify-1`（470d521ec1、kaihatsuには無い。originに控えあり）**。公開はPARSER段1→CONTINUITY→本件の順（各々の後にrebaseして試算し直す、手順は`DILUTION_UNIFY_STEP0.md`末尾）。**DEFICIT-QUALITY-ADOPT-1はブランチ`deficit-quality-adopt-1`（f3b306ec9c〈コード〉・0ef1c29e29〈作り直した`profitability.json`〉、kaihatsuには無い。originに控えあり）**。公開はPARSER段1→CONTINUITY→DILUTION→本件の順、公開の前に`python common/profitability.py --all`（手順は`DEFICIT_QUALITY_STEP0.md`末尾）
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
 - 報告は20行以内（結論・変わった数・判定の変化・決めてほしいこと）。詳しい表はファイルに置き、場所だけ書く（`CHAT_RULES.md`「報告の形」）

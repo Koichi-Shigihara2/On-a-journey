@@ -135,3 +135,54 @@ STONKSの出力はyfinanceの株価の取得（`fetch_valuation`）を含むた�
 2. **TANUKIの調整後EPSの黒字化**（表示だけ）を廃止するか、`adj_eps_breakeven`として名前を分けて残すか
 3. **STONKSの対象を部品の収益の段階にする**とき、境目の銘柄の出入りを防ぐために確認を挟むか（例: 4四半期続けて黒字になるまで外さない。SITMは1四半期だけ黒字）。区分なし（RXRX）は営業利益<0なら残す案
 4. **AMZN・CEG型**：V3で下限を外すと理論株価が負になる。これらを構造的赤字・下限・Policy Aに残す（今のまま・理論株価は参考値）でよいか。別の基準（利益ベースのFCF等）を設計するなら別の件
+
+
+---
+
+## 実装済み（ブランチ `deficit-quality-adopt-1`・未公開、2026-11-12）
+
+kaihatsuには入っていない（`origin/deficit-quality-adopt-1`に控え。PRは作らない）。コードは`f3b306ec9c`、作り直したデータ（`docs/common/profitability.json`）は別のcommit`0ef1c29e29`。決定（1〜5）のとおり実装した。
+
+### 実装の中身
+
+| 決定 | 実装 |
+|---|---|
+| 1. 黒字化の予測は部品の1つ | 会計の黒字化は`common/profitability.py::breakeven`（TTMの営業利益率の直近8四半期の回帰・R²≥0.5）の**1か所**。読み手は`breakeven_view(entry)`（`load_entry(ticker)`）を呼ぶだけ。STONKSの年次の純利益率の回帰（`_gaap_margin_breakeven`）と出力`gaap_breakeven_*`は廃止し、`op_breakeven_year`・`op_breakeven_reason`（部品の理由コード: ACHIEVED・PREDICTED・TOO_FAR・NO_TREND・NO_DATA・LOW_FIT・UNCLASSIFIED・NO_ENTRY）に。`ocf_breakeven_*`は年次のOCF率の回帰のまま、**キャッシュの軸**として別の名前で残した（画面の文言も「営業CF黒字化予測(キャッシュ)」と「営業黒字化予測」に分けた） |
+| 2. TANUKIの`compute_eps_breakeven`は廃止 | `compute_eps_breakeven`・`EPS_*`定数・`latest.json`の`breakeven_estimate`・`breakeven_reason`を削除。report.txtの`Breakeven_Estimate:`行（`report_txt_parser`が読む行名は同じ）は部品の値。STONKSの画面の「黒字転換目算」は`tk.breakeven_*`（TANUKI）ではなくSTONKS自身の`profitability_path.op_breakeven_*`を読む |
+| 3. STONKSの対象は部品の収益の段階＋持続の規則 | 新設`common/stonks_target.py`。対象 = 部品が出す**月末ごとのTTM営業利益の符号**（`operating_state_history`、直近4か月末）を、**stage_v2の持続の条件（`persist`、2か月の月末で続けて同じになったときだけ変える）**に通した最後の状態が「赤字」の銘柄。profitabilityには持続の規則が無いので、stage_v2の`persist`をそのまま呼ぶ（新しい閾値は作っていない。テストで確認）。例外は`config/stonks_target.json`の`excluded`（SOFI・金融）と`pinned`（ASTS・TTMの営業利益が取れない既知の銘柄）だけで、どちらも理由つき。`cik_lookup.csv`の`stonks_silo`列を削除し、読み手（`tickers.get_stonks_silo_tickers`・`get_active_tickers("stonks_silo")`・`get_registrable_tickers`・`get_tickers_by_flag`）は`stonks_target.targets()`に切り替え。旧`stonks_flag_rule.py`・`config/stonks_flag_rule.json`・`tests/test_stonks_flag_rule.py`・rccのCHECK-51の旧照合（フラグ対判定）・登録の検証P7の旧照合を削除（**これで、SITMの既知の失敗〈CHAT_RULES 事例18のゲートの例外〉は無くなる**）。CHECK-51は「`results.json`の銘柄と今の判定のずれ」に置き換え。月末の履歴が1銘柄も無いときは空の対象で走らせず止める |
+| 4. 構造的赤字は今のまま、型④を表示で区別 | 下限・Policy Aは変更なし。`components.structural_deficit_kind`（`capex_profit`＝収益の段階が黒字でFCFだけ構造的赤字: AMZN・CEG・COHR、`cash_loss`＝営業利益も赤字: 15銘柄）を`latest.json`に足し、report.txtは「ℹ️ FCFが負（設備投資）: TTMの営業利益は黒字ですが…」、`tanuki_score`の画面は「✗設備」（titleに説明）。FINDINGSに「AMZN・CEG型の理論株価は、成長の設備投資を分けない下限で支えられている（参考値）」を1行 |
+| 5. 粗利率の導出 | 部品に`gross_ratio`（粗利のフィールドが無い年は売上−売上原価）。STONKSの赤字の質の点数との差は24銘柄で**0**（CRWV・IONQ・JOBY・LYFT・SOUNの5銘柄がそろった） |
+
+### 試算（`tools/sim`、TANUKI→HypeCore→TANUKI、基準はkaihatsuの今のコード）
+
+| 見るもの | 結果 |
+|---|---|
+| 理論株価・判定・funda点・upside・timing | 変化 **0**（96銘柄） |
+| 保有9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA） | 理論株価・判定とも変化 0（SOUNはWATCH、CRWVはWATCHのまま） |
+| stage（HypeCore） | 時刻以外同じ（96ファイル） |
+| `latest.json`の変化 | `breakeven_estimate`・`breakeven_reason`が全銘柄から消える（94銘柄）、`components.structural_deficit_kind`が18銘柄に付く（`capex_profit` = AMZN・CEG・COHR、`cash_loss` = ASTS・AVAV・BBAI・CRWV・IONQ・JOBY・KULR・ONDS・QBTS・RCAT・RDW・RXRX・SOFI・SOUN・SPIR）。値は変わらない |
+| STONKSの対象 | 今日は**入る銘柄も外れる銘柄も無い**（24銘柄のまま）。SITMは月末ごとの符号が7〜10月の4回とも赤字で（黒字に転じたTTM 2026-09-30は11-04の申告で、次の月末は11-30）、**持続の規則で、早くて12-31の月末（11-30・12-31の2回続けて黒字）の後に外れる**。RXRX（区分なし）は営業利益<0なので対象のまま |
+| STONKSの黒字化の表示（`op_breakeven`） | 24銘柄のうち**14銘柄が変わる**（今→新）: AVAV 2027→不明、CRWV（保有）2026→不明、ESTC 達成済み→2027、JOBY 不明→2026、LYFT 達成済み→不明、NET 2026→不明、ONDS 不明→2027、RBRK 不明→2026、RKLB 2028→2029、S 2028→2030、SITM 不明→達成済み、SOUN（保有）2026→不明、SPIR 達成済み→不明、ZS 2027→不明。残り10銘柄は同じ。`ocf_breakeven`は24銘柄とも同じ |
+| STONKSの赤字の質の点数 | 24銘柄とも今の公開と同じ（`dq_old`と一致）、部品とも一致 |
+| scope | `sim.py scope`は94銘柄（キーの出入り）、判定・funda・理論株価・stageが変わる銘柄は**なし**。値が変わらない表示だけの変更なので、`config/method_change.json`に登録するかは公開のときに決める（登録しない案: 🛠の通知を出さない） |
+
+### 未公開の3つとの衝突
+
+`git merge-tree`で`dilution-unify-1`との統合を試した。**文字として衝突するのは出力の一覧4ファイルだけ**（`output_inventory/tanuki_layer`・`stonks_layer`の`.json`・`.md`。`build_output_inventory.py --layer tanuki|stonks`で作り直せば消える）。同じファイルを触る箇所は別の場所で自動で統合できる:
+
+| ファイル | 本件 | DILUTION |
+|---|---|---|
+| `src/value/stonks_silo/analyzer.py` | 黒字化（`_breakeven_estimate`・`ProfitabilityPath`のop_*・summaryの文言） | `dilution_risk`→`sbc_burden` |
+| `docs/value-monitor/stonks-silo/index.html` | 黒字化の列・文言・黒字転換目算 | 希薄化リスク→SBC負担のラベル |
+| `src/value/tanuki_valuation/pipeline.py` | `compute_eps_breakeven`の削除・report・`structural_deficit_kind` | 希薄化率の計算 |
+| `docs/value-monitor/tanuki_score/index.html` | 構造的赤字の表示（型④） | 成長の罠（`split_suspect`） |
+
+統合した状態（出力の一覧を作り直し）で、本件・DILUTIONの関連テスト428件が通った。PARSER段1・CONTINUITYとは`pipeline.py`・`stock.html`・`adjustments.py`・`layer3_builder.py`で触る場所が違い、本件は構造的赤字の定義（`adjustments.py`）を触らない。
+
+### 公開の手順（PARSER段1 → CONTINUITY → DILUTION → 本件）
+
+1. 3つの公開が終わった後、`git checkout deficit-quality-adopt-1 && git rebase kaihatsu`（出力の一覧が衝突したら`build_output_inventory.py --layer sec|tanuki|stonks|eps`で作り直す。`docs/common/profitability.json`がボットの更新と衝突したら取り直す）
+2. `python common/profitability.py --all`で`profitability.json`を作り直す（**公開の前に必ず**。`operating_state_history`が無いとSTONKSの対象が空になるので、`stonks_target.targets()`は止まる）。試算し直す（`tools/sim/sim.py chain base`〈kaihatsuのworktree〉・`chain after`・`compare`・`scope`）。理論株価・判定・保有が0であることを確かめる
+3. ゲート: `PYTHONUTF8=1 env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
+4. kaihatsuに入れてpush（`profitability.json`の作り直しも同じpush）。公開: Market Data Weekly（`profitability.json`の定時の作り直しと同じ）→ Stonks Silo Update（`op_breakeven_*`・対象）→ TANUKI VALUATION → HypeCore → TANUKI（`breakeven_*`が消え、`structural_deficit_kind`が付く）
+5. 確認: STONKSの`results.json`が24銘柄、`op_breakeven_*`がある、`gaap_breakeven_*`が無い、TANUKIの`latest.json`に`breakeven_estimate`が無い、画面（stonks-silo・tanuki_score）、CHECK-51のずれが無い。SITMの対象からの出入りは12月末以降（持続の規則）に確かめる
