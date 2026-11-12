@@ -628,20 +628,23 @@ async function toggleDetail(ticker) {
       // [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]（2026-09-05）: TANUKI
       // VALUATION側に理由コード（breakeven_reason）が追加されたため、
       // beが無い場合も理由（達成済み/傾向なし/データ不足/5年超）を表示する
-      const be = tk.breakeven_estimate;
-      const beReason = tk.breakeven_reason;
+      // [[DEFICIT-QUALITY-ADOPT-1]]（2026-11-12）: TANUKIの調整後EPSの黒字化（breakeven_estimate）は廃止。収益の部品の値（STONKSの結果）を読む
+      const ppd = d.profitability_path || {};
+      const be = ppd.op_breakeven_year ?? null;
+      const beReason = ppd.op_breakeven_reason || null;
       const beEl = document.getElementById(`eps-be-${ticker}`);
       if (beEl) {
         const beReasonLabel = {
-          ACHIEVED: '黒字化：達成済み', NO_TREND: '黒字化予測不可（改善傾向なし）',
-          NO_DATA: 'データ不足', TOO_FAR: '5年超',
+          ACHIEVED: '営業黒字：達成済み', NO_TREND: '黒字化予測不可（営業利益率が上向きでない）',
+          NO_DATA: 'TTMの点が足りない', TOO_FAR: '2年より先', LOW_FIT: '見込み不明（直線に乗らない）',
+          UNCLASSIFIED: '区分なし', NO_ENTRY: '収益の部品に行なし',
         };
         if (be) {
           beEl.style.display = 'block';
-          beEl.innerHTML = `<div style="font-size:9px;color:var(--mut);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">黒字転換目算（調整後EPS線形推定）</div><div style="color:var(--grn);font-family:var(--mono);font-size:13px">${be}年頃（推定）</div><div style="font-size:10px;color:var(--mut);margin-top:2px">直近4Q調整後EPSトレンドを線形外挿</div>`;
+          beEl.innerHTML = `<div style="font-size:9px;color:var(--mut);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">黒字転換目算（TTM営業利益率の回帰）</div><div style="color:var(--grn);font-family:var(--mono);font-size:13px">${be}年頃（推定）</div><div style="font-size:10px;color:var(--mut);margin-top:2px">直近8四半期のTTM営業利益率を線形外挿(R²≥0.5)</div>`;
         } else if (beReason) {
           beEl.style.display = 'block';
-          beEl.innerHTML = `<div style="font-size:9px;color:var(--mut);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">黒字転換目算（調整後EPS線形推定）</div><div style="color:var(--mut);font-family:var(--mono);font-size:13px">${beReasonLabel[beReason] || beReason}</div>`;
+          beEl.innerHTML = `<div style="font-size:9px;color:var(--mut);margin-bottom:3px;letter-spacing:.1em;text-transform:uppercase">黒字転換目算（TTM営業利益率の回帰）</div><div style="color:var(--mut);font-family:var(--mono);font-size:13px">${beReasonLabel[beReason] || beReason}</div>`;
         } else {
           beEl.style.display = 'none';
         }
@@ -999,7 +1002,7 @@ function buildDetail(ticker, d) {
   if (rm === null && (ra.monthly_burn ?? -1) >= 0) summaryOneLiner += ' × Runway ∞（CF黒字）';
   else if (rm === Infinity) summaryOneLiner += ' × Runway ∞（CF黒字）';
   else if (rm != null) summaryOneLiner += rm >= 24 ? ` × Runway ${Math.round(rm)}ヶ月安全` : ` × Runway ${Math.round(rm)}ヶ月（要注意）`;
-  const beYear = pp.ocf_breakeven_year || pp.gaap_breakeven_year;
+  const beYear = pp.ocf_breakeven_year || pp.op_breakeven_year || pp.gaap_breakeven_year;
   if (pp.hidden_profit_already) summaryOneLiner += ' × OCF黒字達成済み';
   else if (beYear) summaryOneLiner += ` × ${beYear}年黒字化予測`;
 
@@ -1126,8 +1129,8 @@ function buildDetail(ticker, d) {
           <div style="font-size:10px;color:var(--mut);line-height:1.6;margin-bottom:6px">${PATH_SCORE_NOTE}</div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">OCFトレンド（金額）<span class="tip-icon">?</span><span class="tip-box">営業CFの金額の直近2年の変化と加速度。点数には、OCFマージンで黒字化年を推定できないときだけ使う（上限50）。参考表示</span></span></span><span class="detail-val">${trendJa[pp.ocf_trend]||'—'}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業CF黒字<span class="tip-icon">?</span><span class="tip-box">OCF(営業CF)がプラスかどうか。本業のキャッシュ創出力がプラスに転じている状態</span></span></span><span class="detail-val ${pp.hidden_profit_already?'pos':''}">${pp.hidden_profit_already?'✓ 達成済み':'未達'}</span></div>
-          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業CF黒字化予測<span class="tip-icon">?</span><span class="tip-box">OCF改善トレンドを線形外挿してゼロを超える年を予測</span></span></span><span class="detail-val">${fmtBe(pp.ocf_breakeven_year, pp.ocf_breakeven_reason)}</span></div>
-          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">純利益黒字化予測<span class="tip-icon">?</span><span class="tip-box">純利益改善トレンドを線形外挿してゼロを超える年を予測</span></span></span><span class="detail-val">${fmtBe(pp.gaap_breakeven_year, pp.gaap_breakeven_reason)}</span></div>
+          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業CF黒字化予測(キャッシュ)<span class="tip-icon">?</span><span class="tip-box">キャッシュの黒字化。年次のOCF率の直近4年の回帰を外挿してゼロを超える年を予測。会計の黒字化(営業利益)とは別の概念</span></span></span><span class="detail-val">${fmtBe(pp.ocf_breakeven_year, pp.ocf_breakeven_reason)}</span></div>
+          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業黒字化予測<span class="tip-icon">?</span><span class="tip-box">会計の黒字化。TTM(直近4四半期)の営業利益率の直近8四半期の回帰で、最新の実際の率から2年以内に0に届くか(当てはまりR²≥0.5)。収益の部品(common/profitability.py)の値。営業CFの黒字化(キャッシュ)とは別の概念</span></span></span><span class="detail-val">${fmtBe(pp.op_breakeven_year ?? pp.gaap_breakeven_year, pp.op_breakeven_reason ?? pp.gaap_breakeven_reason)}</span></div>
           ${pp.discontinuous_growth ? `<div style="font-size:10px;color:var(--amb);margin-top:4px;">⚠ 非連続成長の可能性あり<br><span style="color:var(--mut)">${pp.discontinuous_growth_note}</span></div>` : ''}
         </div>
       </details>
@@ -1450,8 +1453,9 @@ function breakevenLines(pp) {
   if (pp.hidden_profit_already) lines.push({text: 'OCF ✓', color: 'var(--grn)'});
   else if (pp.ocf_breakeven_year) lines.push({text: `OCF ${String(pp.ocf_breakeven_year).slice(-2)}年`, color: 'var(--txt)'});
   // [[STONKS-BREAKEVEN-GAAP-ACHIEVED-HIDDEN-1]]（2026-10-10）: 純利益がすでにプラスなら「純益 ✓」（以前は段が出ず、SPIRは「—」だった）
-  if (pp.gaap_breakeven_reason === 'ACHIEVED') lines.push({text: '純益 ✓', color: 'var(--grn)'});
-  else if (pp.gaap_breakeven_year) lines.push({text: `純益 ${String(pp.gaap_breakeven_year).slice(-2)}年`, color: 'var(--txt)'});
+  const opR = pp.op_breakeven_reason ?? pp.gaap_breakeven_reason, opY = pp.op_breakeven_year ?? pp.gaap_breakeven_year;
+  if (opR === 'ACHIEVED') lines.push({text: '営業 ✓', color: 'var(--grn)'});
+  else if (opY) lines.push({text: `営業 ${String(opY).slice(-2)}年`, color: 'var(--txt)'});
   return lines;
 }
 function breakevenCell(pp) {
@@ -1463,10 +1467,10 @@ function breakevenCell(pp) {
 // 並び（降順＝1回目のクリック）: OCF ✓・純益 ✓ ＞ OCF ✓ ＞ 純益 ✓（OCFは未達）＞ 予測年の早い順（OCFの年、無ければ純利益の年）＞ —
 function breakevenSortVal(pp) {
   pp = pp || {};
-  const gaapAchieved = pp.gaap_breakeven_reason === 'ACHIEVED';
+  const gaapAchieved = (pp.op_breakeven_reason ?? pp.gaap_breakeven_reason) === 'ACHIEVED';
   if (pp.hidden_profit_already) return gaapAchieved ? 30000 : 20000;
   if (gaapAchieved) return 15000;
-  const y = pp.ocf_breakeven_year || pp.gaap_breakeven_year;
+  const y = pp.ocf_breakeven_year || pp.op_breakeven_year || pp.gaap_breakeven_year;
   return y ? 10000 - y : 0;
 }
 // ③黒字化パスの点数の根拠（analyzer.py の PATH_SCORE_* 定数・_path_score_from_breakeven()と同じ。変えるときは両方）

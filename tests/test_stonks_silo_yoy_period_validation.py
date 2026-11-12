@@ -200,7 +200,7 @@ class TestHtmlLabels:
 
 
 class TestBreakevenCell:
-    """[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]（2026-10-10）: 一覧の黒字化の列を「OCF」「純益」の2段に。JSは文字列で確認する"""
+    """[[STONKS-BREAKEVEN-BASIS-UNLABELED-1]]（2026-10-10）: 一覧の黒字化の列を「OCF」「純益」の2段に（2026-11-12から「営業」。会計の黒字化は収益の部品）。JSは文字列で確認する"""
 
     def _html(self):
         with open(_INDEX_HTML, encoding="utf-8") as f:
@@ -216,10 +216,11 @@ class TestBreakevenCell:
         body = self._func("breakevenLines")
         assert "if (pp.hidden_profit_already) lines.push({text: 'OCF ✓'" in body
         assert "else if (pp.ocf_breakeven_year) lines.push({text: `OCF ${String(pp.ocf_breakeven_year).slice(-2)}年`" in body
-        assert "if (pp.gaap_breakeven_reason === 'ACHIEVED') lines.push({text: '純益 ✓', color: 'var(--grn)'});" in body
-        assert "else if (pp.gaap_breakeven_year) lines.push({text: `純益 ${String(pp.gaap_breakeven_year).slice(-2)}年`" in body
-        # 純益 ✓ は純益の年より先に判定する（ACHIEVEDのときgaap_breakeven_yearはNone）
-        assert body.index("'ACHIEVED'") < body.index("pp.gaap_breakeven_year)")
+        # 会計の黒字化は収益の部品の値（op_breakeven_*。旧 gaap_breakeven_* は読み替えの保険）。[[DEFICIT-QUALITY-ADOPT-1]]
+        assert "if (opR === 'ACHIEVED') lines.push({text: '営業 ✓', color: 'var(--grn)'});" in body
+        assert "else if (opY) lines.push({text: `営業 ${String(opY).slice(-2)}年`" in body
+        # 営業 ✓ は営業の年より先に判定する（ACHIEVEDのときop_breakeven_yearはNone）
+        assert body.index("'ACHIEVED'") < body.index("else if (opY)")
 
     def test_cell_dash_when_no_lines(self):
         assert "if (!lines.length) return '—';" in self._func("breakevenCell")
@@ -228,7 +229,7 @@ class TestBreakevenCell:
         body = self._func("breakevenSortVal")
         assert "if (pp.hidden_profit_already) return gaapAchieved ? 30000 : 20000;" in body
         assert "if (gaapAchieved) return 15000;" in body
-        assert "const y = pp.ocf_breakeven_year || pp.gaap_breakeven_year;" in body
+        assert "const y = pp.ocf_breakeven_year || pp.op_breakeven_year || pp.gaap_breakeven_year;" in body
         assert "return y ? 10000 - y : 0;" in body
         assert "case 'be':      return breakevenSortVal(pp);" in self._html()
 

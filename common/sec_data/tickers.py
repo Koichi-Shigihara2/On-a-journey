@@ -66,8 +66,11 @@ def get_tickers_by_flag(flag: str, csv_path: str | None = None) -> list[str]:
     """
     指定フラグが 'true' の銘柄リストを返す（statusは見ない）。
 
-    flag: 'hypecore' | 'tanuki' | 'eps' | 'stonks_silo'
+    flag: 'hypecore' | 'tanuki' | 'eps' | 'stonks_silo'（stonks_silo は列ではなく common/stonks_target.py の判定。
+    [[DEFICIT-QUALITY-ADOPT-1]]、2026-11-12。statusは見ない扱いのため provisioning も含めて返す）
     """
+    if flag == STONKS_FLAG:
+        return _stonks_targets(csv_path, include_provisioning=True)
     return [
         r["ticker"] for r in _load(csv_path)
         if r.get(flag, "").strip().lower() == "true"
@@ -86,6 +89,15 @@ def get_tickers_by_flag(flag: str, csv_path: str | None = None) -> list[str]:
 # そのものの厳密化は別タスクとする）。
 _INVALID_STATUSES = {"retired", "provisioning"}
 
+# STONKS SILO の対象は cik_lookup.csv の列ではなく、収益の部品の判定（common/stonks_target.py）で決める
+# （手で書くフラグを廃止した。[[DEFICIT-QUALITY-ADOPT-1]]、2026-11-12）
+STONKS_FLAG = "stonks_silo"
+
+
+def _stonks_targets(csv_path: str | None = None, include_provisioning: bool = False) -> list[str]:
+    from common import stonks_target
+    return stonks_target.targets(csv_path=csv_path, include_provisioning=include_provisioning)
+
 
 def get_active_tickers(flag: str, csv_path: str | None = None) -> list[str]:
     """
@@ -96,8 +108,10 @@ def get_active_tickers(flag: str, csv_path: str | None = None) -> list[str]:
     一元化する（tanuki=falseのZSがtickers.json等に混入し続けていた問題の
     再発防止。TICKER-SOURCE-UNIFY-1の延長）。
 
-    flag: 'hypecore' | 'tanuki' | 'eps' | 'stonks_silo'
+    flag: 'hypecore' | 'tanuki' | 'eps' | 'stonks_silo'（stonks_silo は列ではなく common/stonks_target.py の判定）
     """
+    if flag == STONKS_FLAG:
+        return _stonks_targets(csv_path)
     return [
         r["ticker"] for r in _load(csv_path)
         if r.get(flag, "").strip().lower() == "true"
@@ -121,7 +135,7 @@ def get_eps_tickers(csv_path: str | None = None) -> list[str]:
 
 
 def get_stonks_silo_tickers(csv_path: str | None = None) -> list[str]:
-    """stonks_silo=true（かつstatus有効）の銘柄リストを返す"""
+    """STONKS SILO の対象（かつstatus有効）の銘柄リストを返す。common/stonks_target.py の判定"""
     return get_active_tickers("stonks_silo", csv_path)
 
 
@@ -164,6 +178,8 @@ def get_registrable_tickers(flag: str | None = None, csv_path: str | None = None
     単一フラグ指定でも偶然結果が一致するが、将来hypecore=falseの銘柄が
     登録されると静かに破綻する設計のため、flag=Noneの専用モードを設けた）。
     """
+    if flag == STONKS_FLAG:
+        return _stonks_targets(csv_path, include_provisioning=True)
     return [
         r["ticker"] for r in _load(csv_path)
         if (flag is None or r.get(flag, "").strip().lower() == "true")

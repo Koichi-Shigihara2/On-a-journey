@@ -23,10 +23,8 @@ Usage:
     P4. Config 孤立エントリ (cik_lookup の非監視残存)
     P5. 自動更新ワークフロー カバレッジ
     P6. CIK断絶候補検知 (新規登録銘柄の法人再編疑い)
-    P7. stonks_siloフラグ判定基準 ([[FLAG-THRESHOLD-DESIGN-1]]案C: TTM営業利益<0
-        または TTM売上=0 → true。登録時のcik_lookup設定と不一致ならWARN。
-        判定はcommon/sec_data/stonks_flag_rule.py、report_consistency_check.py
-        CHECK-51と共通)
+    P7. STONKS SILO の対象の判定（情報のみ。[[DEFICIT-QUALITY-ADOPT-1]]、2026-11-12）。手で書くフラグは廃止し、収益の部品の月末ごとの
+        TTM営業利益の符号を stage_v2 の持続の条件に通して決める（common/stonks_target.py。report_consistency_check.py CHECK-51と共通）
 """
 import csv
 import json
@@ -42,7 +40,7 @@ _REPO_ROOT   = os.path.normpath(os.path.join(_SCRIPT_DIR, "..", ".."))
 sys.path.insert(0, _REPO_ROOT)
 
 from common.sec_data import tickers
-from common.sec_data.stonks_flag_rule import judge_stonks_silo, load_rule_config
+from common import stonks_target
 
 SEC_DATA_DIR = os.path.join(_REPO_ROOT, "common", "sec_data", "data")
 TTM_DIR      = os.path.join(_REPO_ROOT, "common", "sec_data", "ttm")
@@ -326,24 +324,11 @@ def check_p6_cik_discontinuity_candidate(ticker: str, issues: Issues, cik_histor
 
 def check_p7_stonks_silo_flag(ticker: str, issues: Issues, flag_rows: dict,
                               rule_config: Optional[dict] = None) -> None:
-    """P7: 登録時のstonks_siloフラグが[[FLAG-THRESHOLD-DESIGN-1]]案Cの判定と
-    一致するか（不一致はWARN。NGにはせず昇格をブロックしない）。適用外（SOFI等）・
-    判定不能（TTMの営業利益・売上が取れない）銘柄はINFOのみ。"""
-    row = flag_rows.get(ticker)
-    if row is None:
+    """P7: STONKS SILO の対象になるか（情報のみ。登録の昇格をブロックしない）。判定は common/stonks_target.py"""
+    if flag_rows.get(ticker) is None:
         return
-    j = judge_stonks_silo(ticker, config=rule_config)
-    if j["state"] != "judged":
-        issues.info("P7-StonksFlag", f"{ticker}: stonks_silo判定{'適用外' if j['state'] == 'excluded' else '不能'}（{j['reason']}）→ 現行設定を維持")
-        return
-    current = (row.get("stonks_silo") or "").strip().lower() == "true"
-    if j["expected"] != current:
-        issues.warn(
-            "P7-StonksFlag",
-            f"{ticker}: cik_lookup stonks_silo={str(current).lower()} だが案C判定="
-            f"{str(j['expected']).lower()}（{j['reason']}、TTM {j['ttm_end']}）"
-            f" → stonks_siloを{str(j['expected']).lower()}に設定することを検討",
-        )
+    e = stonks_target.explain(ticker, config=rule_config)
+    issues.info("P7-StonksTarget", f"{ticker}: STONKS SILOの対象={str(e['target']).lower()}（{e['reason']}）")
 
 
 def check_p3_segment_config(issues: Issues) -> None:
@@ -483,10 +468,10 @@ def run(target_tickers: Optional[list] = None, summary_only: bool = False) -> Is
     cik_history = _load_json(CIK_HISTORY_JSON) or {}
     flag_rows = {r["ticker"]: r for r in tickers.get_all_rows()}
     try:
-        stonks_rule_config = load_rule_config()
+        stonks_rule_config = stonks_target.load_config()
     except Exception as e:
         stonks_rule_config = None
-        all_issues.warn("P7-StonksFlag", f"config/stonks_flag_rule.json読み込み失敗: {e}")
+        all_issues.warn("P7-StonksTarget", f"config/stonks_target.json読み込み失敗: {e}")
 
     # ── P1 / P2 / P6: 銘柄ごとチェック ────────────────────────────────
     for t in tickers_to_check:

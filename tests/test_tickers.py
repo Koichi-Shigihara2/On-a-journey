@@ -216,11 +216,20 @@ class TestConvenienceWrappersUseActiveTickers:
         ])
         assert tk.get_tanuki_tickers(csv_path) == ["AAA"]
 
-    def test_get_stonks_silo_tickers_excludes_retired(self, tmp_path):
+    def test_get_stonks_silo_tickers_excludes_retired(self, tmp_path, monkeypatch):
+        """STONKSの対象は列ではなく収益の部品の判定（common/stonks_target.py、[[DEFICIT-QUALITY-ADOPT-1]]）。statusは同じく効く"""
+        import json
+        from common import stonks_target
         csv_path = _write_csv(tmp_path, [
-            _row("AAA", stonks_silo="true", status="active"),
-            _row("BBB", stonks_silo="true", status="retired"),
+            _row("AAA", status="active"),
+            _row("BBB", status="retired"),
         ])
+        prof = tmp_path / "profitability.json"
+        hist = [["2026-07-31", "loss"], ["2026-08-31", "loss"], ["2026-09-30", "loss"], ["2026-10-31", "loss"]]
+        prof.write_text(json.dumps({"tickers": {"AAA": {"operating_state_history": hist},
+                                               "BBB": {"operating_state_history": hist}}}), encoding="utf-8")
+        monkeypatch.setattr(stonks_target, "PROFITABILITY_PATH", str(prof))
+        monkeypatch.setattr(stonks_target, "load_config", lambda path=None: {"excluded": {}, "pinned": {}})
         assert tk.get_stonks_silo_tickers(csv_path) == ["AAA"]
 
     def test_get_eps_tickers_excludes_retired(self, tmp_path):

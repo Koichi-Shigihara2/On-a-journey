@@ -350,13 +350,13 @@ _CONFIG_LOADER_REGISTRY = [
         "func": "resolve_growth_options_config_path",
     },
     {
-        # [[FLAG-THRESHOLD-DESIGN-1]]案C（2026-09-25）: CHECK-51・
-        # registration_validator.py P7が参照する適用外・判定不能注記
-        "label": "config/stonks_flag_rule.json",
+        # [[DEFICIT-QUALITY-ADOPT-1]]（2026-11-12）: CHECK-51・registration_validator.py P7が参照する
+        # STONKS SILOの対象の例外（適用外・固定）。手で書くフラグは廃止した
+        "label": "config/stonks_target.json",
         "import_style": "package",
         "module_dir": None,
-        "module": "common.sec_data.stonks_flag_rule",
-        "func": "resolve_stonks_flag_rule_config_path",
+        "module": "common.stonks_target",
+        "func": "resolve_config_path",
     },
 ]
 
@@ -1854,48 +1854,30 @@ def _check_company_reported_rotce(out_dir: Optional[str] = None) -> list[tuple[s
 
 
 def _check_stonks_silo_flag_rule() -> list[str]:
-    """CHECK-51: cik_lookup.csvのstonks_siloフラグと[[FLAG-THRESHOLD-DESIGN-1]]
-    案C（TTM営業利益<0 または TTM売上=0 → true）の判定が食い違う銘柄を検知する
-    （2026-09-25新設、NG化しないWARN）。
-
-    判定はcommon/sec_data/stonks_flag_rule.py::judge_stonks_silo()（新規登録時の
-    registration_validator.py P7と共通）。対象はstatusがretired/provisioning
-    以外の全銘柄（tanuki=false・candidateも含む。stonks_siloフラグはtanukiと
-    独立のため）。config/stonks_flag_rule.jsonの適用外（SOFI）と、TTMの営業
-    利益・売上が取れず判定不能な銘柄（ASTS・XOM・SN等）は対象外（現行維持）。
-    ティッカー非依存の単発チェックとしてrun_checks()から1回だけ呼ばれる。
-    """
-    from common.sec_data.stonks_flag_rule import judge_stonks_silo, load_rule_config
-    warn: list[str] = []
+    """CHECK-51: STONKS SILOの結果（results.json）の銘柄と、今の対象の判定（common/stonks_target.py＝収益の部品の
+    月末ごとのTTM営業利益の符号を持続の条件に通した結果）のずれ。[[DEFICIT-QUALITY-ADOPT-1]]（2026-11-12）で、
+    手で書くcik_lookup.csvのstonks_siloフラグとの照合をやめて置き換えた。判定が変わった直後（STONKSの次の実行まで）は
+    ずれうるのでWARNのみ。"""
+    import json as _json
+    from common import stonks_target
+    path = os.path.join(REPO_ROOT, "docs", "value-monitor", "stonks-silo", "data", "results.json")
     try:
-        cfg = load_rule_config()
-    except Exception as e:
-        return [f"  [WARN-51 stonks_silo判定基準] config/stonks_flag_rule.json読み込み失敗: {e}"]
-    for row in _tickers_mod.get_all_rows():
-        if (row.get("status") or "").strip().lower() in ("retired", "provisioning"):
-            continue
-        t = row["ticker"]
-        j = judge_stonks_silo(t, config=cfg)
-        if j["state"] != "judged":
-            continue
-        current = (row.get("stonks_silo") or "").strip().lower() == "true"
-        if j["expected"] != current:
-            oi = j["operating_income"]
-            rev = j["revenue"]
-            warn.append(
-                f"  [WARN-51 stonks_silo判定基準不一致] {t}: cik_lookup stonks_silo="
-                f"{str(current).lower()} だが案C判定={str(j['expected']).lower()}"
-                f"（{j['reason']}、TTM {j['ttm_end']} 営業利益"
-                f"{'N/A' if oi is None else f'${oi/1e6:,.1f}M'}・売上"
-                f"{'N/A' if rev is None else f'${rev/1e6:,.1f}M'}）→ フラグ是正を検討"
-            )
-    return warn
+        with open(path, encoding="utf-8") as f:
+            have = set((_json.load(f).get("tickers") or {}))
+        want = set(stonks_target.targets())
+    except Exception as e:  # noqa: BLE001
+        return [f"  [WARN-51 STONKS対象] 読み込み失敗: {e}"]
+    msgs = []
+    for t in sorted(want - have):
+        msgs.append(f"  [WARN-51 STONKS対象] {t}: 今の判定では対象だが results.json に無い（次のStonks Silo Updateで入る）")
+    for t in sorted(have - want):
+        msgs.append(f"  [WARN-51 STONKS対象] {t}: results.json にあるが今の判定では対象でない（持続の条件を通って外れた。次のStonks Silo Updateで外れる）")
+    return msgs
 
 
 # CHECK-36: ティッカー非依存の単発チェック用の基準件数。2026-08-16実装時点で
 # 中立フォールバック対象は2銘柄（BKNG/CPRT）。今後の推移を見て閾値は調整する。
 _MOAT_NEUTRAL_FALLBACK_BASELINE_COUNT = 4
-
 
 def _check_moat_score_neutral_fallback_scope(tickers: list[str]) -> list[str]:
     """CHECK-36（集計）: moat_score中立フォールバック対象銘柄数が基準値を
