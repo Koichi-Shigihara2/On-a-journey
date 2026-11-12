@@ -105,26 +105,21 @@ class TestEpsApplySplitAdjustments:
 
 
 class TestTanukiDilutionUsesRegisteredSplits:
-    """TANUKI VALUATIONの3年希薄化率: KULR型（Layer3年次株数がFY2023以前は分割前、
-    FY2024以降は分割後）で、登録済みの1-for-8を「株数減少」と扱わない"""
+    """TANUKI VALUATIONの希薄化率（[[DILUTION-DEFINITION-UNIFY-1]]: 直近の四半期÷12四半期前の加重平均の希薄化後株数）:
+    KULR型（四半期株数が2025-03までは分割前、2025-06以降は分割後）で、登録済みの1-for-8を「株数減少」と扱わない"""
 
     @staticmethod
     def _store():
         tag = "WeightedAverageNumberOfDilutedSharesOutstanding"
 
-        def ann(end, v):
-            return {"end": end, "val": v, "fp": "FY", "is_annual": True, "is_ytd": False, "source_tag": tag}
-
         def q(end, v):
             return {"end": end, "val": v, "fp": "Q2", "is_annual": False, "is_ytd": False, "source_tag": tag}
 
-        entries = [
-            ann("2020-12-31", 82.03 * M), ann("2021-12-31", 95.75 * M), ann("2022-12-31", 105.66 * M),
-            ann("2023-12-31", 117.82 * M), ann("2024-12-31", 23.32 * M), ann("2025-12-31", 39.73 * M),
-            q("2023-06-30", 115.38 * M), q("2023-09-30", 117.14 * M), q("2024-03-31", 142.36 * M),
-            q("2024-06-30", 22.68 * M), q("2024-09-30", 24.31 * M), q("2025-03-31", 34.92 * M),
-            q("2025-06-30", 37.59 * M), q("2025-09-30", 41.14 * M),
-        ]
+        ends = ["2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31",
+                "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31", "2026-06-30"]
+        vals = [115.38, 117.14, 125.0, 142.36, 150.0, 155.0, 160.0, 165.0,      # 分割前（1-for-8の前）
+                37.59, 41.14, 43.0, 45.0, 46.28]                                  # 分割後
+        entries = [q(e, v * M) for e, v in zip(ends, vals)]
         return {"fields": {"shares_diluted": {"entries": entries}}}
 
     def _run(self, tmp_path, monkeypatch, splits):
@@ -139,11 +134,13 @@ class TestTanukiDilutionUsesRegisteredSplits:
     def test_kulr_dilution_is_positive_with_registered_split(self, tmp_path, monkeypatch):
         res = self._run(tmp_path, monkeypatch, {"KULR": [{"date": "2025-06-23", "ratio": 0.125}]})
         dil = res["financial_health"]["dilution_3yr_annual_pct"]
-        # FY2022 13.21M（105.66M×1/8）→ FY2025 39.73M: 年率約+44%
-        assert dil == pytest.approx(((39.73 / (105.66 / 8)) ** (1 / 3) - 1) * 100, abs=0.05)
+        # 2023-06 115.38M（×1/8 = 14.42M）→ 2026-06 46.28M: 年率約+47%
+        assert dil == pytest.approx(((46.28 / (115.38 / 8)) ** (1 / 3) - 1) * 100, abs=0.05)
         assert dil > 40  # 希薄化ペナルティ（>40%で funda −25）の対象
+        assert "split_suspect" not in res["financial_health"]
 
     def test_without_registration_the_old_misjudgment_remains(self, tmp_path, monkeypatch):
-        """未登録なら従来どおりの判定（登録が効いていることの対照）"""
+        """未登録なら割り戻さず、未登録の分割の疑いの印を付ける（登録が効いていることの対照）。印の付いた銘柄は減点に使わない"""
         res = self._run(tmp_path, monkeypatch, {})
         assert res["financial_health"]["dilution_3yr_annual_pct"] < 0
+        assert res["financial_health"]["split_suspect"] == ["2025-06-30"]

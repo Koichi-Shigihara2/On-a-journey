@@ -355,7 +355,7 @@ YYYY.jsonのpl辞書に実在せず常にNoneを返すデッドコードだっ�
 
 **主要フィールド構成（`results.json.tickers.{TICKER}`）:**
 - `deficit_quality`: revenue_growth_pct・cagr_3yr・rnd_ratio・sm_ratio・gross_margin・
-  verdict（BUY/WATCH等）・score・sbc_adjusted_fcf・sbc_ratio・dilution_risk
+  verdict（BUY/WATCH等）・score・sbc_adjusted_fcf・sbc_ratio・sbc_burden（旧dilution_risk）
 - `runway`: cash・monthly_burn・**runway_months**・verdict（SAFE等）・score
 - `profitability_path`: core_profit/ocf_annualの年次推移・ocf_yoy_change・ocf_acceleration
 - `overall_score` / `overall_verdict` / `summary` / `records` / `valuation` / `financial_vectors`
