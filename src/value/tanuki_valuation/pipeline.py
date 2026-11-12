@@ -916,7 +916,7 @@ class TanukiValuationPipeline:
 
         # 希薄化ペナルティ（3年平均年率 > 20% → -15, > 40% → -25）
         fin_health = valuation.get("financial_health", {})
-        # [[DILUTION-DEFINITION-UNIFY-1]]: 減点は common/dilution.py の1か所（段 or 傾斜）。未登録の分割の疑い（split_suspect）の銘柄には使わない
+        # [[DILUTION-DEFINITION-UNIFY-1]]: 減点は common/dilution.py の1か所（傾斜: 20〜40%で0→25点）。未登録の分割の疑い（split_suspect）の銘柄には使わない
         dilution_pct = fin_health.get("dilution_3yr_annual_pct")
         if dilution_pct is not None and not fin_health.get("split_suspect"):
             from common.dilution import dilution_penalty
@@ -3113,7 +3113,7 @@ class TanukiValuationPipeline:
         _layer3_store_dil = self._get_layer3_store(ticker)
         if _layer3_store_dil is not None:
             try:
-                from common.dilution import share_count_change
+                from common.dilution import share_count_change, first_report_end
                 _q_dil = [(e["end"], e["val"]) for e in get_quarterly_series(
                     _layer3_store_dil, "shares_diluted", source_tag=WEIGHTED_AVG_DILUTED_SHARES_TAG) if e.get("val")]
                 _out_dil = None
@@ -3123,7 +3123,8 @@ class TanukiValuationPipeline:
                     _out_dil = (_o[-1]["end"], _o[-1]["val"]) if _o else None
                 except Exception:
                     _out_dil = None
-                _sc = share_count_change(_q_dil, load_split_history().get(ticker, []), _out_dil)
+                _sc = share_count_change(_q_dil, load_split_history().get(ticker, []), _out_dil,
+                                         first_report_period_end=first_report_end(ticker))
                 # SEC株式数がyfinance由来の株式数と10倍以上乖離している場合はXBRLの報告が信頼できない（UP-C構造等）→希薄化計算をスキップ
                 _yf_shares = comps.get("diluted_shares") or 0
                 if _sc and _yf_shares > 0 and _sc["shares_now"] > 0:
@@ -3135,7 +3136,7 @@ class TanukiValuationPipeline:
                     _fh["dilution_3yr_annual_pct"] = round(_sc["cagr_pct"], 2)
                     _fh["shares_yr_now"] = _sc["shares_now"]
                     _fh["shares_yr_3ago"] = _sc["shares_start"]
-                    _fh["dilution_basis"] = "quarterly_weighted_12q"
+                    _fh["dilution_basis"] = "quarterly_weighted_" + _sc["basis"]   # 3y | since_listing
                     _fh["dilution_window"] = [_sc["start_end"], _sc["end"]]
                     if _sc.get("split_suspect"):
                         _fh["split_suspect"] = _sc["split_suspect"]

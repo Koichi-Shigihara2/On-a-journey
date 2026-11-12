@@ -3,7 +3,7 @@
 - 定義: 直近の四半期の加重平均の希薄化後株数 ÷ 約3年前（1,096日前±50日）の四半期の年率。分割は split_history.yaml の比で調整
 - Layer3の四半期にはQ4が無い（Q1〜Q3だけ）ので、点の個数ではなく日付で3年前を探す
 - 連続性: 3年の境目（3年前の点が無ければ欠け・あれば値・窓が進んでも飛ばない）。年次に落ちない。
-  減点の傾斜は20%・40%の境目で連続（段は今の公開どおり）
+  減点の傾斜は20%・40%の境目で連続（段の分岐は無い）
 - 未登録の分割は割り戻さず印だけ
 """
 import os
@@ -105,28 +105,78 @@ def test_outstanding_gap_is_a_display_mark_only():
     assert r["outstanding_gap_pct"] == pytest.approx(12.0) and r["cagr_pct"] == pytest.approx(0.0)
 
 
-# ── 減点 ────────────────────────────────────────────
-@pytest.mark.parametrize("pct,want", [(None, 0), (-5, 0), (20, 0), (20.01, 15), (40, 15), (40.01, 25), (200, 25)])
-def test_step_penalty_is_the_current_rule(pct, want):
-    assert dl.dilution_penalty(pct, "step") == want
+# ── 上場の前後（ALAB・CART・RBRK・LOAR型）────────────────
+def _ipo_series():
+    """上場（最初の定期報告の期末 2024-03-31）の前は少数の普通株、上場後は転換の後の株数。Q4が無い四半期の並び"""
+    pts = [("2023-03-31", 35e6), ("2023-06-30", 36e6), ("2023-09-30", 37e6), ("2024-03-31", 52e6)]     # 上場の前（〜最初の報告の期）
+    post = [("2024-06-30", 155e6), ("2024-09-30", 160e6), ("2025-03-31", 165e6), ("2025-06-30", 168e6),
+            ("2025-09-30", 170e6), ("2026-03-31", 175e6), ("2026-06-30", 178e6), ("2026-09-30", 180e6)]
+    return pts + post
 
 
-def test_slope_penalty_is_continuous_at_the_boundaries():
-    f = lambda x: dl.dilution_penalty(x, "slope")  # noqa: E731
+def test_three_years_back_before_listing_uses_first_quarter_after_listing():
+    r = dl.share_count_change(_ipo_series(), first_report_period_end="2024-03-31")
+    assert r["basis"] == "since_listing" and r["start_end"] == "2024-06-30" and r["split_suspect"] == []   # 上場の前後の跳びは窓に入らない
+    years = (date(2026, 9, 30) - date(2024, 6, 30)).days / 365.25
+    assert r["cagr_pct"] == pytest.approx(((180 / 155) ** (1 / years) - 1) * 100, rel=1e-6)           # 年率は実際の日数
+
+
+def test_without_listing_info_the_basis_is_not_changed():
+    r = dl.share_count_change(_ipo_series())                      # 申告の情報が無い→基準は変えない
+    assert r is None or r["basis"] == "3y"
+
+
+def test_fewer_than_four_quarters_after_listing_is_missing():
+    pts = [("2024-03-31", 52e6), ("2024-09-30", 155e6), ("2024-12-31", 160e6), ("2025-03-31", 165e6)]    # 上場後の最初の四半期から182日（3四半期）
+    assert dl.share_count_change(pts, first_report_period_end="2024-03-31") is None
+    pts.append(("2025-09-30", 168e6))                                                                      # 365日（4四半期以上）になると値が出る
+    assert dl.share_count_change(pts, first_report_period_end="2024-03-31")["basis"] == "since_listing"
+
+
+def test_old_listing_with_missing_three_year_point_stays_missing():
+    """上場が3年より前の銘柄で3年前の点が無いのは単なる欠け。古い基準で年率を出さない"""
+    pts = [("2025-03-31", 100e6), ("2025-06-30", 101e6), ("2025-09-30", 102e6), ("2026-03-31", 103e6),
+           ("2026-06-30", 104e6), ("2026-09-30", 105e6)]
+    assert dl.share_count_change(pts, first_report_period_end="2015-03-31") is None
+
+
+def test_listing_before_the_window_start_is_normal_three_years():
+    """3年前の点が上場の後ならふつうの3年（上場の規則は使わない）"""
+    r = dl.share_count_change(_series(13, 0.01), first_report_period_end="2022-03-31")
+    assert r["basis"] == "3y"
+
+
+def test_unit_error_stays_marked_and_inside_window():
+    """CIX型（単位の誤り）: 上場の規則では救わず、印（split_suspect）のまま"""
+    ends = _ends(13)
+    pts = [(e, 12.3e6) for e in ends[:-1]] + [(ends[-1], 12337.0)]
+    r = dl.share_count_change(pts, first_report_period_end="2015-03-31")
+    assert r["split_suspect"] == [ends[-1]]
+
+
+def test_first_report_end_reads_the_earliest_filing(tmp_path):
+    import json
+    d = tmp_path / "ZZZ"
+    d.mkdir()
+    (d / "submissions.json").write_text(json.dumps({
+        "accn_to_filingdate": {"a-2": "2024-08-01", "a-1": "2024-05-08", "a-3": "2024-11-01"},
+        "accn_to_reportdate": {"a-2": "2024-06-30", "a-1": "2024-03-31", "a-3": "2024-09-30"}}), encoding="utf-8")
+    assert dl.first_report_end("ZZZ", str(tmp_path)) == "2024-03-31"
+    assert dl.first_report_end("NOPE", str(tmp_path)) is None
+
+
+# ── 減点（傾斜だけ）────────────────────────────────
+def test_penalty_is_slope_only_and_continuous_at_the_boundaries():
+    f = dl.dilution_penalty
     eps = 1e-6
     for b in (20.0, 40.0):
         assert abs(f(b + eps) - f(b - eps)) < 1e-3
-    assert f(20) == 0 and f(40) == 25 and f(30) == pytest.approx(12.5) and f(60) == 25 and f(10) == 0
-    # 単調増加
+    assert f(None) == 0 and f(-5) == 0 and f(20) == 0 and f(40) == 25 and f(30) == pytest.approx(12.5) and f(60) == 25 and f(10) == 0
     xs = [i / 2 for i in range(0, 120)]
-    assert all(f(b) >= f(a) for a, b in zip(xs, xs[1:]))
+    assert all(f(b) >= f(a) for a, b in zip(xs, xs[1:]))                        # 単調増加
 
 
-def test_unknown_mode_is_rejected():
-    with pytest.raises(ValueError):
-        dl.dilution_penalty(30, "bogus")
-
-
-def test_default_mode_is_step():
-    assert dl.PENALTY_MODE == "step"
-    assert dl.dilution_penalty(25) == 15
+def test_no_step_branch_remains():
+    assert not hasattr(dl, "PENALTY_MODE") and not hasattr(dl, "STEP_LOW")
+    with pytest.raises(TypeError):
+        dl.dilution_penalty(30, "step")
