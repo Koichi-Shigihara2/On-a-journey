@@ -186,3 +186,26 @@ kaihatsuには入っていない（`origin/deficit-quality-adopt-1`に控え。P
 3. ゲート: `PYTHONUTF8=1 env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
 4. kaihatsuに入れてpush（`profitability.json`の作り直しも同じpush）。公開: Market Data Weekly（`profitability.json`の定時の作り直しと同じ）→ Stonks Silo Update（`op_breakeven_*`・対象）→ TANUKI VALUATION → HypeCore → TANUKI（`breakeven_*`が消え、`structural_deficit_kind`が付く）
 5. 確認: STONKSの`results.json`が24銘柄、`op_breakeven_*`がある、`gaap_breakeven_*`が無い、TANUKIの`latest.json`に`breakeven_estimate`が無い、画面（stonks-silo・tanuki_score）、CHECK-51のずれが無い。SITMの対象からの出入りは12月末以降（持続の規則）に確かめる
+
+
+---
+
+## 手書きの例外を規則に（2026-11-12 追記、ブランチ `deficit-quality-adopt-1` `d4f824cf0e`・データ `c9aadc065d`）
+
+上の「実装の中身」3の`config/stonks_target.json`（`pinned`＝ASTS・`excluded`＝SOFI）は**やめた**（ファイル削除）。STONKSの対象は規則だけで決まる（`common/stonks_target.py`）:
+
+| 場合 | 扱い |
+|---|---|
+| 金融・資産の重い業種 | `common/sector_master.py::is_financial_ticker`（業種のマスターの判定）で対象外（SOFI） |
+| TTM営業利益が取れない**月** | 直前の状態を保つ（持続の条件の「判定不能は直前を保つ」）。印 `held` |
+| 履歴の**最初から**取れない銘柄 | 取れる最新の年次の営業利益の符号を使う。印 `annual` |
+| どちらも無い銘柄 | 対象外。印 `no_data` |
+
+- 月末ごとの履歴の行は `[月末, 状態, 根拠]`（根拠 = `ttm`・`annual`・`none`）。印は`stonks_target.marks()`・`explain()`・登録の検証P7（情報）に出る
+- **規則のあとの対象は今の24銘柄と同じ**（入る銘柄・外れる銘柄とも無し）。ASTSは手書きの固定をやめても入る（Layer3でTTMの営業利益が取れるようになっていて、赤字と判定される。印なし）。SOFIは金融で除かれる。全98銘柄で印が付くのは**XOM（`no_data`、営業利益が取れない大型の黒字株で、元から対象外）の1銘柄だけ**
+- テスト: 金融は除く／TTMが欠けても出入りしない（`held`）／最初から取れない銘柄は年次の符号（`annual`）／どちらも無ければ対象外（`no_data`）／手書きの例外が残っていない（`config/stonks_target.json`が無い）
+
+### 公開の手順への追記
+
+- `config/method_change.json`には**登録しない**（理論株価・判定・funda点が変わらない表示だけの変更。`sim.py scope`は`latest.json`のキーの出入りで94銘柄になるが、🛠の通知は出さない）
+- 公開の順の手順（上）の2の`python common/profitability.py --all`は、月末の履歴の行が3列になった今の形で作り直す。**これを公開の前にしないと、STONKSの対象が空になる前に`stonks_target.targets()`が止まる**（空の対象で走らせない）

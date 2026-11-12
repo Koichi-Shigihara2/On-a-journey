@@ -11,7 +11,15 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-11 終業 更新〈それまでは2026-11-11 束ねの後〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+**次の作業（2026-11-12 終業 更新〈それまでは2026-11-11 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+1. 11-15（日）〜11-16: 手順30の残り（`[[SECTOR-MASTER-ADOPT-1]]`の印が11-15の定時の実行で付かないこと）・手順31（`[[PARSER-LAYER3-SINGLE-SOURCE-1]]`段0の次の定時の確認）・手順32（日足の分割の割り戻しの2回目が0件）→ 合格したら`[[SECTOR-MASTER-ADOPT-1]]`と`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`をBACKLOG_DONE.mdへ移設（アクティブ13→11）【Sonnet】
+2. 未公開4つの公開【Opus】。順は **PARSER段1 → CONTINUITY → DILUTION → DEFICIT**。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧（理論株価が5%を超えて動く銘柄・判定が変わる銘柄・保有を原本で確かめたもの）を作る。段1は`git revert`の戻し（`PARSER_LAYER3_STAGE1.md` §4: `0544696ddc`→`1ebce36a25`の順にrevertの戻し→出力の一覧→派生ファイル→`sim.py scope --write`→TANUKI→HypeCore→TANUKI）、ほかの3つはブランチ（`tanuki-calc-continuity-1`・`dilution-unify-1`・`deficit-quality-adopt-1`。手順は各STEP 0の文書の末尾）。DEFICITは公開の前に`python common/profitability.py --all`（月末の履歴が無いとSTONKSの対象が空になる）。DEFICITは`method_change.json`に登録しない（表示だけ）
+3. `[[MULTIPLES-ADOPT-1]]`のSTEP 0【Opus】（公開は未公開の4つの後。STEP 0は先に進めてよい）
+4. `[[STAGE-V2-ROLLOUT-1]]`の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）→ `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）【Opus】。②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
+5. いつでも・起きた回: 手順9（RSS 取得エラー）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+**注記（2026-11-12）**: 未公開のコードの置き場所は4つ（段1は`git revert`で戻してあり、残り3つはブランチでkaihatsuには無い）。Layer3はその場で計算されるため、定義のコードをpushするとそのまま公開になる（FINDINGS 2026-11-11）。モデルの使い分けは`CHAT_RULES.md`「モデルの使い分け」（依頼文の見出しの【Opus】【Sonnet】）
+
+**（旧）次の作業（2026-11-11 終業。2026-11-12 終業に上へ置き換えた。記録として残す）**:
 1. 11-12（木）朝: 手順30（`[[SECTOR-MASTER-ADOPT-1]]`の印が定時の実行で付かないこと。付かなければBACKLOG_DONE.mdへ移設、アクティブ13→12）【Sonnet】
 2. 11-15（日）〜11-16: 手順31（`[[PARSER-LAYER3-SINGLE-SOURCE-1]]`段0の次の定時の確認）→ 段1の公開【Opus】。段1の実装は公開の時までrevert済み（`PARSER_LAYER3_STAGE1.md` §4: `0544696ddc`→`1ebce36a25`の順にrevertの戻し→出力の一覧→派生ファイル→`sim.py scope --write`→TANUKI→HypeCore→TANUKI）
 3. `[[TANUKI-CALC-CONTINUITY-1]]`の公開【Opus】: ローカルブランチ`tanuki-calc-continuity-1`を段1の公開の後にrebase→段1の上で試算し直し→決定(a)の一覧→公開（`TANUKI_CALC_CONTINUITY_STEP0.md` §6）
@@ -49,6 +57,13 @@
 3. `[[STAGE-V2-ROLLOUT-1]]` の並行計算（定義v2は2026-11-06に確定。定義v2のstageを今の定義と並べて毎月記録、公開の値は変えない。寄せる件を待たずに始める。12か月の並びの評価は2027-11ごろ）
 4. 寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+
+**2026-11-12 の作業（終業、アクティブ13件）**:
+- 朝の確認: 手順15（TAILのレビューの対象の期、APP・CELH・PLTR・SOFI・SOUNは`data_as_of`あり・`backfilled: false`・期は対象まで、ADBE・NVDA・TSLAは直し〈f9a7563010〉より前の生成で対象外）を合格にして外した（BACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」）。手順30は11-12朝の分が合格（TANUKI run `43104058687`、印なし・applied 4つ）、残りは11-15の分
+- `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`: STEP 0（`POINT_IN_TIME_STEP0.md`）→実装・公開。`common/market_data/split_reconcile.py`（Yahooの終値との比が一定の銘柄を`correct_daily_rows(reason="split_adjust")`で割り戻す、Market Data Weeklyの段）、手動のMarket Data Weekly run `43199988826`でAPH・CTVAを割り戻し（bot `21809efb32`）、HONの`price_factor 0.9535`を台帳に、(3)は案A。移設は手順32（11-15の2回目が0件）の後
+- `[[DILUTION-DEFINITION-UNIFY-1]]`: STEP 0（`DILUTION_UNIFY_STEP0.md`、Q4が無い四半期の窓の訂正を含む）→実装（**ブランチ`dilution-unify-1` 470d521ec1・未公開**。株数の変化を`common/dilution.py`の1つに、減点は傾斜だけ、上場の前後は上場後の最初の四半期を基準、STONKSの`dilution_risk`→`sbc_burden`）
+- `[[DEFICIT-QUALITY-ADOPT-1]]`: STEP 0（`DEFICIT_QUALITY_STEP0.md`）→実装（**ブランチ`deficit-quality-adopt-1` d4f824cf0e〈コード〉・c9aadc065d〈データ〉・未公開**。黒字化の予測を`common/profitability.py`の1つに、STONKSの対象を月末の営業利益の符号＋stage_v2の持続の条件で決める〈手書きのフラグ・pinned・excludedを廃止、金融は`is_financial_ticker`〉、粗利率の導出、型④の表示）。この日のFINDINGSは5行（CTVAの日足の停止・株数の単位の壊れ・日足の分割は拒否の記録で見つからない・STONKSの`core_profit`・AMZN/CEG型の参考値）
+- 終業の数: BACKLOGアクティブ13件、rcc NG 0・WARN 223、pytest 2,960件通過・失敗2（kaihatsu。既知のruff不在とSITMの`test_stonks_flag_rule`）、ブランチは`dilution-unify-1`が2,977件・`deficit-quality-adopt-1`が2,963件（失敗はruff不在の1件だけ。DEFICITのブランチはSITMの例外が無くなる）。コマンドはCLAUDE_CODE_START.md「今の状態」
 
 **2026-11-11 の作業（終業、アクティブ13件）**:
 - `[[SECTOR-MASTER-ADOPT-1]]` 段3（金融）・段4（EPS ANALYZERの区分）を公開（段4: 手動のEPS ANALYZER run `42941456669`→TANUKI `42942898607`）。印が定時の実行で付かないことは手順30（11-12朝）で確かめる
