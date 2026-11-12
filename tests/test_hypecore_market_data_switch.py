@@ -82,7 +82,7 @@ class TestFetchPriceData:
 
 class TestFetchInfoSnapshot:
     _ATTRS = {
-        "forward_pe": 18.0, "trailing_pe": 20.0, "price_to_sales": 5.0, "peg_ratio": 1.5,
+        "forward_pe": 18.0, "trailing_pe": 99.0, "price_to_sales": 77.0, "peg_ratio": 1.5,   # trailing_pe・price_to_salesは読まない（部品の値）
         "revenue_growth": 0.164, "earnings_growth": 0.287, "gross_margins": 0.48653,
         "recommendation_mean": 2.08696, "analyst_count": 41, "short_pct_float": 0.01,
         "short_ratio": 2.28, "market_cap": 1_000_000_000, "shares_outstanding": 1_000_000_000,
@@ -93,11 +93,15 @@ class TestFetchInfoSnapshot:
         monkeypatch.setattr(hypecore, "HAS_MARKET_DATA", has_market_data)
         monkeypatch.setattr(hypecore, "_md_get_attributes", lambda ticker: attrs)
         monkeypatch.setattr(hypecore, "_md_get_latest_price", lambda ticker: latest_price)
+        # [[MULTIPLES-ADOPT-1]]: GAAP PER・PSR・時価総額は倍率の部品（実ファイルは読まない）
+        monkeypatch.setattr("common.multiples.current_multiples",
+                            lambda t, px, mc=None: {"per": 20.0, "ps": 5.0, "market_cap": 1_000_000_000} if attrs else {"per": None, "ps": None, "market_cap": None})
 
     def test_normal_case_maps_all_fields(self, monkeypatch):
         self._patch(monkeypatch, attrs=dict(self._ATTRS), latest_price={"volume": 40_000_000})
         result = hypecore.fetch_info_snapshot("XYZ")
-        assert result["forward_pe"] == 18.0
+        assert result["forward_pe"] == 18.0           # stageの入力。yfinanceのまま
+        assert result["trailing_pe"] == 20.0 and result["psr"] == 5.0   # 部品の値
         assert result["revenue_growth"] == 0.164
         assert result["earnings_growth"] == 0.287
         assert result["gross_margins"] == 0.48653

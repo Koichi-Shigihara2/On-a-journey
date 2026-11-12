@@ -237,10 +237,18 @@ def fetch_info_snapshot(ticker: str) -> dict:
     avg_vol = attrs.get("average_volume") or 1
     latest_price = _md_get_latest_price(ticker)
     cur_vol = (latest_price.get("volume") if latest_price is not None else None) or avg_vol
+    # [[MULTIPLES-ADOPT-1]]: GAAP PER・PSR・時価総額は倍率の部品（common/multiples.py）の今日の行 × 日足の終値。
+    # forward_pe・peg_ratio はstageの入力（S3の条件C・S4の底打ち）でyfinanceのまま（部品に過去が無い）
+    _px = (latest_price or {}).get("close") if latest_price is not None else None
+    try:
+        from common import multiples as _mult
+        _m = _mult.current_multiples(ticker, _px, attrs.get("market_cap"))
+    except Exception:  # noqa: BLE001
+        _m = {"per": None, "ps": None, "market_cap": None}
     return {
         "forward_pe":         attrs.get("forward_pe"),
-        "trailing_pe":        attrs.get("trailing_pe"),
-        "psr":                attrs.get("price_to_sales"),
+        "trailing_pe":        _m["per"],
+        "psr":                _m["ps"],
         "peg_ratio":          attrs.get("peg_ratio"),
         "revenue_growth":     attrs.get("revenue_growth"),        # YoY (小数)
         "earnings_growth":    attrs.get("earnings_growth"),       # YoY (小数)
@@ -250,7 +258,7 @@ def fetch_info_snapshot(ticker: str) -> dict:
         "short_pct_float":    attrs.get("short_pct_float"),
         "short_ratio":        attrs.get("short_ratio"),
         "volume_vs_avg":      cur_vol / avg_vol if avg_vol else None,
-        "market_cap":         attrs.get("market_cap"),
+        "market_cap":         _m["market_cap"],
         "shares":             attrs.get("shares_outstanding"),
         "ev_ebitda":          _positive_or_none(attrs.get("ev_to_ebitda")),
     }
