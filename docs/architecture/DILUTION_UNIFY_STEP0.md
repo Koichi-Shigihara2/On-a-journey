@@ -125,3 +125,68 @@
   2. funda点の判定を3年の年率のままにするか、最近の急増（LITE・CEG）を拾う2年の累計も使うか
   3. STONKSの`dilution_risk`を`sbc_burden`に改名してよいか（画面のラベルと、`stonks_silo/analyzer.py`・`index.html`・保存済みデータのキー）
   4. 未登録の分割の安全網（前年比2.5倍超のヒューリスティック）を四半期の列にも残すか
+
+
+---
+
+## 実装済み（ブランチ `dilution-unify-1`（cbd4d05783）・未公開、2026-11-12）
+
+kaihatsuには入っていない（`origin/dilution-unify-1`に控えを置いた。PRは作らない）。決定（1〜4）のとおり実装した。
+
+### 訂正（STEP 0の試算の誤り）
+
+STEP 0の「直近四半期÷12四半期前」は、Layer3の四半期の株数が**Q1〜Q3だけでQ4が無い**ため、12個前の点が約4年前になっていた（3年で割っていたので、値が過大）。実装では**日付で3年前（1,096日±50日）の四半期**を探し、年率は実際の日数で割る（`common/dilution.py`）。直した後の値（`share_count_change`、93銘柄に値が出る）:
+
+| 銘柄 | TANUKI今 | STEP 0の値（誤） | 実装の値 |
+|---|---|---|---|
+| TSLA | 0.51 | 0.70 | **0.46** |
+| LITE | 2.98 | 14.30 | **15.15** |
+| CEG | −1.54 | 3.15 | **3.47** |
+| IONQ | 12.34 | 26.44 | **25.37** |
+| RDW | 23.59 | 57.95 | **56.84** |
+| CART | 40.19 | 50.93 | **37.21** |
+| SOUN | 37.56 | 39.38 | **25.71** |
+
+STEP 0の結論（定義が3つで別の概念・原因の分類・案）は変わらない。変わったのは試算の数字（下の表が正）。
+
+### 実装の中身
+
+| 場所 | 内容 |
+|---|---|
+| `common/dilution.py`（新設） | `share_count_change`（加重平均の希薄化後株数、直近の四半期÷3年前の四半期の年率。分割は`split_history.yaml`で調整。3年前の点が無ければ欠け〈年次に落とさない〉。未登録の分割の疑い〈隣の四半期との比が2.5倍超・0.4倍未満〉は**割り戻さず`split_suspect`の印**。発行済株数との差は`outstanding_gap_pct`〈表示だけ〉）と `dilution_penalty`（`PENALTY_MODE`: `"step"`＝今の段〈>20%で−15・>40%で−25〉、`"slope"`＝20〜40%で0→−25の直線。**既定は`"step"`**） |
+| `tanuki_valuation/pipeline.py` | `_load_extra_data`の希薄化率を差し替え（キー`dilution_3yr_annual_pct`はそのまま。`shares_yr_now`・`shares_yr_3ago`は直近の四半期と3年前の四半期の株数、新キー`dilution_basis`・`dilution_window`・`split_suspect`〈疑いのときだけ〉・`outstanding_gap_pct`）。funda点の減点は`dilution_penalty`の1か所。`split_suspect`の銘柄には減点を使わない。`split_adjusted`・`split_factor`は廃止（年次のヒューリスティックが無くなったため） |
+| STONKS | `dilution_risk` → `sbc_burden`（`analyzer.py`のdataclass・計算・出力、`stonks-silo/index.html`の表示〈ラベル「SBC負担」・旧キーも読む〉、`SYSTEM_MAP.md`、出力の一覧〈`stonks_layer`〉）。書き手: `analyzer.py`のみ。読み手: `stonks-silo/index.html`のみ。出力: `docs/value-monitor/stonks-silo/data/results.json`（次のSTONKS実行で新しいキーになる。24件）。`equity_raise_ratio`は作っていない |
+| 画面 | `tanuki_valuation/stock.html`（株数の期間の注記・疑いの注記・発行済株数との差の注記）、`tanuki_score/index.html`（`split_suspect`の銘柄は成長の罠の数に入れない） |
+| 出力の一覧 | `tanuki_layer`・`stonks_layer`を作り直し（`scripts/inventory/build_output_inventory.py --layer tanuki|stonks`） |
+| テスト | `tests/test_dilution.py` 18件（定義・分割の調整・未登録の分割の印・**3年の境目で値が飛ばない**〈3年前の点が無ければ欠け・窓が進んでも同じ値・Q4無しの系列〉・**傾斜が20%・40%で連続**・段は今の規則）、`tests/test_split_adjust.py`のKULR型を四半期の定義に |
+
+### 試算（`tools/sim`、TANUKI→HypeCore→TANUKI、基準はkaihatsuの今のコードを別のworktreeで回した値）
+
+| 見るもの | 段（`step`、既定） | 傾斜（`slope`） |
+|---|---|---|
+| 理論株価の変化 | **0**（96銘柄） | **0** |
+| 判定の変化 | **0** | **0** |
+| 保有9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA） | 理論株価・判定・funda点とも変化なし（希薄化率: ADBE −3.21→−4.89、APP −2.73→−2.11、CELH 3.95→2.42、NVDA −0.74→−0.96、PLTR 7.52→3.44、SOFI 11.59→12.59、SOUN 37.56→25.71、TSLA 0.51→0.46、CRWV 欠けのまま） | **SOUNだけfunda 35→43**（段では35のまま。25.71%は20〜40%の間で傾斜は−7点）。判定は変わらずWATCH |
+| HypeCore（stage） | 時刻以外同じ（96ファイル） | 同じ |
+| 希薄化率の表示値 | 91銘柄で値が変わる（2pt以上は32銘柄）。欠け: CIX・RCAT（値が出なくなる）、新たに出る: BKNG・LOAR | 同じ |
+| 重大度の表示 | 26銘柄で変わる | 同じ |
+| funda点が動く銘柄 | ALAB 75→100、CART 55→80、RBRK 65→90（**3つとも`split_suspect`で減点を使わなくなったため**。IPO直後の株数の跳びで、実際の希薄化か分割かをここで決めない）、IONQ 100→85、QBTS 10→0、RDW 75→65（株数が実際に増えている）、AVAV・RXRX・SOUN・SPIR は変わらない | ALAB・CART・RBRK・QBTS・RDW は段と同じ。IONQ 100→93、AVAV 85→95、RXRX 60→55、SOUN 35→43、SPIR 0→1 |
+| scope（`sim.py scope --id DILUTION-DEFINITION-UNIFY-1-0`） | 90銘柄（判定・funda・乖離率・理論株価・stageが変わるのは6銘柄: ALAB・CART・IONQ・QBTS・RBRK・RDW） | 90銘柄（同10銘柄: ALAB・AVAV・CART・IONQ・QBTS・RBRK・RDW・RXRX・SOUN・SPIR） |
+| 画面の成長の罠（>5%）の入れ替わり | 入る: **LITE**（2.98→15.15）・**PAYS**（4.06→5.85）・**SITM**（3.28→11.76）・**SNPS**（1.92→7.47）。外れる: **FLYW**（5.78→1.11）・**LYFT**（5.59→−0.93）・**PLTR**（7.52→3.44）・**RCAT**（12.38→欠け）。`split_suspect`のALAB・CART・RBRK・LOAR・CIXは数えない | 同じ |
+| 調整後EPS・STONKS | 希薄化率を読まないので変化なし（STONKSは`sbc_burden`への改名だけで値は同じ） | 同じ |
+
+- 段と傾斜の差は**funda点だけ**で、判定のラベルは両方とも変わらない。傾斜は20%・40%の境目で点が飛ばない代わりに、20%を少し超えた銘柄の減点が段（−15）より小さい（SOUN 25.71%は段−15・傾斜−7）。採否はチャット側
+- 理論株価が5%を超えて動く銘柄は0なので、決定(a)の「理由を原本で確かめた一覧」は、funda点が動く銘柄（上の行）と`split_suspect`の5銘柄（ALAB・CART・CIX・LOAR・RBRK）。`split_suspect`は上場前後の株数の跳び（ALAB 2024-06・CART 2024-03・RBRK 2024-07・LOAR 2024-06）かCIXの単位異常で、分割として登録するか、このまま減点に使わないかは決めてほしい
+
+### PARSER段1・CONTINUITYとの関係
+
+希薄化率は`shares_diluted`の四半期だけを読む。PARSER段1の`val_guard`（`SPLIT_FIELDS`に`shares_diluted`）も、CONTINUITYの`q4_implied.py`・`pipeline.py`の成長モデルの変更も、この箇所を変えないので、重ねても掛け合わせにならない。ただし`pipeline.py`を3件とも触るので、順番に`rebase`して試算し直す。
+
+### 公開の手順（PARSER段1 → CONTINUITY → 本件）
+
+1. PARSER段1・CONTINUITYがkaihatsuに入って公開された後、`git checkout dilution-unify-1 && git rebase kaihatsu`（`pipeline.py`が衝突したら、希薄化の箇所は本件の側を取る）
+2. 試算し直す（`tools/sim/sim.py chain base`〈kaihatsuのworktree〉・`chain step`・`chain slope --hook 〈PENALTY_MODE="slope"のhook〉`→`compare`）。理論株価が5%を超えて動く銘柄・判定が変わる銘柄・保有を原本で確かめて一覧にする（決定(a)）。減点の方式が「傾斜」に決まったら`common/dilution.py`の`PENALTY_MODE`を`"slope"`に変える（テストは両方通る）
+3. ゲート: `PYTHONUTF8=1 env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`。出力の一覧を作り直す（`build_output_inventory.py --layer tanuki|stonks`）
+4. `config/method_change.json`に`DILUTION-DEFINITION-UNIFY-1-0`を足し、`tools/sim/sim.py scope --id DILUTION-DEFINITION-UNIFY-1-0 base step --write`でscopeを作る（手で書かない）
+5. kaihatsuに入れてpush（コードのpushがそのまま公開になるので、ここで手順を止めない）。公開: Stonks Silo Update（キー名の変更）→ TANUKI VALUATION → HypeCore → TANUKI（公開の鎖のとおり。3つ目は手で起動しない）
+6. 確認: 1回目の🛠がscopeの銘柄だけに付くこと、2回目は0件、`results.json`の`sbc_burden`、画面（stock.html・tanuki_score・stonks-silo）

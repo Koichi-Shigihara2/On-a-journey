@@ -2372,6 +2372,7 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 **登録日:** 2026-11-05
 **着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
 **発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-3のSTEP 0（2026-11-05）
+**実装（2026-11-12、ブランチ`dilution-unify-1`・未公開）:** 株数の変化を`common/dilution.py`の1つの部品に寄せ、STONKSの`dilution_risk`を`sbc_burden`に改名。試算は理論株価・判定・保有とも変化0（funda点の段と傾斜の2通りは`DILUTION_UNIFY_STEP0.md`末尾）。公開はPARSER段1→CONTINUITYの後にrebaseして試算し直す。**公開までこの項目は残す**
 **経緯:** 2026-10-19の初回の束ねで[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]を[[STAGE-V2-ROLLOUT-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行と同じ形）。段B-3でLayer3に配当・増資の5項目を足した
 
 #### 今の取り方の場所（2026-11-05、段B-3のSTEP 0）
