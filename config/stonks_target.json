@@ -1,9 +1,0 @@
-{
-  "_comment": "[[DEFICIT-QUALITY-ADOPT-1]]（2026-11-12）: STONKS SILOの対象の選び方の例外。対象はcommon/stonks_target.pyが、収益の部品（common/profitability.py）の月末ごとのTTM営業利益の符号をstage_v2の持続の条件〈2か月〉に通して決める（手で書くcik_lookup.csvのstonks_siloフラグは廃止）。excluded=枠組みが合わず対象にしない銘柄、pinned=TTMの営業利益が取れず機械で判定できない既知の銘柄（取れるようになったら外す）。どちらも理由つき",
-  "excluded": {
-    "SOFI": "金融機関（銀行持株会社）。営業利益・FCFが貸出実行・預金の動きに左右され、赤字企業の資金繰り評価（STONKS SILOのrunway）の枠組み自体が適合しない"
-  },
-  "pinned": {
-    "ASTS": "営業利益がLayer3・TTMとも未取得（OperatingIncomeLossの再構成でpretax調整法が未実装）。プレレベニューの赤字企業なので対象に残す"
-  }
-}

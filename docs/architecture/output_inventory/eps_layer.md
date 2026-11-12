@@ -9,7 +9,7 @@
 
 **件数**: 出力 5（ファイル 4・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 0／2件以上 4／規則の二重 9（検出式 11種のうち。EPSのファイルを含むもの 3）
 
-**画面の項目**: 画面が読むキー 108（この段階の書き手あり 70・ほかの書き手あり 34・画面の中で作る値 1・**書き手なし 3**）／書き手があるのに誰も読まないキー **2**（今の書き手のコードに無いキー 0 は数えない）
+**画面の項目**: 画面が読むキー 110（この段階の書き手あり 102・ほかの書き手あり 4・画面の中で作る値 1・**書き手なし 3**）／書き手があるのに誰も読まないキー **2**（今の書き手のコードに無いキー 0 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 0件／解決できた読み込み 12件＋ファイル名で当たった行 19件（0.0%）→ 当たらない
 
@@ -92,7 +92,7 @@
 - 起動元: .github/workflows/Adjusted_Eps_Analyzer_update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `execution_metrics`(1)・`last_updated`(2)・`quarters`(8)・`ticker`(13)
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 126・130・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
-- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1294・1342・2468・2472・2972・3004・3038・3475・3717・3761（経由 `common/sec_data/report_consistency_check.py::_read_eps_quarterly`）
+- Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1285・1333・2459・2463・2963・2995・3029・3466・3708・3752（経由 `common/sec_data/report_consistency_check.py::_read_eps_quarterly`）
 - Python・保存済みファイル: `common/system_health.py` 行 89・1214（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 1037・1041・1133（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 255・950・1004・1008・1043（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`、`src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
@@ -183,7 +183,7 @@
 | — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 254 | 残す（2026-10-21） |
 | YoY成長 | `yoy_growth` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 213・337・337・387 | 残す（2026-10-21） |
 
-### `docs/value-monitor/adjusted_eps_analyzer/stock.html`（87項目）
+### `docs/value-monitor/adjusted_eps_analyzer/stock.html`（89項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
@@ -192,74 +192,76 @@
 | 項目 | `adjustments` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1319・1438・1438・1443 | 残す（2026-10-21） |
 | — | `ai_analysis` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1013・1445・1445・1445 | 残す（2026-10-21） |
 | 調整なし | `comment` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1198 | 残す（2026-10-21） |
-| — | `company_reported` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 812 | 残す（2026-10-21） |
+| — | `company_reported` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 812 | 残す（2026-10-21） |
 | — | `components` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 960 | 残す（2026-10-21） |
-| — | `computed` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 820 | 残す（2026-10-21） |
+| — | `computed` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 820 | 残す（2026-10-21） |
 | 引用ソース: | `confidence` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1202・1202・1448・1448 | 残す（2026-10-21） |
-| — | `current` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 762 | 残す（2026-10-21） |
-| >出典: ${co.source \|\| | `definition` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 835 | 残す（2026-10-21） |
-| — | `diff` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 821 | 残す（2026-10-21） |
+| — | `current` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 762 | 残す（2026-10-21） |
+| >出典: ${co.source \|\| | `definition` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 835 | 残す（2026-10-21） |
+| — | `diff` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 821 | 残す（2026-10-21） |
 | — | `diluted_shares_used` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1322 | 残す（2026-10-21） |
 | — | `end` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 843・867 | 残す（2026-10-21） |
 | — | `eps` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1242 | 残す（2026-10-21） |
 | — | `eps_diff_pct` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1110 | 残す（2026-10-21） |
 | — | `eps_discrepancy` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1105 | 残す（2026-10-21） |
-| — | `excluded_from_percentile` | ほかの書き手あり<br>`docs/common/sec_data/rotce/APP.json`<br>`docs/common/sec_data/rotce/ASTS.json` | 857 | 残す（2026-10-21） |
+| — | `error` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 672 | 残す（2026-10-21） |
+| — | `excluded_from_percentile` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 857 | 残す（2026-10-21） |
 | — | `execution_metrics` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 669 | 残す（2026-10-21） |
 | — | `extracted_from` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1459 | 残す（2026-10-21） |
 | — | `filing_date` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 983・1034・1066・1075 | 残す（2026-10-21） |
-| ・ | `filled_components` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 928 | 残す（2026-10-21） |
-| — | `filled_from_annual` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 854・927 | 残す（2026-10-21） |
+| ・ | `filled_components` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 928 | 残す（2026-10-21） |
+| — | `filled_from_annual` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 854・927 | 残す（2026-10-21） |
 | — | `fiscal_year` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1222・1223 | 残す（2026-10-21） |
 | XBRL計算EPS: | `gaap_eps` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1113・1124・1137・1163 | 残す（2026-10-21） |
 | — | `gaap_net_income` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1318 | 残す（2026-10-21） |
-| — | `guidance` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 822 | 残す（2026-10-21） |
+| — | `guidance` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 822 | 残す（2026-10-21） |
 | 調整なし | `health` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1195 | 残す（2026-10-21） |
 | 長期目標 <span style= | `high` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 829 | 残す（2026-10-21） |
-| — | `history` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 765 | 残す（2026-10-21） |
+| — | `history` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 765 | 残す（2026-10-21） |
 | — | `item` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1209・1447・1447 | 残す（2026-10-21） |
 | — | `item_id` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1339・1447 | 残す（2026-10-21） |
 | — | `item_name` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1339・1447・1456 | 残す（2026-10-21） |
 | — | `label` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 908 | 残す（2026-10-21） |
-| （登録済みの最新 ${co.last_registered_quarter_en | `last_registered_quarter_end` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 825 | 残す（2026-10-21） |
+| （登録済みの最新 ${co.last_registered_quarter_en | `last_registered_quarter_end` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 825 | 残す（2026-10-21） |
 | — | `last_updated` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 653 | 残す（2026-10-21） |
-| >直近の四半期末（）の会社発表の値: 未登録 | `latest_quarter_end` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 824 | 残す（2026-10-21） |
-| — | `latest_registered` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 823 | 残す（2026-10-21） |
-| — | `long_term_target` | ほかの書き手あり<br>`docs/common/sec_data/rotce/SOFI.json` | 822 | 残す（2026-10-21） |
+| >直近の四半期末（）の会社発表の値: 未登録 | `latest_quarter_end` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 824 | 残す（2026-10-21） |
+| — | `latest_registered` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 823 | 残す（2026-10-21） |
+| — | `long_term_target` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 822 | 残す（2026-10-21） |
 | 長期目標 <span style= | `low` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 829 | 残す（2026-10-21） |
-| 算出不可 | `missing_components` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/AMAT.json` | 771・771・772 | 残す（2026-10-21） |
-| 。無形資産を0と仮定した期は除外 | `n_excluded_assumed_zero` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 808・808 | 残す（2026-10-21） |
-| 比較できる四半期が期（8期以上で判定） | `n_quarters` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 801・807 | 残す（2026-10-21） |
+| 算出不可 | `missing_components` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 771・771・772 | 残す（2026-10-21） |
+| 。無形資産を0と仮定した期は除外 | `n_excluded_assumed_zero` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 808・808 | 残す（2026-10-21） |
+| 比較できる四半期が期（8期以上で判定） | `n_quarters` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 801・807 | 残す（2026-10-21） |
 | — | `net_adjustment_total` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1320 | 残す（2026-10-21） |
 | — | `net_amount` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1337・1457 | 残す（2026-10-21） |
-| 純利益（普通株主帰属のタグなし） | `net_income_source` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 787 | 残す（2026-10-21） |
+| 純利益（普通株主帰属のタグなし） | `net_income_source` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 787 | 残す（2026-10-21） |
 | — | `next_earnings_date` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 951 | 残す（2026-10-21） |
-| ・ | `notes` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 774 | 残す（2026-10-21） |
+| ・ | `notes` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 774 | 残す（2026-10-21） |
 | — | `official_eps` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1109 | 残す（2026-10-21） |
-| — | `per` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 961 | 残す（2026-10-21） |
+| — | `per` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 961 | 残す（2026-10-21） |
 | — | `per_adjusted` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 962 | 残す（2026-10-21） |
-| — | `percentile` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 762 | 残す（2026-10-21） |
+| — | `percentile` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 762 | 残す（2026-10-21） |
 | ガイダンス（）<span style= | `period` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 828・1022・1239・1514 | 残す（2026-10-21） |
 | 期末: | `period_end` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 720・720・1226・1226 | 残す（2026-10-21） |
-| 末と末の平均 | `prev_quarter_end` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 790 | 残す（2026-10-21） |
-| 。参考（TTM）（自社比の目安はこちらで比較） | `price` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 794 | 残す（2026-10-21） |
-| 。参考（TTM）（自社比の目安はこちらで比較） | `price_date` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 794 | 残す（2026-10-21） |
+| 末と末の平均 | `prev_quarter_end` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 790 | 残す（2026-10-21） |
+| 。参考（TTM）（自社比の目安はこちらで比較） | `price` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 794 | 残す（2026-10-21） |
+| 。参考（TTM）（自社比の目安はこちらで比較） | `price_date` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 794 | 残す（2026-10-21） |
 | — | `prior_4q_avg_yoy` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 691 | 残す（2026-10-21） |
-| 。参考（TTM）（自社比の目安はこちらで比較） | `ptbv` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ADBE.json` | 766・769・792・792 | 残す（2026-10-21） |
+| 。参考（TTM）（自社比の目安はこちらで比較） | `ptbv` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 766・769・792・792 | 残す（2026-10-21） |
 | — | `quarter` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1222・1223 | 残す（2026-10-21） |
-| （直近の四半期: ） | `quarter_end` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 777・777・789・790 | 残す（2026-10-21） |
+| （直近の四半期: ） | `quarter_end` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 777・777・789・790 | 残す（2026-10-21） |
 | — | `quarters` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 625・626・626・655 | 残す（2026-10-21） |
+| — | `raw` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1392 | 残す（2026-10-21） |
 | 算出不可 | `reason` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 687・702・704・717 | 残す（2026-10-21） |
 | — | `recent_4q_avg_yoy` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 691 | 残す（2026-10-21） |
 | — | `revenue_growth_acceleration` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 684 | 残す（2026-10-21） |
 | 直近16四半期分のデータ不足 | `roic_trend` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 698 | 残す（2026-10-21） |
 | — | `roic_wacc_ratio` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 704 | 残す（2026-10-21） |
-| 純利益（普通株主帰属のタグなし） | `rotce` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 766・769・782・785 | 残す（2026-10-21） |
-| 末と末の平均 | `rotce_basis` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 790 | 残す（2026-10-21） |
-| 。参考（TTM）（自社比の目安はこちらで比較） | `rotce_ttm` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 791・791 | 残す（2026-10-21） |
+| 純利益（普通株主帰属のタグなし） | `rotce` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 766・769・782・785 | 残す（2026-10-21） |
+| 末と末の平均 | `rotce_basis` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 790 | 残す（2026-10-21） |
+| 。参考（TTM）（自社比の目安はこちらで比較） | `rotce_ttm` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 791・791 | 残す（2026-10-21） |
 | 直近4年中3年以上で算出不能（営業赤字等） | `sbc_ratio` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 714 | 残す（2026-10-21） |
 | 。参考（TTM）（自社比の目安はこちらで比較） | `shares_quarter_end` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ALAB.json` | 794 | 残す（2026-10-21） |
-| — | `signal` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 797・798 | 残す（2026-10-21） |
+| — | `signal` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 797・798 | 残す（2026-10-21） |
 | — | `snippet` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1210 | 残す（2026-10-21） |
 | >出典: ${co.source \|\| | `source` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 835 | 残す（2026-10-21） |
 | 引用ソース: | `sources` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1199・1199・1201・1445 | 残す（2026-10-21） |
@@ -297,18 +299,18 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
 | ヘッダー | `value`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| エラー | `execution_metrics`（この段階の書き手あり）<br>`quarters`（この段階の書き手あり）<br>`special_flags`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
+| エラー | `error`（この段階の書き手あり）<br>`execution_metrics`（この段階の書き手あり）<br>`quarters`（この段階の書き手あり）<br>`special_flags`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | メインコンテンツ | `last_updated`（この段階の書き手あり）<br>`quarters`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 銘柄ヘッダー | `next_earnings_date`（ほかの書き手あり）<br>`tanuki`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`tickers`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | メトリクスカード | `adjusted_eps`（この段階の書き手あり）<br>`eps_diff_pct`（この段階の書き手あり）<br>`eps_discrepancy`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`gaap_eps`（この段階の書き手あり）<br>`official_eps`（この段階の書き手あり）<br>`special_flags`（この段階の書き手あり）<br>`special_notes`（この段階の書き手あり）<br>`upc_prereorg_zero_profit`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 経営者実行力評価（参考指標、[[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④、2026-09-23） | `period_end`（この段階の書き手あり）<br>`prior_4q_avg_yoy`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`recent_4q_avg_yoy`（この段階の書き手あり）<br>`revenue_growth_acceleration`（この段階の書き手あり）<br>`roic_trend`（この段階の書き手あり）<br>`roic_wacc_ratio`（この段階の書き手あり）<br>`sbc_ratio`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`year`（この段階の書き手あり）<br>`years`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| ROTCE・P/TBV（[[ROTCE-PTBV-1]]、2026-10-10、参考表示） | `current`（ほかの書き手あり）<br>`history`（ほかの書き手あり）<br>`missing_components`（ほかの書き手あり）<br>`net_income_source`（ほかの書き手あり）<br>`notes`（ほかの書き手あり）<br>`percentile`（ほかの書き手あり）<br>`prev_quarter_end`（ほかの書き手あり）<br>`price`（ほかの書き手あり）<br>`price_date`（ほかの書き手あり）<br>`ptbv`（ほかの書き手あり）<br>`quarter_end`（ほかの書き手あり）<br>`reason`（この段階の書き手あり）<br>`rotce`（ほかの書き手あり）<br>`rotce_basis`（ほかの書き手あり）<br>`rotce_ttm`（ほかの書き手あり）<br>`shares_quarter_end`（ほかの書き手あり）<br>`signal`（ほかの書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| 会社発表のROTCE（[[ROTCE-QUARTERLY-ANNUALIZED-1]]、config/company_reported_metrics.jsonに登録した銘柄だけ） | `company_reported`（ほかの書き手あり）<br>`computed`（ほかの書き手あり）<br>`definition`（ほかの書き手あり）<br>`diff`（ほかの書き手あり）<br>`end`（この段階の書き手あり）<br>`excluded_from_percentile`（ほかの書き手あり）<br>`filled_components`（ほかの書き手あり）<br>`filled_from_annual`（ほかの書き手あり）<br>`guidance`（ほかの書き手あり）<br>`high`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`last_registered_quarter_end`（ほかの書き手あり）<br>`latest_quarter_end`（ほかの書き手あり）<br>`latest_registered`（ほかの書き手あり）<br>`long_term_target`（ほかの書き手あり）<br>`low`（この段階の書き手あり）<br>`n_excluded_assumed_zero`（ほかの書き手あり）<br>`n_quarters`（ほかの書き手あり）<br>`period`（この段階の書き手あり）<br>`ptbv`（ほかの書き手あり）<br>`quarter_end`（ほかの書き手あり）<br>`reason`（この段階の書き手あり）<br>`rotce`（ほかの書き手あり）<br>`signal`（ほかの書き手あり）<br>`source`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`values`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| PER比較（Addition G） | `components`（この段階の書き手あり）<br>`per`（ほかの書き手あり）<br>`per_adjusted`（ほかの書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
+| ROTCE・P/TBV（[[ROTCE-PTBV-1]]、2026-10-10、参考表示） | `current`（この段階の書き手あり）<br>`history`（この段階の書き手あり）<br>`missing_components`（この段階の書き手あり）<br>`net_income_source`（この段階の書き手あり）<br>`notes`（この段階の書き手あり）<br>`percentile`（この段階の書き手あり）<br>`prev_quarter_end`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`price_date`（この段階の書き手あり）<br>`ptbv`（この段階の書き手あり）<br>`quarter_end`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`rotce`（この段階の書き手あり）<br>`rotce_basis`（この段階の書き手あり）<br>`rotce_ttm`（この段階の書き手あり）<br>`shares_quarter_end`（ほかの書き手あり）<br>`signal`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
+| 会社発表のROTCE（[[ROTCE-QUARTERLY-ANNUALIZED-1]]、config/company_reported_metrics.jsonに登録した銘柄だけ） | `company_reported`（この段階の書き手あり）<br>`computed`（この段階の書き手あり）<br>`definition`（この段階の書き手あり）<br>`diff`（この段階の書き手あり）<br>`end`（この段階の書き手あり）<br>`excluded_from_percentile`（この段階の書き手あり）<br>`filled_components`（この段階の書き手あり）<br>`filled_from_annual`（この段階の書き手あり）<br>`guidance`（この段階の書き手あり）<br>`high`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`last_registered_quarter_end`（この段階の書き手あり）<br>`latest_quarter_end`（この段階の書き手あり）<br>`latest_registered`（この段階の書き手あり）<br>`long_term_target`（この段階の書き手あり）<br>`low`（この段階の書き手あり）<br>`n_excluded_assumed_zero`（この段階の書き手あり）<br>`n_quarters`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`ptbv`（この段階の書き手あり）<br>`quarter_end`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`rotce`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`values`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
+| PER比較（Addition G） | `components`（この段階の書き手あり）<br>`per`（この段階の書き手あり）<br>`per_adjusted`（ほかの書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 期間ピッカー | `ai_analysis`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`quarters`（この段階の書き手あり）<br>`ttm`（この段階の書き手あり）<br>`value`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | チャート | `adjusted_eps`（この段階の書き手あり）<br>`eps`（この段階の書き手あり）<br>`fiscal_year`（この段階の書き手あり）<br>`gaap_eps`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`period_end`（この段階の書き手あり）<br>`quarter`（この段階の書き手あり）<br>`special_flags`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | AI分析 | `comment`（この段階の書き手あり）<br>`confidence`（この段階の書き手あり）<br>`health`（この段階の書き手あり）<br>`item`（この段階の書き手あり）<br>`snippet`（この段階の書き手あり）<br>`sources`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| ウォーターフォール図 | `adjusted_net_income`（この段階の書き手あり）<br>`adjustments`（この段階の書き手あり）<br>`diluted_shares_used`（この段階の書き手あり）<br>`gaap_net_income`（この段階の書き手あり）<br>`item_id`（この段階の書き手あり）<br>`item_name`（この段階の書き手あり）<br>`net_adjustment_total`（この段階の書き手あり）<br>`net_amount`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
+| ウォーターフォール図 | `adjusted_net_income`（この段階の書き手あり）<br>`adjustments`（この段階の書き手あり）<br>`diluted_shares_used`（この段階の書き手あり）<br>`gaap_net_income`（この段階の書き手あり）<br>`item_id`（この段階の書き手あり）<br>`item_name`（この段階の書き手あり）<br>`net_adjustment_total`（この段階の書き手あり）<br>`net_amount`（この段階の書き手あり）<br>`raw`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 調整内訳 | `adjustments`（この段階の書き手あり）<br>`ai_analysis`（この段階の書き手あり）<br>`confidence`（この段階の書き手あり）<br>`extracted_from`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`item`（この段階の書き手あり）<br>`item_id`（この段階の書き手あり）<br>`item_name`（この段階の書き手あり）<br>`net_amount`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`quarters`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`sources`（この段階の書き手あり）<br>`special_flags`（この段階の書き手あり）<br>`special_notes`（この段階の書き手あり）<br>`ttm`（この段階の書き手あり）<br>`upc_prereorg_zero_profit`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 
 ### `docs/value-monitor/adjusted_eps_analyzer/tickers.html`
@@ -336,7 +338,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 |---|---|---|---|
 | Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:162`<br>`common/sec_data/q4_implied.py:171`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | はい |
 | 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:245`<br>`common/sec_data/bs_lines.py:264`<br>`common/sec_data/bs_lines.py:333`<br>`common/sec_data/cf_lines.py:438`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:917`<br>`common/sec_data/layer3_builder.py:1140`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:125`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | はい |
-| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1588`<br>`common/sec_data/report_consistency_check.py:1785`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
+| データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1579`<br>`common/sec_data/report_consistency_check.py:1776`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
 | TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:239`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | はい |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |

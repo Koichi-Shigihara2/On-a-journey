@@ -226,14 +226,18 @@ def month_ends_upto(as_of: str, n: int = HISTORY_MONTHS) -> List[str]:
     return list(reversed(out))
 
 
-def operating_state(fields: Dict[str, Any], as_of: str) -> str:
-    """その時点で使えた値だけの TTM 営業利益の符号。"loss"（<0）・"profit"（≥0）・"unknown"（TTM が作れない）。
-    業種の区分には依らない（STONKS の対象の選び方〈営業利益<0〉。区分なしのバイオも赤字なら "loss"）"""
+def operating_state(fields: Dict[str, Any], as_of: str) -> Tuple[str, str]:
+    """その時点で使えた値だけの営業利益の符号と、その根拠。(状態, 根拠)
+    状態: "loss"（<0）・"profit"（≥0）・"unknown"。根拠: "ttm"（TTM営業利益）・"annual"（TTMが作れないので、取れる最新の年次の営業利益の符号）・
+    "none"（どちらも取れない）。業種の区分には依らない（STONKS の対象の選び方〈営業利益<0〉。区分なしのバイオも赤字なら "loss"）"""
     ent = lambda f: (fields.get(f) or {}).get("entries") or []
     oi = ttm_series(quarterly_points(ent("operating_income"), as_of))
-    if not oi:
-        return "unknown"
-    return "loss" if oi[max(oi)] < 0 else "profit"
+    if oi:
+        return ("loss" if oi[max(oi)] < 0 else "profit"), "ttm"
+    ann = annual_points(ent("operating_income"), as_of)
+    if ann:
+        return ("loss" if ann[max(ann)] < 0 else "profit"), "annual"
+    return "unknown", "none"
 
 
 def _ols(ys: List[float]) -> Tuple[float, float, float]:
@@ -330,7 +334,7 @@ def compute(ticker: str, as_of: str, store: Dict[str, Any], sector_entry: Option
                                       "LOW_FIT": f"見込み不明（TTMの営業利益率が直線に乗らない、R² {be['r2']} < {MIN_R2}）",
                                       "TOO_FAR": f"0に届くのが2年より先（{be['quarters_to_zero']}四半期後）"}[be["reason"]]
     res.update(revenue_stage=stage, revenue_stage_label=STAGE_LABELS[stage], stage_reason=why)
-    res["operating_state_history"] = [[me, operating_state(fields, me)] for me in month_ends_upto(as_of)]
+    res["operating_state_history"] = [[me, *operating_state(fields, me)] for me in month_ends_upto(as_of)]
 
     # 構造的赤字（FCF、TANUKI の TTM の系列と同じく毎年同じ期末の5点）
     ocf_ttm = ttm_series(quarterly_points(ent("operating_cash_flow"), as_of))
