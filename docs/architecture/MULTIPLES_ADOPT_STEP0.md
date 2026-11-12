@@ -154,3 +154,65 @@
 3. **部品に`current`の行**を足し、読み手は生の株価で割る方式でよいか（週1回の再計算に頼らない）
 4. **P/TBVのTCEを時点の値**にしてよいか（31銘柄の履歴が変わる、シグナルは変わらない）
 5. **Vの株数の欠け**（Layer3に`shares_diluted`なし）を先に直すか、Vを例外にするか
+
+---
+
+# 実装済み（2026-11-13、ブランチ`multiples-adopt-1`・**未公開**）
+
+ブランチ`multiples-adopt-1`（`2741efd6e7`）をkaihatsu `7a6a5acd2b`から作り、originに控えを置いた（PRなし。kaihatsuには入れていない）。決定は上の「決めてほしいこと」への回答（2026-11-13）。
+
+## 実装した6段
+
+| 段 | 内容 |
+|---|---|
+| 0 部品 | `common/multiples.py`: 各銘柄のファイルに`current`の行（最新の日足の日の分母・株数・純負債・TCE）。`at_price(row, price, yf_market_cap)`＝**時価総額の作り方の1か所**（株価×部品の株数、`market_cap_source="sec"`）。`current_multiples(ticker, price, yf_market_cap)`が読み手の入口。月末の行は変えていない（`current`の追加だけ） |
+| 1 TANUKI | `data_fetcher.py`: `per_gaap_ttm_sec`・`ps_ttm_sec`・`market_cap_sec`は部品の値。部品がNoneでもforwardには落とさない。forwardは`per_forward_yf`（別の列）。`per_is_forward`を廃止。`stock.html`のPSR・時価総額は`components`を読む（JSの再計算をやめた）。`tanuki_score`に「PER（先行・予想）」の列を追加 |
+| 2 HypeCore | `psr`・`trailing_pe`・`market_cap`を部品から。`forward_pe`・`peg_ratio`はyfinanceのまま（stageの入力） |
+| 3 STONKS | `valuation_fetcher.py`の時価総額・EVを部品から（`pipeline.py`は`market_cap_source`・`market_cap_yf_gap`を保存、画面は`yf_fallback`に「（yfinance値）」） |
+| 4 ROTCE | P/TBV履歴の分母をその期の最初の申告日までのTCE（`tce_first_val`）に。ROTCE（分子・TCEの平均）は最新の値のまま |
+| 5 名前 | `components`のキー: `per`→`per_gaap_ttm_sec`、`ps`→`ps_ttm_sec`、`per_adjusted`→`per_adjusted_ttm`、`max_eps_per`→`per_max_eps_ttm`、`per_is_forward`廃止、`per_forward_yf`・`market_cap_sec`・`market_cap_source`・`market_cap_yf_gap`を追加。読み手（`tanuki_score`・`stock.html`・EPS ANALYZER・HypeCore `detail.html`・`dcf_validity_checker`・rccのCHECK-10・report.txt）を追従。出力の一覧（tanuki・hypecore・eps・stonks）を作り直し |
+
+派生: `docs/common/multiples/`98ファイル（`current`追加）・`docs/common/sec_data/rotce/`（`tce_first_val`追加・`_summary.json`のパーセンタイル）。
+
+## V（決定5）: 原因と扱い
+
+`common/sec_data/data/V/company_facts.json`の`us-gaap`に`WeightedAverageNumberOfDilutedSharesOutstanding`・`EarningsPerShareDiluted`・`CommonStockSharesOutstanding`が**1つも無い**（`dei`の表紙の株数は2009〜2010年の旧クラスの1件だけ）。Visaは種類株（A・B-1・B-2・C）ごとの開示で、SECの一括API（company_facts）は次元つきの値を返さない（`dimension_aggregate_fetcher.py`の冒頭と同じ型）。**company_factsから機械的に取れない**ので、Layer3の取り込みは直せない（生のXBRLインスタンスを取り、転換比率で換算する別の機構が要り、銘柄名を手で書かない方針に合う一般的な取り込みには別の設計）。→ **決定5の後段**: 部品の`current`の行にVの分母（TTM純利益23,504M・純負債・TCE）を入れ、時価総額だけyfinanceの値を**印つき**（`market_cap_source="yf_fallback"`）で代わりに使う。Vの月末の行（70か月）は`no_shares`のまま（過去の倍率は出ない）。
+
+## 試算（`tools/sim`、前＝kaihatsu `7a6a5acd2b`、後＝ブランチ。TANUKI→HypeCore→TANUKI、96銘柄）
+
+| 見るもの | 結果 |
+|---|---|
+| 理論株価・判定（`tanuki_score`）・funda点・timing点 | 変化 **0** |
+| 保有9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA） | すべて変化0 |
+| HypeCoreのstage（96銘柄、月次の履歴ごと） | 変化 **0** |
+| `sim.py scope` | **0銘柄**（method_changeの印は付かない） |
+| 変わるキー | `ps_ttm_sec` 96・`per_gaap_ttm_sec` 77・`per_adjusted_ttm`（改名のみ）80・`per_max_eps_ttm`（改名のみ）82・`rice_per_ratio` 56×3シナリオ・`market_cap_sec`/`market_cap_source`/`per_forward_yf` 追加。`per_forward_yf`と`per_gaap_ttm_sec`が同じ値の銘柄は0（forward混在なし） |
+
+### DCF妥当性のFフラグ（|調整後PER−GAAP PER|≧10x）の反転 10銘柄
+
+STEP 0の試算は4銘柄だったが、決定1（forwardに落とさない）で**6銘柄が増えた**。原因は2種類。純利益はSEC原本の`NetIncomeLoss`の四半期値（accn付き）で確認した。
+
+| 銘柄 | 反転 | 前→後のGAAP PER（調整後PER） | 原因（原本） |
+|---|---|---|---|
+| AVAV・FROG・GTLB・NET・RBRK・S | 真→偽 | 28.2・82.4・45.6・170.3・141.7・51.6（forward）→ None（68.4・118.0・56.2・256.3・661.95・714.2） | **forward PERがGAAPの列に入っていた**ため、TTMの調整後PERとの差が大きく出ていた。TTM純利益が赤字（AVAV −203M・FROG −21M・GTLB −53M・NET −239M・RBRK −254M・S −340M）で、GAAP PERは定義できない。フラグが消えるのが正しい |
+| ADSK | 真→偽 | 33.7→33.3（23.55） | 差が10.17x→9.79xと**境目**。部品の純利益は直近4四半期〈343＋316＋491＋492＝1,642M、原本〉で、yfinanceの暗黙の純利益1,611Mより2%大きい |
+| CELH | 真→偽 | 37.1→25.6（16.85） | 部品のTTM純利益317.1M〈直近4四半期24.7＋110.1＋55.3＋127.0、原本〉。yfinanceの暗黙の純利益223M（優先株の配当等の控除が候補、**未確認**）より42%大きい。差が20.3x→8.8x |
+| ZETA | 真→偽 | 235.9→None（33.2） | TTM純利益が−2.2M〈−3.6＋6.5−13.2＋8.2、原本〉で赤字。yfinanceの暗黙の純利益40.9Mは別の定義（調整後の可能性、未確認）。GAAP PERは定義できない |
+| PAYS | 偽→真 | 28.7→37.3（19.58） | TTM純利益15.8M〈1.4＋5.4＋6.8＋2.2、原本。直近の四半期は2026-06-30でQ3が未収載の可能性〉。yfinanceの暗黙の純利益18.8M。差が9.2x→17.7xになる |
+
+## 公開の手順（公開の順: PARSER段1 → CONTINUITY → DILUTION → DEFICIT → **本件**）
+
+各公開の後、そのたびに:
+
+1. kaihatsuの最新に`multiples-adopt-1`をrebaseする（`git rebase kaihatsu`）。衝突しやすい所: `pipeline.py`（CONTINUITY・DILUTION・DEFICITも触る。本件は`compute_max_eps`の戻りのキー名と`Valuation_Multiples`の文面だけ）、`tanuki_score/index.html`の`COL_KEYS`・`fcfDeficitKind`・`dilutionPct`の行（DILUTION・DEFICIT）、`stock.html`のPSR・時価総額（本件）と2220行付近（CONTINUITY）と1608行付近（DILUTION）、`stonks_silo/index.html`（DEFICIT）。ハンクは別だが、キー名`per`/`ps`/`max_eps_per`の追加の読み手が他のブランチに増えていないか`grep`で確かめる
+2. 部品と派生を作り直す: `python common/multiples.py --all` → `python common/sec_data/rotce.py` → `python scripts/inventory/build_output_inventory.py --layer {tanuki,hypecore,eps,stonks}`。PARSER段1・CONTINUITYは部品の分母（EV・TCE・TTM純利益）を動かすので、作り直しを忘れない
+3. `python tools/sim/sim.py chain before/after`（前＝rebase前のkaihatsu、後＝ブランチ。道具は同じ）。**理論株価・判定・funda・timing・stage・scope が0**であること。前の公開で理論株価が動いていても、本件の前後では0（表示のキーだけ）。Fフラグの反転は**数が変わる**ので、上の表と同じ形で原本を確かめる
+4. ゲート: `PYTHONUTF8=1 python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（失敗は既知の`test_stonks_flag_rule`の1件だけ）・`report_consistency_check.py --fail-on-ng`・`common/sec_data/audit.py`
+5. kaihatsuに`--no-ff`で統合して`git push`。Market Data Weekly（`multiples.py --all`）と、TANUKI VALUATION → HypeCore → TANUKI の連鎖（`workflow_run`で自動。3つ目は手で起動しない）を待つ
+6. 公開後の確認: 各`latest.json`の`components`に`per_gaap_ttm_sec`・`per_forward_yf`・`market_cap_source`があり、`per`・`ps`・`per_is_forward`・`max_eps_per`が無い。画面（TANUKI SCORE・stock.html・HypeCore detail・EPS ANALYZER・STONKS）の目視。`method_change`の印は付かない（scope 0）
+7. ROTCEのP/TBVのパーセンタイル（ALAB 64→73・CELH 29→35）は`method_change`の対象外（TANUKIの出力ではない）。次の`rotce.py`の定時の実行で反映される
+
+## 残り・次の件
+
+- `docs/value-monitor/tanuki_valuation/data/*/latest.json`は公開の前は旧キーのまま（公開の連鎖で新キーになる）。新しいJSは公開前のデータでは「PER」の列が空に見える（ブランチを公開した後の最初の連鎖で埋まる）
+- 理論株価の分母`diluted_shares`の付け替えは **[[TANUKI-SHARES-SINGLE-SOURCE-1]]**（登録のみ、本件の公開の後）。保有のSOUN・TSLA・PLTR・SOFIを含む

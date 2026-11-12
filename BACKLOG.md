@@ -2439,11 +2439,29 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 #### ここで決めること
 今の読み手（TANUKIのPERの列・最大EPSのPER・ROTCEのパーセンタイル・画面のPSR）を部品に寄せる順と、「PER」の名前の付け直し（GAAP・調整後・最大EPS）。寄せるときは全銘柄の試算と計算方法の変更の手順で。P/TBVのTCEを時点の値（first_val）にするか
 
+#### 実装済み（2026-11-13、ブランチ`multiples-adopt-1`・未公開）
+決定5項目（`docs/architecture/MULTIPLES_ADOPT_STEP0.md`）を実装。試算は理論株価・判定・funda・timing・stage・scope すべて変化0（表示のみ）。公開の順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → 本件、手順は同文書末尾。公開後に本項目をBACKLOG_DONE.mdへ移設し、表の「画面のPSRが年次」の記述（古い）を直す。次は[[TANUKI-SHARES-SINGLE-SOURCE-1]]。
+
 #### 投資判断への影響
 今あり（同じ「PER」の名前で中身の違う値が並ぶ、画面のPSRが年次の売上で古い）
 
 #### 規模の見込み
 中〜大
+
+---
+
+### [TANUKI-SHARES-SINGLE-SOURCE-1] TANUKIの`diluted_shares`（理論株価の分母）がyfinance由来で、SECの株数と3%超違う銘柄が23。分母を倍率の部品の株数に寄せる
+**型・処置:** 型B（同じ概念の二重実装）・根治策
+**優先度:** 高
+**分類:** TANUKI VALUATION / `data_fetcher.py::_determine_diluted_shares`・`core_calculator.py`（1株理論株価の分母）・倍率の部品（`common/multiples.py`）・`common/dilution.py`
+**登録日:** 2026-11-13
+**着手条件:** [[MULTIPLES-ADOPT-1]] の公開の後（同じ画面にSECの時価総額とyfinance由来の株数が並ぶため）
+**発見:** [[MULTIPLES-ADOPT-1]] STEP 0（2026-11-13、FINDINGS 2026-11-13 → 登録済み）
+**内容:** `components.diluted_shares`は96/96銘柄が`_shares_source=yf_implied`（yfinanceの`implied_shares_outstanding`）で、理論株価（IV∝1÷株数）の分母になっている。倍率の部品（SECの加重平均の希薄化後株数・分割換算）と3%を超えて違うのが**23銘柄**: ASTS +30%・IONQ +16%・ONDS +16%・RXRX +15%・TSLA +12%・RCAT +12%・SOUN +11%・LITE −11%・PAYS −8%・FICO −7%・PLTR −6%・ALAB −5%・BSY −5%・CART −4%・SOFI −4%・FLYW −4%・JOBY +4%・FROG −4%・DDOG −4%・INTU −4%・CPRT −3%・CAKE −3%・SITM −3%（値は yfinance÷SEC−1）。
+**保有銘柄:** **含まれる（4銘柄）**: SOUN（+11.3%）・TSLA（+11.6%）・PLTR（−6.4%）・SOFI（−4.4%）。SECの株数に寄せると理論株価はSOUN・TSLAで約+11%、PLTR・SOFIで約−6%・−4%動く概算（IV∝1÷株数、試算していない）。ADBE・APP・CELH・CRWV・NVDAは3%以内。
+**方針:** 分母を倍率の部品の株数（[[DILUTION-DEFINITION-UNIFY-1]]の`share_count_change`と同じ基準＝加重平均の希薄化後・分割の調整）に寄せる。株数が欠ける銘柄（V）の扱い・TSLAの制限付株（発行済株数との差、`outstanding_gap_pct`）・ASTSの複数クラスの株の扱いを先に決める。全銘柄の試算（`tools/sim`、TANUKI→HypeCore→TANUKI）と「計算方法の変更の手順」（scope・印・派生ファイル）で行う。
+**投資判断への影響:** あり（理論株価・判定が動く。保有4銘柄を含む）
+**規模の見込み:** 中
 
 ---
 
