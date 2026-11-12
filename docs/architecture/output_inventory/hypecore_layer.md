@@ -9,7 +9,7 @@
 
 **件数**: 出力 3（ファイル 3・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 1／2件以上 2／規則の二重 9（検出式 11種のうち。HypeCoreのファイルを含むもの 1）
 
-**画面の項目**: 画面が読むキー 58（この段階の書き手あり 55・ほかの書き手あり 1・画面の中で作る値 0・**書き手なし 2**）／書き手があるのに誰も読まないキー **1**（今の書き手のコードに無いキー 0 は数えない）
+**画面の項目**: 画面が読むキー 61（この段階の書き手あり 57・ほかの書き手あり 2・画面の中で作る値 0・**書き手なし 2**）／書き手があるのに誰も読まないキー **1**（今の書き手のコードに無いキー 0 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 1件／解決できた読み込み 12件＋ファイル名で当たった行 32件（2.2%）→ 当たらない
 
@@ -62,7 +62,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated`(2)・`generated_at`(9)・`method_change`(2)・`method_change_applied`(1)・`monthly`(19)・`ticker`(22)
 - Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 52・67・68・175・206（経由 `browser_checks/check_signal_consistency_section.py::_piv_points`、`browser_checks/check_signal_consistency_section.py::pick_sparse_ticker`）
 - Python・保存済みファイル: `common/registration/register_ticker.py` 行 299・459・501・512（経由 `common/registration/register_ticker.py::step5_hypecore`）
-- Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・163・166・203・226・251・254・364・367・368・369 ほか3（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_b_source_label`、`common/screening/dcf_validity_checker.py::check_e_transition_sample`）
+- Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・163・166・203・226・251・254・365・368・369・370 ほか3（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_b_source_label`、`common/screening/dcf_validity_checker.py::check_e_transition_sample`）
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 175・493・674・688・690（経由 `common/sec_data/registration_validator.py::check_p1_registration_completeness`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2875・2904・2915（経由 `common/screening/dcf_validity_checker.py::_load_json`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 80・308・337・344・355・361（経由 `common/stage_v2.py::_load`、`common/stage_v2.py::finalize`）
@@ -119,7 +119,7 @@
 
 なし
 
-### `docs/value-monitor/hypecore/detail.html`（35項目）
+### `docs/value-monitor/hypecore/detail.html`（38項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
@@ -138,9 +138,12 @@
 | — | `ocf_yield_q` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 319 | 残す（2026-10-21） |
 | — | `peg` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 569 | 残す（2026-10-21） |
 | — | `peg_ratio` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 318・569 | 残す（2026-10-21） |
+| — | `per` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 566 | 残す（2026-10-21） |
 | — | `per_gaap_ttm_sec` | 書き手なし | 566 | 残す（2026-10-21） |
+| — | `per_is_forward` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 566 | 残す（2026-10-21） |
 | — | `price` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 435・482・489・538 | 残す（2026-10-21） |
 | — | `price_iv_ratio` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 321・354 | 残す（2026-10-21） |
+| — | `ps` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 570 | 残す（2026-10-21） |
 | — | `ps_ttm_sec` | 書き手なし | 570 | 残す（2026-10-21） |
 | — | `psr` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 318・570 | 残す（2026-10-21） |
 | — | `real_strong` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 375 | 残す（2026-10-21） |
@@ -199,7 +202,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 期待の正体（折りたたみ） | `label`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 左：期待指標＋遷移確率 | `analyst_upgrade_rate`（この段階の書き手あり）<br>`eps_surprise`（この段階の書き手あり）<br>`forward_pe`（この段階の書き手あり）<br>`from_peak`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`ocf_yield_q`（この段階の書き手あり）<br>`peg_ratio`（この段階の書き手あり）<br>`price_iv_ratio`（この段階の書き手あり）<br>`psr`（この段階の書き手あり）<br>`rev_yoy`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`rule40_yoy_netmargin`（この段階の書き手あり）<br>`stage`（この段階の書き手あり）<br>`values`（この段階の書き手あり）<br>`vol_surge_6m`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 右：実体指標＋現状解釈＋内部フェーズ | `eps_surprise`（この段階の書き手あり）<br>`from_peak`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`month`（この段階の書き手あり）<br>`price_iv_ratio`（この段階の書き手あり）<br>`rev_yoy`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`substage_label`（この段階の書き手あり）<br>`substage_next`（この段階の書き手あり）<br>`substage_watch`（この段階の書き手あり）<br>`t`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| 追加H: バリュエーション倍率パネル | `ev_ebitda`（この段階の書き手あり）<br>`peg`（ほかの書き手あり）<br>`peg_ratio`（この段階の書き手あり）<br>`per_gaap_ttm_sec`（書き手なし）<br>`ps_ttm_sec`（書き手なし）<br>`psr`（この段階の書き手あり）<br>`trailing_pe`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
+| 追加H: バリュエーション倍率パネル | `ev_ebitda`（この段階の書き手あり）<br>`peg`（ほかの書き手あり）<br>`peg_ratio`（この段階の書き手あり）<br>`per`（この段階の書き手あり）<br>`per_gaap_ttm_sec`（書き手なし）<br>`per_is_forward`（ほかの書き手あり）<br>`ps`（この段階の書き手あり）<br>`ps_ttm_sec`（書き手なし）<br>`psr`（この段階の書き手あり）<br>`trailing_pe`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | チャート | `from_peak`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`ma200_mom`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`real_strong`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`stage`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | テーブル | `components`（この段階の書き手あり）<br>`from_peak`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`ma200_mom`（この段階の書き手あり）<br>`month`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`real_strong`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`stage`（この段階の書き手あり）<br>`substage_label`（この段階の書き手あり）<br>`substage_phase`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | （区画を決められない） | `error`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
@@ -255,7 +258,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
-| `hypecore.py` | 1,317 | `.github/workflows/HypeCore_Update.yml` | `common/registration/register_ticker.py`<br>`tools/sim/sim.py` | — | 8件 |
+| `hypecore.py` | 1,317 | `.github/workflows/HypeCore_Update.yml` | `common/registration/register_ticker.py`<br>`tools/sim/sim.py` | — | 9件 |
 
 ## 止める条件の内訳
 

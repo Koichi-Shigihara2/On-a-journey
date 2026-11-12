@@ -63,7 +63,8 @@ def test_market_cap_is_built_in_one_place():
             line = s[s.rfind("\n", 0, m.start()) + 1: s.find("\n", m.end())]
             assert m.group(1) == "market_cap" and ("yf_market_cap" in line or "current_multiples" in line), (rel, line)
     html = _src("docs/value-monitor/tanuki_valuation/stock.html")
-    assert "currentPrice * dilutedSharesVal" not in html and "ps_ttm_sec" in html
+    assert "ps_ttm_sec" in html
+    assert all("旧キー読み" in l for l in html.splitlines() if "currentPrice * dilutedSharesVal" in l)   # 旧データ用の読みだけ
 
 
 def test_per_column_never_mixes_forward():
@@ -71,9 +72,25 @@ def test_per_column_never_mixes_forward():
     assert "per_is_forward" not in s and "_trailing_pe or _forward_pe" not in s
     assert "per_forward_yf" in s
     sc = _src("docs/value-monitor/tanuki_score/index.html")
-    assert "per_is_forward" not in sc and "perIsFwd" not in sc and "per_forward_yf" in sc
+    # 旧キー読み（MULTIPLES-ADOPT-1の残り）の行以外に per_is_forward を使わない
+    assert "perIsFwd" not in sc and "per_forward_yf" in sc
+    assert all("旧キー読み" in l for l in sc.splitlines() if "per_is_forward" in l)
 
 
 def test_rotce_ptbv_history_uses_first_val_tce():
     s = _src("common/sec_data/rotce.py")
     assert "_tce_pit(q)" in s and "tce_first_val" in s
+
+
+def test_old_key_fallback_never_turns_forward_into_gaap_per():
+    """公開直後の旧データ（per_is_forward=true のとき per は予想PER）でも、GAAP PERの列には入らない"""
+    from common.screening.dcf_validity_checker import check_f_eps_analyzer_delta as F
+    assert F({"components": {"per": 28.0, "per_is_forward": True, "per_adjusted": 68.0}})[0] is False
+    assert F({"components": {"per": 14.0, "per_adjusted": 3.5}})[0] is True            # 旧データ（GAAP）
+    assert F({"components": {"per_gaap_ttm_sec": 14.0, "per_adjusted_ttm": 3.5}})[0] is True
+
+
+def test_every_renamed_key_reader_has_old_key_fallback_marker():
+    for rel in ("docs/value-monitor/tanuki_score/index.html", "docs/value-monitor/tanuki_valuation/stock.html",
+                "docs/value-monitor/adjusted_eps_analyzer/stock.html", "docs/value-monitor/hypecore/detail.html"):
+        assert "旧キー読み" in _src(rel), rel

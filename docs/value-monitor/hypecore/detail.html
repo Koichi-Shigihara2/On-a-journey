@@ -563,11 +563,11 @@ function renderValMultiples(lat, comps) {
   // 保持するようになったため、TANUKI側と同型のtrailing優先・なければ
   // forwardの判定に統一する。
   // [[MULTIPLES-ADOPT-1]]: GAAP PERは部品の値（TANUKIのcomponents）→無ければpoc.json（これも部品由来）。forwardには落とさない
-  const perFromComps = comps?.per_gaap_ttm_sec ?? null;
+  const perFromComps = comps?.per_gaap_ttm_sec ?? (comps?.per_is_forward ? null : (comps?.per ?? null));   // 旧キー読み（公開直後の旧データ用。次の連鎖の後に外す: [[MULTIPLES-ADOPT-1]]）
   const per        = perFromComps ?? lat.trailing_pe ?? null;
   const perIsFwd   = false;
   const peg        = comps?.peg      ?? lat.peg_ratio ?? null;
-  const ps         = comps?.ps_ttm_sec ?? lat.psr ?? null;
+  const ps         = comps?.ps_ttm_sec ?? comps?.ps ?? lat.psr ?? null;   // 旧キー読み（公開直後の旧データ用。次の連鎖の後に外す: [[MULTIPLES-ADOPT-1]]）
   const evEbRaw    = comps?.ev_ebitda ?? (lat.ev_ebitda != null && lat.ev_ebitda > 0 ? lat.ev_ebitda : null);
   // 2-E: 負のEV/EBITDAは表示しない（EBITDA<0は意味をなさない）
   const evEb       = (evEbRaw != null && evEbRaw > 0) ? evEbRaw : null;
