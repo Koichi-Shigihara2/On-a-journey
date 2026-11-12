@@ -509,7 +509,7 @@ function renderDetailTable() {
 
     const dupont      = tk?.dupont ?? null;
     const growthRate  = tk?.growth?.rate ?? null;
-    const dilutionPct = tk?.financial_health?.dilution_3yr_annual_pct ?? null;
+    const dilutionPct = (tk?.financial_health?.split_suspect ? null : tk?.financial_health?.dilution_3yr_annual_pct) ?? null;  // 未登録の分割の疑い（DILUTION-DEFINITION-UNIFY-1）は成長の罠の数に入れない
     const roicWacc    = tk?.rice?.roic_wacc_ratio ?? null;
     const industry    = tk?.components?.industry ?? '';
     // 景気循環株は業種のマスターの区分（[[SECTOR-MASTER-ADOPT-1]] 段5。画面に語の一覧を持たない）
