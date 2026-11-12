@@ -210,7 +210,8 @@ STEP 0の試算は4銘柄だったが、決定1（forwardに落とさない）�
 4. ゲート: `PYTHONUTF8=1 python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（失敗は既知の`test_stonks_flag_rule`の1件だけ）・`report_consistency_check.py --fail-on-ng`・`common/sec_data/audit.py`
 5. kaihatsuに`--no-ff`で統合して`git push`。Market Data Weekly（`multiples.py --all`）と、TANUKI VALUATION → HypeCore → TANUKI の連鎖（`workflow_run`で自動。3つ目は手で起動しない）を待つ
 6. 公開後の確認: 各`latest.json`の`components`に`per_gaap_ttm_sec`・`per_forward_yf`・`market_cap_source`があり、`per`・`ps`・`per_is_forward`・`max_eps_per`が無い。画面（TANUKI SCORE・stock.html・HypeCore detail・EPS ANALYZER・STONKS）の目視。`method_change`の印は付かない（scope 0）
-7. ROTCEのP/TBVのパーセンタイル（ALAB 64→73・CELH 29→35）は`method_change`の対象外（TANUKIの出力ではない）。次の`rotce.py`の定時の実行で反映される
+7. **旧キー読みを外す（公開の次の連鎖の後）**: 公開の直後は`latest.json`が旧キー（`per`・`ps`・`per_adjusted`・`max_eps_per`・`per_is_forward`）のままなので、画面（`tanuki_score/index.html`・`tanuki_valuation/stock.html`・`adjusted_eps_analyzer/stock.html`・`hypecore/detail.html`）と`dcf_validity_checker.py`・`report_consistency_check.py`のCHECK-10は、新キーが無い時に旧キーを読む（コメント「旧キー読み」。旧データの`per_is_forward`が真の`per`はGAAP PERにしない）。**TANUKI → HypeCore → TANUKI の連鎖が1回終わり、全96銘柄の`latest.json`に新キーが入った後**に、`grep -rn "旧キー読み"`で全て外し、`tests/test_multiples_adopt.py`の旧キー読みのテストを新キーだけの検査に直す。残りは`[[MULTIPLES-ADOPT-1]]`の「残り」に書いてある
+8. ROTCEのP/TBVのパーセンタイル（ALAB 64→73・CELH 29→35）は`method_change`の対象外（TANUKIの出力ではない）。次の`rotce.py`の定時の実行で反映される
 
 ## 残り・次の件
 

@@ -2442,6 +2442,8 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 #### 実装済み（2026-11-13、ブランチ`multiples-adopt-1`・未公開）
 決定5項目（`docs/architecture/MULTIPLES_ADOPT_STEP0.md`）を実装。試算は理論株価・判定・funda・timing・stage・scope すべて変化0（表示のみ）。公開の順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → 本件、手順は同文書末尾。公開後に本項目をBACKLOG_DONE.mdへ移設し、表の「画面のPSRが年次」の記述（古い）を直す。次は[[TANUKI-SHARES-SINGLE-SOURCE-1]]。
 
+**残り（公開の次の連鎖の後）:** 画面・検査の**旧キー読みを外す**（`grep -rn "旧キー読み"`: `tanuki_score/index.html`・`tanuki_valuation/stock.html`・`adjusted_eps_analyzer/stock.html`・`hypecore/detail.html`・`dcf_validity_checker.py`・`report_consistency_check.py` CHECK-10。ブランチ`multiples-adopt-1`の`587496219b`で足した）。全96銘柄の`latest.json`に`per_gaap_ttm_sec`が入ったことを確かめてから外し、これを終えて初めて本項目をBACKLOG_DONE.mdへ移設する。
+
 #### 投資判断への影響
 今あり（同じ「PER」の名前で中身の違う値が並ぶ、画面のPSRが年次の売上で古い）
 
@@ -2459,6 +2461,7 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 **発見:** [[MULTIPLES-ADOPT-1]] STEP 0（2026-11-13、FINDINGS 2026-11-13 → 登録済み）
 **内容:** `components.diluted_shares`は96/96銘柄が`_shares_source=yf_implied`（yfinanceの`implied_shares_outstanding`）で、理論株価（IV∝1÷株数）の分母になっている。倍率の部品（SECの加重平均の希薄化後株数・分割換算）と3%を超えて違うのが**23銘柄**: ASTS +30%・IONQ +16%・ONDS +16%・RXRX +15%・TSLA +12%・RCAT +12%・SOUN +11%・LITE −11%・PAYS −8%・FICO −7%・PLTR −6%・ALAB −5%・BSY −5%・CART −4%・SOFI −4%・FLYW −4%・JOBY +4%・FROG −4%・DDOG −4%・INTU −4%・CPRT −3%・CAKE −3%・SITM −3%（値は yfinance÷SEC−1）。
 **保有銘柄:** **含まれる（4銘柄）**: SOUN（+11.3%）・TSLA（+11.6%）・PLTR（−6.4%）・SOFI（−4.4%）。SECの株数に寄せると理論株価はSOUN・TSLAで約+11%、PLTR・SOFIで約−6%・−4%動く概算（IV∝1÷株数、試算していない）。ADBE・APP・CELH・CRWV・NVDAは3%以内。
+**STEP 0（2026-11-13、`docs/architecture/TANUKI_SHARES_STEP0.md`）:** 書き手・読み手を全部出し、23銘柄の原因を原本で分類。案A（部品の株数＝加重平均の希薄化後）の試算は理論株価92銘柄・5%超12銘柄・判定2銘柄（CPRT・RMBS）・funda点0・stage0・scope 95。**公開の順は MULTIPLES の後（最後）。** 決めてほしいことは同文書の§6。
 **方針:** 分母を倍率の部品の株数（[[DILUTION-DEFINITION-UNIFY-1]]の`share_count_change`と同じ基準＝加重平均の希薄化後・分割の調整）に寄せる。株数が欠ける銘柄（V）の扱い・TSLAの制限付株（発行済株数との差、`outstanding_gap_pct`）・ASTSの複数クラスの株の扱いを先に決める。全銘柄の試算（`tools/sim`、TANUKI→HypeCore→TANUKI）と「計算方法の変更の手順」（scope・印・派生ファイル）で行う。
 **投資判断への影響:** あり（理論株価・判定が動く。保有4銘柄を含む）
 **規模の見込み:** 中
