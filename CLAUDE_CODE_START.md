@@ -38,7 +38,7 @@
    - 日時: 2026-11-15（日）のSEC_Data_Update（ttm・normalizedを日曜に作り直す）と、次のMarket Data Weekly（`common/multiples.py --all`が倍率の履歴を作り直す）の後
    - 確認の手順: ①日曜の作り直しで`common/sec_data/ttm/`の19銘柄のD&A・`normalized/`の年次11年が、コミットした値のまま（新しい四半期の分だけ増える）②`docs/common/multiples/`は12か月より前の月だけが変わり（64銘柄、`net_income_5y_*`・`pe_5y_avg_earnings`）、直近12か月は変わらない ③`latest.json`の`method_change`が付かない
    - 期限: 2026-11-16。次の段は`PARSER_LAYER3_STAGE0.md`の§7（段1の前に、動く銘柄の理由を原本の申告で確かめた一覧）
-32. **日足の分割の割り戻しの2回目が0件であること**（`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]` (1)、`common/market_data/split_reconcile.py`。公開は手動のMarket Data Weekly〈run IDは公開時に追記〉）
+32. **日足の分割の割り戻しの2回目が0件であること**（`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]` (1)、`common/market_data/split_reconcile.py`。公開は手動のMarket Data Weekly run `43199988826`〈bot commit `21809efb32`、APH 1,423行・CTVA 1,442行を割り戻し、手元の走査は2回目0件を確認済み〉）
    - 日時: 2026-11-15（日）13:20 UTC（22:20 JST）の定時のMarket Data Weeklyの後
    - 確認の手順: 該当の段（Reconcile daily rows with provider）のログが「当たり 0銘柄」。`common/market_data/daily/APH.json`・`CTVA.json`の境の日より前の行に`_corrections`（reason `split_adjust`）が1回分だけ付いている。`python common/market_data/split_reconcile.py`（走査だけ）が手元で0銘柄。APHの200日線が約75・CTVAの50日線が約12台（Yahooの調整後の値）
    - 期限: 2026-11-16。合格したら`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`をBACKLOG_DONE.mdへ移設（アクティブ13→12）、`PROJECT_STATUS.md`の次の作業4番を外す
