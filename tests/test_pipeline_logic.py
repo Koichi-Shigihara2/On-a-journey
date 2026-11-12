@@ -333,8 +333,8 @@ class TestFundaScorePenalty:
 
         assert result["funda_score"] == 0
 
-    def test_dilution_over_20_applies_15pt_penalty(self, tmp_path):
-        """dilution > 20%/yr → funda_score から 15点ペナルティが適用される"""
+    def test_dilution_over_20_applies_slope_penalty(self, tmp_path):
+        """dilution 25%/yr → 傾斜（20〜40%で0→25点）で6点（25×5/20=6.25→6）の減点。[[DILUTION-DEFINITION-UNIFY-1]]"""
         pipe = _make_pipe(tmp_path)
         pipe._eps_summary_cache = {}
         # stonks-silo に TEST エントリなし（runway ペナルティは発動しない）
@@ -347,8 +347,8 @@ class TestFundaScorePenalty:
         }
         result = pipe._compute_tanuki_score("TEST", valuation)
 
-        # 基本スコア 25 → -15 = 10
-        assert result["funda_score"] == 10
+        # 基本スコア 25 → -6 = 19
+        assert result["funda_score"] == 19
 
     def test_dilution_over_40_applies_25pt_penalty(self, tmp_path):
         """dilution > 40%/yr → -25点ペナルティ（-15より大きいことを確認）"""
