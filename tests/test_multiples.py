@@ -127,3 +127,21 @@ def test_tce_as_of_uses_values_filed_by_then():
     t = rotce.tce_as_of(store, None, "2026-06-30")
     assert (t["end"], t["tce"]) == ("2026-03-31", 700.0)                  # 6月末: 3月末の最初の申告の値（800−100）
     assert rotce.tce_as_of(store, None, "2026-08-31")["end"] == "2026-06-30"
+
+
+def test_ledger_annotations_survive_rebuild():
+    """台帳の行に手で足した price_factor は、機械の作り直しでも同じ（銘柄・分割の日）の行に引き継がれる
+    （[[POINT-IN-TIME-HISTORY-INTEGRITY-1]] (2)。HONの株価の調整の比0.9535）"""
+    new = [{"ticker": "HON", "split_date": "2026-06-29", "status": "mismatch"},
+           {"ticker": "HON", "split_date": "2027-01-04", "status": "ok"}]
+    prev = [{"ticker": "HON", "split_date": "2026-06-29", "status": "mismatch", "price_factor": 0.9535, "price_factor_reason": "x"}]
+    out = mp.carry_annotations(new, prev)
+    assert out[0]["price_factor"] == 0.9535 and out[0]["price_factor_reason"] == "x"
+    assert "price_factor" not in out[1]
+    assert mp.carry_annotations(new, None) == new
+
+
+def test_committed_ledger_keeps_hon_price_factor():
+    led = mp.load_ledger()
+    hon = [e for e in led if e["ticker"] == "HON" and e["split_date"] == "2026-06-29"][0]
+    assert hon["status"] == "mismatch" and hon["price_factor"] == 0.9535

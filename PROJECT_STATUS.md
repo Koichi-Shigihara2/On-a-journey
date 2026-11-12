@@ -15,7 +15,7 @@
 1. 11-12（木）朝: 手順30（`[[SECTOR-MASTER-ADOPT-1]]`の印が定時の実行で付かないこと。付かなければBACKLOG_DONE.mdへ移設、アクティブ13→12）【Sonnet】
 2. 11-15（日）〜11-16: 手順31（`[[PARSER-LAYER3-SINGLE-SOURCE-1]]`段0の次の定時の確認）→ 段1の公開【Opus】。段1の実装は公開の時までrevert済み（`PARSER_LAYER3_STAGE1.md` §4: `0544696ddc`→`1ebce36a25`の順にrevertの戻し→出力の一覧→派生ファイル→`sim.py scope --write`→TANUKI→HypeCore→TANUKI）
 3. `[[TANUKI-CALC-CONTINUITY-1]]`の公開【Opus】: ローカルブランチ`tanuki-calc-continuity-1`を段1の公開の後にrebase→段1の上で試算し直し→決定(a)の一覧→公開（`TANUKI_CALC_CONTINUITY_STEP0.md` §6）
-4. `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`【Opus】（優先: 中。`[[MULTIPLES-ADOPT-1]]`と`[[STAGE-V2-ROLLOUT-1]]`の切り替えより前）
+4. `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`: 実装済み（2026-11-12。(1) 日足の割り戻し `common/market_data/split_reconcile.py`＝Market Data Weeklyの段・APH・CTVAの2銘柄を割り戻し、(2) HONの `price_factor 0.9535` を台帳に、(3) 案A〈コード変更なし〉。`POINT_IN_TIME_STEP0.md`）。残りは次回の確認手順32（Market Data Weeklyの定時の実行で2回目が0件）が済んでからBACKLOG_DONE.mdへ移設【Sonnet】
 5. `[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`【Opus】
 6. `[[STAGE-V2-ROLLOUT-1]]` の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）【Opus】。②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
 7. `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）

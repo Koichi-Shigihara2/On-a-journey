@@ -72,7 +72,17 @@
 
 - 公開の順の案: ①(1)の日足は独立、いつでも（Market Pulseの表示が直る。理論株価・判定は動かない） ②PARSER-LAYER3 段1とCONTINUITYの公開を先に ③(2)・(3)は②の後。(3)は案Aならコード変更なし（読み手の注記だけ） ④(2)の`kind`は、定義v2の切り替え（MULTIPLES-ADOPT-1・STAGE-V2-ROLLOUT-1）の前に入れる
 
-## 決めてほしいこと
+## 決定（2026-11-12、チャット側）と実装
+
+- (a) **週1回**: `common/market_data/split_reconcile.py --apply` をMarket Data Weeklyの段に足した（属性・アナリストの取得の後、倍率の作り直しの前）。UPDATE_SCHEDULE.mdに反映
+- (b) **台帳だけ**: `config/split_price_ledger.json` のHONの行に `price_factor: 0.9535` と理由を記録。`split_history.yaml` は変えない。台帳は機械で作り直すため、`multiples.carry_annotations` が前の台帳の同じ（銘柄・分割の日）の行の `price_factor`・`price_factor_reason` を引き継ぐ。mismatchの扱いは今のまま（分割前の月は判定不能）
+- (c) **案A**: Q4の `first_filed` は部品の最大のまま・コード変更なし。`q4_basis=latest` の印が読み手に見える
+
+### (1) の実装の結果（手元の全銘柄）
+- 走査580銘柄（指数・先物・為替を除く）、当たりは **APH（比2、境2026-09-03、1,423/1,472行）とCTVA（比6.665、境2026-10-01、1,442/1,452行）の2銘柄だけ**。出来高は、APH・CTVAとも保存した出来高が調整前で、Yahooの出来高は比を掛けた値なので、出来高にも比を掛ける
+- CTVAの日足が10-14で止まっている件: 割り戻しとは関係しない。CTVAは分社の後に S&P 500 の控え（`_sp500_constituents_cache.json`）から外れ、毎日の取得の対象でなくなったため。Yahooは11-11まで返す。割り戻しの走査は `daily/` にあるファイル全部を見るので、CTVAも対象になる。直さない（FINDINGSの行に原因を追記）
+
+## 決めてほしいこと（STEP 0の時点。上の決定で解決済み）
 
 - (a) (1)の処理を週1回のMarket Data Weeklyに入れるか、分割の検知（CHECK-54）の後に呼ぶか
 - (b) (2)でHONの株価の調整の比を`split_history`に持たせるか、台帳だけに持つか

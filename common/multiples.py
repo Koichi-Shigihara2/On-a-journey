@@ -137,14 +137,32 @@ def recorded_prices(ticker: str, tanuki_dir: str = TANUKI_DIR) -> List[tuple]:
     return [(r["date"], r["current_price"]) for r in rows if r.get("date") and r.get("current_price")]
 
 
+# 台帳の行に手で足した注記。機械の作り直しでも前の台帳から引き継ぐ（[[POINT-IN-TIME-HISTORY-INTEGRITY-1]] (2)、2026-11-12）。
+# price_factor: 株価の系列に実際に掛かっている調整の比（分社と同時の併合など、株数の比 ratio と違うとき）
+LEDGER_ANNOTATION_KEYS = ("price_factor", "price_factor_reason")
+
+
+def carry_annotations(entries: List[Dict[str, Any]], previous: Optional[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    """前の台帳の同じ（銘柄・分割の日）の行にある注記（LEDGER_ANNOTATION_KEYS）を新しい行に写す"""
+    prev = {(e.get("ticker"), e.get("split_date")): e for e in previous or []}
+    out = []
+    for e in entries:
+        p = prev.get((e.get("ticker"), e.get("split_date"))) or {}
+        extra = {k: p[k] for k in LEDGER_ANNOTATION_KEYS if k in p and k not in e}
+        out.append({**e, **extra} if extra else e)
+    return out
+
+
 def build_ledger(tickers: List[str], daily_dir: str = DAILY_DIR, tanuki_dir: str = TANUKI_DIR,
-                 splits_all: Optional[Dict[str, list]] = None) -> Dict[str, Any]:
+                 splits_all: Optional[Dict[str, list]] = None,
+                 previous: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
     from common.sec_data.split_adjust import load_split_history
     splits_all = splits_all if splits_all is not None else load_split_history()
     entries = []
     for t in tickers:
         if splits_all.get(t):
             entries += detect_split_price(t, splits_all[t], _daily_rows(t, daily_dir), recorded_prices(t, tanuki_dir))
+    entries = carry_annotations(entries, previous)
     return {"_description": "株価の系列の分割の調整と config/split_history.yaml の比の食い違い（common/multiples.py が機械で作る）。"
                             "status mismatch の銘柄は、その分割の日より前の月の倍率を判定不能にする",
             "entries": entries}
@@ -306,12 +324,12 @@ def build(tickers: Optional[List[str]] = None, out_dir: str = OUT_DIR, ledger_pa
     registered = sm.registered_tickers(lookup_path)
     targets = registered if tickers is None else sorted({t.upper() for t in tickers})
     if tickers is None:
-        ledger = build_ledger(registered, daily_dir, tanuki_dir, splits_all)
+        ledger = build_ledger(registered, daily_dir, tanuki_dir, splits_all, previous=load_ledger(ledger_path))
         _write_if_changed(ledger_path, ledger)
     else:
         # 1銘柄の経路: その銘柄の分割だけ検知し、台帳のほかの銘柄の行は残す
         cur = _load(ledger_path) or {"_description": "", "entries": []}
-        mine = build_ledger(targets, daily_dir, tanuki_dir, splits_all)["entries"]
+        mine = build_ledger(targets, daily_dir, tanuki_dir, splits_all, previous=cur.get("entries"))["entries"]
         cur["entries"] = [e for e in cur.get("entries") or [] if e.get("ticker") not in set(targets)] + mine
         cur["_description"] = cur.get("_description") or build_ledger([], daily_dir, tanuki_dir, splits_all)["_description"]
         _write_if_changed(ledger_path, cur)

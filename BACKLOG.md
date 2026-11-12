@@ -2594,6 +2594,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **登録日:** 2026-11-11
 **着手条件:** [[MULTIPLES-ADOPT-1]]と[[STAGE-V2-ROLLOUT-1]]の切り替えより前
 **発見:** FINDINGS 2026-11-03（日足の分割の調整）・2026-11-05（HONの併合と分社・Q4のfirst_filed）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+**実装（2026-11-12、チャット側の決定: (a)週1回 (b)台帳だけ (c)案A）:** (1) `common/market_data/split_reconcile.py`（Yahooとの比で決め、書き手は`correct_daily_rows(reason="split_adjust")`だけ）をMarket Data Weeklyの段に。当たりはAPH・CTVAの2銘柄 (2) HONの`price_factor 0.9535`を`config/split_price_ledger.json`に（`multiples.carry_annotations`で作り直しでも残る・`split_history.yaml`は変えない） (3) 案A（コード変更なし）。詳細は`docs/architecture/POINT_IN_TIME_STEP0.md`。**完了の条件の残り: 次回の確認手順32（定時のMarket Data Weeklyで2回目が0件）。済んだらBACKLOG_DONE.mdへ移設**
 
 #### 内容
 - 束ねた行: (1) `daily/`に株式分割の調整の経路が無い（`split_adjust.py`は株数の点だけ）。Yahooの日足は分割の後に過去の足も調整した値で返り、確定の行と値が違うと`_daily_rejected_overwrites.json`に出る。`fetcher.correct_daily_rows(reason="split_adjust")`は用意したが呼ぶ処理が無い (2) HONの2026-06-29の株式併合（分社と同時）で、併合の前の終値はYahooの比0.9535（併合と分社が混ざった値）で割り戻した値。`split_history.yaml`の0.5で換算したLayer3の株数と掛けると時価総額が約半分。`history.json`に跳ね2か所（2026-06-26・27の理論株価79.99、06-30のma200 429.4） (3) Layer3の四半期の第4四半期の`first_filed`が翌年の10-Kの日付（HON 2024-12-31・JNJ 2023-01-01・DOCN 2023-12-31・DELL 2024-02-02）。`first_filed`で絞るとその間は4四半期のTTMが組めない。DOCN・DELLは年次の組み替えが無く、原因は未調査

@@ -47,6 +47,12 @@ jobs:
             python common/market_data/fetcher.py --layer analyst
           fi
 
+      - name: Reconcile daily rows with provider (split/spin-off)
+        # 日足の分割・分社の割り戻し。Yahooの終値との比が一定の銘柄を correct_daily_rows(reason=split_adjust) で直す
+        # （split_history.yaml に依らない。一度当てた銘柄は次の週に当たらない）。[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]
+        continue-on-error: true
+        run: python common/market_data/split_reconcile.py --apply
+
       - name: Append valuation snapshots
         # forward_pe・trailing_pe・price_to_sales・ev_to_ebitda を取得の日付つきで積む（追記だけ。common/market_data/valuation_history/）。
         # フォワードPERは過去の値が取れないため、週1回の値を今から保存する（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4、2026-11-05）
@@ -80,6 +86,7 @@ jobs:
           git config merge.ours.driver true
           git add common/market_data/attributes/ || true
           git add common/market_data/analyst_history/ || true
+          git add common/market_data/daily/ || true
           git add common/market_data/_sp500_constituents_cache.json || true
           git add config/sector_master.json docs/common/sector_class.json || true
           git add docs/common/profitability.json || true
