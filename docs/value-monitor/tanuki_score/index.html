@@ -307,7 +307,7 @@ function toggleTrapAll() {
   renderTrapPanel();
 }
 
-const COL_KEYS = ['ticker','cat','funda','timing','revYoy','rule40','epsYoy','fcf','upside','per','maxEpsPer','perGap','stage'];
+const COL_KEYS = ['ticker','cat','funda','timing','revYoy','rule40','epsYoy','fcf','upside','per','perFwd','maxEpsPer','perGap','stage'];
 
 // ─── Render ③ Detail table ───────────────────────────────────
 function renderDetailTable() {
@@ -349,7 +349,8 @@ function renderDetailTable() {
       <td class="num">${pct(s.epsYoy)}</td>
       <td style="text-align:center">${fcfDisp}</td>
       <td class="num">${pct(s.upside)}</td>
-      <td class="num" style="font-family:var(--mono)">${s.per != null ? s.per.toFixed(1) + 'x' + (s.perIsFwd ? '<span class="per-fwd" title="trailing PE がないため予想PER">Fwd</span>' : '') : '<span class="neu">—</span>'}</td>
+      <td class="num" style="font-family:var(--mono)">${s.per != null ? s.per.toFixed(1) + 'x' : '<span class="neu">—</span>'}</td>
+      <td class="num" style="font-family:var(--mono)">${s.perFwd != null ? s.perFwd.toFixed(1) + 'x' : '<span class="neu">—</span>'}</td>
       <td class="num" style="font-family:var(--mono);${s.maxEpsRel === 'LOW' ? 'opacity:.45' : ''}">${s.maxEpsPer != null ? (s.maxEpsSharesInfo ? `<span data-info-text="${escAttr(s.maxEpsSharesInfo)}">${s.maxEpsPer.toFixed(1)}x</span>` : s.maxEpsPer.toFixed(1) + 'x') : '<span class="neu">—</span>'}</td>
       <td class="num" style="font-family:var(--mono);${s.perGap != null && s.perGap > 0 ? 'color:#f97316' : ''}">${s.perGap != null ? (s.perGap > 0 ? '+' : '') + s.perGap.toFixed(1) : '<span class="neu">—</span>'}</td>
       <td>${stageLabel(s.stage, s.stageL)}</td>
@@ -370,8 +371,9 @@ function renderDetailTable() {
           ${thArr('epsYoy','EPS成長')}
           <th>FCF</th>
           ${thArr('upside','TANUKI乖離')}
-          ${thArr('per','GAAP PER')}
-          ${thArr('maxEpsPer','最大EPS PER')}
+          ${thArr('per','PER（GAAP・TTM）')}
+          ${thArr('perFwd','PER（先行・予想）')}
+          ${thArr('maxEpsPer','PER（最大EPS）')}
           ${thArr('perGap','乖離')}
           ${thArr('stage','フェーズ')}
         </tr></thead>
@@ -487,10 +489,11 @@ function renderDetailTable() {
     // ARCH-MATRIX-DUP-1: stock.html側のRICE×乖離率マトリクスと同じavailableゲートに揃える
     const riceAvailable = tk?.rice?.available ?? false;
     const roe     = tk?.components?.roe_10yr_avg ?? null;
-    const per        = tk?.components?.per             ?? null;
+    const per        = tk?.components?.per_gaap_ttm_sec ?? null;
+    const perFwd     = tk?.components?.per_forward_yf  ?? null;   // yfinanceのコンセンサス。GAAP PERの代わりにはしない（MULTIPLES-ADOPT-1）
     const peg        = tk?.components?.peg             ?? null;
-    const ps         = tk?.components?.ps              ?? null;
-    const maxEpsPer  = tk?.components?.max_eps_per     ?? null;
+    const ps         = tk?.components?.ps_ttm_sec          ?? null;
+    const maxEpsPer  = tk?.components?.per_max_eps_ttm    ?? null;
     const maxEpsRel  = tk?.components?.max_eps_reliability ?? 'LOW';
     // [[EPS-SHARES-BASIS-MISMATCH-1]]: 分母がTTMの加重平均の株式数でない（今の株式数で割った）とき
     const maxEpsFallback = tk?.components?.max_eps_shares_basis === 'current_diluted_fallback';
@@ -502,10 +505,8 @@ function renderDetailTable() {
         : null,
       maxEpsFallback ? 'EPS ANALYZERのTTMが無いため今の株式数で割っている' : null,
     ].filter(Boolean).join('。');
-    // [[TANUKISCORE-PER-FORWARD-MIX-1]]: perがtrailing PEの代わりの予想PERなら、GAAPの最大EPS PERと
-    // 比べる意味がないため乖離は算出しない（表示は「—」）
-    const perIsFwd   = tk?.components?.per_is_forward ?? false;
-    const perGap     = (per != null && maxEpsPer != null && !perIsFwd) ? parseFloat((per - maxEpsPer).toFixed(1)) : null;
+    // GAAP PERは部品（SEC）の値だけ。予想PERは別の列（perFwd）で、混ぜない（MULTIPLES-ADOPT-1）
+    const perGap     = (per != null && maxEpsPer != null) ? parseFloat((per - maxEpsPer).toFixed(1)) : null;
 
     const dupont      = tk?.dupont ?? null;
     const growthRate  = tk?.growth?.rate ?? null;
@@ -526,7 +527,7 @@ function renderDetailTable() {
 
     return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase, fcfDeficit, fcfFloor,
              upside: rawUp, stage, stageL: stageLabel, substage, stageLabel, sellReason,
-             matrixInfo, riceVal, riceAvailable, roe, per, perIsFwd, peg, ps, maxEpsPer, maxEpsRel, maxEpsFallback, maxEpsSharesInfo, perGap, dupont,
+             matrixInfo, riceVal, riceAvailable, roe, per, perFwd, peg, ps, maxEpsPer, maxEpsRel, maxEpsFallback, maxEpsSharesInfo, perGap, dupont,
              growthRate, dilutionPct, roicWacc, industry, cyclical, fcfHistory, fcfOutlier, latestMissing,
              dividendYield, payoutRatio, netCurrentAssetsRatio, buybackTtm, netDebt };
   });

@@ -993,8 +993,8 @@ function render(d) {
   const sanity = d.growth_sanity || null;
 
   // フェアPER / PEG / PSR
-  const perCurrent   = d.components?.per || null;
-  const perAdjusted  = d.components?.per_adjusted || null;
+  const perCurrent   = d.components?.per_gaap_ttm_sec || null;
+  const perAdjusted  = d.components?.per_adjusted_ttm || null;
   // PSRの分母は直近4四半期（TTM）の売上。取れない場合のみ最新年度の売上（2026-09-26、指示書㉑ STEP C）
   const ttmRevenue = d.components?.revenue_ttm || 0;
   const latestRevenue = ttmRevenue || d.components?.latest_revenue || 0;
@@ -1007,8 +1007,10 @@ function render(d) {
     ? ivps / (currentPrice / perForCalc) : null;
   const pegRatio = (perForCalc && growthRate > 0)
     ? perForCalc / (growthRate * 100) : null;
-  const marketCap = currentPrice * dilutedSharesVal;
-  const psr = (latestRevenue > 0 && marketCap > 0) ? marketCap / latestRevenue : null;
+  // 時価総額・PSRは倍率の部品の値（株価×SECの株数、株数が欠ける銘柄だけyfinanceの値で印つき）。ここで再計算しない（MULTIPLES-ADOPT-1）
+  const marketCap = d.components?.market_cap_sec ?? null;
+  const marketCapSrc = d.components?.market_cap_source ?? null;
+  const psr = d.components?.ps_ttm_sec ?? null;
 
   // アナリスト目標株価
   const atMedian  = d.components?.analyst_target_median ?? null;
@@ -1230,7 +1232,7 @@ function render(d) {
             ${psr != null ? psr.toFixed(1) + 'x' : '—'}
           </div>
           <div style="font-size:12px;color:var(--mut);margin-top:6px">
-            時価総額: <span style="font-family:var(--mono);color:var(--txt)">${fmtB(marketCap)}</span>
+            時価総額: <span style="font-family:var(--mono);color:var(--txt)">${marketCap != null ? fmtB(marketCap) : '—'}</span>${marketCapSrc === 'yf_fallback' ? '<span style="font-size:10px;color:var(--amb,#b45309);margin-left:4px" title="SECの株数が取れないためyfinanceの時価総額">yfinance値</span>' : ''}
             <span style="font-size:11px">（売上: ${psrBasis}）</span>
           </div>
           <div style="font-size:11px;color:var(--mut);margin-top:4px;line-height:1.5">

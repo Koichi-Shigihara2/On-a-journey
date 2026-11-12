@@ -958,8 +958,8 @@
 
       // Addition G: PER比較
       const comps = data.components || {};
-      const perGaap = comps.per;
-      const perAdj = comps.per_adjusted;
+      const perGaap = comps.per_gaap_ttm_sec;
+      const perAdj = comps.per_adjusted_ttm;
       if (perPanel && (perGaap != null || perAdj != null)) {
         if (perGaap != null) document.getElementById('per-gaap').innerText = `${perGaap.toFixed(1)}x`;
         if (perAdj != null) document.getElementById('per-adj').innerText = `${perAdj.toFixed(1)}x`;

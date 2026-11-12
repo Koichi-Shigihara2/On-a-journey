@@ -245,7 +245,7 @@ def compute_max_eps(ttm_entry: dict | None, shares, current_price,
                 max_eps_per = round(current_price / max_eps, 1)
     return {
         "max_eps": max_eps,
-        "max_eps_per": max_eps_per,
+        "per_max_eps_ttm": max_eps_per,
         "max_eps_reliability": reliability,
         "max_eps_ttm_end": (ttm_entry or {}).get("ttm_end"),
         "max_eps_shares": shares,
@@ -2746,8 +2746,8 @@ class TanukiValuationPipeline:
         L.append("Positive surprise historically correlates with")
         L.append("short-term price appreciation (PEAD effect)")
         # PER comparison
-        per_gaap = comps.get("per")
-        per_adj = comps.get("per_adjusted")
+        per_gaap = comps.get("per_gaap_ttm_sec")
+        per_adj = comps.get("per_adjusted_ttm")
         # TTM調整後EPSを quarterly.json から計算（Adjusted_EPS_PER の注記用・GAAP PERと同一TTM期）
         ttm_adj_eps_for_note = None
         try:
@@ -2818,12 +2818,14 @@ class TanukiValuationPipeline:
             L.append("N/A")
 
         # Valuation multiples (market-provided via yfinance)
-        per_val = comps.get("per")
+        per_val = comps.get("per_gaap_ttm_sec")
         peg_val = comps.get("peg")
-        ps_val = comps.get("ps")
+        ps_val = comps.get("ps_ttm_sec")
         ev_ebitda_val = comps.get("ev_ebitda")
-        L.append("Valuation_Multiples (market-provided, yfinance):")
+        L.append("Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):")
         L.append(f"  PER: {per_val:.1f}x" if per_val is not None else "  PER: N/A")
+        _fwd_pe = comps.get("per_forward_yf")
+        L.append(f"  PER_Forward_yf: {_fwd_pe:.1f}x" if _fwd_pe is not None else "  PER_Forward_yf: N/A")
         L.append(f"  PEG: {peg_val:.2f}" if peg_val is not None else "  PEG: N/A")
         L.append(f"  PS:  {ps_val:.1f}x" if ps_val is not None else "  PS:  N/A")
         L.append(f"  EV_EBITDA: {ev_ebitda_val:.1f}x" if ev_ebitda_val is not None else "  EV_EBITDA: N/A")

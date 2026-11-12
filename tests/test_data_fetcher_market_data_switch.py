@@ -43,7 +43,12 @@ def fetcher(monkeypatch):
     return f
 
 
+_MULT_NONE = {"market_cap": None, "market_cap_source": None, "market_cap_yf_gap": None, "per": None, "ps": None, "ttm_end": None}
+
+
 def _patch_market_data(monkeypatch, latest_price=None, attrs=None, ma200_dev=None):
+    # 倍率の部品（common/multiples.py）は実ファイルを読まず、既定は FULL_ATTRS と同じ値（PER 20・PSR 5）を返す
+    monkeypatch.setattr(df, "_multiples_current", lambda t, px, mc=None: dict(_MULT_NONE, per=20.0, ps=5.0) if attrs else _MULT_NONE)
     monkeypatch.setattr(df, "HAS_MARKET_DATA", True)
     monkeypatch.setattr(df, "_md_get_latest_price", lambda ticker: latest_price)
     monkeypatch.setattr(df, "_md_get_attributes", lambda ticker: attrs)
@@ -92,9 +97,10 @@ class TestAttributesFromMarketData:
         assert result["beta_yf_raw"] == 1.5
         assert result["sector"] == "Technology"
         assert result["industry"] == "Software"
-        assert result["per"] == 20.0
+        assert result["per_gaap_ttm_sec"] == 20.0     # 部品の値（_patch_market_dataが差し替え）
+        assert result["per_forward_yf"] == 18.0
         assert result["peg"] == 1.5
-        assert result["ps"] == 5.0
+        assert result["ps_ttm_sec"] == 5.0
         assert result["ev_ebitda"] == 12.0
         assert result["forward_eps"] == 5.0
         assert result["dividend_yield"] == 0.02
@@ -106,29 +112,44 @@ class TestAttributesFromMarketData:
         assert result["analyst_count"] == 20
         assert result["analyst_rec_key"] == "buy"
 
-    def test_forward_pe_used_when_trailing_pe_missing(self, fetcher, monkeypatch):
-        attrs = dict(_FULL_ATTRS, trailing_pe=None)
-        _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0}, attrs=attrs)
+    def test_forward_pe_is_never_used_as_gaap_per(self, fetcher, monkeypatch):
+        """[[MULTIPLES-ADOPT-1]] 決定1（2026-11-13）: GAAP PER（部品）がNoneでもforward_peには落とさない。
+        forward_peは別の列 per_forward_yf（per_is_forward は廃止）"""
+        _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0}, attrs=_FULL_ATTRS)
+        monkeypatch.setattr(df, "_multiples_current", lambda t, px, mc=None: _MULT_NONE)
         result = fetcher.get_financials("XYZ")
-        assert result["per"] == 18.0  # forward_peにフォールバック
-        assert result["per_is_forward"] is True
+        assert result["per_gaap_ttm_sec"] is None
+        assert result["per_forward_yf"] == 18.0
+        assert "per_is_forward" not in result and "per" not in result
 
-    def test_negative_forward_pe_used_is_flagged_forward(self, fetcher, monkeypatch):
-        """[[TANUKISCORE-PER-FORWARD-MIX-1]]: trailing_peが無く負のforward_peを使った場合も
-        per_is_forward=true（QBTS: per=-41.8なのにfalseだった）"""
+    def test_negative_forward_pe_stays_in_forward_column(self, fetcher, monkeypatch):
+        """負のforward_pe（QBTS型）もGAAP PERの列には入らない"""
         attrs = dict(_FULL_ATTRS, trailing_pe=None, forward_pe=-41.758244)
         _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0}, attrs=attrs)
+        monkeypatch.setattr(df, "_multiples_current", lambda t, px, mc=None: _MULT_NONE)
         result = fetcher.get_financials("XYZ")
-        assert result["per"] == -41.758244
-        assert result["per_is_forward"] is True
+        assert result["per_gaap_ttm_sec"] is None
+        assert result["per_forward_yf"] == -41.758244
 
-    def test_trailing_pe_used_is_not_flagged_forward(self, fetcher, monkeypatch):
-        """trailing_peを使ったときはforward_peの有無にかかわらずfalse"""
-        attrs = dict(_FULL_ATTRS, trailing_pe=-12.5, forward_pe=18.0)
+    def test_yfinance_trailing_pe_and_ps_are_ignored(self, fetcher, monkeypatch):
+        """yfinanceのtrailing_pe・price_to_salesは読まない（部品の値だけ）"""
+        attrs = dict(_FULL_ATTRS, trailing_pe=-12.5, price_to_sales=99.0)
         _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0}, attrs=attrs)
+        monkeypatch.setattr(df, "_multiples_current", lambda t, px, mc=None: dict(_MULT_NONE, per=33.0, ps=7.0))
         result = fetcher.get_financials("XYZ")
-        assert result["per"] == -12.5
-        assert result["per_is_forward"] is False
+        assert result["per_gaap_ttm_sec"] == 33.0 and result["ps_ttm_sec"] == 7.0
+
+    def test_yf_market_cap_is_only_passed_as_fallback_argument(self, fetcher, monkeypatch):
+        seen = {}
+        def fake(t, px, mc=None):
+            seen["px"], seen["mc"] = px, mc
+            return dict(_MULT_NONE, market_cap=px * 10, market_cap_source="sec")
+        _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0},
+                           attrs=dict(_FULL_ATTRS, market_cap=555.0))
+        monkeypatch.setattr(df, "_multiples_current", fake)
+        result = fetcher.get_financials("XYZ")
+        assert seen == {"px": 100.0, "mc": 555.0}
+        assert result["market_cap_sec"] == 1000.0 and result["market_cap_source"] == "sec"
 
     def test_missing_attributes_falls_back_to_neutral_defaults(self, fetcher, monkeypatch):
         """attributes/未取得（reader.get_attributes()がNone）の場合、
@@ -138,9 +159,10 @@ class TestAttributesFromMarketData:
         assert result["beta_yf_raw"] is None
         assert result["sector"] == "default"
         assert result["industry"] == ""
-        assert result["per"] is None
+        assert result["per_gaap_ttm_sec"] is None
+        assert result["per_forward_yf"] is None
         assert result["peg"] is None
-        assert result["ps"] is None
+        assert result["ps_ttm_sec"] is None
         assert result["ev_ebitda"] is None
         assert result["forward_eps"] is None
         assert result["dividend_yield"] == 0.0

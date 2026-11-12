@@ -49,6 +49,8 @@ import sys
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional
 
+PIT_LAG_IF_NO_FILED = 45   # P/TBVの時点のTCE: 申告日が無い期末は期末+45日までに申告されたとみなす（倍率の部品と同じ）
+
 if __name__ == "__main__":
     sys.path.insert(0, os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")))
 
@@ -444,6 +446,30 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
             tce_cache[q] = tce_at(series, q, intangible_tags, unavailable, fy_ends, first_reported)
         return tce_cache[q]
 
+    # P/TBVの履歴の分母（TCE）はその期の最初の申告日までに申告された値（first_val）。倍率の部品と同じ時点の規則
+    # （[[MULTIPLES-ADOPT-1]]、2026-11-13の決定4）。ROTCEの分子・分母（上の _tce）は今までどおり最新の値
+    first_filed_eq: Dict[str, str] = {}
+    for _e in get_field_entries(store, "stockholders_equity"):
+        _ff = _e.get("first_filed") or _e.get("filed")
+        if _ff and (_e["end"] not in first_filed_eq or _ff < first_filed_eq[_e["end"]]):
+            first_filed_eq[_e["end"]] = _ff
+    tce_pit_cache: Dict[str, Optional[Dict[str, Any]]] = {}
+
+    def _tce_pit(q: str) -> Optional[Dict[str, Any]]:
+        """その期の最初の申告日時点のTCE。{"tce"}（0以下はNone〈P/TBVを出さない〉）。作れなければNone（最新の値に戻す）"""
+        if q not in tce_pit_cache:
+            asof = first_filed_eq.get(q) or (date.fromisoformat(q) + timedelta(days=PIT_LAG_IF_NO_FILED)).isoformat()
+            try:
+                s2, tg2, un2, fy2, fr2, _n = tce_inputs(store, company_facts, asof)
+                eq2 = s2["stockholders_equity"]
+                if not eq2 or max(eq2) != q:
+                    tce_pit_cache[q] = None
+                else:
+                    tce_pit_cache[q] = {"tce": tce_at(s2, q, tg2, un2, fy2, fr2).get("tce")}
+            except Exception:  # noqa: BLE001
+                tce_pit_cache[q] = None
+        return tce_pit_cache[q]
+
     common_ni = _common_ni_quarterly(company_facts, ticker)
     equity_ends = list(series["stockholders_equity"])
 
@@ -499,7 +525,10 @@ def compute_ticker(ticker: str, repo_root: str = REPO_ROOT, store: Optional[dict
                        rotce_ttm_basis=f"avg{len(used)}")
         if px and sh:
             row["market_cap"] = px["close"] * sh["shares"]
-            row["ptbv"] = row["market_cap"] / t["tce"]
+            _pit = _tce_pit(q)
+            _tce_for_ptbv = _pit["tce"] if _pit is not None else t["tce"]
+            row["tce_first_val"] = _pit["tce"] if _pit is not None else None
+            row["ptbv"] = row["market_cap"] / _tce_for_ptbv if (_tce_for_ptbv and _tce_for_ptbv > 0) else None
         else:
             row["reason"] = R_PRICE_MISSING if not px else R_SHARES_MISSING
         out["history"].append(row)

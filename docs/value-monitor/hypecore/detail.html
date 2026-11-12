@@ -562,13 +562,12 @@ function renderValMultiples(lat, comps) {
   // [[HYPECORE-POC-TRAILING-PE-MISSING-1]]: poc.json側もtrailing_peを
   // 保持するようになったため、TANUKI側と同型のtrailing優先・なければ
   // forwardの判定に統一する。
-  const perFromComps = comps?.per ?? null;
-  const per        = perFromComps ?? lat.trailing_pe ?? lat.forward_pe ?? null;
-  const perIsFwd   = perFromComps != null
-    ? (comps?.per_is_forward ?? false)
-    : (per != null && lat.trailing_pe == null);  // 2-D: trailing/forward判別
+  // [[MULTIPLES-ADOPT-1]]: GAAP PERは部品の値（TANUKIのcomponents）→無ければpoc.json（これも部品由来）。forwardには落とさない
+  const perFromComps = comps?.per_gaap_ttm_sec ?? null;
+  const per        = perFromComps ?? lat.trailing_pe ?? null;
+  const perIsFwd   = false;
   const peg        = comps?.peg      ?? lat.peg_ratio ?? null;
-  const ps         = comps?.ps       ?? lat.psr ?? null;
+  const ps         = comps?.ps_ttm_sec ?? lat.psr ?? null;
   const evEbRaw    = comps?.ev_ebitda ?? (lat.ev_ebitda != null && lat.ev_ebitda > 0 ? lat.ev_ebitda : null);
   // 2-E: 負のEV/EBITDAは表示しない（EBITDA<0は意味をなさない）
   const evEb       = (evEbRaw != null && evEbRaw > 0) ? evEbRaw : null;

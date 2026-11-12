@@ -749,7 +749,7 @@ class KoichiValuationCalculator:
         try:
             _rice_data = financials.get("rice_annual_data")
             if _rice_data:
-                _current_per = financials.get("per") or financials.get("current_per") or 0.0
+                _current_per = financials.get("per_gaap_ttm_sec") or financials.get("current_per") or 0.0
                 _sc_val = scenario_result.to_dict() if scenario_result else None
                 _rice_sector = financials.get("rice_sector") or sector or ""
                 _roic_wacc_ratio = financials.get("roic_wacc_ratio")
@@ -945,15 +945,18 @@ class KoichiValuationCalculator:
                 "rpo_pv": rpo_pv,
                 "growth_option_pv": growth_option_pv,
                 "alpha_uncapped": alpha_result.alpha_uncapped,
-                "per": financials.get("per"),
-                "per_is_forward": financials.get("per_is_forward", False),
-                "per_adjusted": _calc_adjusted_per(
+                "per_gaap_ttm_sec": financials.get("per_gaap_ttm_sec"),   # [[MULTIPLES-ADOPT-1]] 旧 per（部品の時価総額÷TTM純利益）
+                "per_forward_yf": financials.get("per_forward_yf"),       # 旧 per_is_forward の代わり: forwardは別の列
+                "market_cap_sec": financials.get("market_cap_sec"),
+                "market_cap_source": financials.get("market_cap_source"),
+                "market_cap_yf_gap": financials.get("market_cap_yf_gap"),
+                "per_adjusted_ttm": _calc_adjusted_per(
                     ticker=ticker,
                     current_price=financials.get("current_price"),
                     eps_data_dir=self.eps_data_dir,
                 ),
                 "peg": financials.get("peg"),
-                "ps": financials.get("ps"),
+                "ps_ttm_sec": financials.get("ps_ttm_sec"),
                 "ev_ebitda": financials.get("ev_ebitda"),
                 "ma200": financials.get("ma200"),
                 "forward_eps": financials.get("forward_eps"),
@@ -991,7 +994,7 @@ def _calc_adjusted_per(
 ) -> Optional[float]:
     """
     EPS Analyzerの調整後TTM EPS（直近4Q合計）から調整後PERを計算する。
-    GAAP PER（yfinance trailingPE = TTM）と同一期間ベースで比較可能。
+    GAAP PER（部品の時価総額÷TTM純利益）と同一期間ベースで比較可能。
 
     4Q分の四半期データが揃わない場合はNoneを返す（年次フォールバックなし）。
 

@@ -92,8 +92,13 @@ def fetch_valuation(ticker: str) -> dict:
         )
 
         attrs = _md_get_attributes(ticker)
-        market_cap = attrs.get("market_cap") if attrs is not None else None
-        enterprise_value = attrs.get("enterprise_value") if attrs is not None else None
+        yf_market_cap = attrs.get("market_cap") if attrs is not None else None
+        # [[MULTIPLES-ADOPT-1]]: 時価総額・EVは倍率の部品の今日の行 × 日足の終値（common/multiples.py::at_price の1か所）。
+        # yfinanceの時価総額は検証（market_cap_yf_gap）と、株数が欠ける銘柄の代わり（market_cap_source=yf_fallback）にだけ使う
+        from common import multiples as _mult
+        _m = _mult.current_multiples(ticker, current_price, yf_market_cap)
+        market_cap = _m["market_cap"]
+        enterprise_value = _m["enterprise_value"]
         total_debt = attrs.get("total_debt") if attrs is not None else None
         sector = (attrs.get("sector") if attrs is not None else None) or "default"
         industry = (attrs.get("industry") if attrs is not None else None) or ""
@@ -102,6 +107,8 @@ def fetch_valuation(ticker: str) -> dict:
             "market_cap": market_cap,
             "current_price": current_price,
             "enterprise_value": enterprise_value,
+            "market_cap_source": _m["market_cap_source"],
+            "market_cap_yf_gap": _m["market_cap_yf_gap"],
             "total_debt": total_debt,
             "sector": sector,
             "industry": industry,

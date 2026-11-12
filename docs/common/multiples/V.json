@@ -1,6 +1,33 @@
 {
  "_schema_version": "1.0",
  "ticker": "V",
+ "current": {
+  "month": "current",
+  "date": "2026-11-12",
+  "price": 420.30999755859375,
+  "price_date": "2026-11-12",
+  "shares": null,
+  "shares_end": null,
+  "shares_source": null,
+  "market_cap": null,
+  "enterprise_value": null,
+  "ttm_end": "2026-09-30",
+  "ttm_net_income": 23504000000.0,
+  "ttm_revenue": 45903000000.0,
+  "ttm_gross_profit": null,
+  "net_income_5y_avg": 19107000000.0,
+  "net_income_5y_years": 5,
+  "tce": -12567000000,
+  "tce_end": "2026-09-30",
+  "per": null,
+  "ev_sales": null,
+  "ev_gross_profit": null,
+  "pe_5y_avg_earnings": null,
+  "p_tbv": null,
+  "undetermined": "no_shares",
+  "net_debt": 7988000000.0,
+  "reason": "その日までに申告された株数が無い（時価総額は読み手がyfinanceの値を印つきで代わりに使う）"
+ },
  "_description": "月末ごとの倍率（common/multiples.py が機械で作る）。値が None は計算できない（分母が0以下・赤字等）か判定不能（undetermined）。どれを使うかは定義v2が決める。読み手は [[MULTIPLES-ADOPT-1]] で寄せる",
  "months": [
   {

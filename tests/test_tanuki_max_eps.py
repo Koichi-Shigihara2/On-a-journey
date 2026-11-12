@@ -36,8 +36,8 @@ def test_negative_equity_ticker_uses_ttm_net_income():
     r = pipeline.compute_max_eps(entry, shares=635_800_000, current_price=586.06)
     assert r["max_eps_reliability"] == "HIGH"
     assert r["max_eps"] == round(9_132_000_000 / 635_800_000, 4)
-    assert r["max_eps_per"] == round(586.06 / r["max_eps"], 1)
-    assert 40.0 < r["max_eps_per"] < 42.0
+    assert r["per_max_eps_ttm"] == round(586.06 / r["max_eps"], 1)
+    assert 40.0 < r["per_max_eps_ttm"] < 42.0
     assert r["max_eps_ttm_end"] == "2026-05-01"
 
 
@@ -46,11 +46,11 @@ def test_non_positive_sum_returns_none():
     entry = _entry("2026-06-30", ni=-249_000_000, sbc=23_000_000)
     r = pipeline.compute_max_eps(entry, shares=380_000_000, current_price=14.57)
     assert r["max_eps"] is None
-    assert r["max_eps_per"] is None
+    assert r["per_max_eps_ttm"] is None
     assert r["max_eps_reliability"] == "HIGH"
     # ちょうど0もNone
     r0 = pipeline.compute_max_eps(_entry("2026-06-30", ni=-5, sbc=5), 100, 10.0)
-    assert r0["max_eps"] is None and r0["max_eps_per"] is None
+    assert r0["max_eps"] is None and r0["per_max_eps_ttm"] is None
 
 
 def test_missing_sbc_is_med_and_treated_as_zero():
@@ -59,7 +59,7 @@ def test_missing_sbc_is_med_and_treated_as_zero():
     r = pipeline.compute_max_eps(entry, shares=100_000_000, current_price=200.0)
     assert r["max_eps_reliability"] == "MED"
     assert r["max_eps"] == 10.0
-    assert r["max_eps_per"] == 20.0
+    assert r["per_max_eps_ttm"] == 20.0
 
 
 def test_missing_net_income_is_low_and_none_even_with_sbc():
@@ -67,17 +67,17 @@ def test_missing_net_income_is_low_and_none_even_with_sbc():
     entry = _entry("2026-06-30", sbc=500_000_000)
     r = pipeline.compute_max_eps(entry, shares=100_000_000, current_price=200.0)
     assert r["max_eps"] is None
-    assert r["max_eps_per"] is None
+    assert r["per_max_eps_ttm"] is None
     assert r["max_eps_reliability"] == "LOW"
 
 
 def test_no_entry_or_no_price():
     r = pipeline.compute_max_eps(None, shares=100, current_price=10.0)
-    assert r == {"max_eps": None, "max_eps_per": None, "max_eps_reliability": "LOW", "max_eps_ttm_end": None,
+    assert r == {"max_eps": None, "per_max_eps_ttm": None, "max_eps_reliability": "LOW", "max_eps_ttm_end": None,
                  "max_eps_shares": 100, "max_eps_shares_basis": "current_diluted_fallback"}
     # 株価が無ければ max_eps は出すが max_eps_per は None
     r2 = pipeline.compute_max_eps(_entry("2026-06-30", ni=100, sbc=0), shares=10, current_price=None)
-    assert r2["max_eps"] == 10.0 and r2["max_eps_per"] is None
+    assert r2["max_eps"] == 10.0 and r2["per_max_eps_ttm"] is None
 
 
 def test_latest_ttm_entry_picks_max_ttm_end_regardless_of_order():

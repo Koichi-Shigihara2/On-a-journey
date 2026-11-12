@@ -94,6 +94,16 @@ if not HAS_MARKET_DATA:
         pass
 
 
+def _multiples_current(ticker, price, yf_market_cap=None):
+    """倍率の部品（docs/common/multiples/{T}.json の current の行）× 生の株価。部品が読めない時は全てNone"""
+    try:
+        from common import multiples as _mult
+        return _mult.current_multiples(ticker, price, yf_market_cap)
+    except Exception as e:  # noqa: BLE001
+        print(f"   [{ticker}] 倍率の部品を読めない（{e}）。PER・PSR・時価総額はNone")
+        return {k: None for k in ("market_cap", "market_cap_source", "market_cap_yf_gap", "per", "ps", "ttm_end")}
+
+
 # セクター別デフォルトβ
 SECTOR_DEFAULT_BETA = {
     "Technology": 1.20,
@@ -751,10 +761,11 @@ class TanukiDataFetcher:
         beta = None
         sector = "default"
         industry = ""       # v8.1: 保険判定精度向上のためindustryも取得
-        per = None
-        per_is_forward = False
+        per = None              # GAAP PER（TTM純利益、倍率の部品〈SEC〉。赤字・欠けはNone）
+        per_forward_yf = None   # 先行PER（yfinance）
+        yf_market_cap = None
         peg = None
-        ps = None
+        ps = None               # PSR（TTM売上、倍率の部品）
         ev_ebitda = None
         ma200 = None
         forward_eps = None
@@ -800,29 +811,19 @@ class TanukiDataFetcher:
                 if industry:
                     print(f"   [{ticker}] market_data industry: {industry}")
 
-                # PER（株価収益率）
-                _trailing_pe = attrs.get("trailing_pe")
-                _forward_pe  = attrs.get("forward_pe")
-                per = _trailing_pe or _forward_pe or None
-                # [[TANUKISCORE-PER-FORWARD-MIX-1]]: trailing_peが無くforward_peを使ったときは
-                # forward_peの正負にかかわらずtrue（以前はforward_pe>0のときだけで、
-                # QBTS〈forward_pe -41.8〉はper=forward_peなのにfalseだった）
-                per_is_forward = (not _trailing_pe) and bool(_forward_pe)
-                if per is not None and per > 0:
-                    _pe_src = "Fwd" if per_is_forward else "Trailing"
-                    print(f"   [{ticker}] market_data PER({_pe_src}): {per:.1f}")
+                # PER（先行・予想）: yfinanceのコンセンサス。GAAP PERとは別の列（[[MULTIPLES-ADOPT-1]]の決定1、
+                # 2026-11-13。GAAP PERが無い時にforwardで代用していた旧フラグは廃止）
+                _fwd = attrs.get("forward_pe")
+                if isinstance(_fwd, (int, float)) and not isinstance(_fwd, bool):
+                    per_forward_yf = float(_fwd)
+                    print(f"   [{ticker}] market_data PER(Forward, yf): {per_forward_yf:.1f}")
+                yf_market_cap = attrs.get("market_cap") or None
 
                 # PEG（成長調整PER）
                 peg_raw = attrs.get("peg_ratio") or None
                 if peg_raw is not None and peg_raw > 0:
                     peg = float(peg_raw)
                     print(f"   [{ticker}] market_data PEG: {peg:.2f}")
-
-                # PS（株価売上高倍率）
-                ps_raw = attrs.get("price_to_sales") or None
-                if ps_raw is not None and ps_raw > 0:
-                    ps = float(ps_raw)
-                    print(f"   [{ticker}] market_data PS: {ps:.2f}")
 
                 # EV/EBITDA
                 ev_ebitda_raw = attrs.get("ev_to_ebitda") or None
@@ -883,8 +884,7 @@ class TanukiDataFetcher:
 
             except Exception as e:
                 print(f"   [{ticker}] market_data attributes解析エラー: {e}")
-                per = None
-                per_is_forward = False
+                per_forward_yf = None
                 peg = None
                 ps = None
                 ev_ebitda = None
@@ -907,6 +907,22 @@ class TanukiDataFetcher:
         # ========================================
         final_beta, beta_source = self._determine_beta(ticker, beta, sector)
         
+        # ========================================
+        # 3b. 倍率（GAAP PER・PSR・時価総額）: 倍率の部品の今日の行 × 生の株価（[[MULTIPLES-ADOPT-1]]）
+        #     時価総額の作り方は common/multiples.py::at_price の1か所。yfinanceの時価総額は検証（gap）と、
+        #     部品の株数が欠ける銘柄の代わり（market_cap_source=yf_fallback）にだけ使う
+        # ========================================
+        mult = _multiples_current(ticker, current_price, yf_market_cap)
+        per = mult["per"]
+        ps = mult["ps"]
+        market_cap = mult["market_cap"]
+        market_cap_source = mult["market_cap_source"]
+        market_cap_yf_gap = mult["market_cap_yf_gap"]
+        if per is not None:
+            print(f"   [{ticker}] multiples GAAP PER(TTM {mult['ttm_end']}): {per:.1f}")
+        if ps is not None:
+            print(f"   [{ticker}] multiples PSR(TTM): {ps:.2f}")
+
         # ========================================
         # 4. 株式数決定
         # ========================================
@@ -1011,10 +1027,13 @@ class TanukiDataFetcher:
             "beta_yf_raw": float(beta) if (beta is not None and beta > 0) else None,
             "sector": sector,
             "industry": industry,
-            "per": per,
-            "per_is_forward": per_is_forward,
+            "per_gaap_ttm_sec": per,
+            "per_forward_yf": per_forward_yf,
+            "market_cap_sec": market_cap,
+            "market_cap_source": market_cap_source,
+            "market_cap_yf_gap": market_cap_yf_gap,
             "peg": peg,
-            "ps": ps,
+            "ps_ttm_sec": ps,
             "ev_ebitda": ev_ebitda,
             "ma200": ma200,
             "forward_eps": forward_eps,

@@ -174,26 +174,26 @@ class TestCheckFEpsAnalyzerDelta:
     （[[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元EPS-ANALYZER-INTEGRATE-1）"""
 
     def test_flags_when_delta_at_least_10x(self):
-        latest = {"components": {"per": 14.0, "per_adjusted": 3.5}}
+        latest = {"components": {"per_gaap_ttm_sec": 14.0, "per_adjusted_ttm": 3.5}}
         flag, reason, detail = check_f_eps_analyzer_delta(latest)
         assert flag is True
         assert "-10.5" in reason
         assert detail["delta"] == 3.5 - 14.0
 
     def test_no_flag_when_delta_below_10x(self):
-        latest = {"components": {"per": 14.083194, "per_adjusted": 12.08}}
+        latest = {"components": {"per_gaap_ttm_sec": 14.083194, "per_adjusted_ttm": 12.08}}
         flag, reason, detail = check_f_eps_analyzer_delta(latest)
         assert flag is False
         assert reason == ""
 
     def test_no_flag_when_per_missing(self):
-        latest = {"components": {"per_adjusted": 12.08}}
+        latest = {"components": {"per_adjusted_ttm": 12.08}}
         flag, reason, detail = check_f_eps_analyzer_delta(latest)
         assert flag is False
         assert detail["delta"] is None
 
     def test_no_flag_when_per_not_positive(self):
-        latest = {"components": {"per": -5.0, "per_adjusted": 20.0}}
+        latest = {"components": {"per_gaap_ttm_sec": -5.0, "per_adjusted_ttm": 20.0}}
         flag, reason, detail = check_f_eps_analyzer_delta(latest)
         assert flag is False
         assert detail["delta"] is None

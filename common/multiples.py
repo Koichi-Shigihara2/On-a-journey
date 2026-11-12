@@ -207,8 +207,11 @@ def snapshot_at(records: List[dict], d: str) -> Optional[dict]:
 
 def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List[tuple],
             splits: List[dict], tce_at_date: Callable[[str], Dict[str, Any]], ledger: List[Dict[str, Any]],
-            snapshots: Optional[List[dict]] = None) -> Dict[str, Any]:
-    """tce_at_date(月末) → {"end", "tce"}（その月末までに申告された値のTCE、rotce.tce_as_of）"""
+            snapshots: Optional[List[dict]] = None, current: Optional[str] = None) -> Dict[str, Any]:
+    """tce_at_date(月末) → {"end", "tce"}（その月末までに申告された値のTCE、rotce.tce_as_of）
+
+    current: 最新の日足の日付。渡すと月末の行とは別に `current` の行（読み手が生の株価で割るための今日の値、
+    [[MULTIPLES-ADOPT-1]]）を作る。株数が無い銘柄でも分母（TTM・TCE・純負債）は出し、倍率だけNone（undetermined no_shares）"""
     from common.sec_data.split_adjust import shares_by_end
     fields = (store or {}).get("fields") or {}
     ent = lambda f: (fields.get(f) or {}).get("entries") or []
@@ -223,26 +226,29 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
             sh_filed[e["end"]] = ff
     blocked = sorted(x["split_date"] for x in ledger if x.get("ticker") == ticker and x.get("status") == "mismatch")
     rows = []
-    for m, d in months:
+    cur_row: Optional[Dict[str, Any]] = None
+    for m, d in list(months) + ([("current", current)] if current else []):
+        is_cur = m == "current"
         r: Dict[str, Any] = {"month": m, "date": d}
         bad = [s for s in blocked if d < s]
-        if bad:
+        if bad and not is_cur:
             r.update({k: None for k in MULTIPLE_KEYS}, undetermined="split_price_mismatch",
                      reason=f"分割の日（{bad[0]}）より前（株価の系列の調整と分割の比が合わない、config/split_price_ledger.json）")
             rows.append(r)
             continue
         px = close_on_or_before(prices, d)
         avail = [e for e in shares if (sh_filed.get(e) or (_d(e) + timedelta(days=SHARES_LAG_IF_NO_FILED)).isoformat()) <= d]
-        if px is None or not avail:
+        partial = is_cur and px is not None and not avail    # 現在の行: 株数が無くても分母は出す（読み手の代わりの時価総額用）
+        if (px is None or not avail) and not partial:
             r.update({k: None for k in MULTIPLE_KEYS}, undetermined="no_price" if px is None else "no_shares",
                      reason="その月末の終値が無い" if px is None else "その月末までに申告された株数が無い")
             rows.append(r)
             continue
-        se = max(avail)
-        mcap = px["close"] * shares[se]["shares"]
+        se = max(avail) if avail else None
+        mcap = px["close"] * shares[se]["shares"] if se else None
         debt = sum((_stock_at(ent(f), d) or (None, 0.0))[1] for f in ("short_term_debt", "long_term_debt"))
         cash = sum((_stock_at(ent(f), d) or (None, 0.0))[1] for f in ("cash_and_equivalents", "short_term_investments"))
-        ev = mcap + debt - cash
+        ev = (mcap + debt - cash) if mcap is not None else None
         ni = _latest_ttm(ttm_series(quarterly_points(ent("net_income"), d)))
         rev = _latest_ttm(ttm_series(quarterly_points(ent("revenue"), d)))
         gp = _latest_ttm(ttm_series(quarterly_points(ent("gross_profit"), d)))
@@ -252,8 +258,8 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
         tce = t.get("tce")
         pos = lambda num, den: (num / den) if (den is not None and den > 0 and num is not None and num > 0) else None
         r.update({
-            "price": px["close"], "price_date": px["date"], "shares": shares[se]["shares"], "shares_end": se,
-            "shares_source": shares[se].get("source"), "market_cap": mcap, "enterprise_value": ev,
+            "price": px["close"], "price_date": px["date"], "shares": shares[se]["shares"] if se else None, "shares_end": se,
+            "shares_source": shares[se].get("source") if se else None, "market_cap": mcap, "enterprise_value": ev,
             "ttm_end": ni[0] if ni else None, "ttm_net_income": ni[1] if ni else None,
             "ttm_revenue": rev[1] if rev else None, "ttm_gross_profit": gp[1] if gp else None,
             "net_income_5y_avg": ni5, "net_income_5y_years": len(a_ni), "tce": tce, "tce_end": t.get("end"),
@@ -262,17 +268,72 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
             "ev_gross_profit": pos(ev, gp[1] if gp else None),
             "pe_5y_avg_earnings": pos(mcap, ni5),
             "p_tbv": pos(mcap, tce),
-            "undetermined": None,
+            "undetermined": None if se else "no_shares",
         })
+        if is_cur:
+            r["net_debt"] = debt - cash
+            if not se:
+                r["reason"] = "その日までに申告された株数が無い（時価総額は読み手がyfinanceの値を印つきで代わりに使う）"
+            cur_row = r
+            continue
         snap = snapshot_at(snapshots or [], d)
         # フォワードPERは過去の値が取れないので、2026-11-01から積んだ yfinance の週1回の値（スナップショット、参考）
         r["forward_pe_snapshot"] = snap.get("forward_pe") if snap else None
         r["forward_pe_snapshot_date"] = snap.get("date") if snap else None
         rows.append(r)
-    return {"_schema_version": SCHEMA_VERSION, "ticker": ticker,
+    out_cur = {"current": cur_row} if cur_row else {}
+    return {"_schema_version": SCHEMA_VERSION, "ticker": ticker, **out_cur,
             "_description": "月末ごとの倍率（common/multiples.py が機械で作る）。値が None は計算できない（分母が0以下・赤字等）か判定不能（undetermined）。"
                             "どれを使うかは定義v2が決める。読み手は [[MULTIPLES-ADOPT-1]] で寄せる",
             "months": rows}
+
+
+# ── 読み手向け: 今日の行を生の株価で割る（[[MULTIPLES-ADOPT-1]]、2026-11-13の決定3） ──────────────
+MCAP_SOURCE_SEC = "sec"            # 株価×部品の株数（標準）
+MCAP_SOURCE_YF_FALLBACK = "yf_fallback"   # 株数が欠ける銘柄の代わり（yfinanceの時価総額。印つき）
+
+
+def load_part(ticker: str, out_dir: str = OUT_DIR) -> Dict[str, Any]:
+    return _load(os.path.join(out_dir, f"{ticker.upper()}.json"))
+
+
+def at_price(row: Optional[Dict[str, Any]], price: Optional[float], yf_market_cap: Optional[float] = None) -> Dict[str, Any]:
+    """部品の `current` の行（分母・株数・純負債・TCE）を、読み手の生の株価で割った倍率。時価総額の作り方はここの1か所。
+
+    時価総額: 株価×部品の株数（market_cap_source="sec"）。株数が欠ける銘柄だけ yf_market_cap を代わりに使い、
+    market_cap_source="yf_fallback" の印を付ける。どちらも無ければ全てNone。
+    倍率は分母が0以下・欠けならNone（forwardには落とさない。2026-11-13の決定1）。
+    market_cap_yf_gap: 部品の時価総額とyfinanceの時価総額の差（yf÷部品−1）。検証用（読み手は10%超を印にしてよい）。
+    """
+    out: Dict[str, Any] = {k: None for k in ("market_cap", "market_cap_source", "market_cap_yf_gap", "enterprise_value", "per", "ps",
+                                              "ev_sales", "ev_gross_profit", "pe_5y_avg_earnings", "p_tbv", "shares",
+                                              "ttm_end", "ttm_revenue")}
+    if not row or not price or price <= 0:
+        return out
+    sh = row.get("shares")
+    if sh:
+        mcap, src = price * sh, MCAP_SOURCE_SEC
+        if yf_market_cap:
+            out["market_cap_yf_gap"] = yf_market_cap / mcap - 1
+    elif yf_market_cap:
+        mcap, src = yf_market_cap, MCAP_SOURCE_YF_FALLBACK
+    else:
+        return out
+    pos = lambda num, den: (num / den) if (den is not None and den > 0 and num is not None and num > 0) else None
+    nd = row.get("net_debt")
+    ev = (mcap + nd) if nd is not None else None
+    out.update(market_cap=mcap, market_cap_source=src, enterprise_value=ev, shares=sh,
+               per=pos(mcap, row.get("ttm_net_income")), ps=pos(mcap, row.get("ttm_revenue")),
+               ev_sales=pos(ev, row.get("ttm_revenue")), ev_gross_profit=pos(ev, row.get("ttm_gross_profit")),
+               pe_5y_avg_earnings=pos(mcap, row.get("net_income_5y_avg")), p_tbv=pos(mcap, row.get("tce")),
+               ttm_end=row.get("ttm_end"), ttm_revenue=row.get("ttm_revenue"))
+    return out
+
+
+def current_multiples(ticker: str, price: Optional[float], yf_market_cap: Optional[float] = None,
+                      out_dir: str = OUT_DIR) -> Dict[str, Any]:
+    """読み手の入口: 銘柄の部品の `current` の行 × 生の株価"""
+    return at_price(load_part(ticker, out_dir).get("current"), price, yf_market_cap)
 
 
 def peer_percentile(values: Dict[str, Optional[float]], ticker: str, sector_of: Dict[str, Optional[str]],
@@ -340,7 +401,9 @@ def build(tickers: Optional[List[str]] = None, out_dir: str = OUT_DIR, ledger_pa
     for t in targets:
         store = store_fn(t) or {}
         snaps = _load(os.path.join(VALUATION_HISTORY_DIR, f"{t}.json")).get("records") or []
-        out = compute(t, store, _daily_rows(t, daily_dir), months, splits_all.get(t, []), tce_fn(t, store), ledger_entries, snaps)
+        prices_t = _daily_rows(t, daily_dir)
+        out = compute(t, store, prices_t, months, splits_all.get(t, []), tce_fn(t, store), ledger_entries, snaps,
+                      current=prices_t[-1]["date"] if prices_t else None)
         if _write_if_changed(os.path.join(out_dir, f"{t}.json"), out):
             summary["written"] += 1
         summary["tickers"] += 1

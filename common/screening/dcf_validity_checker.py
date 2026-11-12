@@ -28,7 +28,7 @@ TANUKI VALUATIONのDCF成長率前提・ROIC計算根拠が実績データと整
   E. HypeCore遷移確率のサンプル数
      - 現在ステージからの遷移観測数が5件未満(閾値は引数で調整可)
   F. EPS Analyzer PER比較([[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元EPS-ANALYZER-INTEGRATE-1)
-     - components.per(GAAP PER)とcomponents.per_adjusted(調整後PER)の差が
+     - components.per_gaap_ttm_sec(GAAP PER)とcomponents.per_adjusted_ttm(調整後PER)の差が
        ±10x以上(SBC等の影響で見かけの割安度が歪んでいる可能性)
   G. RICE投資効率([[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元RICE-INTEGRATE-1)
      - rice.base.rice<1.0(低効率)をフラグ。TANUKI SCORE=BUYとの組み合わせ
@@ -269,13 +269,13 @@ def check_f_eps_analyzer_delta(latest, delta_threshold=10.0):
     """F: EPS Analyzer PER比較(GAAP PERと調整後PERの乖離、
     [[SCREENING-SIGNAL-INTEGRATION-EPIC-1]]元EPS-ANALYZER-INTEGRATE-1参照)
 
-    components.per(GAAP基準PER)・components.per_adjusted(調整後PER)の両方が
+    components.per_gaap_ttm_sec(GAAP基準PER)・components.per_adjusted_ttm(調整後PER)の両方が
     存在しper>0の場合のみ判定。delta=per_adjusted-perがdelta_threshold(デフォルト
     ±10x)以上ならSBC等の影響で見かけの割安度が歪んでいる可能性としてフラグする。
     """
     comp = latest.get("components") or {}
-    per = comp.get("per")
-    per_adjusted = comp.get("per_adjusted")
+    per = comp.get("per_gaap_ttm_sec")
+    per_adjusted = comp.get("per_adjusted_ttm")
 
     flag = False
     reason = ""
