@@ -2792,7 +2792,7 @@ def check_ticker(ticker: str, whitelist: set, include_yfinance: bool = False,
     # CHECK-10: PS異常値 (警告)
     # yfinance PSが自社計算値(price×shares/revenue)と大きく乖離する場合にWARN
     comp = latest.get("components", {}) or {}
-    ps_yf   = comp.get("ps_ttm_sec")   # MULTIPLES-ADOPT-1: 部品の値（変数名はそのまま）
+    ps_yf   = comp.get("ps_ttm_sec", comp.get("ps"))   # MULTIPLES-ADOPT-1: 部品の値（旧キー読みは次の連鎖の後に外す）
     price   = comp.get("current_price") or 0
     shares  = comp.get("diluted_shares") or 0
     rev     = comp.get("revenue_ttm") or comp.get("latest_revenue") or 0  # TTM優先（2026-09-26、指示書㉑ STEP C）

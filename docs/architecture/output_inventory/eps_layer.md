@@ -9,7 +9,7 @@
 
 **件数**: 出力 5（ファイル 4・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 0／2件以上 4／規則の二重 9（検出式 11種のうち。EPSのファイルを含むもの 3）
 
-**画面の項目**: 画面が読むキー 108（この段階の書き手あり 70・ほかの書き手あり 32・画面の中で作る値 1・**書き手なし 5**）／書き手があるのに誰も読まないキー **2**（今の書き手のコードに無いキー 0 は数えない）
+**画面の項目**: 画面が読むキー 111（この段階の書き手あり 70・ほかの書き手あり 35・画面の中で作る値 1・**書き手なし 5**）／書き手があるのに誰も読まないキー **2**（今の書き手のコードに無いキー 0 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 0件／解決できた読み込み 13件＋ファイル名で当たった行 20件（0.0%）→ 当たらない
 
@@ -186,7 +186,7 @@
 | — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 254 | 残す（2026-10-21） |
 | YoY成長 | `yoy_growth` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 213・337・337・387 | 残す（2026-10-21） |
 
-### `docs/value-monitor/adjusted_eps_analyzer/stock.html`（87項目）
+### `docs/value-monitor/adjusted_eps_analyzer/stock.html`（90項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
@@ -239,8 +239,11 @@
 | — | `next_earnings_date` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 951 | 残す（2026-10-21） |
 | ・ | `notes` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 774 | 残す（2026-10-21） |
 | — | `official_eps` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 1109 | 残す（2026-10-21） |
+| — | `per` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 961 | 残す（2026-10-21） |
+| — | `per_adjusted` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 962 | 残す（2026-10-21） |
 | — | `per_adjusted_ttm` | 書き手なし | 962 | 残す（2026-10-21） |
 | — | `per_gaap_ttm_sec` | 書き手なし | 961 | 残す（2026-10-21） |
+| — | `per_is_forward` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 961 | 残す（2026-10-21） |
 | — | `percentile` | ほかの書き手あり<br>`docs/common/sec_data/rotce/AAPL.json`<br>`docs/common/sec_data/rotce/ABBV.json` | 762 | 残す（2026-10-21） |
 | ガイダンス（）<span style= | `period` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 828・1022・1239・1514 | 残す（2026-10-21） |
 | 期末: | `period_end` | この段階の書き手あり<br>`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>`docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json` | 720・720・1226・1226 | 残す（2026-10-21） |
@@ -307,7 +310,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 経営者実行力評価（参考指標、[[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④、2026-09-23） | `period_end`（この段階の書き手あり）<br>`prior_4q_avg_yoy`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`recent_4q_avg_yoy`（この段階の書き手あり）<br>`revenue_growth_acceleration`（この段階の書き手あり）<br>`roic_trend`（この段階の書き手あり）<br>`roic_wacc_ratio`（この段階の書き手あり）<br>`sbc_ratio`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`year`（この段階の書き手あり）<br>`years`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | ROTCE・P/TBV（[[ROTCE-PTBV-1]]、2026-10-10、参考表示） | `current`（ほかの書き手あり）<br>`history`（ほかの書き手あり）<br>`missing_components`（ほかの書き手あり）<br>`net_income_source`（ほかの書き手あり）<br>`notes`（ほかの書き手あり）<br>`percentile`（ほかの書き手あり）<br>`prev_quarter_end`（ほかの書き手あり）<br>`price`（ほかの書き手あり）<br>`price_date`（ほかの書き手あり）<br>`ptbv`（ほかの書き手あり）<br>`quarter_end`（ほかの書き手あり）<br>`reason`（この段階の書き手あり）<br>`rotce`（ほかの書き手あり）<br>`rotce_basis`（ほかの書き手あり）<br>`rotce_ttm`（ほかの書き手あり）<br>`shares_quarter_end`（ほかの書き手あり）<br>`signal`（ほかの書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 会社発表のROTCE（[[ROTCE-QUARTERLY-ANNUALIZED-1]]、config/company_reported_metrics.jsonに登録した銘柄だけ） | `company_reported`（ほかの書き手あり）<br>`computed`（ほかの書き手あり）<br>`definition`（ほかの書き手あり）<br>`diff`（ほかの書き手あり）<br>`end`（この段階の書き手あり）<br>`excluded_from_percentile`（ほかの書き手あり）<br>`filled_components`（ほかの書き手あり）<br>`filled_from_annual`（ほかの書き手あり）<br>`guidance`（ほかの書き手あり）<br>`high`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`last_registered_quarter_end`（ほかの書き手あり）<br>`latest_quarter_end`（ほかの書き手あり）<br>`latest_registered`（ほかの書き手あり）<br>`long_term_target`（ほかの書き手あり）<br>`low`（この段階の書き手あり）<br>`n_excluded_assumed_zero`（ほかの書き手あり）<br>`n_quarters`（ほかの書き手あり）<br>`period`（この段階の書き手あり）<br>`ptbv`（ほかの書き手あり）<br>`quarter_end`（ほかの書き手あり）<br>`reason`（この段階の書き手あり）<br>`rotce`（ほかの書き手あり）<br>`signal`（ほかの書き手あり）<br>`source`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`values`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| PER比較（Addition G） | `components`（この段階の書き手あり）<br>`per_adjusted_ttm`（書き手なし）<br>`per_gaap_ttm_sec`（書き手なし） | 残す（2026-10-21、Koichiさんの判断） |
+| PER比較（Addition G） | `components`（この段階の書き手あり）<br>`per`（ほかの書き手あり）<br>`per_adjusted`（ほかの書き手あり）<br>`per_adjusted_ttm`（書き手なし）<br>`per_gaap_ttm_sec`（書き手なし）<br>`per_is_forward`（ほかの書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 期間ピッカー | `ai_analysis`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`quarters`（この段階の書き手あり）<br>`ttm`（この段階の書き手あり）<br>`value`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | チャート | `adjusted_eps`（この段階の書き手あり）<br>`eps`（この段階の書き手あり）<br>`fiscal_year`（この段階の書き手あり）<br>`gaap_eps`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`period_end`（この段階の書き手あり）<br>`quarter`（この段階の書き手あり）<br>`special_flags`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | AI分析 | `comment`（この段階の書き手あり）<br>`confidence`（この段階の書き手あり）<br>`health`（この段階の書き手あり）<br>`item`（この段階の書き手あり）<br>`snippet`（この段階の書き手あり）<br>`sources`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |

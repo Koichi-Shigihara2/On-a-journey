@@ -2858,7 +2858,7 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 361,
+     "line": 362,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2866,15 +2866,7 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 364,
-     "func": "check_ticker",
-     "how": "保存済みファイル",
-     "via": "common/screening/dcf_validity_checker.py::_load_json",
-     "type": "Python"
-    },
-    {
-     "file": "common/screening/dcf_validity_checker.py",
-     "line": 367,
+     "line": 365,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_load_json",
@@ -2906,7 +2898,15 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 408,
+     "line": 371,
+     "func": "check_ticker",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 409,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::check_ticker",
@@ -2914,7 +2914,7 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 448,
+     "line": 449,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::check_ticker",
@@ -5602,6 +5602,7 @@
     "tests/test_data_fetcher_market_data_switch.py",
     "tests/test_fcf_component_lists.py",
     "tests/test_fcf_notes_and_fv_year.py",
+    "tests/test_multiples_adopt.py",
     "tests/test_no_direct_ticker_access.py",
     "tests/test_pipeline_logic.py",
     "tests/test_retention_and_fcf_points.py",
@@ -6049,9 +6050,15 @@
      472,
      491,
      492,
+     492,
+     492,
+     493,
+     493,
      493,
      494,
      495,
+     495,
+     496,
      496,
      497,
      499,
@@ -6747,6 +6754,22 @@
    },
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
+    "key": "max_eps_per",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     496
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "max_eps_reliability",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -6986,6 +7009,8 @@
     "lines": [
      352,
      352,
+     492,
+     493,
      569,
      569,
      1069,
@@ -7040,6 +7065,23 @@
    },
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
+    "key": "per_is_forward",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     492,
+     493
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "per_max_eps_ttm",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -7088,6 +7130,7 @@
     ],
     "label": "",
     "lines": [
+     495,
      574,
      575,
      576
@@ -9516,6 +9559,9 @@
      969,
      970,
      996,
+     996,
+     996,
+     997,
      997,
      999,
      1000,
@@ -11744,6 +11790,41 @@
    },
    {
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "per",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "label": "",
+    "lines": [
+     996
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "per_adjusted",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
+    "label": "",
+    "lines": [
+     997
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "per_adjusted_ttm",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -11773,6 +11854,22 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "label": "",
+    "lines": [
+     996
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "per_is_forward",
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
     ],
     "label": "",
     "lines": [
@@ -14436,9 +14533,15 @@
        472,
        491,
        492,
+       492,
+       492,
+       493,
+       493,
        493,
        494,
        495,
+       495,
+       496,
        496,
        497,
        499,
@@ -14735,6 +14838,13 @@
       ]
      },
      {
+      "key": "max_eps_per",
+      "status": "ほかの書き手あり",
+      "lines": [
+       496
+      ]
+     },
+     {
       "key": "max_eps_reliability",
       "status": "この段階の書き手あり",
       "lines": [
@@ -14830,6 +14940,8 @@
       "lines": [
        352,
        352,
+       492,
+       493,
        569,
        569,
        1069,
@@ -14857,6 +14969,14 @@
       ]
      },
      {
+      "key": "per_is_forward",
+      "status": "ほかの書き手あり",
+      "lines": [
+       492,
+       493
+      ]
+     },
+     {
       "key": "per_max_eps_ttm",
       "status": "この段階の書き手あり",
       "lines": [
@@ -14867,6 +14987,7 @@
       "key": "ps",
       "status": "この段階の書き手あり",
       "lines": [
+       495,
        574,
        575,
        576
@@ -16025,6 +16146,9 @@
        969,
        970,
        996,
+       996,
+       996,
+       997,
        997,
        999,
        1000,
@@ -16642,6 +16766,20 @@
       ]
      },
      {
+      "key": "per",
+      "status": "この段階の書き手あり",
+      "lines": [
+       996
+      ]
+     },
+     {
+      "key": "per_adjusted",
+      "status": "ほかの書き手あり",
+      "lines": [
+       997
+      ]
+     },
+     {
       "key": "per_adjusted_ttm",
       "status": "この段階の書き手あり",
       "lines": [
@@ -16651,6 +16789,13 @@
      {
       "key": "per_gaap_ttm_sec",
       "status": "この段階の書き手あり",
+      "lines": [
+       996
+      ]
+     },
+     {
+      "key": "per_is_forward",
+      "status": "ほかの書き手あり",
       "lines": [
        996
       ]

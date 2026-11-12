@@ -489,11 +489,11 @@ function renderDetailTable() {
     // ARCH-MATRIX-DUP-1: stock.html側のRICE×乖離率マトリクスと同じavailableゲートに揃える
     const riceAvailable = tk?.rice?.available ?? false;
     const roe     = tk?.components?.roe_10yr_avg ?? null;
-    const per        = tk?.components?.per_gaap_ttm_sec ?? null;
-    const perFwd     = tk?.components?.per_forward_yf  ?? null;   // yfinanceのコンセンサス。GAAP PERの代わりにはしない（MULTIPLES-ADOPT-1）
+    const per        = tk?.components?.per_gaap_ttm_sec ?? (tk?.components?.per_is_forward ? null : (tk?.components?.per ?? null));   // 旧キー読み（公開直後の旧データ用。次の連鎖の後に外す: [[MULTIPLES-ADOPT-1]]）。旧データのforward代用はGAAP PERにしない
+    const perFwd     = tk?.components?.per_forward_yf  ?? (tk?.components?.per_is_forward ? (tk?.components?.per ?? null) : null);   // 旧キー読み（公開直後の旧データ用。次の連鎖の後に外す: [[MULTIPLES-ADOPT-1]]）   // yfinanceのコンセンサス。GAAP PERの代わりにはしない（MULTIPLES-ADOPT-1）
     const peg        = tk?.components?.peg             ?? null;
-    const ps         = tk?.components?.ps_ttm_sec          ?? null;
-    const maxEpsPer  = tk?.components?.per_max_eps_ttm    ?? null;
+    const ps         = tk?.components?.ps_ttm_sec          ?? tk?.components?.ps ?? null;   // 旧キー読み（公開直後の旧データ用。次の連鎖の後に外す: [[MULTIPLES-ADOPT-1]]）
+    const maxEpsPer  = tk?.components?.per_max_eps_ttm    ?? tk?.components?.max_eps_per ?? null;   // 旧キー読み（公開直後の旧データ用。次の連鎖の後に外す: [[MULTIPLES-ADOPT-1]]）
     const maxEpsRel  = tk?.components?.max_eps_reliability ?? 'LOW';
     // [[EPS-SHARES-BASIS-MISMATCH-1]]: 分母がTTMの加重平均の株式数でない（今の株式数で割った）とき
     const maxEpsFallback = tk?.components?.max_eps_shares_basis === 'current_diluted_fallback';

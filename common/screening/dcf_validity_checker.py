@@ -274,8 +274,9 @@ def check_f_eps_analyzer_delta(latest, delta_threshold=10.0):
     ±10x)以上ならSBC等の影響で見かけの割安度が歪んでいる可能性としてフラグする。
     """
     comp = latest.get("components") or {}
-    per = comp.get("per_gaap_ttm_sec")
-    per_adjusted = comp.get("per_adjusted_ttm")
+    # 旧キー読み（公開直後の旧データ用。次の連鎖の後に外す: [[MULTIPLES-ADOPT-1]]）。旧データのforward代用はGAAP PERにしない
+    per = comp.get("per_gaap_ttm_sec", None if comp.get("per_is_forward") else comp.get("per"))
+    per_adjusted = comp.get("per_adjusted_ttm", comp.get("per_adjusted"))
 
     flag = False
     reason = ""
