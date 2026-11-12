@@ -349,15 +349,6 @@ _CONFIG_LOADER_REGISTRY = [
         "module": "segment_config",
         "func": "resolve_growth_options_config_path",
     },
-    {
-        # [[DEFICIT-QUALITY-ADOPT-1]]（2026-11-12）: CHECK-51・registration_validator.py P7が参照する
-        # STONKS SILOの対象の例外（適用外・固定）。手で書くフラグは廃止した
-        "label": "config/stonks_target.json",
-        "import_style": "package",
-        "module_dir": None,
-        "module": "common.stonks_target",
-        "func": "resolve_config_path",
-    },
 ]
 
 

@@ -229,7 +229,8 @@ class TestConvenienceWrappersUseActiveTickers:
         prof.write_text(json.dumps({"tickers": {"AAA": {"operating_state_history": hist},
                                                "BBB": {"operating_state_history": hist}}}), encoding="utf-8")
         monkeypatch.setattr(stonks_target, "PROFITABILITY_PATH", str(prof))
-        monkeypatch.setattr(stonks_target, "load_config", lambda path=None: {"excluded": {}, "pinned": {}})
+        import common.sector_master as sm
+        monkeypatch.setattr(sm, "is_financial_ticker", lambda t, *a, **k: False)
         assert tk.get_stonks_silo_tickers(csv_path) == ["AAA"]
 
     def test_get_eps_tickers_excludes_retired(self, tmp_path):

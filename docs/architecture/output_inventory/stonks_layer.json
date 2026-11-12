@@ -68,7 +68,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1072,
+     "line": 1063,
      "func": "_check_runway_divergence",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -76,7 +76,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1863,
+     "line": 1854,
      "func": "_check_stonks_silo_flag_rule",
      "how": "保存済みファイル",
      "via": "grep",
@@ -84,7 +84,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1865,
+     "line": 1856,
      "func": "_check_stonks_silo_flag_rule",
      "how": "保存済みファイル",
      "via": "AST",
@@ -92,7 +92,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2664,
+     "line": 2655,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -100,7 +100,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3475,
+     "line": 3466,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_load_stonks_results",
@@ -108,7 +108,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3581,
+     "line": 3572,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_stonks_silo_flag_rule",
@@ -116,7 +116,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3761,
+     "line": 3752,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_stonks_silo_flag_rule",
@@ -1256,12 +1256,12 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1588,
+     "line": 1579,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1785,
+     "line": 1776,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -1683,6 +1683,7 @@
     "src/value/stonks_silo/pipeline.py"
    ],
    "tests": [
+    "tests/test_deficit_quality_adopt.py",
     "tests/test_output_inventory_check.py",
     "tests/test_pipeline_logic.py",
     "tests/test_profitability.py",
@@ -2500,6 +2501,21 @@
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "months",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "",
+    "lines": [
+     548,
+     1509
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
     "key": "net_cash",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -3149,6 +3165,22 @@
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "target",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "",
+    "lines": [
+     1631,
+     1635,
+     1640
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
     "key": "tickers",
     "has_writer": true,
     "status": "この段階の書き手あり",
@@ -3459,6 +3491,21 @@
    },
    {
     "page": "docs/value-monitor/stonks-silo/index.html",
+    "section": "Guide",
+    "keys": [
+     {
+      "key": "target",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1631,
+       1635,
+       1640
+      ]
+     }
+    ]
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
     "section": "Table",
     "keys": [
      {
@@ -3735,6 +3782,14 @@
        1112,
        1112,
        1112
+      ]
+     },
+     {
+      "key": "months",
+      "status": "この段階の書き手あり",
+      "lines": [
+       548,
+       1509
       ]
      },
      {

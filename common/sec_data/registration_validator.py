@@ -322,13 +322,13 @@ def check_p6_cik_discontinuity_candidate(ticker: str, issues: Issues, cik_histor
 # P3: segment_config 整合性チェック
 # ═══════════════════════════════════════════════════════════════════════
 
-def check_p7_stonks_silo_flag(ticker: str, issues: Issues, flag_rows: dict,
-                              rule_config: Optional[dict] = None) -> None:
+def check_p7_stonks_silo_flag(ticker: str, issues: Issues, flag_rows: dict) -> None:
     """P7: STONKS SILO の対象になるか（情報のみ。登録の昇格をブロックしない）。判定は common/stonks_target.py"""
     if flag_rows.get(ticker) is None:
         return
-    e = stonks_target.explain(ticker, config=rule_config)
-    issues.info("P7-StonksTarget", f"{ticker}: STONKS SILOの対象={str(e['target']).lower()}（{e['reason']}）")
+    e = stonks_target.explain(ticker)
+    mk = f"、印={','.join(e['marks'])}" if e["marks"] else ""
+    issues.info("P7-StonksTarget", f"{ticker}: STONKS SILOの対象={str(e['target']).lower()}（{e['reason']}{mk}）")
 
 
 def check_p3_segment_config(issues: Issues) -> None:
@@ -467,11 +467,6 @@ def run(target_tickers: Optional[list] = None, summary_only: bool = False) -> Is
     all_issues = Issues()
     cik_history = _load_json(CIK_HISTORY_JSON) or {}
     flag_rows = {r["ticker"]: r for r in tickers.get_all_rows()}
-    try:
-        stonks_rule_config = stonks_target.load_config()
-    except Exception as e:
-        stonks_rule_config = None
-        all_issues.warn("P7-StonksTarget", f"config/stonks_target.json読み込み失敗: {e}")
 
     # ── P1 / P2 / P6: 銘柄ごとチェック ────────────────────────────────
     for t in tickers_to_check:
@@ -480,8 +475,7 @@ def run(target_tickers: Optional[list] = None, summary_only: bool = False) -> Is
                                            eps_disabled=eps_disabled)
         check_p2_data_quality(t, all_issues)
         check_p6_cik_discontinuity_candidate(t, all_issues, cik_history)
-        if stonks_rule_config is not None:
-            check_p7_stonks_silo_flag(t, all_issues, flag_rows, stonks_rule_config)
+        check_p7_stonks_silo_flag(t, all_issues, flag_rows)
 
     # ── P3: segment_config（全銘柄対象）──────────────────────────────
     check_p3_segment_config(all_issues)

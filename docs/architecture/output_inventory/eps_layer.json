@@ -1398,7 +1398,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1294,
+     "line": 1285,
      "func": "_local_data_start",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -1406,7 +1406,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1342,
+     "line": 1333,
      "func": "_check_split_history_registration",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -1414,7 +1414,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2468,
+     "line": 2459,
      "func": "_read_eps_quarterly",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1422,7 +1422,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2472,
+     "line": 2463,
      "func": "_read_eps_quarterly",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1430,7 +1430,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 2972,
+     "line": 2963,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -1438,7 +1438,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3004,
+     "line": 2995,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -1446,7 +1446,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3038,
+     "line": 3029,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -1454,7 +1454,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3475,
+     "line": 3466,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -1462,7 +1462,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3717,
+     "line": 3708,
      "func": "run_checks",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -1470,7 +1470,7 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 3761,
+     "line": 3752,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_read_eps_quarterly",
@@ -2634,12 +2634,12 @@
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1588,
+     "line": 1579,
      "text": "def _check_stale_provisional_rows(base_dir: Optional[str] = None, now: Optional[datetime] = None) -> list[tuple[str, str"
     },
     {
      "file": "common/sec_data/report_consistency_check.py",
-     "line": 1785,
+     "line": 1776,
      "text": "def _check_sec_freshness(path: Optional[str] = None, today: Optional[date] = None) -> list[tuple[str, str]]:"
     },
     {
@@ -3788,9 +3788,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "company_reported",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -3819,9 +3822,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "computed",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -3853,11 +3859,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "current",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -3869,9 +3876,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "definition",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": ">出典: ${co.source ||",
     "lines": [
@@ -3883,9 +3893,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "diff",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -3981,13 +3994,31 @@
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+    "key": "error",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
+    ],
+    "label": "",
+    "lines": [
+     672
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "excluded_from_percentile",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/APP.json",
-     "docs/common/sec_data/rotce/ASTS.json",
-     "docs/common/sec_data/rotce/CART.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4067,11 +4098,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "filled_components",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "・",
     "lines": [
@@ -4083,11 +4115,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "filled_from_annual",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4156,9 +4189,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "guidance",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4204,11 +4240,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "history",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4293,9 +4330,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "last_registered_quarter_end",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "（登録済みの最新 ${co.last_registered_quarter_en",
     "lines": [
@@ -4324,9 +4364,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "latest_quarter_end",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": ">直近の四半期末（）の会社発表の値: 未登録",
     "lines": [
@@ -4338,9 +4381,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "latest_registered",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4352,9 +4398,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "long_term_target",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/SOFI.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4383,11 +4432,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "missing_components",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/AMAT.json",
-     "docs/common/sec_data/rotce/AMD.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "算出不可",
     "lines": [
@@ -4401,11 +4451,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "n_excluded_assumed_zero",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "。無形資産を0と仮定した期は除外",
     "lines": [
@@ -4418,11 +4469,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "n_quarters",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "比較できる四半期が期（8期以上で判定）",
     "lines": [
@@ -4470,11 +4522,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "net_income_source",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "純利益（普通株主帰属のタグなし）",
     "lines": [
@@ -4502,11 +4555,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "notes",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "・",
     "lines": [
@@ -4535,11 +4589,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "per",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
-     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4567,11 +4622,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "percentile",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -4623,11 +4679,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "prev_quarter_end",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "末と末の平均",
     "lines": [
@@ -4639,11 +4696,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "price",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "。参考（TTM）（自社比の目安はこちらで比較）",
     "lines": [
@@ -4655,11 +4713,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "price_date",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "。参考（TTM）（自社比の目安はこちらで比較）",
     "lines": [
@@ -4688,11 +4747,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "ptbv",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ADBE.json",
-     "docs/common/sec_data/rotce/ALAB.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "。参考（TTM）（自社比の目安はこちらで比較）",
     "lines": [
@@ -4732,11 +4792,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "quarter_end",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "（直近の四半期: ）",
     "lines": [
@@ -4773,6 +4834,23 @@
      1034,
      1066,
      1503
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
+    "key": "raw",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
+    ],
+    "label": "",
+    "lines": [
+     1392
     ],
     "decision": "残す（2026-10-21）"
    },
@@ -4871,11 +4949,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "rotce",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "純利益（普通株主帰属のタグなし）",
     "lines": [
@@ -4895,11 +4974,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "rotce_basis",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "末と末の平均",
     "lines": [
@@ -4911,11 +4991,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "rotce_ttm",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "。参考（TTM）（自社比の目安はこちらで比較）",
     "lines": [
@@ -4961,11 +5042,12 @@
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "signal",
     "has_writer": true,
-    "status": "ほかの書き手あり",
+    "status": "この段階の書き手あり",
     "sources": [
-     "docs/common/sec_data/rotce/AAPL.json",
-     "docs/common/sec_data/rotce/ABBV.json",
-     "docs/common/sec_data/rotce/ADBE.json"
+     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
+     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
     ],
     "label": "",
     "lines": [
@@ -5556,6 +5638,13 @@
     "section": "エラー",
     "keys": [
      {
+      "key": "error",
+      "status": "この段階の書き手あり",
+      "lines": [
+       672
+      ]
+     },
+     {
       "key": "execution_metrics",
       "status": "この段階の書き手あり",
       "lines": [
@@ -5825,21 +5914,21 @@
     "keys": [
      {
       "key": "current",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        762
       ]
      },
      {
       "key": "history",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        765
       ]
      },
      {
       "key": "missing_components",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        771,
        771,
@@ -5848,49 +5937,49 @@
      },
      {
       "key": "net_income_source",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        787
       ]
      },
      {
       "key": "notes",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        774
       ]
      },
      {
       "key": "percentile",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        762
       ]
      },
      {
       "key": "prev_quarter_end",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        790
       ]
      },
      {
       "key": "price",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        794
       ]
      },
      {
       "key": "price_date",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        794
       ]
      },
      {
       "key": "ptbv",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        766,
        769,
@@ -5901,7 +5990,7 @@
      },
      {
       "key": "quarter_end",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        777,
        777,
@@ -5920,7 +6009,7 @@
      },
      {
       "key": "rotce",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        766,
        769,
@@ -5932,14 +6021,14 @@
      },
      {
       "key": "rotce_basis",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        790
       ]
      },
      {
       "key": "rotce_ttm",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        791,
        791
@@ -5954,7 +6043,7 @@
      },
      {
       "key": "signal",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        797
       ]
@@ -5967,28 +6056,28 @@
     "keys": [
      {
       "key": "company_reported",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        812
       ]
      },
      {
       "key": "computed",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        820
       ]
      },
      {
       "key": "definition",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        835
       ]
      },
      {
       "key": "diff",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        821
       ]
@@ -6003,21 +6092,21 @@
      },
      {
       "key": "excluded_from_percentile",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        857
       ]
      },
      {
       "key": "filled_components",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        928
       ]
      },
      {
       "key": "filled_from_annual",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        854,
        927
@@ -6025,7 +6114,7 @@
      },
      {
       "key": "guidance",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        822
       ]
@@ -6046,28 +6135,28 @@
      },
      {
       "key": "last_registered_quarter_end",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        825
       ]
      },
      {
       "key": "latest_quarter_end",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        824
       ]
      },
      {
       "key": "latest_registered",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        823
       ]
      },
      {
       "key": "long_term_target",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        822
       ]
@@ -6081,7 +6170,7 @@
      },
      {
       "key": "n_excluded_assumed_zero",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        808,
        808
@@ -6089,7 +6178,7 @@
      },
      {
       "key": "n_quarters",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        801,
        807
@@ -6104,7 +6193,7 @@
      },
      {
       "key": "ptbv",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        801,
        805,
@@ -6116,7 +6205,7 @@
      },
      {
       "key": "quarter_end",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        818,
        867
@@ -6131,7 +6220,7 @@
      },
      {
       "key": "rotce",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        801,
        865,
@@ -6140,7 +6229,7 @@
      },
      {
       "key": "signal",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        798
       ]
@@ -6184,7 +6273,7 @@
      },
      {
       "key": "per",
-      "status": "ほかの書き手あり",
+      "status": "この段階の書き手あり",
       "lines": [
        961
       ]
@@ -6439,6 +6528,13 @@
       "status": "この段階の書き手あり",
       "lines": [
        1337
+      ]
+     },
+     {
+      "key": "raw",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1392
       ]
      }
     ]
