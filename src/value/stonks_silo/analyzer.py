@@ -67,7 +67,7 @@ class DeficitQuality:
     sbc_adjusted_fcf: Optional[float] = None  # FCF - SBC
     sbc_ratio: Optional[float] = None         # SBC ÷ 売上
     sbc_yoy_change: Optional[float] = None    # SBC前年比変化率(%)
-    dilution_risk: str = "UNKNOWN"            # HIGH/MEDIUM/LOW/UNKNOWN
+    sbc_burden: str = "UNKNOWN"               # HIGH/MEDIUM/LOW/UNKNOWN（SBC÷売上。旧名 dilution_risk。株数の変化ではない: [[DILUTION-DEFINITION-UNIFY-1]]）
     deficit_fixed_risk: str = "MEDIUM"        # HIGH/MEDIUM/LOW
     mature_profit_note: str = ""              # 投資除外後も赤字の場合に注記
     revenue_outlier_years: list[int] = field(default_factory=list)  # 外れ値除去された年
@@ -291,15 +291,15 @@ class StonksAnalyzer:
             if prev_sbc is not None and prev_sbc != 0:
                 sbc_yoy_change = (sbc - prev_sbc) / abs(prev_sbc) * 100
 
-        # 希薄化リスク
+        # SBC負担（旧 希薄化リスク。株数の変化は common/dilution.py）
         if sbc_ratio_val is None:
-            dilution_risk = "UNKNOWN"
+            sbc_burden = "UNKNOWN"
         elif sbc_ratio_val >= 15:
-            dilution_risk = "HIGH"
+            sbc_burden = "HIGH"
         elif sbc_ratio_val >= 8:
-            dilution_risk = "MEDIUM"
+            sbc_burden = "MEDIUM"
         else:
-            dilution_risk = "LOW"
+            sbc_burden = "LOW"
 
         # ── DESIGN-11: Unit Economics ──
         # 粗利率系列（複数年）
@@ -388,7 +388,7 @@ class StonksAnalyzer:
             sbc_adjusted_fcf=sbc_adjusted_fcf,
             sbc_ratio=sbc_ratio_val,
             sbc_yoy_change=sbc_yoy_change,
-            dilution_risk=dilution_risk,
+            sbc_burden=sbc_burden,
             revenue_outlier_years=revenue_outlier_years,
             gross_margin_trend=gross_margin_trend,
             unit_economics_score=ue_score,

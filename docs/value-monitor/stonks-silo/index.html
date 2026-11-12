@@ -1089,7 +1089,7 @@ function buildDetail(ticker, d) {
           <div style="font-size:9px;color:var(--mut);margin-top:10px;letter-spacing:.1em;text-transform:uppercase">判定</div>
           <div class="detail-row"><span class="detail-key">投資性赤字</span><span class="detail-val">${deficitBadge(dq.verdict)}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">赤字固定化リスク<span class="tip-icon">?</span><span class="tip-box">良い赤字×OCF改善中→LOW / 悪い赤字×悪化中→HIGH</span></span></span>${riskBadge(dq.deficit_fixed_risk)}</div>
-          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">希薄化リスク<span class="tip-icon">?</span><span class="tip-box">SBC比率による株主希薄化リスク。≥15%=HIGH / ≥8%=MEDIUM / &lt;8%=LOW</span></span></span>${riskBadge(dq.dilution_risk)}</div>
+          <div class="detail-row"><span class="detail-key"><span class="tip-wrap">SBC負担<span class="tip-icon">?</span><span class="tip-box">SBC÷売上。≥15%=HIGH / ≥8%=MEDIUM / &lt;8%=LOW（株数の希薄化率ではありません。株数の変化はTANUKIの希薄化率）</span></span></span>${riskBadge(dq.sbc_burden ?? dq.dilution_risk)}</div>
         </div>
       </details>
     </div>

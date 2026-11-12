@@ -1605,7 +1605,9 @@ function render(d) {
             <div style="margin-bottom:5px">${dilStr}</div>
             ${dil != null ? `<div style="background:var(--bdr);border-radius:3px;height:4px;margin-bottom:6px;overflow:hidden"><div style="background:${dilColor};height:100%;width:${dilBarPct}%;border-radius:3px"></div></div>` : ''}
             ${dilComment ? `<div style="font-size:10px;color:${dilColor};font-weight:600;margin-bottom:3px">${dilComment}</div>` : ''}
-            <div style="font-size:10px;color:var(--mut)">${fh.shares_yr_3ago||'?'}→${fh.shares_yr_now||'?'}年</div>
+            <div style="font-size:10px;color:var(--mut)">${fh.shares_yr_3ago||'?'}→${fh.shares_yr_now||'?'}（加重平均・12四半期前→直近${fh.dilution_window?'：'+fh.dilution_window[0]+'→'+fh.dilution_window[1]:''}）</div>
+            ${fh.split_suspect?`<div style="font-size:10px;color:var(--amb,#b45309)">⚠ 未登録の分割の疑い（${fh.split_suspect.join(', ')}）。減点に使いません</div>`:''}
+            ${fh.outstanding_gap_pct!=null&&Math.abs(fh.outstanding_gap_pct)>10?`<div style="font-size:10px;color:var(--mut)">発行済株数との差 ${fh.outstanding_gap_pct>0?'+':''}${fh.outstanding_gap_pct}%（制限付株式・転換前後など）</div>`:''}
           </div>
           <div style="background:var(--sur);border:1px solid var(--bdr);border-radius:6px;padding:12px">
             <div style="font-size:10px;color:var(--mut);margin-bottom:4px;letter-spacing:.06em">次回決算</div>

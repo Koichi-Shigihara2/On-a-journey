@@ -53,7 +53,7 @@ from common.sec_data.layer3_builder import (  # フェーズD Step2-1
 from common.sec_data.roic import calc_roic_wacc_ratio  # [[HYPECORE-EXPECTATION-FRAMEWORK-EPIC-1]]④共有モジュール化
 from common.sec_data.reader import get_runway_cash  # [[BBAI-RDW-RUNWAY-VERIFICATION-1]] STONKS SILOとRunway cashを共通化
 from common.sec_data.reader import get_ttm_revenue  # 指示書㉑ STEP C: PS比率（表示用）の分母をTTM売上に
-from common.sec_data.split_adjust import load_split_history, adjust_share_points  # [[SPLIT-REALTIME-GAP-REVERSE-1]]
+from common.sec_data.split_adjust import load_split_history  # [[SPLIT-REALTIME-GAP-REVERSE-1]]
 
 # common/market_data - [[MARKETDATA-LAYER-CONSTRUCTION-1]]着手順序4-4:
 # 次回決算日取得（yf.Ticker(ticker).calendar直接呼び出し）を
@@ -916,12 +916,11 @@ class TanukiValuationPipeline:
 
         # 希薄化ペナルティ（3年平均年率 > 20% → -15, > 40% → -25）
         fin_health = valuation.get("financial_health", {})
+        # [[DILUTION-DEFINITION-UNIFY-1]]: 減点は common/dilution.py の1か所（段 or 傾斜）。未登録の分割の疑い（split_suspect）の銘柄には使わない
         dilution_pct = fin_health.get("dilution_3yr_annual_pct")
-        if dilution_pct is not None:
-            if dilution_pct > 40:
-                funda = max(0, funda - 25)
-            elif dilution_pct > 20:
-                funda = max(0, funda - 15)
+        if dilution_pct is not None and not fin_health.get("split_suspect"):
+            from common.dilution import dilution_penalty
+            funda = max(0, funda - round(dilution_penalty(dilution_pct)))
 
         # classify (JS移植。BUY判定はJS同様 upside>20% かつ timing>=50 をゲートとする。ARCH-SCORE-SYNC-1）
         # [[MARKETDATA-DAILY-CLOSE-NONE-PERMANENT-1]]（2026-09-26）: 株価（有効な終値）が
@@ -3109,127 +3108,39 @@ class TanukiValuationPipeline:
                 if _monthly_burn > 0:
                     result["computed_runway_months"] = _runway_cash / _monthly_burn
 
-        # 希薄化率: 株式分割調整済みのLayer3 shares_diluted年次データを使用
-        # （フェーズD Step2-1、normalized/からLayer3へ切替）
+        # 希薄化率（株数の変化）: [[DILUTION-DEFINITION-UNIFY-1]]（2026-11-12）。直近の四半期の加重平均の希薄化後株数 ÷ 12四半期前の年率。
+        # 分割は split_history.yaml で調整、未登録の分割の疑いは割り戻さず印（split_suspect）。定義は common/dilution.py の1か所
         _layer3_store_dil = self._get_layer3_store(ticker)
         if _layer3_store_dil is not None:
             try:
-                shares_series = get_field_entries(_layer3_store_dil, "shares_diluted")
-                annual_shares = sorted(
-                    [e for e in shares_series if e.get("is_annual") and e.get("fp") == "FY" and e.get("val")],
-                    key=lambda e: e.get("end", "")
-                )
-                if len(annual_shares) >= 4:
-                    s_now_entry = annual_shares[-1]
-                    s_3ago_entry = annual_shares[-4]
-
-                    # 株式分割による不連続を検出・補正（最新基準に統一）
-                    # 判定: FY値の前年比が2.5倍超 かつ 同一会計年度の四半期中央値と2.5倍超乖離
-                    #   → 遡及的分割調整（stock split retroactive restatement）として補正
-                    # 判定: FY値の前年比が2.5倍超 だが 四半期中央値と近い
-                    #   → IPO等の実際の希薄化として補正なし
-                    #
-                    # 四半期グルーピングは年次end日を起点にtrailing 12ヶ月窓で行う
-                    # （LRCX-SPLIT-1の教訓・CHECK-QREV-FYE-1と同型バグ）:
-                    # 暦年ラベル（end[:4]）でグルーピングすると非12月決算企業
-                    # （LRCX=6月期等）で誤判定する。LRCXの10:1分割（2024-10実施）は
-                    # SECの比較開示ウィンドウの都合で、一部四半期のみが後続filingで
-                    # 分割後ベースに遡及修正され、別四半期は未修正のまま残っていた。
-                    # 暦年グルーピングだと同一暦年内に「修正済み・未修正」の四半期が
-                    # 混在し、中央値が偶然「分割後基準」に一致して分割を見逃していた。
-                    # [[LAYER3-SHARESDILUTED-TAG-GAP-1]]案2対応: Layer3の
-                    # shares_dilutedはCommonStockSharesOutstanding
-                    # （期末発行済株式数、BS概念）をフォールバックタグとして
-                    # 含むため、加重平均（PL概念）でないエントリが混入する。
-                    # 分割検知の中央値計算をWeightedAverageNumberOf
-                    # DilutedSharesOutstanding由来のみに絞り、概念混在を防ぐ。
-                    # [[TAIL-SHARESDILUTED-Q4-TIMING-RISK-1]]対応
-                    # （2026-09-11）: このフィルタをget_quarterly_series()
-                    # のsource_tag引数へ統合し、TANUKI TAIL側
-                    # （quarterly_review_generator.py・tail_dcf_bridge.py）
-                    # とsource_tagの絞り込み条件を完全一致させた（実データ
-                    # 確認: shares_dilutedにis_ytd=Trueエントリは全102銘柄
-                    # で0件のため、旧来の独自フィルタ〈is_ytd未チェック〉と
-                    # 本関数〈is_ytdも除外〉の間に実際の値差分はない）。
-                    # val truthyチェックのみ、get_quarterly_series()の
-                    # 一般契約に含めず本箇所で明示的に維持する（実データで
-                    # CEG(2021-09-30)にval=0のWeightedAverage由来エントリ
-                    # が1件存在し、含めると分割検知の中央値計算を歪める
-                    # ため、旧実装と完全に同じ除外挙動を保つ）。
-                    q_entries_all = [
-                        e for e in get_quarterly_series(
-                            _layer3_store_dil, "shares_diluted",
-                            source_tag=WEIGHTED_AVG_DILUTED_SHARES_TAG,
-                        )
-                        if e.get("val")
-                    ]
-
-                    # [[SPLIT-REALTIME-GAP-REVERSE-1]]（2026-09-25）: config/
-                    # split_history.yaml（正の情報源）に登録済みの分割は、下の
-                    # ヒューリスティック検知より前に、年次・四半期の株数へ適用する
-                    # （判定はEPS ANALYZERと共通のcommon/sec_data/split_adjust.py）。
-                    # Layer3の株数は、分割後の10-Qが比較期間として再掲しなかった
-                    # 期が分割前基準のまま残るため、年次（KULRはFY2023以前が分割前）
-                    # と、分割検知の確認用中央値に使う四半期（2024-03は分割前・
-                    # 2024-06以降は分割後）の両方で基準が混在していた。KULRは
-                    # 1-for-8の株式併合が「実際の株数減少」と扱われ、3年希薄化率が
-                    # −27.82%/年（自社株買い扱い）と算出されていた。
-                    # 下のヒューリスティック検知は未登録の分割の安全網として残す。
-                    _reg_splits = load_split_history().get(ticker, [])
-                    if _reg_splits:
-                        raw_vals = adjust_share_points(
-                            [(e["end"][:10], e["val"]) for e in annual_shares], _reg_splits)
-                        _q_adj_vals = adjust_share_points(
-                            [(e["end"][:10], e["val"]) for e in q_entries_all], _reg_splits)
-                        q_entries_all = [dict(e, val=v) for e, v in zip(q_entries_all, _q_adj_vals)]
-                    else:
-                        raw_vals = [e["val"] for e in annual_shares]
-                    adj_vals = list(raw_vals)
-                    split_factor = 1.0
-                    for i in range(len(raw_vals) - 1, 0, -1):
-                        ratio = raw_vals[i] / raw_vals[i - 1] if raw_vals[i - 1] > 0 else 1.0
-                        if ratio > 2.5 or ratio < 0.4:
-                            # 四半期値との比較で遡及的分割調整か実際の希薄化かを判別
-                            # （ARCH-DATA-1残課題①: quarters_in_trailing_window()に一本化。
-                            #  quarterly.py::check_revenue_quality()と同一の窓計算を使用）
-                            try:
-                                from common.sec_data.utils import quarters_in_trailing_window
-                                q_pairs = [(e["end"], e["val"]) for e in q_entries_all]
-                                q_list = quarters_in_trailing_window(q_pairs, annual_shares[i]["end"])
-                            except (ValueError, KeyError):
-                                q_list = []
-                            if q_list:
-                                q_median = sorted(q_list)[len(q_list) // 2]
-                                fy_q_ratio = raw_vals[i] / q_median if q_median > 0 else 1.0
-                                is_split = fy_q_ratio > 2.5 or fy_q_ratio < 0.4
-                            else:
-                                is_split = False  # 四半期データなし → 実際の希薄化と判断
-                            if is_split:
-                                split_factor *= ratio
-                                for j in range(i):
-                                    adj_vals[j] = raw_vals[j] * split_factor
-
-                    s_now = adj_vals[-1]
-                    s_3ago = adj_vals[-4]
-
-                    # SEC株式数がyfinance由来の株式数と10倍以上乖離している場合は
-                    # XBRLの報告が信頼できない（UP-C構造等）→希薄化計算をスキップ
-                    _yf_shares = comps.get("diluted_shares") or 0
-                    if _yf_shares > 0 and s_now > 0:
-                        _sec_yf_ratio = _yf_shares / s_now
-                        if _sec_yf_ratio > 10 or _sec_yf_ratio < 0.1:
-                            s_now = None  # sanity check fail → skip
-
-                    if s_now and s_3ago > 0:
-                        dilution_3yr = ((s_now / s_3ago) ** (1 / 3) - 1) * 100
-                        if "financial_health" not in result:
-                            result["financial_health"] = {}
-                        result["financial_health"]["dilution_3yr_annual_pct"] = round(dilution_3yr, 2)
-                        result["financial_health"]["shares_yr_now"] = s_now_entry["val"]
-                        result["financial_health"]["shares_yr_3ago"] = s_3ago_entry["val"]
-                        if abs(split_factor - 1.0) > 0.01:
-                            result["financial_health"]["split_adjusted"] = True
-                            result["financial_health"]["split_factor"] = round(split_factor, 4)
+                from common.dilution import share_count_change
+                _q_dil = [(e["end"], e["val"]) for e in get_quarterly_series(
+                    _layer3_store_dil, "shares_diluted", source_tag=WEIGHTED_AVG_DILUTED_SHARES_TAG) if e.get("val")]
+                _out_dil = None
+                try:  # 発行済株数（期末）との差は表示だけの補助の印
+                    _o = sorted([e for e in get_quarterly_series(_layer3_store_dil, "shares_outstanding_period_end_sec")
+                                 if e.get("val")], key=lambda e: e["end"])
+                    _out_dil = (_o[-1]["end"], _o[-1]["val"]) if _o else None
+                except Exception:
+                    _out_dil = None
+                _sc = share_count_change(_q_dil, load_split_history().get(ticker, []), _out_dil)
+                # SEC株式数がyfinance由来の株式数と10倍以上乖離している場合はXBRLの報告が信頼できない（UP-C構造等）→希薄化計算をスキップ
+                _yf_shares = comps.get("diluted_shares") or 0
+                if _sc and _yf_shares > 0 and _sc["shares_now"] > 0:
+                    _sec_yf_ratio = _yf_shares / _sc["shares_now"]
+                    if _sec_yf_ratio > 10 or _sec_yf_ratio < 0.1:
+                        _sc = None
+                if _sc:
+                    _fh = result.setdefault("financial_health", {})
+                    _fh["dilution_3yr_annual_pct"] = round(_sc["cagr_pct"], 2)
+                    _fh["shares_yr_now"] = _sc["shares_now"]
+                    _fh["shares_yr_3ago"] = _sc["shares_start"]
+                    _fh["dilution_basis"] = "quarterly_weighted_12q"
+                    _fh["dilution_window"] = [_sc["start_end"], _sc["end"]]
+                    if _sc.get("split_suspect"):
+                        _fh["split_suspect"] = _sc["split_suspect"]
+                    if _sc.get("outstanding_gap_pct") is not None:
+                        _fh["outstanding_gap_pct"] = round(_sc["outstanding_gap_pct"], 1)
             except Exception:
                 pass
 
