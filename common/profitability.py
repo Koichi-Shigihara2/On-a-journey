@@ -9,6 +9,11 @@
      TANUKI の下限・Policy A は今のまま（この部品を読まない）
   4. 業種のマスター（config/sector_master.json）で区分なし・金融の銘柄は収益の段階を「区分なし」（金融は P/TBV÷ROTCE の側）
   赤字の質の点数（STONKS SILO の「良い赤字・悪い赤字」）の関数は deficit_quality_verdict に移した。STONKS はそれを呼ぶ
+  5. 黒字化の予測（会計）はこの部品の1つだけ（[[DEFICIT-QUALITY-ADOPT-1]]、2026-11-12）。STONKS SILO の画面・TANUKI の report.txt は
+     breakeven_view() で読む。STONKS の営業CF黒字化（ocf_breakeven）はキャッシュの軸として別の名前で残す
+  6. STONKS の対象は operating_state_history（月末ごとの TTM 営業利益の符号）を stage_v2 の持続の条件で通した結果
+     （common/stonks_target.py）。この部品は月末ごとの符号を出すだけで、持続の閾値は持たない
+  7. 粗利率は粗利のフィールドが無ければ 売上−売上原価 から導出する（STONKS の gross_margin_derived と同じ）
 
 時点: 財務は Layer3（common/sec_data/layer3_builder.py::build_ticker_store、ファイルに保存しない）の値を、その期の値が最初に
 申告された書類の提出日（first_filed）で、時点（as_of）までに使えたものだけ・その時点の値（first_val）で使う（定義v2 §3）。
@@ -48,6 +53,7 @@ NEAR_HORIZON_QUARTERS = 8         # 2年以内に0に届けば「黒字化目前
 # 0.5 はその切れ目。R²が低いのは率が直線に乗らない（売上がほぼ0の期を含みJOBYの率が数千%から動く等）ときで、傾きで伸ばした時期に意味が無い
 MIN_R2 = 0.5
 BREAKEVEN_METHOD = "ttm_operating_margin_ols_8q"
+HISTORY_MONTHS = 4                # 月末ごとの TTM 営業利益の符号を何か月ぶん出すか（持続の条件〈2か月〉を通すのに足りる数）
 FCF_POINTS = 5                    # 構造的赤字の5点の平均（TANUKI の TTM の系列と同じく、毎年同じ期末の点）
 
 STAGE_PROFIT, STAGE_NEAR, STAGE_LOSS, STAGE_UNCLASSIFIED = "profit", "near_profit", "loss", "unclassified"
@@ -207,6 +213,29 @@ def ttm_series(quarters: Dict[str, float]) -> Dict[str, float]:
     return out
 
 
+def month_ends_upto(as_of: str, n: int = HISTORY_MONTHS) -> List[str]:
+    """as_of 以前の最後の n 個の月末（古い順）。as_of が月末ならそれを含む"""
+    d = _d(as_of)
+    nxt = date(d.year + (d.month == 12), (d.month % 12) + 1, 1)
+    last = nxt - timedelta(days=1)
+    cur = last if d == last else date(d.year, d.month, 1) - timedelta(days=1)
+    out = []
+    for _ in range(n):
+        out.append(cur.isoformat())
+        cur = date(cur.year, cur.month, 1) - timedelta(days=1)
+    return list(reversed(out))
+
+
+def operating_state(fields: Dict[str, Any], as_of: str) -> str:
+    """その時点で使えた値だけの TTM 営業利益の符号。"loss"（<0）・"profit"（≥0）・"unknown"（TTM が作れない）。
+    業種の区分には依らない（STONKS の対象の選び方〈営業利益<0〉。区分なしのバイオも赤字なら "loss"）"""
+    ent = lambda f: (fields.get(f) or {}).get("entries") or []
+    oi = ttm_series(quarterly_points(ent("operating_income"), as_of))
+    if not oi:
+        return "unknown"
+    return "loss" if oi[max(oi)] < 0 else "profit"
+
+
 def _ols(ys: List[float]) -> Tuple[float, float, float]:
     """(傾き, 切片, 決定係数R²)"""
     n = len(ys)
@@ -301,6 +330,7 @@ def compute(ticker: str, as_of: str, store: Dict[str, Any], sector_entry: Option
                                       "LOW_FIT": f"見込み不明（TTMの営業利益率が直線に乗らない、R² {be['r2']} < {MIN_R2}）",
                                       "TOO_FAR": f"0に届くのが2年より先（{be['quarters_to_zero']}四半期後）"}[be["reason"]]
     res.update(revenue_stage=stage, revenue_stage_label=STAGE_LABELS[stage], stage_reason=why)
+    res["operating_state_history"] = [[me, operating_state(fields, me)] for me in month_ends_upto(as_of)]
 
     # 構造的赤字（FCF、TANUKI の TTM の系列と同じく毎年同じ期末の5点）
     ocf_ttm = ttm_series(quarterly_points(ent("operating_cash_flow"), as_of))
@@ -332,12 +362,55 @@ def compute(ticker: str, as_of: str, store: Dict[str, Any], sector_entry: Option
             growth[b[:4]] = (a_rev[b] / a_rev[a] - 1) * 100 if a_rev[a] and a_rev[a] > 0 else None
         ratio = lambda f: (annual_points(ent(f), as_of).get(last) / rev * 100) if rev and rev > 0 and \
             annual_points(ent(f), as_of).get(last) is not None else None
+
+        def gross_ratio():
+            """粗利率（%）。粗利のフィールドが無い年は 売上−売上原価 から導出（STONKS の gross_margin_derived と同じ）"""
+            if not rev or rev <= 0:
+                return None
+            gp = annual_points(ent("gross_profit"), as_of).get(last)
+            if gp is None:
+                cogs = annual_points(ent("cost_of_revenue"), as_of).get(last)
+                gp = (rev - cogs) if cogs is not None else None
+            return gp / rev * 100 if gp is not None else None
         ni = annual_points(ent("net_income"), as_of).get(last)
         v, why, sc = deficit_quality_verdict(ni, cagr, growth, ratio("research_and_development"),
-                                             ratio("selling_and_marketing"), ratio("gross_profit"))
+                                             ratio("selling_and_marketing"), gross_ratio())
         dq.update(verdict=v, score=sc, reason=why, fiscal_year_end=last)
     res["deficit_quality"] = dq
     return res
+
+
+def structural_deficit_kind(entry: Optional[Dict[str, Any]]) -> str:
+    """構造的赤字（FCF）の種類（表示だけ）。"capex_profit"＝収益の段階が黒字でFCFだけ構造的に負（AMZN・CEG型。設備投資が営業CFを上回る）、
+    "cash_loss"＝営業利益も赤字（または区分なし等）。TANUKI の下限・Policy A はこの種類に依らず今のまま"""
+    return "capex_profit" if (entry or {}).get("revenue_stage") == STAGE_PROFIT else "cash_loss"
+
+
+# ── 読み手（STONKS の画面・TANUKI の report.txt）が黒字化の予測を読む1か所 ───────────────
+def load_entry(ticker: str, path: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """docs/common/profitability.json のその銘柄の行。無ければ None"""
+    try:
+        with open(path or OUTPUT_PATH, encoding="utf-8") as f:
+            return (json.load(f).get("tickers") or {}).get(ticker.upper())
+    except (OSError, ValueError):
+        return None
+
+
+def breakeven_view(entry: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """黒字化の見込み（会計）の見せ方。{"state": achieved|predicted|unknown, "year", "reason", "r2", "basis"}。
+    achieved = TTM の営業利益がプラス。predicted = 年が出る（黒字化目前、または2年より先でも年を出せるもの）。
+    reason は部品の理由コード（PREDICTED・TOO_FAR・NO_TREND・NO_DATA・LOW_FIT）か ACHIEVED・UNCLASSIFIED・NO_ENTRY"""
+    if not entry:
+        return {"state": "unknown", "year": None, "reason": "NO_ENTRY", "r2": None, "basis": BREAKEVEN_METHOD}
+    stage = entry.get("revenue_stage")
+    be = entry.get("breakeven") or {}
+    if stage == STAGE_PROFIT:
+        return {"state": "achieved", "year": None, "reason": "ACHIEVED", "r2": None, "basis": BREAKEVEN_METHOD}
+    if stage == STAGE_UNCLASSIFIED and not be:
+        return {"state": "unknown", "year": None, "reason": "UNCLASSIFIED", "r2": None, "basis": BREAKEVEN_METHOD}
+    year = be.get("year")
+    return {"state": "predicted" if year else "unknown", "year": year, "reason": be.get("reason") or "NO_DATA",
+            "r2": be.get("r2"), "basis": BREAKEVEN_METHOD}
 
 
 # ── 全銘柄・保存 ─────────────────────────────────────────────────────

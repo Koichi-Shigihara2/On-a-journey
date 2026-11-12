@@ -417,7 +417,7 @@ def register_one(ticker: str, target_status: str, dry_run: bool) -> bool:
         return False
 
     print(f"現在のstatus: {row.get('status', '(不明)')}"
-          f" / tanuki={row.get('tanuki')} stonks_silo={row.get('stonks_silo')}"
+          f" / tanuki={row.get('tanuki')}"
           f" eps={row.get('eps')} hypecore={row.get('hypecore')}")
 
     # Step 0.5直後・Step 1実行前のプリフライトチェック（[[QUALITY-GATES-

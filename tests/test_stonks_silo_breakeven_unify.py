@@ -152,31 +152,7 @@ class TestMarginBreakevenReasonCodes:
         assert reason in ("PREDICTED", "NO_TREND", "TOO_FAR")
 
 
-class TestGaapMarginBreakevenReasonCodes:
-    def test_achieved(self):
-        years = [2024, 2025]
-        ni = {2024: -10.0, 2025: 5.0}
-        rev = {yr: 100.0 for yr in years}
-        year, reason, predicted = am._gaap_margin_breakeven(years, ni, _records(rev))
-        assert reason == "ACHIEVED"
-        assert predicted is False
-
-    def test_imminent_when_breakeven_year_not_after_latest(self):
-        years = [2023, 2024, 2025]
-        # 改善が非常に急で、ゼロ交差が2025年以前に計算されるケース
-        ni = {2023: -5.0, 2024: -1.0, 2025: -0.1}
-        rev = {yr: 100.0 for yr in years}
-        year, reason, predicted = am._gaap_margin_breakeven(years, ni, _records(rev))
-        assert reason in ("IMMINENT", "PREDICTED")
-        assert predicted is True
-
-    def test_no_data(self):
-        years = [2025]
-        ni = {2025: -10.0}
-        rev = {2025: 100.0}
-        year, reason, predicted = am._gaap_margin_breakeven(years, ni, _records(rev))
-        assert reason == "NO_DATA"
-        assert predicted is False
+# 会計の黒字化（旧 _gaap_margin_breakeven・年次の純利益率の回帰）は廃止した。収益の部品の1つだけ（tests/test_deficit_quality_adopt.py、[[DEFICIT-QUALITY-ADOPT-1]]）
 
 
 class TestOlsSlopeIntercept:

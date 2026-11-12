@@ -27,7 +27,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 from common.sec_data.reader import get_runway_cash  # noqa: E402
-from common.profitability import deficit_quality_verdict  # noqa: E402
+from common.profitability import deficit_quality_verdict, breakeven_view, load_entry  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -114,8 +114,11 @@ class ProfitabilityPath:
     ocf_trend: str = "UNKNOWN"   # ACCELERATING / IMPROVING / FLAT / DETERIORATING
 
     # 黒字化予測
-    gaap_breakeven_year: Optional[int] = None     # GAAP純利益ベース
-    gaap_breakeven_reason: str = ""               # ACHIEVED/PREDICTED/NO_TREND/NO_DATA/TOO_FAR
+    # 会計の黒字化: 収益の部品（common/profitability.py、TTMの営業利益率の直近8四半期の回帰・R²≥0.5）の1つだけ
+    # （[[DEFICIT-QUALITY-ADOPT-1]]、2026-11-12。以前の年次の純利益率の回帰は廃止）
+    op_breakeven_year: Optional[int] = None       # 部品の黒字化の年（営業利益ベース）
+    op_breakeven_reason: str = ""                 # ACHIEVED/PREDICTED/TOO_FAR/NO_TREND/NO_DATA/LOW_FIT/UNCLASSIFIED/NO_ENTRY
+    # キャッシュの黒字化（年次のOCF率の回帰）。会計の黒字化とは別の概念として残す
     ocf_breakeven_year: Optional[int] = None      # OCFベース（隠れ黒字化）
     ocf_breakeven_reason: str = ""                # ACHIEVED/PREDICTED/NO_TREND/NO_DATA/TOO_FAR
     hidden_profit_already: bool = False            # OCFが既に黒字かどうか
@@ -175,7 +178,7 @@ class StonksAnalyzer:
 
         dq = self._analyze_deficit_quality(years, records)
         ra = self._analyze_runway(years, records, net_cash_data)
-        pp = self._analyze_profitability_path(years, records)
+        pp = self._analyze_profitability_path(years, records, ticker)
         dq.deficit_fixed_risk = self._calc_deficit_fixed_risk(dq, pp)
 
         overall_score, overall_verdict = self._overall(dq, ra, pp)
@@ -505,7 +508,7 @@ class StonksAnalyzer:
     # ③ 隠れ黒字化パス
     # ------------------------------------------------------------------
 
-    def _analyze_profitability_path(self, years: list[int], records: dict) -> ProfitabilityPath:
+    def _analyze_profitability_path(self, years: list[int], records: dict, ticker: Optional[str] = None) -> ProfitabilityPath:
         # OCF 年次
         ocf_annual = {}
         for yr in years:
@@ -558,8 +561,8 @@ class StonksAnalyzer:
         ocf_trend = self._ocf_trend(years, ocf_annual, ocf_yoy, ocf_accel)
 
         # 黒字化予測
-        (gaap_be, ocf_be, hidden_already, gaap_reason, ocf_reason, reason, any_predicted,
-         ocf_basis_year) = self._breakeven_estimate(years, records, ocf_annual, ocf_trend)
+        (op_be, ocf_be, hidden_already, op_reason, ocf_reason, reason, any_predicted,
+         ocf_basis_year) = self._breakeven_estimate(years, records, ocf_annual, ocf_trend, ticker)
 
         # 非連続成長の検出（実際に将来年を予測〈PREDICTED/IMMINENT〉した
         # 場合のみ、その予測の精度への影響を確認する）
@@ -657,8 +660,8 @@ class StonksAnalyzer:
             ocf_yoy_change=ocf_yoy,
             ocf_acceleration=ocf_accel,
             ocf_trend=ocf_trend,
-            gaap_breakeven_year=gaap_be,
-            gaap_breakeven_reason=gaap_reason,
+            op_breakeven_year=op_be,
+            op_breakeven_reason=op_reason,
             ocf_breakeven_year=ocf_be,
             ocf_breakeven_reason=ocf_reason,
             hidden_profit_already=hidden_already,
@@ -728,27 +731,24 @@ class StonksAnalyzer:
         records: dict,
         ocf_annual: dict,
         ocf_trend: str,
+        ticker: Optional[str] = None,
     ) -> tuple[Optional[int], Optional[int], bool, str, str, str, bool, Optional[int]]:
         """
-        常に直近4年のマージン比率OLS回帰で黒字化年を予測する
+        会計の黒字化は収益の部品（common/profitability.py::breakeven_view。TTMの営業利益率の直近8四半期の回帰・R²≥0.5）を読むだけ
+        （[[DEFICIT-QUALITY-ADOPT-1]]、2026-11-12。以前の年次の純利益率の回帰は廃止）。
+        キャッシュの黒字化（OCF）は、年次のOCF率の直近4年のマージン比率OLS回帰のまま、別の概念として残す
         （[[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]、2026-09-05統一）。
-        Returns: (gaap_be_year, ocf_be_year, hidden_already, gaap_reason, ocf_reason, combined_reason, any_predicted,
+        Returns: (op_be_year, ocf_be_year, hidden_already, op_reason, ocf_reason, combined_reason, any_predicted,
                   ocf_basis_year)
         ocf_basis_year: OCFマージン回帰に使った最新年（OCFがすでに黒字なら None）。
         ③の点数の「推定年まで何年か」の起点（[[STONKS-PATHSCORE-WITHOUT-ESTIMATE-1]]）。
-        reason codes: ACHIEVED / PREDICTED / IMMINENT / NO_TREND[:XX%→XX%] / NO_DATA / TOO_FAR
-        any_predicted: GAAP・OCFいずれかがPREDICTED/IMMINENT（実際に将来年を
-        算出）した場合のみTrue。非連続成長チェックのゲートに使う
-        （旧ols_used、絶対値OLSフォールバックの廃止に伴い意味を変更）。
+        reason codes（会計）: ACHIEVED / PREDICTED / TOO_FAR / NO_TREND / NO_DATA / LOW_FIT / UNCLASSIFIED / NO_ENTRY
+        reason codes（OCF）: ACHIEVED / PREDICTED / IMMINENT / NO_TREND[:XX%→XX%] / NO_DATA / TOO_FAR
+        any_predicted: 会計・OCFいずれかが実際に将来年を算出した場合のみTrue。非連続成長チェックのゲートに使う
         """
-        net_incomes = {yr: records[yr]["pl"].get("net_income") for yr in years}
-        latest_ni = net_incomes.get(years[-1])
-        predicted_gaap = False
-        if latest_ni is not None and latest_ni > 0:
-            gaap_be = None
-            gaap_reason = "ACHIEVED"
-        else:
-            gaap_be, gaap_reason, predicted_gaap = _gaap_margin_breakeven(years, net_incomes, records)
+        view = breakeven_view(load_entry(ticker) if ticker else None)
+        op_be, op_reason = view["year"], view["reason"]
+        predicted_op = view["state"] == "predicted"
 
         latest_ocf = ocf_annual.get(years[-1])
         hidden_already = latest_ocf is not None and latest_ocf > 0
@@ -760,13 +760,9 @@ class StonksAnalyzer:
         else:
             ocf_be, ocf_reason, predicted_ocf, ocf_basis_year = _margin_breakeven_detail(years, ocf_annual, records)
 
-        if ocf_trend == "DETERIORATING" and gaap_reason not in ("ACHIEVED", "PREDICTED", "IMMINENT"):
-            gaap_be = None
-            gaap_reason = "NO_TREND"
-
-        any_predicted = predicted_gaap or predicted_ocf
-        combined = f"{gaap_reason} | {ocf_reason}"
-        return gaap_be, ocf_be, hidden_already, gaap_reason, ocf_reason, combined, any_predicted, ocf_basis_year
+        any_predicted = predicted_op or predicted_ocf
+        combined = f"{op_reason} | {ocf_reason}"
+        return op_be, ocf_be, hidden_already, op_reason, ocf_reason, combined, any_predicted, ocf_basis_year
 
     # ------------------------------------------------------------------
     # 総合スコア・サマリー
@@ -911,14 +907,16 @@ class StonksAnalyzer:
             m = {"NO_TREND": "黒字化予測不可（悪化中）", "NO_DATA": "データ不足", "TOO_FAR": "5年超"}
             ocf_be_text = f"営業CF黒字化：{m.get(pp.ocf_breakeven_reason, pp.ocf_breakeven_reason or '不明')}"
 
-        # GAAP黒字化テキスト
-        if pp.gaap_breakeven_reason == "ACHIEVED":
-            gaap_be_text = "純利益黒字：達成済み"
-        elif pp.gaap_breakeven_year:
-            gaap_be_text = f"純利益黒字化予測：{pp.gaap_breakeven_year}年頃"
+        # 営業黒字化テキスト（収益の部品。TTMの営業利益率の回帰）
+        if pp.op_breakeven_reason == "ACHIEVED":
+            op_be_text = "営業利益黒字：達成済み（TTM）"
+        elif pp.op_breakeven_year:
+            op_be_text = f"営業黒字化予測：{pp.op_breakeven_year}年頃（TTM営業利益率の回帰）"
         else:
-            m = {"NO_TREND": "純利益黒字化予測不可", "NO_DATA": "純利益データ不足", "TOO_FAR": "純利益黒字化：5年超"}
-            gaap_be_text = m.get(pp.gaap_breakeven_reason, f"純利益：{pp.gaap_breakeven_reason or '不明'}")
+            m = {"NO_TREND": "営業黒字化予測不可（営業利益率が上向きでない）", "NO_DATA": "営業黒字化：TTMの点が足りない",
+                 "LOW_FIT": "営業黒字化：見込み不明（営業利益率が直線に乗らない）", "TOO_FAR": "営業黒字化：2年より先",
+                 "UNCLASSIFIED": "営業黒字化：区分なし", "NO_ENTRY": "営業黒字化：収益の部品に行なし"}
+            op_be_text = m.get(pp.op_breakeven_reason, f"営業黒字化：{pp.op_breakeven_reason or '不明'}")
 
         verdict_label = verdict_label_map.get(dq.verdict, dq.verdict)
         runway_label  = runway_label_map.get(ra.verdict, ra.verdict)
@@ -952,7 +950,7 @@ class StonksAnalyzer:
             f"黒字化パス {pp_s}点　（{pp.path_score_basis or '—'}）",
             f"• 営業CFトレンド（金額） {trend_ja}",
             f"• {ocf_be_text}",
-            f"• {gaap_be_text}",
+            f"• {op_be_text}",
         ]
 
         return "\n".join(lines)
@@ -1149,114 +1147,6 @@ def _margin_breakeven_detail(
     if be_year > latest_yr + horizon:
         return None, "TOO_FAR", False, latest_yr
     return be_year, "PREDICTED", True, latest_yr
-
-
-def _gaap_margin_breakeven(
-    years: list[int],
-    net_incomes: dict[int, Optional[float]],
-    records: dict,
-    horizon: int = 5,
-) -> tuple[Optional[int], str, bool]:
-    """
-    純利益マージン（NI/Revenue × 100）の改善外挿でGAAP黒字化年を予測する。
-
-    [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]（2026-09-05）: `_margin_
-    breakeven()`と同様、常に直近4年のマージン比率OLS回帰に統一した
-    （旧: 2点傾き優先→絶対値3点OLSフォールバック）。フィルタの校正値
-    （売上規模10%未満除外・|マージン|>1000%除外・500pt/年超除外）は
-    変更していない。
-
-    Returns: (year, reason, predicted)
-    reason codes: ACHIEVED / PREDICTED / IMMINENT / NO_TREND[:XX%→XX%] / NO_DATA / TOO_FAR
-    predicted: PREDICTED・IMMINENT（実際に将来年を算出した場合）のみTrue。
-    """
-    latest_rev = None
-    for yr in reversed(years):
-        r = records.get(yr, {}).get("pl", {}).get("revenue_sanitized")
-        if r and r > 0:
-            latest_rev = r
-            break
-
-    margin_data: list[tuple[int, float]] = []
-    for yr in years[-4:]:
-        ni = net_incomes.get(yr)
-        rev = records.get(yr, {}).get("pl", {}).get("revenue_sanitized")
-        if ni is not None and rev is not None and rev > 0:
-            if latest_rev is None or rev >= latest_rev * 0.10:
-                m = ni / rev * 100  # percentage
-                if abs(m) <= 1000:
-                    margin_data.append((yr, m))
-
-    if len(margin_data) < 2:
-        return None, "NO_DATA", False
-
-    latest_yr, latest_m = margin_data[-1]
-    if latest_m >= 0:
-        return latest_yr, "ACHIEVED", False
-
-    xs = [yr for yr, _ in margin_data]
-    ys = [m for _, m in margin_data]
-    slope, intercept = _ols_slope_intercept(xs, ys)
-    if slope is None:
-        return None, "NO_DATA", False
-
-    if slope <= 0 or slope > 500:
-        trend_str = _fmt_margin_trend(margin_data, scale=1)
-        reason = f"NO_TREND:{trend_str}" if trend_str else "NO_TREND"
-        return None, reason, False
-
-    be_year = int(-intercept / slope + 0.5)
-    if be_year <= latest_yr:
-        return latest_yr + 1, "IMMINENT", True
-    if be_year > latest_yr + horizon:
-        return None, "TOO_FAR", False
-    return be_year, "PREDICTED", True
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    import sys
-    from fetcher import load_annual_data
-
-    ticker = sys.argv[1] if len(sys.argv) > 1 else "PLTR"
-    data = load_annual_data(ticker, years=5)
-
-    analyzer = StonksAnalyzer()
-    result = analyzer.analyze(data)
-
-    print("\n" + "=" * 60)
-    print(result.summary)
-    print("=" * 60)
-
-    dq = result.deficit_quality
-    ra = result.runway
-    pp = result.profitability_path
-
-    print(f"\n【① 赤字品質詳細】")
-    print(f"  粗利率: {_pct(dq.gross_margin)}  R&D比: {_pct(dq.rnd_ratio)}  S&M比: {_pct(dq.sm_ratio)}")
-    print(f"  3年CAGR: {_pct(dq.cagr_3yr)}")
-    print(f"  売上成長YoY: ", end="")
-    for yr, g in dq.revenue_growth_pct.items():
-        print(f"{yr}={_pct(g)}", end="  ")
-    print()
-
-    print(f"\n【② 生存能力詳細】")
-    print(f"  現金: {_fmt(ra.cash)}  月次バーン: {_fmt(ra.monthly_burn)}/月")
-
-    print(f"\n【③ 黒字化パス詳細】")
-    print(f"  年度     OCF          OCF速度      OCF加速度    コア利益")
-    for yr in result.years:
-        o = _fmt(pp.ocf_annual.get(yr))
-        v = _fmt(pp.ocf_yoy_change.get(yr))
-        a = _fmt(pp.ocf_acceleration.get(yr))
-        c = _fmt(pp.core_profit.get(yr))
-        print(f"  {yr}  {o:>12}  {v:>12}  {a:>12}  {c:>12}")
-
-    print(f"\n  GAAP黒字化予測: {result.profitability_path.gaap_breakeven_year or '不明'}")
-    print(f"  OCF黒字化予測 : {result.profitability_path.ocf_breakeven_year or '既に黒字' if pp.hidden_profit_already else '不明'}")
 
 
 def _pct(v) -> str:

@@ -324,82 +324,10 @@ def _resolve_live_risk_free_rate(get_latest_price=None, today=None) -> dict:
         return _fallback(f"error: {e}")
 
 
-# [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]（2026-09-05）: STONKS SILO
-# （src/value/stonks_silo/analyzer.py::_margin_breakeven()）が持つ
-# 安全策一式（理由コード・傾き上限・異常値除外）をこちら側にも追加し、
-# 「常に直近4点のOLS回帰」という回帰方式自体はSTONKS SILO側と揃えた
-# （対象指標は調整後EPSのまま維持、STONKS SILO側のマージン比率とは別軸）。
-#
-# 閾値はEPS Analyzer対象100銘柄・全1723四半期の実データ分布から校正
-# （マージン比率用に校正されたSTONKS SILO側の閾値をそのまま転用しない）:
-# - 正常範囲は概ね-9.5〜+18.2（p1=-1.35, p99=+8.72, mean=1.20, stdev=4.10）。
-#   唯一の極端な外れ値はLITE 2026Q4（adjusted_eps=-95.0）で、10-Kの通期
-#   実績が単一四半期として誤抽出された別種のバグ
-#   （[[EPS-LITE-ANNUAL-AS-QUARTERLY-1]]として別途新規登録、本タスクでは
-#   対象外）。EPS_MAGNITUDE_CAP=30はこの唯一の異常値を確実に除外しつつ、
-#   正常範囲の最大値(+18.2)に約65%の余裕を残す
-# - 現在赤字の16銘柄で直近4四半期OLS傾きを実測した結果、LITEの異常値
-#   混入分(-28.73/四半期)を除けば最大でも±0.31/四半期（CRWV）。
-#   EPS_SLOPE_CAP_PER_QUARTER=2.0はこれに対し約6倍の余裕を持たせつつ、
-#   LITEの異常混入ケースは1桁以上下回り確実に除外する
-EPS_MAGNITUDE_CAP = 30.0          # |adjusted_eps|がこれを超える四半期は回帰対象から除外
-EPS_SLOPE_CAP_PER_QUARTER = 2.0   # 傾きがこれを超える改善は信頼せずNO_TRENDとする
-BREAKEVEN_HORIZON_QUARTERS = 20   # 5年（STONKS SILOのhorizon=5年と統一）
-
-
-def compute_eps_breakeven(quarters_list: list, current_year: int) -> tuple:
-    """
-    EPS Analyzer quarterly.jsonの"quarters"（filing_date降順、直近が
-    index 0）から、調整後EPSの直近4四半期OLS回帰で黒字化四半期を予測する。
-
-    STONKS SILO（src/value/stonks_silo/analyzer.py::_margin_
-    breakeven()）と回帰の方式（常に直近4点のOLS）・安全策の考え方
-    （理由コード・傾き上限・異常値除外）を揃えている。対象指標は
-    調整後EPS（STONKS SILO側はマージン比率）のまま維持。
-
-    Returns: (breakeven_estimate, breakeven_reason)
-    reason codes: ACHIEVED / PREDICTED / NO_TREND / NO_DATA / TOO_FAR
-    """
-    candidates = quarters_list[:4]
-    # 値が存在し・株式数構造が別物でなく（[[EPS-LOAR-1]]の
-    # SHARE_STRUCTURE_MISMATCH）・Up-C組織再編前ゼロ利益でもなく
-    # （[[EPS-UPC-PREREORG-1]]のUPC_PREREORG_ZERO_PROFIT）・EPS絶対値が
-    # 異常でない（EPS_MAGNITUDE_CAP以内）ものだけを回帰対象とする
-    _excluded_flags = ("SHARE_STRUCTURE_MISMATCH", "UPC_PREREORG_ZERO_PROFIT")
-    recent_eps = [
-        q.get("adjusted_eps") for q in candidates
-        if q.get("adjusted_eps") is not None
-        and not any(f in (q.get("special_flags") or []) for f in _excluded_flags)
-        and abs(q.get("adjusted_eps")) <= EPS_MAGNITUDE_CAP
-    ]
-    if len(recent_eps) < 2:
-        return None, "NO_DATA"
-    if recent_eps[0] >= 0:
-        # STONKS SILO側（_breakeven_estimate()の直近黒字ショートサーキット）
-        # と同じ規約: 「達成済み」は年ではなくreasonのみで表す
-        # （breakeven_estimateはNoneのまま）
-        return None, "ACHIEVED"
-
-    vals = list(reversed(recent_eps))  # oldest→newest
-    n = len(vals)
-    x_mean = (n - 1) / 2.0
-    y_mean = sum(vals) / n
-    denom = sum((i - x_mean) ** 2 for i in range(n))
-    if denom == 0:
-        return None, "NO_DATA"
-
-    slope = sum((i - x_mean) * (vals[i] - y_mean) for i in range(n)) / denom
-    if slope <= 0 or slope > EPS_SLOPE_CAP_PER_QUARTER:
-        return None, "NO_TREND"
-
-    intercept = y_mean - slope * x_mean
-    x_zero = -intercept / slope
-    quarters_until = max(x_zero - (n - 1), 0)
-    if quarters_until > BREAKEVEN_HORIZON_QUARTERS:
-        return None, "TOO_FAR"
-
-    breakeven_year = round(current_year + quarters_until / 4.0)
-    return breakeven_year, "PREDICTED"
+# [[DEFICIT-QUALITY-ADOPT-1]]（2026-11-12）: 調整後EPSの直近4四半期の回帰による黒字化の予測（compute_eps_breakeven・
+# breakeven_estimate・breakeven_reason）は廃止した。黒字化の予測（会計）は収益の部品
+# （common/profitability.py::breakeven_view、TTMの営業利益率の直近8四半期の回帰・R²≥0.5）の1つだけ。
+# report.txt の Breakeven_Estimate 行もそれを読む。
 
 
 class TanukiValuationPipeline:
@@ -1387,6 +1315,12 @@ class TanukiValuationPipeline:
             latest_data["dilution_severity"] = _dil_sev
             latest_data["dilution_comment"] = _dil_badge
 
+        # 構造的赤字（FCF）の種類（表示だけ）: capex_profit＝営業利益は黒字でFCFだけ負（AMZN・CEG型）、cash_loss＝営業利益も赤字。
+        # 理論株価・判定は変えない（下限・Policy Aは今のまま）。[[DEFICIT-QUALITY-ADOPT-1]]
+        if (latest_data.get("components") or {}).get("structural_deficit"):
+            from common.profitability import structural_deficit_kind, load_entry as _pf_load
+            latest_data["components"]["structural_deficit_kind"] = structural_deficit_kind(_pf_load(ticker))
+
         # analyst_vs_iv: アナリスト中央値とTANUKI IVの乖離率
         _iv_ld = latest_data.get("intrinsic_value_per_share")
         _at_median_ld = latest_data.get("components", {}).get("analyst_target_median")
@@ -2087,10 +2021,16 @@ class TanukiValuationPipeline:
         # null化せず、Classification/Policy A・Bのロジックも変更しない
         # （フラグと注記の追加のみ、ブラスト半径を限定する保守的スコープ）。
         if comps.get("structural_deficit"):
-            L.append("⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。")
-            L.append("   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、")
-            L.append("    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄")
-            L.append("    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]")
+            if comps.get("structural_deficit_kind") == "capex_profit":
+                # 型④（AMZN・CEG型）: 営業利益は黒字で、FCF（営業CF−設備投資）だけが構造的に負。設備投資が営業CFを上回っている
+                L.append("ℹ️ FCFが負（設備投資）: TTMの営業利益は黒字ですが、5年・2年平均とも実績FCF（営業CF−設備投資）が負です。")
+                L.append("   [成長のための設備投資を分けずに、売上×8%の下限でFCFを支えて計算しているため、")
+                L.append("    以下のDCF/IVは参考値程度に留めてください。営業利益の赤字（会計の赤字）ではありません。]")
+            else:
+                L.append("⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。")
+                L.append("   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、")
+                L.append("    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄")
+                L.append("    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]")
 
         if _floor_applied > 0:
             _fcf_raw_avg = comps.get("fcf_5yr_avg", 0) or 0
@@ -2930,17 +2870,18 @@ class TanukiValuationPipeline:
         L.append(f"Runway_Months: {runway_m}" if runway_m != "N/A" else "Runway_Months: N/A (profitable or not in STONKS)")
         L.append(f"Revenue_Growth_YoY: {rev_growth_str}%")
         L.append(f"Next_Earnings_Date: {next_earnings}")
-        breakeven_est = extra.get("breakeven_estimate")
-        breakeven_reason_disp = extra.get("breakeven_reason")
-        if breakeven_reason_disp == "ACHIEVED":
-            L.append("Breakeven_Estimate: 黒字化：達成済み")
-        elif breakeven_est is not None:
-            L.append(f"Breakeven_Estimate: {breakeven_est}年頃（推定、reason=PREDICTED）")
-        elif breakeven_reason_disp:
-            _be_reason_m = {"NO_TREND": "黒字化予測不可（改善傾向なし）", "NO_DATA": "データ不足", "TOO_FAR": "5年超"}
-            L.append(f"Breakeven_Estimate: {_be_reason_m.get(breakeven_reason_disp, breakeven_reason_disp)}")
+        # 黒字化の予測（会計）は収益の部品の値（common/profitability.py::breakeven_view。[[DEFICIT-QUALITY-ADOPT-1]]）
+        from common.profitability import breakeven_view, load_entry
+        _bv = breakeven_view(load_entry(ticker))
+        if _bv["state"] == "achieved":
+            L.append("Breakeven_Estimate: 営業黒字：達成済み（TTM営業利益）")
+        elif _bv["year"] is not None:
+            L.append(f"Breakeven_Estimate: {_bv['year']}年頃（推定、TTM営業利益率の回帰、reason={_bv['reason']}）")
         else:
-            L.append("Breakeven_Estimate: N/A (profitable or insufficient data)")
+            _be_reason_m = {"NO_TREND": "黒字化予測不可（営業利益率が上向きでない）", "NO_DATA": "TTMの点が足りない",
+                            "LOW_FIT": "見込み不明（営業利益率が直線に乗らない）", "TOO_FAR": "2年より先",
+                            "UNCLASSIFIED": "区分なし", "NO_ENTRY": "N/A (not in profitability.json)"}
+            L.append(f"Breakeven_Estimate: {_be_reason_m.get(_bv['reason'], _bv['reason'])}")
         L.append("Definition:")
         L.append("")
         L.append("Short_Interest: % of float sold short")
@@ -2953,7 +2894,7 @@ class TanukiValuationPipeline:
         L.append("Note: TTM may reflect restated (continuing operations) figures for")
         L.append("companies that divested business units (e.g., APP Apps segment 2024).")
         L.append("Primary growth metric for RICE-excluded tickers")
-        L.append("Breakeven_Estimate: Projected year when adjusted EPS turns positive")
+        L.append("Breakeven_Estimate: Projected year when TTM operating income turns positive (common/profitability.py)")
         L.append("based on recent 4Q linear trend. Rough estimate only.")
         L.append("")
         L.append("==============================================")
@@ -3431,27 +3372,6 @@ class TanukiValuationPipeline:
                     result["next_earnings_date"] = str(dates[0])  # 全て過去なら最後の値
         except Exception:
             pass
-
-        # --- breakeven estimate from EPS quarterly.json (deficit tickers only) ---
-        # [[BREAKEVEN-FORECAST-METHOD-MISMATCH-1]]: 計算本体は
-        # compute_eps_breakeven()（モジュール直下、単体テスト可能）に
-        # 切り出し済み
-        eps_q_path = os.path.join(
-            self.repo_root, "docs", "value-monitor", "adjusted_eps_analyzer", "data", ticker, "quarterly.json"
-        )
-        if os.path.exists(eps_q_path):
-            try:
-                with open(eps_q_path, encoding="utf-8") as f:
-                    eps_q_data = json.load(f)
-                quarters_list = eps_q_data.get("quarters", [])
-                from datetime import datetime as _dt
-                breakeven_estimate, breakeven_reason = compute_eps_breakeven(quarters_list, _dt.now().year)
-                if breakeven_estimate is not None:
-                    result["breakeven_estimate"] = breakeven_estimate
-                if breakeven_reason is not None:
-                    result["breakeven_reason"] = breakeven_reason
-            except Exception:
-                pass
 
         # --- XBRLセグメント決定論的算出（[[SEGMENT-KPI-NARRATIVE-
         # EXTRACTION-FUTURE-IDEA-1]]案①、2026-09-18）---
