@@ -410,10 +410,26 @@ def _months(s: str, e: str) -> int:
     return round((date.fromisoformat(e) - date.fromisoformat(s)).days / 30.44)
 
 
+def _amount_elsewhere(amount: float, kinds, period: str, own: str) -> bool:
+    """最新の申告の同じ期間に、amount とほぼ同額（千単位の丸めまで）の行が、own（落ちた分類）以外の分類にあるか（付け替えの判定）"""
+    tol = max(1000.0, 0.005 * abs(amount))
+    for k, x in kinds:
+        if k == own or k == "total" or period not in x["values"]:
+            continue
+        if abs(abs(x["values"][period]) - abs(amount)) <= tol:
+            return True
+    return False
+
+
 def period_values(records: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     """期間（start~end）ごとに、その期間を載せた最新の申告の {ppe, software, other_acq, has_capex_line, accn, filed, form}。
-    投資CFの合計の無い期間（別表の期間等）は除く"""
+    投資CFの合計の無い期間（別表の期間等）は除く。
+
+    val の守り(ii)（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1）: 最新の申告が、前の申告にあった内訳の行（ppe・software）を持たず、
+    その額が最新の申告のどの行にも残っていない（付け替えでなく、行ごと消えて他の行に溶けた）ときは、内訳の揃った申告のうち最新を採る。
+    印 guard="components_dropped:software" 等。額が別の行に同額である期（DELL・ONDS の付け替え）は最新のまま"""
     out: Dict[str, Dict[str, Any]] = {}
+    cands: Dict[str, List[Dict[str, Any]]] = {}
     for accn, rec in records.items():
         if rec.get("status") != "ok":
             continue
@@ -431,12 +447,30 @@ def period_values(records: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any
                 continue
             v = {"ppe": 0.0, "software": 0.0, "other_acq": 0.0, "has_capex_line": has_line,
                  "accn": accn, "filed": rec["filed"], "form": rec["form"]}
+            present = set()
             for k, x in kinds:
                 if k in ("ppe", "software", "other_acq") and p in x["values"]:
                     v[k] += x["values"][p]
+                    if k in ("ppe", "software"):
+                        present.add(k)
             cur = out.get(p)
             if cur is None or v["filed"] >= cur["filed"]:
                 out[p] = v
+            cands.setdefault(p, []).append({"v": v, "present": present, "kinds": kinds})
+    for p, cs in cands.items():
+        latest = max(cs, key=lambda c: c["v"]["filed"])
+        gone = set()
+        for c in cs:
+            for comp in c["present"] - latest["present"]:
+                amt = c["v"][comp]
+                if amt and not _amount_elsewhere(amt, latest["kinds"], p, comp):
+                    gone.add(comp)
+        if not gone:
+            continue
+        full = [c for c in cs if gone <= c["present"]]
+        pick = max(full, key=lambda c: c["v"]["filed"])["v"]
+        if pick is not latest["v"] and pick["ppe"] + pick["software"] != latest["v"]["ppe"] + latest["v"]["software"]:
+            out[p] = dict(pick, guard="components_dropped:" + ",".join(sorted(gone)))
     return out
 
 
@@ -459,7 +493,7 @@ def capex_periods(records: Dict[str, Dict[str, Any]]) -> Dict[Tuple[str, bool], 
         for (s, e), v in per.items():
             m = _months(s, e)
             base = {"accn": v["accn"], "filed": v["filed"], "form": v["form"],
-                    "no_capex_line": not v["has_capex_line"]}
+                    "no_capex_line": not v["has_capex_line"], **({"guard": v["guard"]} if v.get("guard") else {})}
             if m == 12 and v["form"].startswith("10-K"):
                 out.setdefault((e, True), {**base, "start": s, "val": val(v)})
             if m == 3:
@@ -507,12 +541,14 @@ def fill_layer3_capex(ticker: str, entries: List[Dict[str, Any]], data_dir: str 
                 if e.get("_asof"):
                     e["_asof"] = [[f, abs(x) + delta if x is not None else x] for f, x in e["_asof"]]
                 e["capex_basis"] = "cf_lines"
+                if v.get("guard"):
+                    e["val_guard"] = v["guard"]
             continue
         n = {"end": end, "start": v["start"], "val": _num(v["val"]), "first_val": _num(v["val"]), "accn": v["accn"],
              "filed": v["filed"], "first_filed": v["filed"], "form": v["form"],
              "fp": "FY" if ann else "Q", "fy": fy.get(end, int(end[:4])), "is_ytd": False, "is_annual": ann,
              "period_days": (date.fromisoformat(end) - date.fromisoformat(v["start"])).days,
-             "source_tag": "cf_lines", "capex_basis": "cf_lines"}
+             "source_tag": "cf_lines", "capex_basis": "cf_lines", **({"val_guard": v["guard"]} if v.get("guard") else {})}
         if v["no_capex_line"]:
             n["capex_basis"] = "no_cf_line"
             n["mark"] = CAPEX_NO_CF_LINE_MARK

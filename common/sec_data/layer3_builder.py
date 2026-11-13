@@ -69,6 +69,7 @@ from .q4_implied import _SNAKE_TO_PASCAL, build_q4_implied_entries
 from .tag_definitions import NET_INCOME_CANDIDATES, TAG_CANDIDATES, with_derived_net_income, with_derived_intangibles
 from .share_unit_fix import with_share_unit_fix
 from .conditional_tags import conditional_candidate
+from .val_guard import guard_unit_errors, mark_suspect
 
 logger = logging.getLogger(__name__)
 
@@ -530,6 +531,8 @@ def _merge_candidate_entries(
             continue
         for e in normalized:
             e["source_tag"] = concept
+        # val の守り(i)（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1）: 単位の誤り（10の累乗）の val は first_val に戻す。Q4の逆算より前
+        guard_unit_errors(normalized)
         if apply_missing_quarter:
             missing_list = _build_missing_quarter_implied_entries(normalized)
             if missing_list:
@@ -1503,12 +1506,19 @@ def build_ticker_store(ticker: str) -> dict | None:
 
     # 貸借対照表の行の補い（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]] ②、2026-11-04。規則は bs_lines.py の1か所）: 純資産の値がある期末日で
     # 借入金・短期投資・優先株・のれん・無形資産・非支配持分の値が無い期を、申告の貸借対照表の行（独自タグを含む）で埋める
-    from .bs_lines import fill_layer3_bs
+    from .bs_lines import fill_layer3_bs, prefer_face_debt
     fill_layer3_bs(ticker, fields_out)
+    # 借入金は申告の貸借対照表の行（完全に取れた申告だけ）を正にする（段1）。タグが1年内返済を含む合計だったり、流動の行を1つしか採らない期を直す
+    prefer_face_debt(ticker, fields_out)
+    # 純資産が非支配持分込みのタグなら、minority_interest を引いた親会社の純資産にする（段1）。恒等式（負債合計）より前
+    _equity_ex_nci(fields_out)
 
     # 負債合計（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段0、2026-11-11）: 候補から LiabilitiesAndStockholdersEquity（負債・純資産の合計＝資産合計）を
     # 外した。Liabilities が無い期末日は、貸借対照表の恒等式（資産合計 − 純資産 − 非支配持分）で埋める
     _derive_total_liabilities(fields_out, company_facts)
+
+    # val の守り(iii)（段1）: 隣の期から外れる val は値を変えず印だけ
+    mark_suspect(fields_out)
 
     # 申告の履歴（_asof）はQ4の逆算・補完のためのメモリの中だけのキー。読み手に渡す前に消す（[[LAYER3-FIRST-FILED-DATE-1]]）
     for f in fields_out.values():
@@ -1534,6 +1544,31 @@ def build_ticker_store(ticker: str) -> dict | None:
 # 絞り込める（[[LAYER3-SHARESDILUTED-TAG-GAP-1]]でpipeline.py側の
 # 分割検知に個別実装されていたフィルタを、共通アクセサへ統合したもの）。
 WEIGHTED_AVG_DILUTED_SHARES_TAG = "WeightedAverageNumberOfDilutedSharesOutstanding"
+
+
+SE_NCI_TAG = "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"
+EQUITY_EX_NCI_TAG = SE_NCI_TAG + "-MinorityInterest"      # 引いたあとの source_tag（rotce が minority_interest を二重に引かないよう別の名前にする）
+EQUITY_INCL_NCI_MARK = "純資産が非支配持分込み（minority_interestの値なし）"
+
+
+def _equity_ex_nci(fields_out: dict) -> None:
+    """stockholders_equity が非支配持分込みのタグ（SE_NCI_TAG）の期末日は、minority_interest を引く（val・first_val とも）。
+    minority_interest の値が無い期は値を残して印（mark）だけ付ける（0で埋めない、[[PARSER-LAYER3-SINGLE-SOURCE-1]] 決定(c)）。
+    非支配持分の値が無いのは、非支配持分が無い会社が込みのタグで申告している場合もあるため、引かないことが誤りとは限らない"""
+    eq = (fields_out.get("stockholders_equity") or {}).get("entries") or []
+    mi = {e["end"]: e for e in (fields_out.get("minority_interest") or {}).get("entries") or [] if e.get("val") is not None}
+    for e in eq:
+        if e.get("source_tag") != SE_NCI_TAG or e.get("val") is None:
+            continue
+        m = mi.get(e["end"])
+        if m is None:
+            e["mark"] = EQUITY_INCL_NCI_MARK
+            continue
+        e["val_incl_nci"] = e["val"]
+        e["val"] = e["val"] - m["val"]
+        if e.get("first_val") is not None:
+            e["first_val"] = e["first_val"] - (m["first_val"] if m.get("first_val") is not None else m["val"])
+        e["source_tag"] = EQUITY_EX_NCI_TAG
 
 
 TEMPORARY_EQUITY_CONCEPTS = (
