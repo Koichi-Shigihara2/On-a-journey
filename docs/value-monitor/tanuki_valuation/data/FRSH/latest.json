@@ -2,9 +2,9 @@
   "intrinsic_value_per_share": 35.23792223184258,
   "intrinsic_value_beta": 38.89,
   "upside_percent_beta": 206.9,
-  "intrinsic_value_rf": 145.01,
-  "upside_percent_rf": 1044.5,
-  "intrinsic_value_rf_rate": 0.051029996871948244,
+  "intrinsic_value_rf": 140.51,
+  "upside_percent_rf": 1009.0,
+  "intrinsic_value_rf_rate": 0.05154000282287598,
   "v0": 9503987083.675577,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 178.1,
-  "calculation_date": "2026-11-13T06:45:40+09:00",
+  "calculation_date": "2026-11-14T06:45:42+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -209,7 +209,7 @@
       "total_transient_amount": 7032000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業再編に伴う一時的費用と判断されるため。"
+        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。"
       }
     },
     "action": "flagged",
@@ -376,7 +376,7 @@
     "peg": 0.4831,
     "ps": 3.3922026,
     "ev_ebitda": 26.166,
-    "ma200": 10.484924981594085,
+    "ma200": 10.495074980258941,
     "forward_eps": 0.87018,
     "next_quarter_eps": 0.21,
     "analyst_target_median": 16.0,
@@ -426,10 +426,10 @@
   },
   "phase1_growth": 0.2081974920254343,
   "required_growth_rf_base": -0.35759188650747076,
-  "risk_free_rate_live": 0.051029996871948244,
-  "risk_free_rate_live_date": "2026-11-12",
+  "risk_free_rate_live": 0.05154000282287598,
+  "risk_free_rate_live_date": "2026-11-13",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.2617903679866548,
+  "required_growth_rf_live": -0.25715169655143555,
   "tanuki_score": "BUY",
   "funda_score": 80,
   "score_comment": "割安圏(178%)で買い余地大、FCF黒字、売上安定成長",
@@ -569,7 +569,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0177,
+  "erp": 0.0171,
   "dilution_severity": "low",
   "dilution_comment": "許容範囲内 ✅"
 }
