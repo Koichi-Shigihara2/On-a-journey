@@ -323,6 +323,69 @@ def fill_layer3_bs(ticker: str, fields_out: Dict[str, Any], data_dir: str = DATA
     return added
 
 
+FACE_DEBT_MARK = "bs_lines"      # 借入金を貸借対照表の行で置き換えた印（エントリの debt_basis）
+
+
+def complete_debt_record(rec: Dict[str, Any]) -> bool:
+    """その申告の貸借対照表の借入金の行が、保存した行（lines）に全部入っているか。表のコンセプトの一覧（concepts）に借入金と分類される
+    名前があるのに lines に無い申告（保存した時点の分類の規則が今と違った古い記録。ABBVの「1年内返済の長期債務」の行など、全記録の約15%）は
+    借入金の合計が過小になるので、貸借対照表の行を正にする置き換えには使わない。concepts が無い記録も確かめられないので使わない"""
+    if rec.get("status") != "ok" or not rec.get("concepts"):
+        return False
+    have = {ln["concept"] for ln in rec.get("lines") or []}
+    return not [c for c in rec["concepts"] if classify(c.split(":")[-1]) in DEBT_FIELDS and c not in have]
+
+
+def _without_total_ltd_overlap(rec: Dict[str, Any]) -> Dict[str, Any]:
+    """同じ時点に長期借入金の合計のタグ（LongTermDebt、1年内返済を含む）と非流動のタグ（…Noncurrent）の両方の行がある申告は、
+    合計の行を除く（足すと非流動を二重に数える。全申告で RKLB の14件）。それ以外の複数の行（転換社債＋銀行借入など）は別の行として足す"""
+    by_date: Dict[str, List[str]] = {}
+    for ln in rec.get("lines") or []:
+        if classify(ln["concept"]) == "long_term_debt":
+            for d in ln.get("values") or {}:
+                by_date.setdefault(d, []).append(ln["concept"].split(":")[-1])
+    dup = {d for d, names in by_date.items() if "LongTermDebt" in names and any(n.endswith(("Noncurrent", "NonCurrent")) for n in names)}
+    if not dup:
+        return rec
+    lines = []
+    for ln in rec["lines"]:
+        if ln["concept"].split(":")[-1] == "LongTermDebt":
+            ln = dict(ln, values={d: v for d, v in ln["values"].items() if d not in dup})
+        lines.append(ln)
+    return dict(rec, lines=lines)
+
+
+def prefer_face_debt(ticker: str, fields_out: Dict[str, Any], data_dir: str = DATA_DIR) -> Dict[str, int]:
+    """Layer3 の long_term_debt・short_term_debt を、申告の貸借対照表の行（完全に取れた申告の最新）で置き換える（その場で書き換え）。
+    置き換えるのは Layer3 に値があり、行の値と違う期だけ（short_term_debt は行の値の方が大きい期だけ）（欠けの補いは fill_layer3_bs）。val・first_val を同じ差だけずらし
+    （最初の申告との差を保つ。cf_lines の capex と同じ）、印 debt_basis="bs_lines"・置き換え前の値 val_tag_val を残す。
+    行が無く0になった期（no_bs_line）では置き換えない。戻り値は項目ごとの置き換えた数"""
+    recs = {a: _without_total_ltd_overlap(r) for a, r in load_records(ticker, data_dir).items() if complete_debt_record(r)}
+    if not recs:
+        return {}
+    bv = values(recs)
+    changed: Dict[str, int] = {}
+    for f in DEBT_FIELDS:
+        for e in (fields_out.get(f) or {}).get("entries") or []:
+            if e.get("is_ytd") or e.get("val") is None or e.get("source_tag") == "bs_lines":
+                continue
+            v = bv.get((f, e["end"]))
+            if v is None or v.get("no_bs_line") or abs(v["val"] - e["val"]) <= 0.5:
+                continue
+            if f == "short_term_debt" and v["val"] < e["val"]:
+                continue        # 流動の借入金は、行の値がタグより小さいときは使わない（行の名前の規則が拾わない行があり得る〈KOの Loans and notes payable〉）。行がタグの取りこぼしを足すときだけ
+            delta = v["val"] - e["val"]
+            e["val_tag_val"] = e["val"]
+            e["val"] = _cf._num(v["val"])
+            if e.get("first_val") is not None:
+                e["first_val"] = _cf._num(e["first_val"] + delta)
+            if e.get("_asof"):
+                e["_asof"] = [[fl, x + delta if x is not None else x] for fl, x in e["_asof"]]
+            e["debt_basis"] = FACE_DEBT_MARK
+            changed[f] = changed.get(f, 0) + 1
+    return changed
+
+
 def latest_balance(ticker: str, cash: Optional[float], data_dir: str = DATA_DIR) -> Dict[str, Any]:
     """TANUKIの純有利子負債の補い: 最新の申告の貸借対照表の当期（いちばん新しい時点）の値。現金の行が cash と同じときだけ返す
     （同じ時点の確認）。{"end", "accn", 分類: 値, ...} か {}"""
