@@ -4125,6 +4125,9 @@ class SECParser:
         """パースして保存"""
         parsed = self.parse_company_facts(ticker)
         if parsed:
+            # [[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1: 四半期のBSは Layer3 の val から作る（書き手は quarterly_bs.py の1か所）
+            from common.sec_data import quarterly_bs
+            quarterly_bs.replace_from_layer3(ticker, parsed)
             self.save_parsed_data(ticker, parsed)
         return parsed
 
