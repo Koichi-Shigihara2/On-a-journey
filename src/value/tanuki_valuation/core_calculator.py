@@ -975,6 +975,9 @@ class KoichiValuationCalculator:
         # ベースが混在（[[QUARTERLY-BASIS-MIX-1]]）。混在しているときだけキーを置く
         if financials.get("basis_mix"):
             result["basis_mix"] = financials["basis_mix"]
+        # Layer3 の値の守りの印（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1）。印があるときだけキーを置く
+        if financials.get("val_guard_marks"):
+            result["val_guard_marks"] = financials["val_guard_marks"]
 
         return result
 
