@@ -1,0 +1,247 @@
+From 0ebb0c3fff1c03f3f4f73ae7ee9315791f83a4d7 Mon Sep 17 00:00:00 2001
+From: Koichi Shigihara <jamablue01@gmail.com>
+Date: Fri, 13 Nov 2026 12:14:34 +0900
+Subject: [PATCH] =?UTF-8?q?rehearsal=E6=A1=88:=20outstanding=5Fgap=5Fpct?=
+ =?UTF-8?q?=20=E3=82=921=E3=81=8B=E6=89=80=EF=BC=88=E5=BC=8F=3Dshares=5Fba?=
+ =?UTF-8?q?se.gap=5Fpct=E3=83=BB=E3=82=AD=E3=83=BC=3Dcomponents=EF=BC=89?=
+ =?UTF-8?q?=E3=81=AB=E5=AF=84=E3=81=9B=E3=82=8B=EF=BC=88DILUTION=E3=81=A8?=
+ =?UTF-8?q?=E6=9C=AC=E4=BB=B6=E3=81=AE=E9=87=8D=E3=81=AA=E3=82=8A=EF=BC=89?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ common/dilution.py                            |  3 ++-
+ common/shares_base.py                         |  9 +++++--
+ .../output_inventory/tanuki_layer.json        | 26 ++++++++++++-------
+ .../output_inventory/tanuki_layer.md          |  6 ++---
+ .../value-monitor/tanuki_valuation/stock.html |  2 +-
+ src/value/tanuki_valuation/pipeline.py        |  3 +--
+ tests/test_shares_base.py                     | 10 +++++++
+ 7 files changed, 41 insertions(+), 18 deletions(-)
+
+diff --git a/common/dilution.py b/common/dilution.py
+index 9f6203afed..bbfcbf756f 100644
+--- a/common/dilution.py
++++ b/common/dilution.py
+@@ -94,7 +94,8 @@ def share_count_change(quarters: Sequence[Tuple[str, float]], splits: Optional[L
+                            "end": pts[now_i][0], "start_end": pts[start_i][0], "n": len(pts),
+                            "split_suspect": suspect, "basis": basis}
+     if outstanding and outstanding[1] and outstanding[1] > 0:
+-        out["outstanding_gap_pct"] = (outstanding[1] / vals[now_i] - 1) * 100
++        from common.shares_base import gap_pct          # 式は1か所（[[TANUKI-SHARES-SINGLE-SOURCE-1]]）
++        out["outstanding_gap_pct"] = gap_pct(outstanding[1], vals[now_i])
+         out["outstanding_end"] = outstanding[0]
+     return out
+ 
+diff --git a/common/shares_base.py b/common/shares_base.py
+index f52c0e51be..c239108f0d 100644
+--- a/common/shares_base.py
++++ b/common/shares_base.py
+@@ -23,6 +23,11 @@ def _d(s: str) -> dt.date:
+     return dt.date.fromisoformat(s)
+ 
+ 
++def gap_pct(outstanding: Optional[float], shares: Optional[float]) -> Optional[float]:
++    """発行済 ÷ 採った株数 − 1（%）。outstanding_gap_pct の式はここだけ（TSLA型: 制限付株・未確定の株など、発行でも希薄化後でもない分の印。表示だけ）"""
++    return (outstanding / shares - 1) * 100 if outstanding and shares else None
++
++
+ def corrected_shares(wd: float, wb: float, c0: float, c1: float) -> Dict[str, float]:
+     """補正後の株数。純粋な関数（入力は全て同じ単位の株数）。issued は符号つき（買い戻しは負）。
+     不変条件: |issued| ≤ |c1−c0|（二重に数えない）"""
+@@ -89,7 +94,7 @@ def base_shares(wd: Optional[float], period_end: Optional[str], wd_source: Optio
+     latest = ends[-1] if ends else None
+     if latest and ser[latest]:
+         out.update(cover_shares=ser[latest], cover_date=latest)
+-        out["outstanding_gap_pct"] = (ser[latest] / wd - 1) * 100
++        out["outstanding_gap_pct"] = gap_pct(ser[latest], wd)
+     if wd_source != "quarterly_weighted":
+         out["shares_note"] = f"wd_not_quarterly:{wd_source}"          # 年度の平均・Q4が無い銘柄は印だけ（決定3）
+         return out
+@@ -119,5 +124,5 @@ def base_shares(wd: Optional[float], period_end: Optional[str], wd_source: Optio
+     out.update(shares=res["shares"], shares_issued=res["issued"],
+                shares_basis=SOURCE_ADJUSTED if res["issued"] else SOURCE_PLAIN, previous_cover_shares=c0,
+                previous_cover_date=prev[-1])
+-    out["outstanding_gap_pct"] = (c1 / out["shares"] - 1) * 100
++    out["outstanding_gap_pct"] = gap_pct(c1, out["shares"])
+     return out
+diff --git a/docs/architecture/output_inventory/tanuki_layer.json b/docs/architecture/output_inventory/tanuki_layer.json
+index 72a753d719..1657263a01 100644
+--- a/docs/architecture/output_inventory/tanuki_layer.json
++++ b/docs/architecture/output_inventory/tanuki_layer.json
+@@ -468,7 +468,7 @@
+     {
+      "file": "src/value/tanuki_valuation/pipeline.py",
+      "func": "TanukiValuationPipeline._save_hypecore_history",
+-     "line": 3810
++     "line": 3809
+     }
+    ],
+    "writers_outside_layer": [],
+@@ -908,7 +908,7 @@
+     },
+     {
+      "file": "src/value/tanuki_valuation/pipeline.py",
+-     "line": 3863,
++     "line": 3862,
+      "func": "TanukiValuationPipeline.run_single",
+      "how": "保存済みファイル",
+      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
+@@ -1427,7 +1427,7 @@
+     {
+      "file": "src/value/tanuki_valuation/pipeline.py",
+      "func": "TanukiValuationPipeline._save_tickers_index",
+-     "line": 3857
++     "line": 3856
+     }
+    ],
+    "writers_outside_layer": [],
+@@ -3666,7 +3666,7 @@
+     },
+     {
+      "file": "src/value/tanuki_valuation/pipeline.py",
+-     "line": 3848,
++     "line": 3847,
+      "func": "TanukiValuationPipeline._save_tickers_index",
+      "how": "保存済みファイル",
+      "via": "grep",
+@@ -3674,7 +3674,7 @@
+     },
+     {
+      "file": "src/value/tanuki_valuation/pipeline.py",
+-     "line": 3863,
++     "line": 3862,
+      "func": "TanukiValuationPipeline.run_single",
+      "how": "保存済みファイル",
+      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index",
+@@ -4281,7 +4281,7 @@
+     {
+      "file": "src/value/tanuki_valuation/pipeline.py",
+      "func": "TanukiValuationPipeline._save_report",
+-     "line": 3816
++     "line": 3815
+     }
+    ],
+    "writers_outside_layer": [],
+@@ -5682,7 +5682,7 @@
+    "dir": "src/value/tanuki_valuation",
+    "file": "src/value/tanuki_valuation/pipeline.py",
+    "decision": "残す（2026-10-20）",
+-   "lines": 3878,
++   "lines": 3877,
+    "workflows": [
+     ".github/workflows/TANUKI_VALUATION_Update.yml"
+    ],
+@@ -9656,6 +9656,10 @@
+      1034,
+      1035,
+      1372,
++     1617,
++     1617,
++     1617,
++     1617,
+      1698,
+      1699,
+      1700,
+@@ -11886,7 +11890,7 @@
+      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+     ],
+-    "label": "0?'+':''}%（制限付株式・転換前後など）",
++    "label": "0?'+':''}%（制限付株式・未確定の株・転換前後など。分母には入れない）",
+     "lines": [
+      1617,
+      1617,
+@@ -16419,7 +16423,11 @@
+        1033,
+        1034,
+        1035,
+-       1372
++       1372,
++       1617,
++       1617,
++       1617,
++       1617
+       ]
+      },
+      {
+diff --git a/docs/architecture/output_inventory/tanuki_layer.md b/docs/architecture/output_inventory/tanuki_layer.md
+index 15f0de5817..2135cbeafa 100644
+--- a/docs/architecture/output_inventory/tanuki_layer.md
++++ b/docs/architecture/output_inventory/tanuki_layer.md
+@@ -72,7 +72,7 @@
+ - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 40・71・155・288・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::load_config`）
+ - Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 301・1056（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
+ - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 513・519・533・588（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
+-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 430・466・1066・1134・1373・1906・1907・3863（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
++- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 430・466・1066・1134・1373・1906・1907・3862（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
+ - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 87・95・99・104・111（経由 `common/sec_data/audit.py::audit_beta_drift`）
+ - テスト・保存済みファイル: `tests/test_core_calculator_rf_reference.py` 行 23（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
+ - テスト・保存済みファイル: `tests/test_core_calculator_v0_note.py` 行 47・54・63・72（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
+@@ -155,7 +155,7 @@
+ - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 146・148・150・325・327・1636・1637・1844・1856・1880（経由 `src/tail/quarterly_review_generator.py::load_layer1_financials`、`src/tail/quarterly_review_generator.py::load_tanuki_valuation`、`src/tail/tail_dcf_bridge.py::_load_latest_valuation`）
+ - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 73・76・159・161・194・207・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_latest_valuation`、`src/tail/tail_dcf_bridge.py::_load_layer1_financials`）
+ - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 356・358・542・1084・1293（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
+-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 493・3848・3863（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index`）
++- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 493・3847・3862（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index`）
+ - Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 79・82・113・344・381（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
+ - Python・保存済みファイル: `tools/sim/sim.py` 行 114（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
+ - JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 335
+@@ -625,7 +625,7 @@
+ | 。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして | `note` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 840・849・874・1093 | 残す（2026-10-20） |
+ | 営業利益率 | `op_margin` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1945 | 残す（2026-10-20） |
+ | 未実現の成長機会を「仮説セグメント」として定量化。TAM × 侵入率で期待売上、 | `options` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1998 | 残す（2026-10-20） |
+-| 0?'+':''}%（制限付株式・転換前後など） | `outstanding_gap_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1617・1617・1617・1617 | 残す（2026-10-20） |
++| 0?'+':''}%（制限付株式・未確定の株・転換前後など。分母には入れない） | `outstanding_gap_pct` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 1617・1617・1617・1617 | 残す（2026-10-20） |
+ | — | `overall` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 880 | 残す（2026-10-20） |
+ | D&A比率 | `paper_bgcolor` | 画面の中で作る値 | 432・461・488 | 残す（2026-10-20） |
+ | — | `penetration` | この段階の書き手あり<br>`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`<br>`docs/value-monitor/tanuki_valuation/data/tickers.json` | 2005 | 残す（2026-10-20） |
+diff --git a/docs/value-monitor/tanuki_valuation/stock.html b/docs/value-monitor/tanuki_valuation/stock.html
+index 3ae7b0dc6a..7d0a189359 100644
+--- a/docs/value-monitor/tanuki_valuation/stock.html
++++ b/docs/value-monitor/tanuki_valuation/stock.html
+@@ -1614,7 +1614,7 @@ function render(d) {
+             ${dilComment ? `<div style="font-size:10px;color:${dilColor};font-weight:600;margin-bottom:3px">${dilComment}</div>` : ''}
+             <div style="font-size:10px;color:var(--mut)">${fh.shares_yr_3ago||'?'}→${fh.shares_yr_now||'?'}（加重平均・12四半期前→直近${fh.dilution_window?'：'+fh.dilution_window[0]+'→'+fh.dilution_window[1]:''}）</div>
+             ${fh.split_suspect?`<div style="font-size:10px;color:var(--amb,#b45309)">⚠ 未登録の分割の疑い（${fh.split_suspect.join(', ')}）。減点に使いません</div>`:''}
+-            ${fh.outstanding_gap_pct!=null&&Math.abs(fh.outstanding_gap_pct)>10?`<div style="font-size:10px;color:var(--mut)">発行済株数との差 ${fh.outstanding_gap_pct>0?'+':''}${fh.outstanding_gap_pct}%（制限付株式・転換前後など）</div>`:''}
++            ${(d.components?.outstanding_gap_pct!=null&&Math.abs(d.components.outstanding_gap_pct)>10)?`<div style="font-size:10px;color:var(--mut)">発行済株数との差 ${d.components.outstanding_gap_pct>0?'+':''}${d.components.outstanding_gap_pct}%（制限付株式・未確定の株・転換前後など。分母には入れない）</div>`:''}
+           </div>
+           <div style="background:var(--sur);border:1px solid var(--bdr);border-radius:6px;padding:12px">
+             <div style="font-size:10px;color:var(--mut);margin-bottom:4px;letter-spacing:.06em">次回決算</div>
+diff --git a/src/value/tanuki_valuation/pipeline.py b/src/value/tanuki_valuation/pipeline.py
+index d01899e838..b7618e1169 100644
+--- a/src/value/tanuki_valuation/pipeline.py
++++ b/src/value/tanuki_valuation/pipeline.py
+@@ -3099,8 +3099,7 @@ class TanukiValuationPipeline:
+                     _fh["dilution_window"] = [_sc["start_end"], _sc["end"]]
+                     if _sc.get("split_suspect"):
+                         _fh["split_suspect"] = _sc["split_suspect"]
+-                    if _sc.get("outstanding_gap_pct") is not None:
+-                        _fh["outstanding_gap_pct"] = round(_sc["outstanding_gap_pct"], 1)
++                    # 発行済との差の印は components.outstanding_gap_pct の1か所（表紙÷採った分母。common/shares_base.gap_pct）
+             except Exception:
+                 pass
+ 
+diff --git a/tests/test_shares_base.py b/tests/test_shares_base.py
+index 54c63d7c6e..32c26ff812 100644
+--- a/tests/test_shares_base.py
++++ b/tests/test_shares_base.py
+@@ -126,3 +126,13 @@ def test_determine_diluted_shares_prefers_part_and_marks_fallback():
+     assert f._determine_diluted_shares("X", 999_999_999, 0, 0, part={"shares": 5e8, "shares_basis": SB.SOURCE_ADJUSTED}) \
+         == (500_000_000, "sec_weighted_plus_issuance")
+     assert f._determine_diluted_shares("V", 2_000_000_000, 0, 0, part={"shares": None}) == (2_000_000_000, "yf_implied_fallback")
++
++
++def test_outstanding_gap_pct_has_one_formula_and_one_key():
++    """発行済との差の式は shares_base.gap_pct の1か所。DILUTION の share_count_change も同じ関数。キーは components の1か所
++    （financial_health には書かない）"""
++    assert abs(SB.gap_pct(112.0, 100.0) - 12.0) < 1e-9 and SB.gap_pct(None, 100.0) is None
++    d = _src("common/dilution.py")
++    assert "gap_pct(outstanding[1]" in d and "/ vals[now_i] - 1) * 100" not in d
++    assert '_fh["outstanding_gap_pct"]' not in _src("src/value/tanuki_valuation/pipeline.py")
++    assert "fh.outstanding_gap_pct" not in _src("docs/value-monitor/tanuki_valuation/stock.html")
+-- 
+2.53.0.windows.2
+
