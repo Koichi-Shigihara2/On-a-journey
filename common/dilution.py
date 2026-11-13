@@ -94,7 +94,8 @@ def share_count_change(quarters: Sequence[Tuple[str, float]], splits: Optional[L
                            "end": pts[now_i][0], "start_end": pts[start_i][0], "n": len(pts),
                            "split_suspect": suspect, "basis": basis}
     if outstanding and outstanding[1] and outstanding[1] > 0:
-        out["outstanding_gap_pct"] = (outstanding[1] / vals[now_i] - 1) * 100
+        from common.shares_base import gap_pct          # 式は1か所（[[TANUKI-SHARES-SINGLE-SOURCE-1]]）
+        out["outstanding_gap_pct"] = gap_pct(outstanding[1], vals[now_i])
         out["outstanding_end"] = outstanding[0]
     return out
 

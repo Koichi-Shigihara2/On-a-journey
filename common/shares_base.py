@@ -23,6 +23,11 @@ def _d(s: str) -> dt.date:
     return dt.date.fromisoformat(s)
 
 
+def gap_pct(outstanding: Optional[float], shares: Optional[float]) -> Optional[float]:
+    """発行済 ÷ 採った株数 − 1（%）。outstanding_gap_pct の式はここだけ（TSLA型: 制限付株・未確定の株など、発行でも希薄化後でもない分の印。表示だけ）"""
+    return (outstanding / shares - 1) * 100 if outstanding and shares else None
+
+
 def corrected_shares(wd: float, wb: float, c0: float, c1: float) -> Dict[str, float]:
     """補正後の株数。純粋な関数（入力は全て同じ単位の株数）。issued は符号つき（買い戻しは負）。
     不変条件: |issued| ≤ |c1−c0|（二重に数えない）"""
@@ -89,7 +94,7 @@ def base_shares(wd: Optional[float], period_end: Optional[str], wd_source: Optio
     latest = ends[-1] if ends else None
     if latest and ser[latest]:
         out.update(cover_shares=ser[latest], cover_date=latest)
-        out["outstanding_gap_pct"] = (ser[latest] / wd - 1) * 100
+        out["outstanding_gap_pct"] = gap_pct(ser[latest], wd)
     if wd_source != "quarterly_weighted":
         out["shares_note"] = f"wd_not_quarterly:{wd_source}"          # 年度の平均・Q4が無い銘柄は印だけ（決定3）
         return out
@@ -119,5 +124,5 @@ def base_shares(wd: Optional[float], period_end: Optional[str], wd_source: Optio
     out.update(shares=res["shares"], shares_issued=res["issued"],
                shares_basis=SOURCE_ADJUSTED if res["issued"] else SOURCE_PLAIN, previous_cover_shares=c0,
                previous_cover_date=prev[-1])
-    out["outstanding_gap_pct"] = (c1 / out["shares"] - 1) * 100
+    out["outstanding_gap_pct"] = gap_pct(c1, out["shares"])
     return out

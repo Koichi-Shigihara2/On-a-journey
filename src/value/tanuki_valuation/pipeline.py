@@ -3099,8 +3099,7 @@ class TanukiValuationPipeline:
                     _fh["dilution_window"] = [_sc["start_end"], _sc["end"]]
                     if _sc.get("split_suspect"):
                         _fh["split_suspect"] = _sc["split_suspect"]
-                    if _sc.get("outstanding_gap_pct") is not None:
-                        _fh["outstanding_gap_pct"] = round(_sc["outstanding_gap_pct"], 1)
+                    # 発行済との差の印は components.outstanding_gap_pct の1か所（表紙÷採った分母。common/shares_base.gap_pct）
             except Exception:
                 pass
 

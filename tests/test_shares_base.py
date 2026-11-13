@@ -126,3 +126,13 @@ def test_determine_diluted_shares_prefers_part_and_marks_fallback():
     assert f._determine_diluted_shares("X", 999_999_999, 0, 0, part={"shares": 5e8, "shares_basis": SB.SOURCE_ADJUSTED}) \
         == (500_000_000, "sec_weighted_plus_issuance")
     assert f._determine_diluted_shares("V", 2_000_000_000, 0, 0, part={"shares": None}) == (2_000_000_000, "yf_implied_fallback")
+
+
+def test_outstanding_gap_pct_has_one_formula_and_one_key():
+    """発行済との差の式は shares_base.gap_pct の1か所。DILUTION の share_count_change も同じ関数。キーは components の1か所
+    （financial_health には書かない）"""
+    assert abs(SB.gap_pct(112.0, 100.0) - 12.0) < 1e-9 and SB.gap_pct(None, 100.0) is None
+    d = _src("common/dilution.py")
+    assert "gap_pct(outstanding[1]" in d and "/ vals[now_i] - 1) * 100" not in d
+    assert '_fh["outstanding_gap_pct"]' not in _src("src/value/tanuki_valuation/pipeline.py")
+    assert "fh.outstanding_gap_pct" not in _src("docs/value-monitor/tanuki_valuation/stock.html")
