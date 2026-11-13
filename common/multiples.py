@@ -207,7 +207,8 @@ def snapshot_at(records: List[dict], d: str) -> Optional[dict]:
 
 def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List[tuple],
             splits: List[dict], tce_at_date: Callable[[str], Dict[str, Any]], ledger: List[Dict[str, Any]],
-            snapshots: Optional[List[dict]] = None, current: Optional[str] = None) -> Dict[str, Any]:
+            snapshots: Optional[List[dict]] = None, current: Optional[str] = None,
+            company_facts: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """tce_at_date(月末) → {"end", "tce"}（その月末までに申告された値のTCE、rotce.tce_as_of）
 
     current: 最新の日足の日付。渡すと月末の行とは別に `current` の行（読み手が生の株価で割るための今日の値、
@@ -245,7 +246,13 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
             rows.append(r)
             continue
         se = max(avail) if avail else None
-        mcap = px["close"] * shares[se]["shares"] if se else None
+        base = None
+        if is_cur and se:
+            # 今日の行の株数は common/shares_base.py の1か所（加重平均の希薄化後＋期末後の実際の発行・買い戻し）
+            from common import shares_base
+            base = shares_base.base_shares(shares[se]["shares"], se, shares[se].get("source"), company_facts, splits)
+        use_shares = base["shares"] if base else (shares[se]["shares"] if se else None)
+        mcap = px["close"] * use_shares if se else None
         debt = sum((_stock_at(ent(f), d) or (None, 0.0))[1] for f in ("short_term_debt", "long_term_debt"))
         cash = sum((_stock_at(ent(f), d) or (None, 0.0))[1] for f in ("cash_and_equivalents", "short_term_investments"))
         ev = (mcap + debt - cash) if mcap is not None else None
@@ -258,7 +265,7 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
         tce = t.get("tce")
         pos = lambda num, den: (num / den) if (den is not None and den > 0 and num is not None and num > 0) else None
         r.update({
-            "price": px["close"], "price_date": px["date"], "shares": shares[se]["shares"] if se else None, "shares_end": se,
+            "price": px["close"], "price_date": px["date"], "shares": use_shares if se else None, "shares_end": se,
             "shares_source": shares[se].get("source") if se else None, "market_cap": mcap, "enterprise_value": ev,
             "ttm_end": ni[0] if ni else None, "ttm_net_income": ni[1] if ni else None,
             "ttm_revenue": rev[1] if rev else None, "ttm_gross_profit": gp[1] if gp else None,
@@ -271,6 +278,10 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
             "undetermined": None if se else "no_shares",
         })
         if is_cur:
+            if base:
+                r.update({k: base[k] for k in ("shares_wd", "shares_basis", "shares_issued", "shares_note", "cover_shares",
+                                               "cover_date", "outstanding_gap_pct", "previous_cover_shares",
+                                               "previous_cover_date") if k in base})
             r["net_debt"] = debt - cash
             if not se:
                 r["reason"] = "その日までに申告された株数が無い（時価総額は読み手がyfinanceの値を印つきで代わりに使う）"
@@ -307,7 +318,9 @@ def at_price(row: Optional[Dict[str, Any]], price: Optional[float], yf_market_ca
     """
     out: Dict[str, Any] = {k: None for k in ("market_cap", "market_cap_source", "market_cap_yf_gap", "enterprise_value", "per", "ps",
                                               "ev_sales", "ev_gross_profit", "pe_5y_avg_earnings", "p_tbv", "shares",
-                                              "ttm_end", "ttm_revenue")}
+                                              "ttm_end", "ttm_revenue", "shares_wd", "shares_basis", "shares_source",
+                                              "shares_issued", "shares_note", "outstanding_gap_pct", "cover_shares",
+                                              "cover_date")}
     if not row or not price or price <= 0:
         return out
     sh = row.get("shares")
@@ -326,7 +339,9 @@ def at_price(row: Optional[Dict[str, Any]], price: Optional[float], yf_market_ca
                per=pos(mcap, row.get("ttm_net_income")), ps=pos(mcap, row.get("ttm_revenue")),
                ev_sales=pos(ev, row.get("ttm_revenue")), ev_gross_profit=pos(ev, row.get("ttm_gross_profit")),
                pe_5y_avg_earnings=pos(mcap, row.get("net_income_5y_avg")), p_tbv=pos(mcap, row.get("tce")),
-               ttm_end=row.get("ttm_end"), ttm_revenue=row.get("ttm_revenue"))
+               ttm_end=row.get("ttm_end"), ttm_revenue=row.get("ttm_revenue"),
+               **{k: row.get(k) for k in ("shares_wd", "shares_basis", "shares_issued", "shares_note", "outstanding_gap_pct",
+                                          "cover_shares", "cover_date")}, shares_source=row.get("shares_source"))
     return out
 
 
@@ -362,6 +377,14 @@ def _tce_fn(ticker: str, store: Dict[str, Any]) -> Callable[[str], Dict[str, Any
         except Exception:  # noqa: BLE001  TCEが作れない月は P/TBV を出さない
             return {}
     return at
+
+
+def _company_facts(ticker: str) -> Optional[Dict[str, Any]]:
+    from common.sec_data.layer3_builder import load_company_facts
+    try:
+        return load_company_facts(ticker)
+    except Exception:  # noqa: BLE001  表紙が読めない銘柄は株数の補正だけ付けない（印 no_cover）
+        return None
 
 
 def _default_store(ticker: str) -> Optional[Dict[str, Any]]:
@@ -403,7 +426,7 @@ def build(tickers: Optional[List[str]] = None, out_dir: str = OUT_DIR, ledger_pa
         snaps = _load(os.path.join(VALUATION_HISTORY_DIR, f"{t}.json")).get("records") or []
         prices_t = _daily_rows(t, daily_dir)
         out = compute(t, store, prices_t, months, splits_all.get(t, []), tce_fn(t, store), ledger_entries, snaps,
-                      current=prices_t[-1]["date"] if prices_t else None)
+                      current=prices_t[-1]["date"] if prices_t else None, company_facts=_company_facts(t))
         if _write_if_changed(os.path.join(out_dir, f"{t}.json"), out):
             summary["written"] += 1
         summary["tickers"] += 1

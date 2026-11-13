@@ -2071,7 +2071,7 @@ function render(d) {
               <div class="input-item"><span class="input-label">V₀</span><span class="input-value">${fmtB(v0)}</span></div>
               <div class="input-item"><span class="input-label">RPO_PV</span><span class="input-value">${fmtB(rpoPV)}</span></div>
               <div class="input-item"><span class="input-label">GrowthOption_PV</span><span class="input-value">${fmtB(goPv)}</span></div>
-              <div class="input-item"><span class="input-label">希薄化後株式数</span><span class="input-value">${fmtInt(dilutedShares)}</span></div>
+              <div class="input-item"><span class="input-label">希薄化後株式数</span><span class="input-value">${fmtInt(dilutedShares)}</span>${(()=>{const c=d.components||{};const g=c.outstanding_gap_pct;const n=[];if(String(c._shares_source||'').startsWith('yf_'))n.push('yfinance（SEC株数なし）');if(c.shares_note)n.push(c.shares_note);if(g!=null&&Math.abs(g)>10)n.push('表紙の発行済は '+(g>0?'+':'')+g+'%（分母に入れない）');return n.length?'<div style="font-size:10px;color:var(--mut)">'+n.join(' ／ ')+'</div>':'';})()}</div>
               <div class="input-item"><span class="input-label">P_t（企業価値）</span><span class="input-value">${fmtB(v0 + rpoPV + goPv)}</span></div>
               <div class="input-item"><span class="input-label">BS補正/株</span><span class="input-value">${bsNetCashPerShare >= 0 ? '+' : ''}$${fmt(bsNetCashPerShare)}</span></div>
               <div class="input-item"><span class="input-label">1株当り</span><span class="input-value highlight">$${fmt(ivps)}</span></div>

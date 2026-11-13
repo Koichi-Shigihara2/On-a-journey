@@ -2829,6 +2829,17 @@ class TanukiValuationPipeline:
         L.append(f"  PEG: {peg_val:.2f}" if peg_val is not None else "  PEG: N/A")
         L.append(f"  PS:  {ps_val:.1f}x" if ps_val is not None else "  PS:  N/A")
         L.append(f"  EV_EBITDA: {ev_ebitda_val:.1f}x" if ev_ebitda_val is not None else "  EV_EBITDA: N/A")
+        # [[TANUKI-SHARES-SINGLE-SOURCE-1]] 分母の株数の内訳と、表紙との差の印（表示だけ。差の分は分母に入れない）
+        _sh_src = comps.get("_shares_source")
+        if _sh_src:
+            _sh_wd, _sh_iss = comps.get("shares_wd"), comps.get("shares_issued")
+            _sh_det = f"  加重平均希薄化後 {_sh_wd:,.0f}・期末後の発行（買い戻しは負） {_sh_iss:+,.0f}" if _sh_wd else ""
+            _sh_note = f"  印: {comps['shares_note']}" if comps.get("shares_note") else ""
+            L.append(f"  Shares_Basis: {_sh_src}{_sh_det}{_sh_note}")
+            _gap = comps.get("outstanding_gap_pct")
+            if _gap is not None and abs(_gap) > 10:
+                L.append(f"  Shares_OutstandingGap: 表紙の発行済は分母より {_gap:+.1f}%"
+                         "（発行でも希薄化後でもない分〈制限付株・未確定の株等〉。分母には入れない）")
         if peg_val is not None:
             if peg_val < 1.0:
                 L.append("  PEG_Signal: 割安水準（成長率対比でPEG<1.0）")

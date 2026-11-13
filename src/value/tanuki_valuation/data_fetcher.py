@@ -101,7 +101,9 @@ def _multiples_current(ticker, price, yf_market_cap=None):
         return _mult.current_multiples(ticker, price, yf_market_cap)
     except Exception as e:  # noqa: BLE001
         print(f"   [{ticker}] 倍率の部品を読めない（{e}）。PER・PSR・時価総額はNone")
-        return {k: None for k in ("market_cap", "market_cap_source", "market_cap_yf_gap", "per", "ps", "ttm_end")}
+        return {k: None for k in ("market_cap", "market_cap_source", "market_cap_yf_gap", "per", "ps", "ttm_end", "shares",
+                                  "shares_wd", "shares_basis", "shares_source", "shares_issued", "shares_note",
+                                  "outstanding_gap_pct", "cover_shares", "cover_date")}
 
 
 # セクター別デフォルトβ
@@ -926,8 +928,10 @@ class TanukiDataFetcher:
         # ========================================
         # 4. 株式数決定
         # ========================================
+        #     分母の書き手はここだけ。株数は倍率の部品の今日の行（common/shares_base.py）で、時価総額と同じ値
+        #     （[[TANUKI-SHARES-SINGLE-SOURCE-1]]）。部品に株数が無い銘柄（V型）だけ yfinance implied を印つきで使う
         final_shares, shares_source = self._determine_diluted_shares(
-            ticker, yf_implied, yf_outstanding, sec_diluted
+            ticker, yf_implied, yf_outstanding, sec_diluted, part=mult
         )
         
         # ========================================
@@ -1052,6 +1056,12 @@ class TanukiDataFetcher:
             "insider_latest_date": insider_latest_date,
             "eps_data": {"ticker": ticker},
             "_shares_source": shares_source,
+            "shares_wd": mult.get("shares_wd"),
+            "shares_issued": mult.get("shares_issued"),
+            "shares_note": mult.get("shares_note"),
+            "shares_cover": mult.get("cover_shares"),
+            "shares_cover_date": mult.get("cover_date"),
+            "outstanding_gap_pct": (round(mult["outstanding_gap_pct"], 1) if mult.get("outstanding_gap_pct") is not None else None),
             "_beta_source": beta_source,
             "fcf_source": fcf_source,
             "fcf_ttm_end": fcf_ttm_end,
@@ -1226,11 +1236,23 @@ class TanukiDataFetcher:
         ticker: str,
         yf_implied: int, 
         yf_outstanding: int, 
-        sec_diluted: int
+        sec_diluted: int,
+        part: Optional[dict] = None
     ) -> Tuple[int, str]:
-        """完全希薄化後株式数を決定"""
+        """理論株価の分母（希薄化後株数）を決定。
+
+        part（倍率の部品の今日の行 × 株価、common.multiples.at_price の戻り）に株数があればそれ（SEC・加重平均の希薄化後＋
+        期末後の実際の発行、時価総額と同じ値）。無ければ yfinance implied を印つき（yf_implied_fallback）で使い、
+        それも無ければ従来の順（yfinance outstanding・SEC）。"""
         MIN_SHARES = 100_000
-        
+        if part and part.get("shares") and part["shares"] > MIN_SHARES:
+            src = "sec_" + (part.get("shares_basis") or "weighted")
+            print(f"   [{ticker}] → 倍率の部品の株数採用（{src}）")
+            return int(part["shares"]), src
+        if yf_implied > MIN_SHARES and part is not None:
+            print(f"   [{ticker}] → 部品に株数なし。yfinance implied を印つきで採用（yf_implied_fallback）")
+            return int(yf_implied), "yf_implied_fallback"
+
         if yf_implied > MIN_SHARES:
             print(f"   [{ticker}] → yfinance implied採用（完全希薄化後）")
             return int(yf_implied), "yf_implied"
