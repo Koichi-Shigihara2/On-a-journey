@@ -1,12 +1,12 @@
-# 公開の予行（未公開の6つを手元で重ねた結果、2026-11-13）
+# 公開の予行（未公開の6つを手元で重ねた結果、2026-11-13。PARSER段1は置き換え込みでやり直し済み）
 
-手元の作業用ブランチ `publish-rehearsal`（kaihatsu `bcf4742573` から。**pushしていない・消した**）に、公開の順で重ねて、各段でゲートの pytest と `tools/sim`（TANUKI→HypeCore→TANUKI、96銘柄）を回した。各ブランチの単独の試算は、kaihatsu の今の HEAD に**そのブランチだけ**を入れた別の作業用ブランチ（worktree）で回し、重ねた結果と比べた。表（全銘柄）は `PUBLISH_REHEARSAL_2026-11_table.csv`、案の差分は `PUBLISH_REHEARSAL_2026-11_gap_pct.patch`。
+手元の作業用ブランチ（kaihatsu `bcf4742573` から。**pushしていない・消した**。1回目は PARSER段1 が守りと定義だけ〈revert の戻し〉、**2回目〈この文書の数字〉は PARSER段1 を四半期BSの置き換え込みのブランチ `parser-layer3-stage1`〈`6ae6ca8534`〉にして重ね直した**）に、公開の順で重ねて、各段でゲートの pytest と `tools/sim`（TANUKI→HypeCore→TANUKI、96銘柄）を回した。各ブランチの単独の試算は、kaihatsu の今の HEAD に**そのブランチだけ**を入れた別の作業用ブランチ（worktree）で回し、重ねた結果と比べた。表（全銘柄）は `PUBLISH_REHEARSAL_2026-11_table.csv`、案の差分は `PUBLISH_REHEARSAL_2026-11_gap_pct.patch`。
 
 ## 結論
 
-- 順どおりに重ねて**テキストの衝突は生成物だけ**（出力の一覧・倍率の部品・`profitability.json`）。作り直せば解ける。コード・設定の衝突は0（`pipeline.py`・`stock.html`・`sec_concept_definitions.json` は自動で重なり、全段でテストが通った）
-- **理論株価の変化は、単独の変化の掛け算とぴったり一致**（全96銘柄で差 0.000pp）。掛け合わせにならない銘柄は、理論株価・判定・funda・stage では**無い**。CAKE は CONTINUITY −22.6%・SHARES −3.3% で、積 −25.2% = 全部の後の −25.2%（和 −25.9% ではない）。KO・HWM・APP も同様。STEP 0 で気にしていた「CAKE ほか」は、**単独の試算が前の公開の上の値でなかった**ための差で、今の HEAD の上では解消
-- 全部の後、今の公開の値に対して: 理論株価が変わる 86 銘柄・5%超 13（ALAB・ASTS・CAKE・CART・DOCN・FICO・KO・LITE・LOAR・PAYS・PLTR・SOUN・TSLA）・判定が変わる **3（CPRT・DOCN・RMBS）**・funda 点が変わる 10（保有はSOUN 35→43）・stage 0
+- 順どおりに重ねて**テキストの衝突は生成物だけ**（出力の一覧・倍率の部品・`profitability.json`）。作り直せば解ける。コード・設定の衝突は0（全段でテストが通った）
+- **単独の変化の掛け算にならない銘柄が2つ**（今の公開の上の理論株価）: **CAKE**（PARSER +29.1%・CONTINUITY 単独 −22.6%・SHARES −3.3% → 積は −3.5%、重ねると **+2.9%**。CONTINUITY が PARSER の後では −17.5%）と **KO**（積 +3.8%、重ねると +4.0%）。理由: PARSER は純負債（二重の借入 561M を除く）を、CONTINUITY は FCF の基準（EV）を動かし、**1株の理論株価は EV−純負債÷株数で、CAKE は時価総額に比べ負債が大きく、%の掛け算にならない**。掛け合わせの順は公開の順（PARSER→CONTINUITY）のとおり。他の銘柄は掛け算と全銘柄で一致（0.05pp以内）
+- 全部の後、今の公開の値に対して: 理論株価が変わる 88 銘柄・5%超 11（ASTS・LOAR・TSLA・SOUN・DOCN・LITE・PAYS・FICO・PLTR・ALAB・CART）・判定が変わる **3（CPRT・DOCN・RMBS）**・funda 点が変わる 10（保有はSOUN 35→43）・stage 0。**CAKE は全部の後 +2.9%（5%超でない・判定は基準でもTRIMのまま）、KO は +4.0%**
 - 保有9銘柄の判定は全段で変化0。理論株価（全部の後）: TSLA +11.5・SOUN +11.3・PLTR −6.4・SOFI −4.8・APP −1.1・CELH −0.9・NVDA −0.2・ADBE −0.1・CRWV +0.1
 
 ## 1. 重ねた順と各段（pytest・衝突・前の段からの変化）
@@ -16,12 +16,12 @@
 | 段 | 入れたもの | 衝突 | pytest | 前の段から（理論株価 / 5%超 / 判定 / funda / scope） | 単独と同じか |
 |---|---|---|---|---|---|
 | 0 | 基準（kaihatsu `bcf4742573`） | — | 2960通過・失敗1 | （今の公開の `latest.json` と理論株価は一致。判定は CAKE・MO・WMT が基準の試算と公開で違う＝相場による。表では「判定（今の公開）」と「全部の後」を並べた） | — |
-| 1 | PARSER段1（`0544696ddc`→`1ebce36a25` を revert の revert） | なし | 2969通過・失敗1 | 1銘柄（APP −0.06%）/ 0 / 0 / 0 / scope 3 | 同じ（最初の段） |
-| 2 | tanuki-calc-continuity-1（2 commit） | なし（`pipeline.py`・`stock.html`・`sec_concept_definitions.json` は自動で重なる） | 2976通過・失敗1 | 11 / 4（CAKE −22.6・DOCN −13.1・LOAR −10.8・KO +7.5）/ **DOCN HOLD→TRIM** / 0 / 16 | 同じ（単独 11・4・DOCN） |
-| 3 | dilution-unify-1（4 commit） | 出力の一覧（tanuki）のみ→作り直し | 2993通過・失敗1 | 0 / 0 / 0 / **funda 10銘柄**（ALAB 75→100・AVAV 85→95・CART 55→80・IONQ 100→93・QBTS 10→0・RBRK 65→90・RDW 75→65・RXRX 60→55・SOUN 35→43・SPIR 0→1）/ 90 | 同じ |
-| 4 | deficit-quality-adopt-1（4 commit） | 出力の一覧（sec・tanuki・stonks）のみ→作り直し。`python common/profitability.py --all` で `profitability.json` を作り直した（1ファイル） | **2996通過・失敗0**（既知の `test_stonks_flag_rule` は本段で通る） | 0 / 0 / 0 / 0 / 94 | 同じ |
-| 5 | multiples-adopt-1（2 commit） | 出力の一覧（eps・stonks・tanuki）のみ→作り直し。`multiples.py --all`・`rotce.py` | 3006通過・失敗0 | 0 / 0 / 0 / 0 / 96 | 同じ |
-| 6 | tanuki-shares-single-source-1（1 commit）＋案（下の2） | 出力の一覧・倍率の部品8銘柄（AAPL・ABBV・ADSK・CDNS・ELF・HWM・MO・WMT）→作り直し | 3018通過・失敗0 | **86 / 9（ASTS +30.4・TSLA +11.5・SOUN +11.3・LITE −10.8・PAYS −9.2・FICO −7.0・PLTR −6.4・CART −5.9・ALAB −5.4）/ CPRT HOLD→TRIM・RMBS WATCH→HOLD** / 0 / 96 | 同じ（単独の `multiples+shares` も同数） |
+| 1 | PARSER段1（`parser-layer3-stage1` `6ae6ca8534`＝守りと定義の revert の戻し＋四半期BSの置き換え685セル・57銘柄） | なし | 2975通過・失敗1 | 10銘柄（CAKE +29.1・KO −3.2・ABBV −3.0・WMT −1.8・MO −1.4・HWM −1.1・ADSK −0.5・ELF +0.3・AAPL −0.1・APP −0.1）/ 1（CAKE）/ 0 / 0 / scope 16 | 同じ（最初の段。STAGE1 §3「置き換えも」と一致） |
+| 2 | tanuki-calc-continuity-1（2 commit） | なし（`pipeline.py`・`stock.html`・`sec_concept_definitions.json` は自動で重なる） | 2982通過・失敗1 | 11 / 4（CAKE −17.5・DOCN −13.1・LOAR −10.8・KO +7.7）/ **DOCN HOLD→TRIM** / 0 / 16 | **CAKE（単独 −22.6）・KO（単独 +7.5）が違う**。ほかは同じ |
+| 3 | dilution-unify-1（4 commit） | 出力の一覧（tanuki）のみ→作り直し | 2999通過・失敗1 | 0 / 0 / 0 / **funda 10銘柄**（ALAB 75→100・AVAV 85→95・CART 55→80・IONQ 100→93・QBTS 10→0・RBRK 65→90・RDW 75→65・RXRX 60→55・SOUN 35→43・SPIR 0→1）/ 90 | 同じ |
+| 4 | deficit-quality-adopt-1（4 commit） | 出力の一覧（sec・tanuki・stonks）のみ→作り直し。`python common/profitability.py --all` で `profitability.json` を作り直した（1ファイル） | **3002通過・失敗0**（既知の `test_stonks_flag_rule` は本段で通る） | 0 / 0 / 0 / 0 / 94 | 同じ |
+| 5 | multiples-adopt-1（2 commit） | 出力の一覧（eps・stonks・tanuki）のみ→作り直し。`multiples.py --all`・`rotce.py` | 3012通過・失敗0 | 0 / 0 / 0 / 0 / 96 | 同じ |
+| 6 | tanuki-shares-single-source-1（1 commit）＋案（下の2） | 出力の一覧・倍率の部品8銘柄（AAPL・ABBV・ADSK・CDNS・ELF・HWM・MO・WMT）→作り直し | 3024通過・失敗0 | **86 / 9（ASTS +30.4・TSLA +11.5・SOUN +11.3・LITE −10.8・PAYS −9.2・FICO −7.0・PLTR −6.4・CART −5.9・ALAB −5.4）/ CPRT HOLD→TRIM・RMBS WATCH→HOLD** / 0 / 96 | 同じ（単独の `multiples+shares` も同数） |
 
 stage（HypeCore）は全段で0。STONKS の出力（`results.json`）は `tools/sim` の chain に入らないため、本予行では比べていない（DEFICIT の公開の確認手順5で見る）。
 
@@ -40,16 +40,17 @@ DILUTION（`financial_health.outstanding_gap_pct`＝期末の発行済÷加重�
 - 式は `common/shares_base.py::gap_pct` の1か所。`common/dilution.py::share_count_change` もその関数を呼ぶ（引数と戻りは今のまま。`test_dilution.py` はそのまま通る）
 - キーは `components.outstanding_gap_pct` の1か所。`pipeline.py` は `financial_health` に書かない（出力の一覧を作り直し）。`stock.html` の希薄化の欄の注記も `components` を読む（表示は「発行済株数との差 +11.5%（制限付株式・未確定の株・転換前後など。分母には入れない）」）
 - テスト: `tests/test_shares_base.py::test_outstanding_gap_pct_has_one_formula_and_one_key`（式の重複・fhへの書き込み・画面の旧キー読みが無い）
-- この案を入れた段6の試算・pytest（3018通過・失敗0）は上の表のとおり。理論株価・判定への影響は0（表示のキーだけ）
+- この案を入れた段6の試算・pytest（3024通過・失敗0）は上の表のとおり。理論株価・判定への影響は0（表示のキーだけ）
 - 公開の手順: SHARES の公開の前に、この差分を本ブランチ（`tanuki-shares-single-source-1`）へ当てる（`git am`）。DILUTION の公開が先なので、その後に当てれば衝突しない
 
 ## 3. 全部を重ねた後の、今の公開の値との比（銘柄ごと・どのブランチで動いたか）
 
-全銘柄は CSV（87行）。ここは動きが大きい・判定が動く・保有の分。単位は理論株価の変化%（前の段との差。空は0.05%以下）。
+全銘柄は CSV（89行）。ここは動きが大きい・判定が動く・保有・掛け合わせにならない銘柄。単位は理論株価の変化%（前の段との差。空は0.05%以下）。
 
 | 銘柄 | 全体 | PARSER | CONTINUITY | DILUTION | DEFICIT | MULTIPLES | SHARES | 判定 今の公開→全部の後 | 備考 |
 |---|---|---|---|---|---|---|---|---|---|
-| CAKE | −25.2 | | −22.6 | | | | −3.3 | HOLD→TRIM | 判定は基準の試算ですでにTRIM（公開との差は相場）。掛け算 |
+| **CAKE** | **+2.9** | +29.1 | −17.5 | | | | −3.3 | HOLD→TRIM | **掛け合わせにならない**（積 −3.5%）。判定は基準の試算ですでにTRIM（公開との差は相場）。単独の CONTINUITY は −22.6 |
+| **KO** | **+4.0** | −3.2 | +7.7 | | | | −0.3 | TRIM→TRIM | **掛け合わせにならない**（積 +3.8%）。単独の CONTINUITY は +7.5 |
 | ASTS | +30.4 | | | | | | +30.4 | | 種類株。表紙が取れず補正なし。SEC待ち |
 | LOAR | −12.8 | | −10.8 | | | | −2.2 | | |
 | DOCN | −10.9 | | −13.1 | | | | +2.5 | HOLD→TRIM | **判定が動くのは CONTINUITY**（SHARES は逆向きに戻す分） |
@@ -57,17 +58,20 @@ DILUTION（`financial_health.outstanding_gap_pct`＝期末の発行済÷加重�
 | SOUN（保有） | +11.3 | | | | | | +11.3 | | funda 35→43（DILUTION） |
 | LITE | −10.8 | | | | | | −10.8 | | 希薄化証券 |
 | PAYS | −9.2 | | | | | | −9.2 | | |
-| KO | +7.2 | | +7.5 | | | | −0.3 | | |
 | FICO | −7.0 | | | | | | −7.0 | | 年度平均 |
 | PLTR（保有） | −6.4 | | | | | | −6.4 | | |
-| CART | −5.9 | | | | | | −5.9 | | |
 | ALAB | −6.1 | | −0.7 | | | | −5.4 | | 判定は変わらない（funda 75→100 は DILUTION） |
+| CART | −5.9 | | | | | | −5.9 | | |
 | SOFI（保有） | −4.8 | | | | | | −4.8 | | |
 | APP（保有） | −1.1 | −0.06 | | | | | −1.0 | | |
 | CPRT | −3.2 | | | | | | −3.2 | HOLD→TRIM | SHARES（境目、年度平均） |
 | RMBS | −1.6 | | | | | | −1.6 | WATCH→HOLD | SHARES（境目） |
 
-どのブランチの分かは CSV の列。**判定を動かすのは CONTINUITY（DOCN）と SHARES（CPRT・RMBS）だけ**。funda 点を動かすのは DILUTION だけ（10銘柄）。DEFICIT・MULTIPLES は理論株価・判定・funda・stage を動かさない（DEFICIT は STONKS の対象・`breakeven_*`、MULTIPLES は PER・時価総額の出どころ＝表示）。
+**CAKE・KO の全部の後の値**（今の公開の値に対して）: CAKE **+2.9%**（判定 TRIM）、KO **+4.0%**（判定 TRIM のまま）。
+
+**掛け合わせにならない理由（CAKE）**: 1株の理論株価＝（EV − 純負債）÷ 株数。PARSER は**純負債**（parser が前年度末の非流動の借入 561M を残して二重に数えていた分を除く）、CONTINUITY は **FCF の基準（EV）**を動かす。CAKE は時価総額に比べ負債が大きく、純負債の円の変化と EV の%の変化は掛け算でなく足し算で効く。理論株価の%の積（−3.5%）でなく、重ねた試算（+2.9%）が正しい。KO も同型（差は0.2pp）。STEP 0 で「CAKE ほか」と言っていたのはこの2銘柄（HWM・APP は掛け算と一致）。公開の順（PARSER → CONTINUITY）のとおりに重ねた値が、公開の日の値。
+
+どのブランチの分かは CSV の列。**判定を動かすのは CONTINUITY（DOCN）と SHARES（CPRT・RMBS）だけ**。PARSER の10銘柄の変化は判定を動かさない。funda 点を動かすのは DILUTION だけ（10銘柄）。DEFICIT・MULTIPLES は理論株価・判定・funda・stage を動かさない（DEFICIT は STONKS の対象・`breakeven_*`、MULTIPLES は PER・時価総額の出どころ＝表示）。
 
 ## 4. 公開の日の段取り（案）
 
@@ -78,8 +82,8 @@ DILUTION（`financial_health.outstanding_gap_pct`＝期末の発行済÷加重�
 
 | 日 | 件 | 確認の手順（詳細は各STEP 0の末尾） |
 |---|---|---|
-| 11-16（月）以降の最初の平日 | PARSER段1（revert戻し＋`regen_derived`・一覧・`scope`ID） | 手順31の確認の後。1回目の印はscopeの3銘柄だけ・2回目0件。APP −0.06%。`PARSER_LAYER3_STAGE1.md` §4 |
-| 翌営業日 | TANUKI-CALC-CONTINUITY-1（rebase・`regen_derived`＋`revert_noise`・ID `TANUKI-CALC-CONTINUITY-1-1`） | scope 16銘柄（CAKE・DOCN・LOAR・KO・…）。DOCN HOLD→TRIM。`TANUKI_CALC_CONTINUITY_STEP0.md` §公開の手順 |
+| 11-16（月）以降の最初の平日 | PARSER段1（ブランチ `parser-layer3-stage1`＝守りと定義＋四半期BSの置き換え。`regen_derived`・一覧・`scope`ID） | 手順31の確認の後。1回目の印は scope の16銘柄だけ・2回目0件。理論株価は10銘柄（CAKE +29.1・KO −3.2・ABBV −3.0 …）・判定0。`PARSER_LAYER3_STAGE1.md` §4 |
+| 翌営業日 | TANUKI-CALC-CONTINUITY-1（rebase・`regen_derived`＋`revert_noise`・ID `TANUKI-CALC-CONTINUITY-1-1`。**PARSER の公開の後の値で試算し直す**：CAKE −17.5・KO +7.7 で単独と違う） | scope 16銘柄（CAKE・DOCN・LOAR・KO・…）。DOCN HOLD→TRIM。`TANUKI_CALC_CONTINUITY_STEP0.md` §公開の手順 |
 | その次 | DILUTION-DEFINITION-UNIFY-1（ID `DILUTION-DEFINITION-UNIFY-1-0`）＋DEFICIT-QUALITY-ADOPT-1（`profitability.py --all` を公開の前に） | funda 10銘柄（SOUN 35→43）が🛠で出る・理論株価は動かない。STONKSの`results.json`24銘柄・`op_breakeven_*`・CHECK-51。順は DILUTION → DEFICIT（Stonks Silo Update の鎖は DILUTION・DEFICIT とも通る） |
 | その次 | MULTIPLES-ADOPT-1（`multiples.py --all`・`rotce.py`・一覧） | 理論株価・判定0。`latest.json` に `per_gaap_ttm_sec`・`per_forward_yf`・`market_cap_source`。画面5か所の目視。旧キー読みは次の連鎖の後に外す（手順は`MULTIPLES_ADOPT_STEP0.md`の7） |
 | その次（週のうち、日曜を挟まない日） | TANUKI-SHARES-SINGLE-SOURCE-1（上の2の案を当てる・`multiples.py --all`・ID `…-1-1` の scope・`committed_at` を作り直す） | 理論株価86銘柄（TSLA +11.5・SOUN +11.3・ASTS +30.4 …）・判定 CPRT・RMBS（DOCN は CONTINUITY）。`_shares_source` が `sec_*`（Vだけ`yf_implied_fallback`）。TSLAの`Shares_OutstandingGap`。SECの原本（手順33）は公開の前に |

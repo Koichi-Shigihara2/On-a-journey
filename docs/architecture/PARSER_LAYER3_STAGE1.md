@@ -61,10 +61,18 @@
 
 ## 4. 公開の前に（段1）
 1. 公開は手順31（段0の定時の確認、期限11-16）が済んでから。**注意: Layer3はその場で計算されるため、定義のコードをpushするとそのまま公開になる**（日曜のSEC_Data_Updateがttm/・normalized/を作り直し、TANUKI等も次の実行で読む）。そのため実装のcommitは2026-11-11に戻した（下の「戻したcommit」）。公開のcommitで戻し直す
-2. 公開の手順: ttm/・normalized/ を `tools/sim/regen_derived.py` で作り直してcommit→`sim.py scope --write`→TANUKI→HypeCore→TANUKI
+2. 公開の手順: **ブランチ `parser-layer3-stage1`（下の「ブランチ」）を kaihatsu に入れる**→ttm/・normalized/ を `tools/sim/regen_derived.py`（→`revert_noise.py common/sec_data/ttm common/sec_data/normalized`）で作り直し、`python common/sec_data/quarterly_bs.py`（四半期BSの置き換え。既存の quarterly_*.json に当てる）・出力の一覧（`--layer sec`・`--layer tanuki`）を作り直してcommit→`sim.py scope --write`（ID `PARSER-LAYER3-SINGLE-SOURCE-1-1`）→TANUKI→HypeCore→TANUKI
 3. 取り込めなかったもの（FINDINGSに登録）: bs_lines の記録2,214件のうち328件（15%）は借入金の行が保存されていない古い記録で、貸借対照表の行を正にできない期（HON・ABBV・ELF等の一部）はタグのまま。取り直しにはSECの取得が要る
 
-### 戻したcommit（実装は公開のときまで戻してある）
+### ブランチ `parser-layer3-stage1`（2026-11-13、未公開。origin に控え。kaihatsu の `4c356229cc` から）
+- 守りと定義の revert の戻し（`0544696ddc` → `1ebce36a25` の順に revert。ブランチの先頭の2 commit）に加え、**§3 の「置き換えも」を本番のコードにした**。**置き換えは、これまで `tools/sim/parser_l3/parser_overlay.py`＋`parser_redirect.py`（試算用の差し替え。元の表は `%TEMP%/parser_l3/all.json` で、リポジトリに無かった）にだけあり、revert した `6a9786cebd`・`a02135a4f6` には入っていなかった**
+- `common/sec_data/quarterly_bs.py`（新）: parser の四半期BS（`quarterly_{FYQ}.json` の `bs`）のうち Layer3 の val（守りの後）と違う値を、同じ期の Layer3 の val で置き換える**1か所**。期の末日は parser のファイルに無いので、Layer3 の同じ値の期末日の多数決（段0の比較と同じ規則。parser のラベル `fy+fp` は10-Qの前年同期の比較値と区別できず使えない。決まらない期は触らない）。parser にだけある値・Layer3 にだけある値（0の補い）・符号だけの違いは触らない。年次・CF・PL・株数は段1で置き換えない。`SECParser.parse_and_save` が保存の前に呼ぶ（日曜の SEC_Data_Update）。銘柄名は書いていない
+- 既存データへの当て方: `python common/sec_data/quarterly_bs.py [TICKER ...]`（同じ関数。SECは呼ばない）。**置き換えたセル 685・57銘柄（§3と一致）**。CAKE・KO・VZ は `parse_and_save` を丸ごと回した結果と既存ファイルに当てた結果が一致（確認済み）
+- テスト `tests/test_quarterly_bs.py`: 違う値は置き換わる（CAKE型の二重計上が起きない）・parser にだけ／Layer3 にだけ／符号だけ／期末日が決まらない期は触らない・書き手は `quarterly_bs.py` の1か所
+- 試算（`tools/sim`、前＝kaihatsu、後＝ブランチ）: **§3 と一致**。理論株価10銘柄（CAKE +29.1・KO −3.2・ABBV −3.0・WMT −1.8・MO −1.4・HWM −1.1・ADSK −0.5・ELF +0.3・AAPL −0.1・APP −0.1）・5%超は CAKE・判定0・funda 0・stage 0・保有は APP −0.06% のほか ±0.0%・scope 16銘柄。pytest 2975通過・失敗1（既知の `test_stonks_flag_rule`）
+- 予行（`PUBLISH_REHEARSAL_2026-11.md`）: 6つを公開の順に重ねても衝突は生成物だけ。CAKE は他の段との掛け合わせにならない（全部の後 +2.9%）
+
+### 戻したcommit（元の実装。公開は上のブランチで行う）
 - 実装: `6a9786cebd`（Layer3の守りと定義）・`a02135a4f6`（印の表示）。2026-11-11に revert（`0544696ddc`＝6a9786cebd、`1ebce36a25`＝a02135a4f6）。docsのcommit（`3e7eea9dc9`・`01eab47f89`）は残した
-- 公開のとき: 先に `git revert 1ebce36a25` と `git revert 0544696ddc`（revertのrevert。順は古い方から戻すと衝突しにくい: 0544696ddc→1ebce36a25）で実装を戻し、出力の一覧（`build_output_inventory.py --layer tanuki`・`--layer sec`）を作り直し、ttm/・normalized/ を `tools/sim/regen_derived.py` で作り直してcommit→`sim.py scope --write`→TANUKI→HypeCore→TANUKI
+- 公開のとき: **上のブランチを入れる**（revertの戻しはブランチの先頭に入っている。直接 `git revert 0544696ddc`・`1ebce36a25` をする必要はない）。そのあと出力の一覧（`build_output_inventory.py --layer tanuki`・`--layer sec`）を作り直し、ttm/・normalized/ を `tools/sim/regen_derived.py` で作り直してcommit→`sim.py scope --write`→TANUKI→HypeCore→TANUKI
 - 出力の一覧（sec・tanuki）は戻したあとの実物に合わせて作り直した（`val_guard_marks`は一覧から消えている。公開のときに再び作り直す）
