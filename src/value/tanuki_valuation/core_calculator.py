@@ -950,6 +950,13 @@ class KoichiValuationCalculator:
                 "market_cap_sec": financials.get("market_cap_sec"),
                 "market_cap_source": financials.get("market_cap_source"),
                 "market_cap_yf_gap": financials.get("market_cap_yf_gap"),
+                # [[TANUKI-SHARES-SINGLE-SOURCE-1]] 分母の株数の内訳（分母 diluted_shares は倍率の部品の株数＝時価総額と同じ）
+                "shares_wd": financials.get("shares_wd"),
+                "shares_issued": financials.get("shares_issued"),
+                "shares_note": financials.get("shares_note"),
+                "shares_cover": financials.get("shares_cover"),
+                "shares_cover_date": financials.get("shares_cover_date"),
+                "outstanding_gap_pct": financials.get("outstanding_gap_pct"),
                 "per_adjusted_ttm": _calc_adjusted_per(
                     ticker=ticker,
                     current_price=financials.get("current_price"),
