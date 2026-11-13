@@ -6,7 +6,7 @@
 ## 今の状態（2026-11-12 終業）
 
 - BACKLOG.md のアクティブは **14件**（`^### [` の機械カウント）。rcc NG 0・WARN 223、pytest 2960件通過・失敗2（kaihatsu。ruffの無い環境の1件と、SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
-- **未公開のコードの置き場所は5つ**（Layer3の定義のコードをpushするとそのまま公開になる。公開の順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → MULTIPLES、各々の前に前の公開の上にrebaseして試算し直す）: (1) PARSER-LAYER3 段1は`0544696ddc`・`1ebce36a25`でrevert済み（公開の時にrevertの戻し、`PARSER_LAYER3_STAGE1.md` §4）、(2) TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（originにも控えあり〈7b8a432d2b〉）、(3) DILUTION-DEFINITION-UNIFY-1はブランチ`dilution-unify-1`（470d521ec1、手順は`DILUTION_UNIFY_STEP0.md`末尾）、(4) DEFICIT-QUALITY-ADOPT-1はブランチ`deficit-quality-adopt-1`（d4f824cf0e〈コード〉・c9aadc065d〈作り直した`profitability.json`〉、公開の前に`python common/profitability.py --all`、手順は`DEFICIT_QUALITY_STEP0.md`末尾）。(5) MULTIPLES-ADOPT-1はブランチ`multiples-adopt-1`（`2741efd6e7`、kaihatsu `7a6a5acd2b`から。公開の手順は`MULTIPLES_ADOPT_STEP0.md`末尾。公開の前に`python common/multiples.py --all`と`python common/sec_data/rotce.py`）。(2)〜(5)はkaihatsuには無く、originに控えがある
+- **未公開のコードの置き場所は6つ**（Layer3の定義のコードをpushするとそのまま公開になる。公開の順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES、各々の前に前の公開の上にrebaseして試算し直す）: (1) PARSER-LAYER3 段1は`0544696ddc`・`1ebce36a25`でrevert済み（公開の時にrevertの戻し、`PARSER_LAYER3_STAGE1.md` §4）、(2) TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（originにも控えあり〈7b8a432d2b〉）、(3) DILUTION-DEFINITION-UNIFY-1はブランチ`dilution-unify-1`（470d521ec1、手順は`DILUTION_UNIFY_STEP0.md`末尾）、(4) DEFICIT-QUALITY-ADOPT-1はブランチ`deficit-quality-adopt-1`（d4f824cf0e〈コード〉・c9aadc065d〈作り直した`profitability.json`〉、公開の前に`python common/profitability.py --all`、手順は`DEFICIT_QUALITY_STEP0.md`末尾）。(5) MULTIPLES-ADOPT-1はブランチ`multiples-adopt-1`（`2741efd6e7`、kaihatsu `7a6a5acd2b`から。公開の手順は`MULTIPLES_ADOPT_STEP0.md`末尾。公開の前に`python common/multiples.py --all`と`python common/sec_data/rotce.py`）。(6) TANUKI-SHARES-SINGLE-SOURCE-1はブランチ`tanuki-shares-single-source-1`（`8cdf37598c`、`multiples-adopt-1`の上。公開の手順は`TANUKI_SHARES_STEP0.md`末尾。公開の前に`python common/multiples.py --all`）。(2)〜(6)はkaihatsuには無く、originに控えがある
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
 - 報告は20行以内（結論・変わった数・判定の変化・決めてほしいこと）。詳しい表はファイルに置き、場所だけ書く（`CHAT_RULES.md`「報告の形」）
@@ -43,6 +43,10 @@
    - 確認の手順: 該当の段（Reconcile daily rows with provider）のログが「当たり 0銘柄」。`common/market_data/daily/APH.json`・`CTVA.json`の境の日より前の行に`_corrections`（reason `split_adjust`）が1回分だけ付いている。`python common/market_data/split_reconcile.py`（走査だけ）が手元で0銘柄。APHの200日線が約75・CTVAの50日線が約12台（Yahooの調整後の値）
    - 期限: 2026-11-16。合格したら`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`をBACKLOG_DONE.mdへ移設（アクティブ13→12）、`PROJECT_STATUS.md`の次の作業4番を外す
 
+33. **TANUKI-SHARES-SINGLE-SOURCE-1 の原本の確認（SECの取得）**（`[[TANUKI-SHARES-SINGLE-SOURCE-1]]`、`SEC_USER_AGENT_EMAIL`が環境変数に無く未実施）
+   - 日時: 環境変数に`SEC_USER_AGENT_EMAIL`（定時と同じ連絡先。値は会話・文書・commitに書かない）を置いた回
+   - 期限: 本件の公開の前
+   - 確認の手順: ASTS・PLTR・SOUNの表紙の発行済（クラスごと）、TSLAの10-Qの本文（表紙3,953M と加重平均の差412Mの内訳）、IONQ（yfinanceの implied 464.7 が表紙432.5より+7.5%の理由）。読み取りだけ・10件/秒以下。結果は`TANUKI_SHARES_STEP0.md`末尾に書く。TSLAの未確定の株は確かめるまで分母に入れない（決定2）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

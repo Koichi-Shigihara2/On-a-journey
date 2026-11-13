@@ -2458,6 +2458,7 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 **分類:** TANUKI VALUATION / `data_fetcher.py::_determine_diluted_shares`・`core_calculator.py`（1株理論株価の分母）・倍率の部品（`common/multiples.py`）・`common/dilution.py`
 **登録日:** 2026-11-13
 **着手条件:** [[MULTIPLES-ADOPT-1]] の公開の後（同じ画面にSECの時価総額とyfinance由来の株数が並ぶため）
+**実装済み（2026-11-13、ブランチ・未公開）:** `tanuki-shares-single-source-1`（`8cdf37598c`、`multiples-adopt-1`の上）。分母は新A2（`common/shares_base.py`）。試算: 理論株価86銘柄・5%超9・判定2（CPRT・RMBS）・funda/stage 0・保有9の判定0。**残り:** 公開（順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → MULTIPLES → 本件、手順は`TANUKI_SHARES_STEP0.md`末尾）、SECの原本の確認（`CLAUDE_CODE_START.md`手順33）
 **発見:** [[MULTIPLES-ADOPT-1]] STEP 0（2026-11-13、FINDINGS 2026-11-13 → 登録済み）
 **内容:** `components.diluted_shares`は96/96銘柄が`_shares_source=yf_implied`（yfinanceの`implied_shares_outstanding`）で、理論株価（IV∝1÷株数）の分母になっている。倍率の部品（SECの加重平均の希薄化後株数・分割換算）と3%を超えて違うのが**23銘柄**: ASTS +30%・IONQ +16%・ONDS +16%・RXRX +15%・TSLA +12%・RCAT +12%・SOUN +11%・LITE −11%・PAYS −8%・FICO −7%・PLTR −6%・ALAB −5%・BSY −5%・CART −4%・SOFI −4%・FLYW −4%・JOBY +4%・FROG −4%・DDOG −4%・INTU −4%・CPRT −3%・CAKE −3%・SITM −3%（値は yfinance÷SEC−1）。
 **保有銘柄:** **含まれる（4銘柄）**: SOUN（+11.3%）・TSLA（+11.6%）・PLTR（−6.4%）・SOFI（−4.4%）。SECの株数に寄せると理論株価はSOUN・TSLAで約+11%、PLTR・SOFIで約−6%・−4%動く概算（IV∝1÷株数、試算していない）。ADBE・APP・CELH・CRWV・NVDAは3%以内。

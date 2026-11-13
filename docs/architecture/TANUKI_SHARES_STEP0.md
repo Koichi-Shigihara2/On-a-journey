@@ -290,3 +290,65 @@ RXRX・IONQ・ONDS・RCAT は新A2でも表紙どおりに直る。JOBY だけ�
   1. **期末後の買戻し（約21銘柄、−0.0〜−1.6%）を引くか**（符号つき）。引かない版（「発行が無ければ0」の字どおり）を新A2とした。引くと ADBE −0.1・CELH −0.9・NVDA −0.2 と前のA2に近づく
   2. TSLA の412M は決定2どおり入れず、画面・report.txt の印 `outstanding_gap_pct`（表紙÷Wd−1＝+11.6%）で出す。その印を今の案A/A2の実装の対象にするか
   3. `SEC_USER_AGENT_EMAIL` を設定した環境で、ASTS・PLTR・SOUN の表紙と TSLA の10-Q本文の取得を行う（値は書かない）
+
+# 実装済み（ブランチ・未公開、2026-11-13）
+
+ブランチ `tanuki-shares-single-source-1`（`multiples-adopt-1`〈`587496219b`〉の上、`8cdf37598c`。originに控えあり。kaihatsuには無い・PRなし）。決定: 分母は新A2（発行の分＝表紙の前→最新の純の変化〈買い戻しも引く〉から加重平均に既に入っている分を除く。閾値なし）、TSLA型の差は分母に入れず印（`outstanding_gap_pct`）で出す、Vは yfinance implied を印つき、Q4の株数が無い銘柄は印だけ。
+
+## 実装
+
+- `common/shares_base.py`（新）: 株数 = Wd × (1 + 発行の分 ÷ Wb)。`corrected_shares` が補正の計算の唯一の場所（`|発行の分| ≤ |c1−c0|`＝二重に数えない）。`base_shares` が表紙（dei）の前後・同じ期のWb（`company_facts`の同じ期の Wb÷Wd の比で単位を揃える。LOAR型を避ける）・分割・種類株・年度平均を見て、補正できない時はWdのまま `shares_note` に理由（`no_cover`・`cover_multi_class`・`wd_not_quarterly:…`・`cover_not_after_period_end:…`・`split_after_period_end`・`no_previous_cover`）
+- `common/multiples.py`: 部品の `current` の行の株数＝`base_shares`の値。時価総額（`at_price`）・TANUKIの分母・STONKS・HypeCoreが**同じ値**。月末の行（履歴）は今までどおりWd。印 `shares_wd`・`shares_basis`・`shares_issued`・`shares_note`・`cover_shares`・`outstanding_gap_pct`
+- `data_fetcher._determine_diluted_shares`（分母の唯一の書き手）: 部品の株数を読む（`_shares_source`＝`sec_weighted`／`sec_weighted_plus_issuance`）。部品に株数が無い銘柄（V）は `yf_implied_fallback`（印）。`components` に `shares_wd`・`shares_issued`・`shares_note`・`shares_cover`・`shares_cover_date`・`outstanding_gap_pct`、`report.txt` に `Shares_Basis`・`Shares_OutstandingGap`（表紙が分母より10%超違う時）、`stock.html` の「希薄化後株式数」の下に印
+- `config/method_change.json` に `TANUKI-SHARES-SINGLE-SOURCE-1-1`（scope 96銘柄。`committed_at`は公開前の統合で作り直す）。部品 `docs/common/multiples/*.json`・出力の一覧（tanuki・hypecore・eps・stonks）を作り直し
+- テスト `tests/test_shares_base.py`（11件）: 発行が無ければ補正0・買い戻しで下がる・加重平均に入っている分は足さない・TSLA型は入らない・表の格子で`|発行の分|≤|c1−c0|`・補正の種類の印・LOAR型・部品の株数＝`base_shares`（時価総額と同じ値）・分母の書き手は1か所
+
+## 試算（`tools/sim`、前＝`multiples-adopt-1`、後＝ブランチ、TANUKI→HypeCore→TANUKI、96銘柄）
+
+| 項目 | 前→後 |
+|---|---|
+| 理論株価が変わる | 86銘柄（5%超は9銘柄） |
+| 判定が変わる | 2（CPRT HOLD→TRIM・RMBS WATCH→HOLD） |
+| funda・stage | 変化0・0 |
+| 保有9銘柄の判定 | 変化0。理論株価（前比）: ADBE −0.1・APP −1.0・CELH −0.9・CRWV +0.1・NVDA −0.2・PLTR −6.4・SOFI −4.8・SOUN +11.3・TSLA +11.5 |
+| scope | 96銘柄（理論株価・乖離率・分母の印などが変わる銘柄 90） |
+| 分母の出どころ | `sec_weighted_plus_issuance` 50・`sec_weighted` 45・`yf_implied_fallback` 1（V） |
+| 補正の印 | 表紙が取れず補正なし（`no_cover`）20・年度平均（`wd_not_quarterly`）5・表紙が期末後でない 11 |
+
+### 5%超の9銘柄と判定が変わる2銘柄の理由（原本の値は上の「原本で確かめた一覧」）
+
+| 銘柄 | 理論株価 | 理由 |
+|---|---|---|
+| ASTS | +30.4% | yf implied 390.1（全クラス）→ Wd 299.1。種類株。表紙が`company_facts`に無く補正なし。**SECの取得待ち（次回の確認手順33）** |
+| TSLA（保有） | +11.5% | 3,952.8→3,544.5。表紙の3,953と加重平均の差412Mは未確定の株で、発行でも希薄化後でもない。**入れない**（補正は表紙の増加3.2Mだけ）。印 `outstanding_gap_pct` +11.5%。本文は未確認（SEC取得待ち） |
+| SOUN（保有） | +11.3% | Layer3が1四半期遅れ（Q3の10-Qは11-09提出）。表紙は2022年の旧値のみで補正なし。次の日曜のSEC_Data_Updateで追いつく |
+| LITE | −10.8% | 希薄化証券（転換社債のif-converted +9.2M）。発行の補正は0（表紙の増加1.0Mは基本の加重平均に既に入る） |
+| PAYS | −9.2% | 希薄化証券（+6.1M）。補正 +1.0%（Layer3がQ3未収載のため期末後の発行） |
+| FICO | −7.0% | 年度の平均（Q4の株数が無い）。補正なし・印のみ |
+| PLTR（保有） | −6.4% | 希薄化証券（オプション・RSU +168M）。表紙は次元つきで補正なし |
+| CART | −5.9% | 希薄化証券（希薄化後−基本 14.6M）。補正 +1.6%（表紙 231.5→236.6M） |
+| ALAB | −5.4% | 希薄化証券（+10M） |
+| **CPRT**（判定） | −3.2% | 年度の平均＋希薄化証券。HOLD→TRIMは境目 |
+| **RMBS**（判定） | −1.6% | 希薄化証券（+1.2M）。WATCH→HOLDは境目 |
+
+IONQ・RXRX・ONDS・RCAT・JOBYは期末後・期中の発行を表紙で補い、前の案Aの+11〜16%が+0〜4%へ縮む（RXRX +0.1・IONQ +4.2・JOBY +1.1。ONDS・RCATは試算の表のとおり）。
+
+## DILUTIONとの重なり（`dilution-unify-1`、未公開）
+
+- 株数の元は同じ（Layer3・`shares_by_end`の加重平均の希薄化後・分割換算）。`share_count_change`は補正前のWdの系列でCAGRを出すので変えない（CAGRの端点に表紙の補正を混ぜない）。TANUKI・MULTIPLESの株数だけ `shares_base` の1か所
+- `outstanding_gap_pct`の名前が重なる: DILUTIONの`financial_health.outstanding_gap_pct`は期末の発行済÷加重平均−1（`pipeline.py`・`stock.html`の希薄化の欄）、本件の`components.outstanding_gap_pct`は表紙÷分母−1（分母の欄）。場所が違い衝突しないが、画面の注記が2つ並ぶ。公開後に1つにするかは別の判断（FINDINGS）
+- `pipeline.py`の同じ周辺を触る（`Valuation_Multiples`の下の`Shares_Basis`の行。DILUTIONは希薄化の行）。rebase時に衝突したら両方残す
+
+## 公開の手順（公開の順: PARSER段1 → CONTINUITY → DILUTION → DEFICIT → MULTIPLES → **本件**）
+
+各公開の後、そのたびに:
+
+1. kaihatsuの最新に`tanuki-shares-single-source-1`をrebaseする（`multiples-adopt-1`の公開の後なら`git rebase kaihatsu`。MULTIPLESの公開前に本件だけ先に出さない＝本件は`multiples-adopt-1`の上）
+2. `python common/multiples.py --all` → `python scripts/inventory/build_output_inventory.py --layer {tanuki,hypecore,eps,stonks}`。PARSER段1・CONTINUITYは分母の元（Wd・Wb・TTM）を動かすので、作り直した後に試算し直す
+3. `python tools/sim/sim.py chain before/after`（前＝rebase前のkaihatsu）→ 理論株価・判定の変化が上の表と同じ（PARSER等の前の公開で動いた分は前後で0になる）。`python tools/sim/sim.py scope before after --id TANUKI-SHARES-SINGLE-SOURCE-1-1 --write`で`method_change.json`の`scope`・`committed_at`を作り直す
+4. ゲート（`PYTHONUTF8=1 python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`・`common/sec_data/audit.py`・`report_consistency_check.py --fail-on-ng`）→ kaihatsuに`--no-ff`で統合して`git push`
+5. 連鎖（TANUKI VALUATION → HypeCore → TANUKI、3つ目は手で起動しない）の後、`components._shares_source`が`sec_*`（Vだけ`yf_implied_fallback`）・`method_change`の印がscope銘柄だけに付く・2回目は0件。理論株価の変化が試算（TSLA +11.5・SOUN +11.3・ASTS +30.4等）と一致
+6. 画面・report.txtの目視: TSLAの「希薄化後株式数」の下に「表紙の発行済は +11.5%（分母に入れない）」、`Shares_OutstandingGap`の行
+7. 公開後、BACKLOGの`[[TANUKI-SHARES-SINGLE-SOURCE-1]]`をBACKLOG_DONE.mdへ移設
+
+SECの原本（ASTS・PLTR・SOUNの表紙・TSLAの10-Q本文・IONQ）は`SEC_USER_AGENT_EMAIL`が環境変数にある時だけ取る。無ければ次回の確認手順33に残した。
