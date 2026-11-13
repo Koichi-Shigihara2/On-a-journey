@@ -41,6 +41,7 @@ _REPO_ROOT_FOR_IMPORT = os.path.dirname(os.path.dirname(os.path.dirname(_SCRIPT_
 if _REPO_ROOT_FOR_IMPORT not in sys.path:
     sys.path.insert(0, _REPO_ROOT_FOR_IMPORT)
 from common.sec_data.contracts import Classification  # GATE2-PHASE3B-1③-b
+from common.sec_data.val_guard import rule_text as val_guard_rule_text  # [[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1
 from common.sec_data.basis_mix import NOTE as BASIS_MIX_NOTE  # [[QUARTERLY-BASIS-MIX-1]] ベースが混在の注記
 from common import method_change as _method_change  # 計算方法の変更の印（[[LAYER3-RETENTION-PERIOD-1]]・[[METHOD-CHANGE-PUBLISH-TIMING-1]]）
 from common.sec_data.layer3_builder import (  # フェーズD Step2-1
@@ -2109,6 +2110,11 @@ class TanukiValuationPipeline:
             L.append("  [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途")
             L.append("   加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの")
             L.append("   直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]")
+
+        for _vm in (valuation.get("val_guard_marks") or [])[:5]:
+            L.append(f"Layer3の値の守り ⚠️ {_vm['field']} {_vm['end']}（{_vm['kind']}）: {val_guard_rule_text(_vm['rule'])}"
+                     f"（使用 {_vm['val']:,} / 別の値 {_vm['other']:,}）" if _vm.get("val") is not None and _vm.get("other") is not None
+                     else f"Layer3の値の守り ⚠️ {_vm['field']} {_vm['end']}（{_vm['kind']}）: {val_guard_rule_text(_vm['rule'])}")
 
         if _floor_applied > 0:
             L.append("DCF_Reliability: LOW ⚠️ (FCF実績マイナス: revenue_floor適用, IV参考値)")
