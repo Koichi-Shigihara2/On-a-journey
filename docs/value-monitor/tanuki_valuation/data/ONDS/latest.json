@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -66.2,
-  "calculation_date": "2026-11-16T03:15:28+09:00",
+  "calculation_date": "2026-11-16T03:32:41+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -184,18 +184,24 @@
         {
           "category": "金融関連",
           "item_name": "ローン公正価値評価損益",
+          "amount": 125100000,
+          "reason": "市場金利変動による一時的評価替え"
+        },
+        {
+          "category": "金融関連",
+          "item_name": "ローン公正価値評価損益",
           "amount": 15300000,
           "reason": "市場金利変動による一時的評価替え"
         }
       ],
-      "total_transient_amount": 15300000,
+      "total_transient_amount": 140400000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "市場金利変動による一時的な公正価値評価損で、事業運営の問題や構造的悪化とは無関係。"
+        "reasoning": "市場金利変動による公正価値評価の変動で、事業運営の一時的影響に留まり構造的な収益力悪化とは判断されない。"
       }
     },
     "action": "excluded",
-    "note": "TTM 2026-09-30 FCF($-311.6M)がマイナス。一過性費用合計$15M(金融関連(ローン公正価値評価損益 $15M))による影響と判断し除外。5年平均($-86M)を採用。"
+    "note": "TTM 2026-09-30 FCF($-311.6M)がマイナス。一過性費用合計$140M(金融関連(ローン公正価値評価損益 $125M)、金融関連(ローン公正価値評価損益 $15M))による影響と判断し除外。5年平均($-86M)を採用。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-09-30",
@@ -374,12 +380,12 @@
     "revenue_ttm": 331494120,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 961.0,
-    "max_eps": 0.4556,
-    "max_eps_per": 11.3,
+    "max_eps": 0.5878,
+    "max_eps_per": 8.8,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
-    "max_eps_shares": 582302699,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 451264000.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
