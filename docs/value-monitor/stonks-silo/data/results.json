@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T21:30:26.272091+00:00",
+  "generated_at": "2026-11-15T18:08:27.232587+00:00",
   "tickers": {
     "ASTS": {
       "ticker": "ASTS",
@@ -43,13 +43,13 @@
       },
       "runway": {
         "latest_year": 2025,
-        "cash": 4588253000.0,
+        "cash": 5298911000.0,
         "monthly_burn": -94688166.66666667,
-        "runway_months": 48.45645619216762,
+        "runway_months": 55.961702359851365,
         "ocf_annual": -71517000,
         "capex_annual": 1064741000,
         "verdict": "SAFE",
-        "verdict_reason": "Runway 48ヶ月（2年超）",
+        "verdict_reason": "Runway 56ヶ月（2年超）",
         "score": 100.0,
         "sti_quarterly_missing": false
       },
@@ -104,7 +104,7 @@
       },
       "overall_score": 67.0,
       "overall_verdict": "PROMISING",
-      "summary": "【総合スコア判定根拠】\n\n赤字品質 55点　（成長・投資のバランス要確認）\n• 売上成長率 72.5%　→　極めて強い成長エンジン\n• 研究開発+販管費 39.6%　→　標準的な投資水準\n• 粗利率 N/A%　→　データなし\n\n生存能力 100点　（極めて安全水準）\n• 現金 $4.6B・月次バーン $-95M/月　→　ランウェイ48ヶ月確保\n\n黒字化パス 50点　（推定不能: OCF加速中（上限50））\n• 営業CFトレンド（金額） 加速中\n• 営業CF黒字化：データ不足\n• 純利益：NO_TREND:-229%→-482%",
+      "summary": "【総合スコア判定根拠】\n\n赤字品質 55点　（成長・投資のバランス要確認）\n• 売上成長率 72.5%　→　極めて強い成長エンジン\n• 研究開発+販管費 39.6%　→　標準的な投資水準\n• 粗利率 N/A%　→　データなし\n\n生存能力 100点　（極めて安全水準）\n• 現金 $5.3B・月次バーン $-95M/月　→　ランウェイ56ヶ月確保\n\n黒字化パス 50点　（推定不能: OCF加速中（上限50））\n• 営業CFトレンド（金額） 加速中\n• 営業CF黒字化：データ不足\n• 純利益：NO_TREND:-229%→-482%",
       "records": {
         "2021": {
           "revenue": 12405000,
@@ -132,30 +132,25 @@
         "current_price": 32.599998474121094,
         "enterprise_value": 12768191488,
         "total_debt": 4118731008,
-        "psr": 123.9,
-        "ev_sales": 110.7,
-        "sales_basis": "TTM 2026-06-30",
-        "net_cash": 1616337000.0,
-        "fetched_at": "2026-11-13T21:30:26.272620+00:00",
+        "psr": 100.0,
+        "ev_sales": 89.4,
+        "sales_basis": "TTM 2026-09-30",
+        "net_cash": 1206414000.0,
+        "fetched_at": "2026-11-15T18:08:27.233051+00:00",
         "error": null
       },
       "financial_as_of": {
-        "latest_quarter_end": "2026-06-30",
+        "latest_quarter_end": "2026-09-30",
         "scoring_fy": 2025,
         "scoring_fy_end": "2025-12-31",
-        "stale": true,
+        "stale": false,
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.240763+00:00",
+        "updated_at": "2026-11-15T18:08:30.098957+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 1100000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -190,26 +185,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 31520000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 42321000
               }
             ],
             "yoy": {
-              "length": 0.916,
-              "percentile": 95.8,
-              "change_pct": 2626.6,
-              "val_latest": 31520000,
-              "val_prev": 1156000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.416,
+              "percentile": 70.8,
+              "change_pct": 187.1,
+              "val_latest": 42321000,
+              "val_prev": 14739000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.75,
-              "percentile": 87.5,
-              "change_pct": 113.9,
-              "val_latest": 31520000,
-              "val_prev": 14735000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.334,
+              "percentile": 66.7,
+              "change_pct": 34.3,
+              "val_latest": 42321000,
+              "val_prev": 31520000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "GrossProfit": {
@@ -224,11 +224,6 @@
           },
           "RD": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 14724000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -263,35 +258,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 7768000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 9094000
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 29.2,
-              "change_pct": 21.5,
-              "val_latest": 7768000,
-              "val_prev": 6393000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.25,
+              "percentile": 62.5,
+              "change_pct": 64.4,
+              "val_latest": 9094000,
+              "val_prev": 5530000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 54.2,
-              "change_pct": 9.0,
-              "val_latest": 7768000,
-              "val_prev": 7129000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.334,
+              "percentile": 66.7,
+              "change_pct": 17.1,
+              "val_latest": 9094000,
+              "val_prev": 7768000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "NetIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -171946000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -326,35 +321,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -230909000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -132380000
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 25.0,
-              "change_pct": -132.3,
-              "val_latest": -230909000,
-              "val_prev": -99394000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.25,
+              "percentile": 37.5,
+              "change_pct": -7.7,
+              "val_latest": -132380000,
+              "val_prev": -122874000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.0,
-              "percentile": 50.0,
-              "change_pct": -20.9,
-              "val_latest": -230909000,
-              "val_prev": -191012000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.416,
+              "percentile": 70.8,
+              "change_pct": 42.7,
+              "val_latest": -132380000,
+              "val_prev": -230909000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OCF": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -33429000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -389,35 +384,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -97154000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -169265000
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 25.0,
-              "change_pct": -123.5,
-              "val_latest": -97154000,
-              "val_prev": -43478000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.666,
+              "percentile": 16.7,
+              "change_pct": -162.6,
+              "val_latest": -169265000,
+              "val_prev": -64462000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.666,
-              "percentile": 16.7,
-              "change_pct": -102.2,
-              "val_latest": -97154000,
-              "val_prev": -48058000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.5,
+              "percentile": 25.0,
+              "change_pct": -74.2,
+              "val_latest": -169265000,
+              "val_prev": -97154000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "CapEx": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 30325000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -452,26 +447,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 597616000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 294981000
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 54.2,
-              "change_pct": 92.7,
-              "val_latest": 597616000,
-              "val_prev": 310166000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.416,
+              "percentile": 29.2,
+              "change_pct": 23.7,
+              "val_latest": 294981000,
+              "val_prev": 238423000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 75.0,
-              "change_pct": 128.4,
-              "val_latest": 597616000,
-              "val_prev": 261599000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.75,
+              "percentile": 12.5,
+              "change_pct": -50.6,
+              "val_latest": 294981000,
+              "val_prev": 597616000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           }
         }
@@ -612,7 +612,7 @@
         "ev_sales": 3.3,
         "sales_basis": "TTM 2026-08-01",
         "net_cash": -149830000.0,
-        "fetched_at": "2026-11-13T21:30:26.585847+00:00",
+        "fetched_at": "2026-11-15T18:08:27.369084+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -623,7 +623,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.241027+00:00",
+        "updated_at": "2026-11-15T18:08:30.099275+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -669,8 +669,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 16.7,
+              "length": 0.834,
+              "percentile": 8.3,
               "change_pct": 5.7,
               "val_latest": 480490000,
               "val_prev": 454676000,
@@ -679,8 +679,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.916,
-              "percentile": 4.2,
+              "length": 1.0,
+              "percentile": 0.0,
               "change_pct": -25.1,
               "val_latest": 480490000,
               "val_prev": 641616000,
@@ -742,8 +742,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.914,
-              "percentile": 4.3,
+              "length": 1.0,
+              "percentile": 0.0,
               "change_pct": -38.5,
               "val_latest": 124599000,
               "val_prev": 202625000,
@@ -795,8 +795,8 @@
               }
             ],
             "yoy": {
-              "length": 0.74,
-              "percentile": 87.0,
+              "length": 0.652,
+              "percentile": 82.6,
               "change_pct": 84.3,
               "val_latest": -10871000,
               "val_prev": -69272000,
@@ -805,8 +805,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.652,
-              "percentile": 17.4,
+              "length": 0.74,
+              "percentile": 13.0,
               "change_pct": -119.1,
               "val_latest": -10871000,
               "val_prev": 56941000,
@@ -921,8 +921,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.584,
+              "percentile": 79.2,
               "change_pct": 92.5,
               "val_latest": -5066000,
               "val_prev": -67370000,
@@ -931,8 +931,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 20.8,
+              "length": 0.666,
+              "percentile": 16.7,
               "change_pct": -108.0,
               "val_latest": -5066000,
               "val_prev": 63174000,
@@ -994,8 +994,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 25.0,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": -85.9,
               "val_latest": 13496000,
               "val_prev": 95513000.0,
@@ -1047,8 +1047,8 @@
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 37.5,
+              "length": 0.166,
+              "percentile": 41.7,
               "change_pct": 54.2,
               "val_latest": 49450000,
               "val_prev": 32068000,
@@ -1057,8 +1057,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 70.8,
+              "length": 0.5,
+              "percentile": 75.0,
               "change_pct": 116.8,
               "val_latest": 49450000,
               "val_prev": 22809000.0,
@@ -1204,7 +1204,7 @@
         "ev_sales": 5.9,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 269105000.0,
-        "fetched_at": "2026-11-13T21:30:26.700853+00:00",
+        "fetched_at": "2026-11-15T18:08:27.466697+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -1215,7 +1215,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.241203+00:00",
+        "updated_at": "2026-11-15T18:08:30.099530+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -1261,8 +1261,8 @@
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": 31.5,
               "val_latest": 43581000,
               "val_prev": 33143000,
@@ -1387,8 +1387,8 @@
               }
             ],
             "yoy": {
-              "length": 0.826,
-              "percentile": 8.7,
+              "length": 0.914,
+              "percentile": 4.3,
               "change_pct": -357.2,
               "val_latest": -99959000,
               "val_prev": -21861000,
@@ -1397,8 +1397,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.826,
-              "percentile": 8.7,
+              "length": 0.914,
+              "percentile": 4.3,
               "change_pct": -250.0,
               "val_latest": -99959000,
               "val_prev": -28558000,
@@ -1450,8 +1450,8 @@
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 70.8,
+              "length": 0.166,
+              "percentile": 58.3,
               "change_pct": 59.6,
               "val_latest": 5385000,
               "val_prev": 3375000,
@@ -1576,8 +1576,8 @@
               }
             ],
             "yoy": {
-              "length": 0.0,
-              "percentile": 50.0,
+              "length": 0.084,
+              "percentile": 45.8,
               "change_pct": 0.4,
               "val_latest": -9550000,
               "val_prev": -9585000,
@@ -1586,8 +1586,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.834,
-              "percentile": 91.7,
+              "length": 0.584,
+              "percentile": 79.2,
               "change_pct": 57.0,
               "val_latest": -9550000,
               "val_prev": -22207000,
@@ -1649,8 +1649,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 20.8,
+              "length": 0.666,
+              "percentile": 16.7,
               "change_pct": -22.8,
               "val_latest": 244000,
               "val_prev": 316000,
@@ -1701,13 +1701,13 @@
       },
       "runway": {
         "latest_year": 2025,
-        "cash": 5539000000.0,
+        "cash": 4184000000.0,
         "monthly_burn": -604250000.0,
-        "runway_months": 9.166735622672736,
+        "runway_months": 6.924286305337195,
         "ocf_annual": 3058000000,
         "capex_annual": 10309000000,
         "verdict": "DANGER",
-        "verdict_reason": "Runway 9ヶ月（1年未満）危険",
+        "verdict_reason": "Runway 7ヶ月（1年未満）危険",
         "score": 20.0,
         "sti_quarterly_missing": false
       },
@@ -1758,7 +1758,7 @@
       },
       "overall_score": 48.0,
       "overall_verdict": "WATCH",
-      "summary": "【総合スコア判定根拠】\n\n赤字品質 30点　（採算性に懸念）\n• 売上成長率 N/A%　→　計算不可\n• 研究開発+販管費 9.7%　→　投資水準は低め\n• 粗利率 71.7%　→　高収益ビジネスモデル\n• 純利益マージン改善: -45.1%→-22.7%（+22.3pt/年）\n\n生存能力 20点　（危険水準）\n• 現金 $5.5B・月次バーン $-604M/月　→　ランウェイ9ヶ月確保\n\n黒字化パス 100点　（OCF達成済）\n• 営業CFトレンド（金額） 改善中\n• 営業CF黒字：達成済み\n• 純利益黒字化予測：2026年頃",
+      "summary": "【総合スコア判定根拠】\n\n赤字品質 30点　（採算性に懸念）\n• 売上成長率 N/A%　→　計算不可\n• 研究開発+販管費 9.7%　→　投資水準は低め\n• 粗利率 71.7%　→　高収益ビジネスモデル\n• 純利益マージン改善: -45.1%→-22.7%（+22.3pt/年）\n\n生存能力 20点　（危険水準）\n• 現金 $4.2B・月次バーン $-604M/月　→　ランウェイ7ヶ月確保\n\n黒字化パス 100点　（OCF達成済）\n• 営業CFトレンド（金額） 改善中\n• 営業CF黒字：達成済み\n• 純利益黒字化予測：2026年頃",
       "records": {
         "2022": {
           "revenue": null,
@@ -1782,30 +1782,25 @@
         "current_price": 53.130001068115234,
         "enterprise_value": 96005431296,
         "total_debt": 66218999808,
-        "psr": 4.4,
-        "ev_sales": 12.6,
-        "sales_basis": "TTM 2026-06-30",
-        "net_cash": -29750000000.0,
-        "fetched_at": "2026-11-13T21:30:26.787511+00:00",
+        "psr": 3.4,
+        "ev_sales": 9.7,
+        "sales_basis": "TTM 2026-09-30",
+        "net_cash": -43338000000.0,
+        "fetched_at": "2026-11-15T18:08:27.566732+00:00",
         "error": null
       },
       "financial_as_of": {
-        "latest_quarter_end": "2026-06-30",
+        "latest_quarter_end": "2026-09-30",
         "scoring_fy": 2025,
         "scoring_fy_end": "2025-12-31",
-        "stale": true,
+        "stale": false,
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.241349+00:00",
+        "updated_at": "2026-11-15T18:08:30.099732+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 583941000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -1824,7 +1819,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 1364676000
+                "val": 1365000000
               },
               {
                 "end": "2025-12-31",
@@ -1840,35 +1835,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 2575000000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 3661000000
               }
             ],
             "yoy": {
               "length": 0.334,
               "percentile": 66.7,
-              "change_pct": 112.5,
-              "val_latest": 2575000000,
-              "val_prev": 1212000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": 168.2,
+              "val_latest": 3661000000,
+              "val_prev": 1365000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 62.5,
-              "change_pct": 23.9,
-              "val_latest": 2575000000,
-              "val_prev": 2078000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.416,
+              "percentile": 70.8,
+              "change_pct": 42.2,
+              "val_latest": 3661000000,
+              "val_prev": 2575000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "GrossProfit": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 440807000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -1887,7 +1882,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 995852000
+                "val": 996000000
               },
               {
                 "end": "2025-12-31",
@@ -1903,35 +1898,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 1696000000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 2478000000
               }
             ],
             "yoy": {
-              "length": 0.392,
-              "percentile": 69.6,
-              "change_pct": 88.7,
-              "val_latest": 1696000000,
-              "val_prev": 899000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.566,
+              "percentile": 78.3,
+              "change_pct": 148.8,
+              "val_latest": 2478000000,
+              "val_prev": 996000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.304,
-              "percentile": 65.2,
-              "change_pct": 24.5,
-              "val_latest": 1696000000,
-              "val_prev": 1362000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.392,
+              "percentile": 69.6,
+              "change_pct": 46.1,
+              "val_latest": 2478000000,
+              "val_prev": 1696000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OperatingIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 117116000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -1950,7 +1945,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 51850000
+                "val": 52000000
               },
               {
                 "end": "2025-12-31",
@@ -1966,35 +1961,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -49000000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 207000000
               }
             ],
             "yoy": {
               "length": 0.914,
-              "percentile": 4.3,
-              "change_pct": -357.9,
-              "val_latest": -49000000,
-              "val_prev": 19000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "percentile": 95.7,
+              "change_pct": 298.1,
+              "val_latest": 207000000,
+              "val_prev": 52000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.74,
-              "percentile": 87.0,
-              "change_pct": 66.0,
-              "val_latest": -49000000,
-              "val_prev": -144000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.914,
+              "percentile": 95.7,
+              "change_pct": 522.4,
+              "val_latest": 207000000,
+              "val_prev": -49000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "RD": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 14000000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -2029,35 +2024,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 117000000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 154000000
               }
             ],
             "yoy": {
               "length": 0.334,
               "percentile": 66.7,
-              "change_pct": 46.2,
-              "val_latest": 117000000,
-              "val_prev": 80000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": 65.6,
+              "val_latest": 154000000,
+              "val_prev": 93000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 70.8,
-              "change_pct": 12.5,
-              "val_latest": 117000000,
-              "val_prev": 104000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.5,
+              "percentile": 75.0,
+              "change_pct": 31.6,
+              "val_latest": 154000000,
+              "val_prev": 117000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "NetIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -359807000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -2065,18 +2060,18 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -315000000
               },
               {
                 "end": "2025-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -290000000
               },
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": -110124000
+                "val": -110000000
               },
               {
                 "end": "2025-12-31",
@@ -2085,42 +2080,42 @@
               },
               {
                 "end": "2026-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -740000000
               },
               {
                 "end": "2026-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -626000000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -709000000
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 37.5,
-              "change_pct": -115.9,
-              "val_latest": -626000000,
-              "val_prev": -290000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.75,
+              "percentile": 12.5,
+              "change_pct": -544.5,
+              "val_latest": -709000000,
+              "val_prev": -110000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 66.7,
-              "change_pct": 15.4,
-              "val_latest": -626000000,
-              "val_prev": -740000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.084,
+              "percentile": 45.8,
+              "change_pct": -13.3,
+              "val_latest": -709000000,
+              "val_prev": -626000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OCF": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 641222000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -2139,7 +2134,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 1689051000
+                "val": 1689000000
               },
               {
                 "end": "2025-12-31",
@@ -2155,35 +2150,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 679000000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 1975000000
               }
             ],
             "yoy": {
-              "length": 0.916,
-              "percentile": 95.8,
-              "change_pct": 370.5,
-              "val_latest": 679000000,
-              "val_prev": -251000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.166,
+              "percentile": 58.3,
+              "change_pct": 16.9,
+              "val_latest": 1975000000,
+              "val_prev": 1689000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 29.2,
-              "change_pct": -77.2,
-              "val_latest": 679000000,
-              "val_prev": 2984000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.916,
+              "percentile": 95.8,
+              "change_pct": 190.9,
+              "val_latest": 1975000000,
+              "val_prev": 679000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "CapEx": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 1215155000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -2202,7 +2197,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 2389239000
+                "val": 2389000000
               },
               {
                 "end": "2025-12-31",
@@ -2218,26 +2213,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 6422000000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 9441000000
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 70.8,
-              "change_pct": 161.8,
-              "val_latest": 6422000000,
-              "val_prev": 2453000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.5,
+              "percentile": 75.0,
+              "change_pct": 295.2,
+              "val_latest": 9441000000,
+              "val_prev": 2389000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 29.2,
-              "change_pct": -16.5,
-              "val_latest": 6422000000,
-              "val_prev": 7695000000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.25,
+              "percentile": 62.5,
+              "change_pct": 47.0,
+              "val_latest": 9441000000,
+              "val_prev": 6422000000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           }
         }
@@ -2378,7 +2378,7 @@
         "ev_sales": 4.6,
         "sales_basis": "TTM 2026-07-31",
         "net_cash": 889847000.0,
-        "fetched_at": "2026-11-13T21:30:26.808299+00:00",
+        "fetched_at": "2026-11-15T18:08:27.587085+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -2389,7 +2389,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.241574+00:00",
+        "updated_at": "2026-11-15T18:08:30.100026+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -2435,8 +2435,8 @@
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 25.0,
+              "length": 0.666,
+              "percentile": 16.7,
               "change_pct": 15.1,
               "val_latest": 478113000,
               "val_prev": 415288000,
@@ -2445,8 +2445,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 25.0,
+              "length": 0.416,
+              "percentile": 29.2,
               "change_pct": 6.1,
               "val_latest": 478113000,
               "val_prev": 450681000,
@@ -2498,8 +2498,8 @@
               }
             ],
             "yoy": {
-              "length": 0.74,
-              "percentile": 13.0,
+              "length": 0.826,
+              "percentile": 8.7,
               "change_pct": 11.8,
               "val_latest": 356188000,
               "val_prev": 318542000,
@@ -2561,8 +2561,8 @@
               }
             ],
             "yoy": {
-              "length": 0.392,
-              "percentile": 30.4,
+              "length": 0.478,
+              "percentile": 26.1,
               "change_pct": -149.7,
               "val_latest": -23574000,
               "val_prev": -9440000,
@@ -2571,8 +2571,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.392,
-              "percentile": 30.4,
+              "length": 0.652,
+              "percentile": 17.4,
               "change_pct": -43.6,
               "val_latest": -23574000,
               "val_prev": -16411000,
@@ -2687,8 +2687,8 @@
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 54.2,
+              "length": 0.0,
+              "percentile": 50.0,
               "change_pct": 32.0,
               "val_latest": -16729000,
               "val_prev": -24603000,
@@ -2697,8 +2697,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 25.0,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": -103.8,
               "val_latest": -16729000,
               "val_prev": 435900000,
@@ -2760,8 +2760,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.0,
-              "percentile": 50.0,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": -13.6,
               "val_latest": 132004000,
               "val_prev": 152710000.0,
@@ -2823,8 +2823,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.834,
-              "percentile": 8.3,
+              "length": 0.916,
+              "percentile": 4.2,
               "change_pct": -79.6,
               "val_latest": 590000,
               "val_prev": 2895000.0,
@@ -2970,7 +2970,7 @@
         "ev_sales": 6.3,
         "sales_basis": "TTM 2026-07-31",
         "net_cash": 1256986000.0,
-        "fetched_at": "2026-11-13T21:30:26.874584+00:00",
+        "fetched_at": "2026-11-15T18:08:27.645201+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -2981,7 +2981,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.241776+00:00",
+        "updated_at": "2026-11-15T18:08:30.100274+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -3027,8 +3027,8 @@
               }
             ],
             "yoy": {
-              "length": 0.334,
-              "percentile": 33.3,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": 21.3,
               "val_latest": 286254000,
               "val_prev": 235960000,
@@ -3037,8 +3037,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 33.3,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": 8.4,
               "val_latest": 286254000,
               "val_prev": 264158000,
@@ -3090,8 +3090,8 @@
               }
             ],
             "yoy": {
-              "length": 0.566,
-              "percentile": 21.7,
+              "length": 0.652,
+              "percentile": 17.4,
               "change_pct": 16.0,
               "val_latest": 240616000,
               "val_prev": 207455000,
@@ -3153,8 +3153,8 @@
               }
             ],
             "yoy": {
-              "length": 0.74,
-              "percentile": 13.0,
+              "length": 0.826,
+              "percentile": 8.7,
               "change_pct": -210.3,
               "val_latest": -56935000,
               "val_prev": -18351000,
@@ -3163,8 +3163,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.914,
-              "percentile": 4.3,
+              "length": 1.0,
+              "percentile": 0.0,
               "change_pct": -261.5,
               "val_latest": -56935000,
               "val_prev": -15749000,
@@ -3216,8 +3216,8 @@
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.416,
+              "percentile": 29.2,
               "change_pct": 32.9,
               "val_latest": 94980000,
               "val_prev": 71488000,
@@ -3279,8 +3279,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 16.7,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": -300.1,
               "val_latest": -36844000,
               "val_prev": -9208000,
@@ -3342,8 +3342,8 @@
               }
             ],
             "yoy": {
-              "length": 0.334,
-              "percentile": 33.3,
+              "length": 0.416,
+              "percentile": 29.2,
               "change_pct": -106.3,
               "val_latest": -3092000,
               "val_prev": 49369000,
@@ -3352,8 +3352,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 20.8,
+              "length": 0.666,
+              "percentile": 16.7,
               "change_pct": -102.1,
               "val_latest": -3092000,
               "val_prev": 149197000,
@@ -3564,7 +3564,7 @@
         "ev_sales": 36.4,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 903910000.0,
-        "fetched_at": "2026-11-13T21:30:26.927444+00:00",
+        "fetched_at": "2026-11-15T18:08:27.695061+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -3575,7 +3575,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.241967+00:00",
+        "updated_at": "2026-11-15T18:08:30.100524+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -3621,8 +3621,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.75,
+              "percentile": 87.5,
               "change_pct": 336.0,
               "val_latest": 173831000,
               "val_prev": 39866000,
@@ -3631,8 +3631,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.834,
-              "percentile": 91.7,
+              "length": 0.75,
+              "percentile": 87.5,
               "change_pct": 117.2,
               "val_latest": 173831000,
               "val_prev": 80050000,
@@ -3684,8 +3684,8 @@
               }
             ],
             "yoy": {
-              "length": 0.478,
-              "percentile": 73.9,
+              "length": 0.392,
+              "percentile": 69.6,
               "change_pct": 104.3,
               "val_latest": 38027000,
               "val_prev": 18613000,
@@ -3747,8 +3747,8 @@
               }
             ],
             "yoy": {
-              "length": 0.478,
-              "percentile": 26.1,
+              "length": 0.566,
+              "percentile": 21.7,
               "change_pct": -156.5,
               "val_latest": -433075000,
               "val_prev": -168813000,
@@ -3757,8 +3757,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.13,
-              "percentile": 43.5,
+              "length": 0.304,
+              "percentile": 34.8,
               "change_pct": -28.4,
               "val_latest": -433075000,
               "val_prev": -337243000,
@@ -3810,8 +3810,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.584,
+              "percentile": 79.2,
               "change_pct": 113.7,
               "val_latest": 141670000,
               "val_prev": 66298000,
@@ -3873,8 +3873,8 @@
               }
             ],
             "yoy": {
-              "length": 0.834,
-              "percentile": 91.7,
+              "length": 0.75,
+              "percentile": 87.5,
               "change_pct": 153.5,
               "val_latest": 563957000,
               "val_prev": -1054955000,
@@ -4156,7 +4156,7 @@
         "ev_sales": 30.4,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 1481471000.0,
-        "fetched_at": "2026-11-13T21:30:26.982910+00:00",
+        "fetched_at": "2026-11-15T18:08:27.749341+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -4167,7 +4167,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.242135+00:00",
+        "updated_at": "2026-11-15T18:08:30.100741+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -4213,8 +4213,8 @@
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 70.8,
+              "length": 0.25,
+              "percentile": 62.5,
               "change_pct": 144.0,
               "val_latest": 55089000,
               "val_prev": 22574000,
@@ -4339,8 +4339,8 @@
               }
             ],
             "yoy": {
-              "length": 0.13,
-              "percentile": 43.5,
+              "length": 0.218,
+              "percentile": 39.1,
               "change_pct": -53.1,
               "val_latest": -278097000,
               "val_prev": -181667000,
@@ -4349,8 +4349,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.13,
-              "percentile": 56.5,
+              "length": 0.044,
+              "percentile": 52.2,
               "change_pct": -6.6,
               "val_latest": -278097000,
               "val_prev": -260883000,
@@ -4402,8 +4402,8 @@
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 62.5,
+              "length": 0.084,
+              "percentile": 54.2,
               "change_pct": 39.8,
               "val_latest": 208599000,
               "val_prev": 149163000,
@@ -4412,8 +4412,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.0,
-              "percentile": 50.0,
+              "length": 0.166,
+              "percentile": 41.7,
               "change_pct": 7.2,
               "val_latest": 208599000,
               "val_prev": 194662000,
@@ -4465,8 +4465,8 @@
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 70.8,
+              "length": 0.25,
+              "percentile": 62.5,
               "change_pct": 47.2,
               "val_latest": -211830000,
               "val_prev": -401226000,
@@ -4528,8 +4528,8 @@
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": -21.2,
               "val_latest": -168637000,
               "val_prev": -139193000,
@@ -4538,8 +4538,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 66.7,
+              "length": 0.166,
+              "percentile": 58.3,
               "change_pct": 2.6,
               "val_latest": -168637000,
               "val_prev": -173143000,
@@ -4591,8 +4591,8 @@
               }
             ],
             "yoy": {
-              "length": 0.0,
-              "percentile": 50.0,
+              "length": 0.084,
+              "percentile": 54.2,
               "change_pct": 90.0,
               "val_latest": 24740000,
               "val_prev": 13020000,
@@ -4601,8 +4601,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.166,
+              "percentile": 41.7,
               "change_pct": -13.6,
               "val_latest": 24740000,
               "val_prev": 28639000,
@@ -4748,7 +4748,7 @@
         "ev_sales": 41.2,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 686793000.0,
-        "fetched_at": "2026-11-13T21:30:27.038077+00:00",
+        "fetched_at": "2026-11-15T18:08:27.799273+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -4759,7 +4759,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.242347+00:00",
+        "updated_at": "2026-11-15T18:08:30.101009+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -4806,7 +4806,7 @@
             ],
             "yoy": {
               "length": 0.084,
-              "percentile": 54.2,
+              "percentile": 45.8,
               "change_pct": 39.2,
               "val_latest": 782513000,
               "val_prev": 562027000,
@@ -4815,8 +4815,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.0,
+              "percentile": 50.0,
               "change_pct": 12.4,
               "val_latest": 782513000,
               "val_prev": 696061000,
@@ -4931,8 +4931,8 @@
               }
             ],
             "yoy": {
-              "length": 0.218,
-              "percentile": 39.1,
+              "length": 0.304,
+              "percentile": 34.8,
               "change_pct": -81.3,
               "val_latest": -67926000,
               "val_prev": -37460000,
@@ -4941,8 +4941,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.826,
-              "percentile": 91.3,
+              "length": 0.74,
+              "percentile": 87.0,
               "change_pct": 67.0,
               "val_latest": -67926000,
               "val_prev": -205696000,
@@ -4994,8 +4994,8 @@
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 58.3,
+              "length": 0.084,
+              "percentile": 45.8,
               "change_pct": 39.1,
               "val_latest": 168204000,
               "val_prev": 120956000,
@@ -5004,8 +5004,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": 5.5,
               "val_latest": 168204000,
               "val_prev": 159486000,
@@ -5067,8 +5067,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.75,
-              "percentile": 87.5,
+              "length": 0.666,
+              "percentile": 83.3,
               "change_pct": 80.0,
               "val_latest": -34065000,
               "val_prev": -169981000,
@@ -5130,8 +5130,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.916,
-              "percentile": 95.8,
+              "length": 0.75,
+              "percentile": 87.5,
               "change_pct": 83.2,
               "val_latest": 215365000,
               "val_prev": 117564000,
@@ -5183,8 +5183,8 @@
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 29.2,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": 43.9,
               "val_latest": 121809000,
               "val_prev": 84641000,
@@ -5247,13 +5247,13 @@
       },
       "runway": {
         "latest_year": 2025,
-        "cash": 1384493000.0,
+        "cash": 788873000.0,
         "monthly_burn": -3401500.0,
-        "runway_months": 407.02425400558576,
+        "runway_months": 231.9191533147141,
         "ocf_annual": -38746000,
         "capex_annual": 2072000,
         "verdict": "SAFE",
-        "verdict_reason": "Runway 407ヶ月（2年超）",
+        "verdict_reason": "Runway 232ヶ月（2年超）",
         "score": 100.0,
         "sti_quarterly_missing": false
       },
@@ -5308,7 +5308,7 @@
       },
       "overall_score": 82.7,
       "overall_verdict": "10x_CANDIDATE",
-      "summary": "【総合スコア判定根拠】\n\n赤字品質 83点　（高成長×積極投資の好例）\n• 売上成長率 187.9%　→　極めて強い成長エンジン\n• 研究開発+販管費 67.2%　→　将来への戦略的投資を継続\n• 粗利率 39.7%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -528.4%→-260.7%（+267.8pt/年）\n\n生存能力 100点　（極めて安全水準）\n• 現金 $1.4B・月次バーン $-3M/月　→　ランウェイ407ヶ月確保\n\n黒字化パス 65点　（OCF黒字化 2028年（3年後））\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化予測：2028年頃\n• 純利益黒字化予測不可",
+      "summary": "【総合スコア判定根拠】\n\n赤字品質 83点　（高成長×積極投資の好例）\n• 売上成長率 187.9%　→　極めて強い成長エンジン\n• 研究開発+販管費 67.2%　→　将来への戦略的投資を継続\n• 粗利率 39.7%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -528.4%→-260.7%（+267.8pt/年）\n\n生存能力 100点　（極めて安全水準）\n• 現金 $789M・月次バーン $-3M/月　→　ランウェイ232ヶ月確保\n\n黒字化パス 65点　（OCF黒字化 2028年（3年後））\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化予測：2028年頃\n• 純利益黒字化予測不可",
       "records": {
         "2021": {
           "revenue": 2906771,
@@ -5336,30 +5336,25 @@
         "current_price": 5.159999847412109,
         "enterprise_value": 1931452928,
         "total_debt": 41096000,
-        "psr": 19.2,
-        "ev_sales": 11.1,
-        "sales_basis": "TTM 2026-06-30",
-        "net_cash": 1379841000.0,
-        "fetched_at": "2026-11-13T21:30:27.101495+00:00",
+        "psr": 10.1,
+        "ev_sales": 5.8,
+        "sales_basis": "TTM 2026-09-30",
+        "net_cash": 783827000.0,
+        "fetched_at": "2026-11-15T18:08:27.858034+00:00",
         "error": null
       },
       "financial_as_of": {
-        "latest_quarter_end": "2026-06-30",
+        "latest_quarter_end": "2026-09-30",
         "scoring_fy": 2025,
         "scoring_fy_end": "2025-12-31",
-        "stale": true,
+        "stale": false,
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.242570+00:00",
+        "updated_at": "2026-11-15T18:08:30.101287+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 1480792
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -5378,7 +5373,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 10098310
+                "val": 10098000
               },
               {
                 "end": "2025-12-31",
@@ -5394,35 +5389,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 83772000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 167489000
               }
             ],
             "yoy": {
-              "length": 0.834,
-              "percentile": 91.7,
-              "change_pct": 1235.4,
-              "val_latest": 83772000,
-              "val_prev": 6273000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.916,
+              "percentile": 95.8,
+              "change_pct": 1558.6,
+              "val_latest": 167489000,
+              "val_prev": 10098000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 79.2,
-              "change_pct": 67.1,
-              "val_latest": 83772000,
-              "val_prev": 50122000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.666,
+              "percentile": 83.3,
+              "change_pct": 99.9,
+              "val_latest": 167489000,
+              "val_prev": 83772000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "GrossProfit": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 47560
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -5441,7 +5436,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 2604395
+                "val": 2604000
               },
               {
                 "end": "2025-12-31",
@@ -5457,35 +5452,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 36131000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 36500000
               }
             ],
             "yoy": {
               "length": 0.914,
               "percentile": 95.7,
-              "change_pct": 984.4,
-              "val_latest": 36131000,
-              "val_prev": 3332000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": 1301.7,
+              "val_latest": 36500000,
+              "val_prev": 2604000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.392,
-              "percentile": 69.6,
-              "change_pct": 46.5,
-              "val_latest": 36131000,
-              "val_prev": 24658000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.74,
+              "percentile": 13.0,
+              "change_pct": 1.0,
+              "val_latest": 36500000,
+              "val_prev": 36131000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OperatingIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -8660715
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -5504,7 +5499,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": -15503550
+                "val": -15504000
               },
               {
                 "end": "2025-12-31",
@@ -5520,35 +5515,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -162946000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -189506000
               }
             ],
             "yoy": {
               "length": 1.0,
               "percentile": 0.0,
-              "change_pct": -1661.6,
-              "val_latest": -162946000,
-              "val_prev": -9250000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": -1122.3,
+              "val_latest": -189506000,
+              "val_prev": -15504000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 1.0,
-              "percentile": 0.0,
-              "change_pct": -281.9,
-              "val_latest": -162946000,
-              "val_prev": -42671000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.13,
+              "percentile": 43.5,
+              "change_pct": -16.3,
+              "val_latest": -189506000,
+              "val_prev": -162946000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "RD": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 3182345
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -5567,7 +5562,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 4512756
+                "val": 4513000
               },
               {
                 "end": "2025-12-31",
@@ -5583,35 +5578,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 30953000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 61594000
               }
             ],
             "yoy": {
               "length": 0.916,
               "percentile": 95.8,
-              "change_pct": 630.5,
-              "val_latest": 30953000,
-              "val_prev": 4237000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": 1264.8,
+              "val_latest": 61594000,
+              "val_prev": 4513000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
               "length": 0.916,
               "percentile": 95.8,
-              "change_pct": 129.0,
-              "val_latest": 30953000,
-              "val_prev": 13519000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "change_pct": 99.0,
+              "val_latest": 61594000,
+              "val_prev": 30953000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "NetIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -9526268
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -5619,18 +5614,18 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -14136000
               },
               {
                 "end": "2025-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -10750000
               },
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": -7480856
+                "val": -7481000
               },
               {
                 "end": "2025-12-31",
@@ -5639,42 +5634,42 @@
               },
               {
                 "end": "2026-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": 362796000
               },
               {
                 "end": "2026-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -88392000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -64672000
               }
             ],
             "yoy": {
               "length": 0.834,
               "percentile": 8.3,
-              "change_pct": -722.3,
-              "val_latest": -88392000,
-              "val_prev": -10750000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": -764.5,
+              "val_latest": -64672000,
+              "val_prev": -7481000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.75,
-              "percentile": 12.5,
-              "change_pct": -124.4,
-              "val_latest": -88392000,
-              "val_prev": 362796000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.334,
+              "percentile": 66.7,
+              "change_pct": 26.8,
+              "val_latest": -64672000,
+              "val_prev": -88392000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OCF": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -9085927
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -5693,7 +5688,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": -10954625
+                "val": -10953000
               },
               {
                 "end": "2025-12-31",
@@ -5709,35 +5704,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -86081000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -140648000
               }
             ],
             "yoy": {
               "length": 1.0,
               "percentile": 0.0,
-              "change_pct": -924.3,
-              "val_latest": -86081000,
-              "val_prev": -8404000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": -1184.1,
+              "val_latest": -140648000,
+              "val_prev": -10953000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 33.3,
-              "change_pct": -67.8,
-              "val_latest": -86081000,
-              "val_prev": -51298000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.416,
+              "percentile": 29.2,
+              "change_pct": -63.4,
+              "val_latest": -140648000,
+              "val_prev": -86081000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "CapEx": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -675879
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -5756,12 +5751,12 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 185913
+                "val": 170000
               },
               {
                 "end": "2025-12-31",
                 "fp": "Q4",
-                "val": 1619087.0
+                "val": 1634702.0
               },
               {
                 "end": "2026-03-31",
@@ -5772,26 +5767,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 7761000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 10107000
               }
             ],
             "yoy": {
               "length": 0.916,
               "percentile": 95.8,
-              "change_pct": 7984.4,
-              "val_latest": 7761000,
-              "val_prev": 96000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": 5845.3,
+              "val_latest": 10107000,
+              "val_prev": 170000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.834,
-              "percentile": 91.7,
-              "change_pct": 482.7,
-              "val_latest": 7761000,
-              "val_prev": 1332000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.084,
+              "percentile": 54.2,
+              "change_pct": 30.2,
+              "val_latest": 10107000,
+              "val_prev": 7761000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           }
         }
@@ -5932,7 +5932,7 @@
         "ev_sales": 279.1,
         "sales_basis": "TTM 2026-06-30",
         "net_cash": 511183000.0,
-        "fetched_at": "2026-11-13T21:30:27.205403+00:00",
+        "fetched_at": "2026-11-15T18:08:27.930498+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -5943,7 +5943,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.242730+00:00",
+        "updated_at": "2026-11-15T18:08:30.101526+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -5989,8 +5989,8 @@
               }
             ],
             "yoy": {
-              "length": 0.834,
-              "percentile": 8.3,
+              "length": 1.0,
+              "percentile": 0.0,
               "change_pct": -0.6,
               "val_latest": 3076000,
               "val_prev": 3095000,
@@ -5999,8 +5999,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 29.2,
+              "length": 0.334,
+              "percentile": 33.3,
               "change_pct": 7.6,
               "val_latest": 3076000,
               "val_prev": 2858000,
@@ -6052,8 +6052,8 @@
               }
             ],
             "yoy": {
-              "length": 0.826,
-              "percentile": 8.7,
+              "length": 0.914,
+              "percentile": 4.3,
               "change_pct": -13.8,
               "val_latest": 1704000,
               "val_prev": 1976000,
@@ -6115,8 +6115,8 @@
               }
             ],
             "yoy": {
-              "length": 0.304,
-              "percentile": 34.8,
+              "length": 0.392,
+              "percentile": 30.4,
               "change_pct": -101.0,
               "val_latest": -53278000,
               "val_prev": -26502000,
@@ -6125,8 +6125,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.392,
-              "percentile": 69.6,
+              "length": 0.478,
+              "percentile": 73.9,
               "change_pct": 2.6,
               "val_latest": -53278000,
               "val_prev": -54727000,
@@ -6188,8 +6188,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 58.3,
+              "length": 0.084,
+              "percentile": 45.8,
               "change_pct": 9.5,
               "val_latest": 28239000,
               "val_prev": 25793000,
@@ -6241,8 +6241,8 @@
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 75.0,
+              "length": 0.416,
+              "percentile": 70.8,
               "change_pct": 71.3,
               "val_latest": -48028000,
               "val_prev": -167329000,
@@ -6304,8 +6304,8 @@
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 37.5,
+              "length": 0.334,
+              "percentile": 33.3,
               "change_pct": -86.5,
               "val_latest": -28503000,
               "val_prev": -15286000,
@@ -6314,8 +6314,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.416,
+              "percentile": 70.8,
               "change_pct": 36.6,
               "val_latest": -28503000,
               "val_prev": -44960000,
@@ -6367,8 +6367,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.75,
+              "percentile": 87.5,
               "change_pct": 467.2,
               "val_latest": 4640000,
               "val_prev": 818000,
@@ -6524,7 +6524,7 @@
         "ev_sales": 14.3,
         "sales_basis": "TTM 2026-07-31",
         "net_cash": 614754000.0,
-        "fetched_at": "2026-11-13T21:30:27.258128+00:00",
+        "fetched_at": "2026-11-15T18:08:28.027530+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -6535,7 +6535,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.242870+00:00",
+        "updated_at": "2026-11-15T18:08:30.101711+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -6581,8 +6581,8 @@
               }
             ],
             "yoy": {
-              "length": 0.0,
-              "percentile": 50.0,
+              "length": 0.166,
+              "percentile": 41.7,
               "change_pct": 37.9,
               "val_latest": 427260000,
               "val_prev": 309860000,
@@ -6591,8 +6591,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.084,
+              "percentile": 45.8,
               "change_pct": 10.4,
               "val_latest": 427260000,
               "val_prev": 387068000,
@@ -6654,8 +6654,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.218,
-              "percentile": 39.1,
+              "length": 0.13,
+              "percentile": 43.5,
               "change_pct": 7.5,
               "val_latest": 335123000,
               "val_prev": 311783000,
@@ -6707,8 +6707,8 @@
               }
             ],
             "yoy": {
-              "length": 0.304,
-              "percentile": 65.2,
+              "length": 0.218,
+              "percentile": 60.9,
               "change_pct": 23.9,
               "val_latest": -71902000,
               "val_prev": -94463000,
@@ -6717,8 +6717,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.218,
-              "percentile": 39.1,
+              "length": 0.392,
+              "percentile": 30.4,
               "change_pct": -36.6,
               "val_latest": -71902000,
               "val_prev": -52634000,
@@ -6770,8 +6770,8 @@
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 54.2,
+              "length": 0.166,
+              "percentile": 41.7,
               "change_pct": 37.7,
               "val_latest": 126863000,
               "val_prev": 92107000,
@@ -6780,8 +6780,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 66.7,
+              "length": 0.084,
+              "percentile": 54.2,
               "change_pct": 11.0,
               "val_latest": 126863000,
               "val_prev": 114341000,
@@ -6833,8 +6833,8 @@
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 58.3,
+              "length": 0.084,
+              "percentile": 54.2,
               "change_pct": 35.6,
               "val_latest": -61777000,
               "val_prev": -95929000,
@@ -6843,8 +6843,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 37.5,
+              "length": 0.334,
+              "percentile": 33.3,
               "change_pct": -47.6,
               "val_latest": -61777000,
               "val_prev": -41853000,
@@ -6906,8 +6906,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 58.3,
+              "length": 0.0,
+              "percentile": 50.0,
               "change_pct": -5.9,
               "val_latest": 76846000,
               "val_prev": 81689000,
@@ -6959,8 +6959,8 @@
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.084,
+              "percentile": 45.8,
               "change_pct": 55.6,
               "val_latest": 11174000,
               "val_prev": 7181000,
@@ -6969,8 +6969,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 62.5,
+              "length": 0.166,
+              "percentile": 58.3,
               "change_pct": 38.4,
               "val_latest": 11174000,
               "val_prev": 8076000,
@@ -7116,7 +7116,7 @@
         "ev_sales": 4.8,
         "sales_basis": "TTM 2026-06-30",
         "net_cash": 324661000.0,
-        "fetched_at": "2026-11-13T21:30:27.286732+00:00",
+        "fetched_at": "2026-11-15T18:08:28.056387+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -7127,7 +7127,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.243099+00:00",
+        "updated_at": "2026-11-15T18:08:30.102003+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -7173,8 +7173,8 @@
               }
             ],
             "yoy": {
-              "length": 0.75,
-              "percentile": 87.5,
+              "length": 0.834,
+              "percentile": 91.7,
               "change_pct": 527.3,
               "val_latest": 20189000,
               "val_prev": 3218577,
@@ -7183,8 +7183,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 66.7,
+              "length": 0.25,
+              "percentile": 62.5,
               "change_pct": 30.5,
               "val_latest": 20189000,
               "val_prev": 15471000,
@@ -7299,8 +7299,8 @@
               }
             ],
             "yoy": {
-              "length": 0.652,
-              "percentile": 17.4,
+              "length": 0.74,
+              "percentile": 13.0,
               "change_pct": -205.6,
               "val_latest": -38645000,
               "val_prev": -12647000,
@@ -7309,8 +7309,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.304,
-              "percentile": 34.8,
+              "length": 0.566,
+              "percentile": 21.7,
               "change_pct": -41.5,
               "val_latest": -38645000,
               "val_prev": -27302000,
@@ -7425,8 +7425,8 @@
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 20.8,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": -165.5,
               "val_latest": -35259000,
               "val_prev": -13279000,
@@ -7435,8 +7435,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": -32.8,
               "val_latest": -35259000,
               "val_prev": -26553000,
@@ -7498,8 +7498,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.334,
+              "percentile": 33.3,
               "change_pct": -46.5,
               "val_latest": -46804000,
               "val_prev": -31945000,
@@ -7561,8 +7561,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 33.3,
+              "length": 0.416,
+              "percentile": 29.2,
               "change_pct": -14.9,
               "val_latest": 5774000,
               "val_prev": 6783000,
@@ -7708,7 +7708,7 @@
         "ev_sales": 3.9,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 439314000.0,
-        "fetched_at": "2026-11-13T21:30:27.355152+00:00",
+        "fetched_at": "2026-11-15T18:08:28.126501+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -7719,7 +7719,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.243262+00:00",
+        "updated_at": "2026-11-15T18:08:30.102221+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -7765,8 +7765,8 @@
               }
             ],
             "yoy": {
-              "length": 0.75,
-              "percentile": 12.5,
+              "length": 0.916,
+              "percentile": 4.2,
               "change_pct": 5.4,
               "val_latest": 109035000,
               "val_prev": 103432000,
@@ -7775,8 +7775,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.834,
-              "percentile": 8.3,
+              "length": 0.916,
+              "percentile": 4.2,
               "change_pct": -6.9,
               "val_latest": 109035000,
               "val_prev": 117074000,
@@ -7828,8 +7828,8 @@
               }
             ],
             "yoy": {
-              "length": 0.566,
-              "percentile": 78.3,
+              "length": 0.478,
+              "percentile": 73.9,
               "change_pct": 109.5,
               "val_latest": 35222000,
               "val_prev": 16810000,
@@ -7838,8 +7838,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.13,
-              "percentile": 43.5,
+              "length": 0.044,
+              "percentile": 47.8,
               "change_pct": 8.2,
               "val_latest": 35222000,
               "val_prev": 32544000,
@@ -7891,8 +7891,8 @@
               }
             ],
             "yoy": {
-              "length": 0.478,
-              "percentile": 73.9,
+              "length": 0.392,
+              "percentile": 69.6,
               "change_pct": 37.2,
               "val_latest": -26269000,
               "val_prev": -41852000,
@@ -7901,8 +7901,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.044,
-              "percentile": 47.8,
+              "length": 0.218,
+              "percentile": 39.1,
               "change_pct": -18.9,
               "val_latest": -26269000,
               "val_prev": -22090000,
@@ -7954,8 +7954,8 @@
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 75.0,
+              "length": 0.416,
+              "percentile": 70.8,
               "change_pct": 87.1,
               "val_latest": 14396000,
               "val_prev": 7693000,
@@ -7964,8 +7964,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 75.0,
+              "length": 0.25,
+              "percentile": 62.5,
               "change_pct": 14.7,
               "val_latest": 14396000,
               "val_prev": 12547000,
@@ -8017,8 +8017,8 @@
               }
             ],
             "yoy": {
-              "length": 0.334,
-              "percentile": 66.7,
+              "length": 0.166,
+              "percentile": 58.3,
               "change_pct": 43.7,
               "val_latest": -23178000,
               "val_prev": -41152000,
@@ -8027,8 +8027,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 79.2,
+              "length": 0.5,
+              "percentile": 75.0,
               "change_pct": 43.4,
               "val_latest": -23178000,
               "val_prev": -40971000,
@@ -8080,8 +8080,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 16.7,
+              "length": 0.75,
+              "percentile": 12.5,
               "change_pct": -212.9,
               "val_latest": -63590000,
               "val_prev": -20325000,
@@ -8153,8 +8153,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.75,
-              "percentile": 12.5,
+              "length": 0.834,
+              "percentile": 8.3,
               "change_pct": -79.5,
               "val_latest": 1753000,
               "val_prev": 8532000,
@@ -8207,13 +8207,13 @@
       },
       "runway": {
         "latest_year": 2025,
-        "cash": 2302185000.0,
+        "cash": 4607955000.0,
         "monthly_burn": -26817166.666666668,
-        "runway_months": 85.84743603288938,
+        "runway_months": 171.8285550921984,
         "ocf_annual": -165521000,
         "capex_annual": 156285000,
         "verdict": "SAFE",
-        "verdict_reason": "Runway 86ヶ月（2年超）",
+        "verdict_reason": "Runway 172ヶ月（2年超）",
         "score": 100.0,
         "sti_quarterly_missing": false
       },
@@ -8268,7 +8268,7 @@
       },
       "overall_score": 79.2,
       "overall_verdict": "10x_CANDIDATE",
-      "summary": "【総合スコア判定根拠】\n\n赤字品質 63点　（成長・投資のバランス要確認）\n• 売上成長率 41.8%　→　高い成長力\n• 研究開発+販管費 45.0%　→　積極的な投資姿勢\n• 粗利率 34.4%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -43.6%→-32.9%（+10.7pt/年）\n\n生存能力 100点　（極めて安全水準）\n• 現金 $2.3B・月次バーン $-27M/月　→　ランウェイ86ヶ月確保\n\n黒字化パス 80点　（OCF黒字化 2027年（2年後））\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化予測：2027年頃\n• 純利益黒字化予測：2028年頃",
+      "summary": "【総合スコア判定根拠】\n\n赤字品質 63点　（成長・投資のバランス要確認）\n• 売上成長率 41.8%　→　高い成長力\n• 研究開発+販管費 45.0%　→　積極的な投資姿勢\n• 粗利率 34.4%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -43.6%→-32.9%（+10.7pt/年）\n\n生存能力 100点　（極めて安全水準）\n• 現金 $4.6B・月次バーン $-27M/月　→　ランウェイ172ヶ月確保\n\n黒字化パス 80点　（OCF黒字化 2027年（2年後））\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化予測：2027年頃\n• 純利益黒字化予測：2028年頃",
       "records": {
         "2021": {
           "revenue": 62237000,
@@ -8296,30 +8296,25 @@
         "current_price": 61.529998779296875,
         "enterprise_value": 37320515584,
         "total_debt": 120284000,
-        "psr": 57.9,
-        "ev_sales": 48.5,
-        "sales_basis": "TTM 2026-06-30",
-        "net_cash": 2286001000.0,
-        "fetched_at": "2026-11-13T21:30:27.411038+00:00",
+        "psr": 50.5,
+        "ev_sales": 42.3,
+        "sales_basis": "TTM 2026-09-30",
+        "net_cash": 4591865000.0,
+        "fetched_at": "2026-11-15T18:08:28.186333+00:00",
         "error": null
       },
       "financial_as_of": {
-        "latest_quarter_end": "2026-06-30",
+        "latest_quarter_end": "2026-09-30",
         "scoring_fy": 2025,
         "scoring_fy_end": "2025-12-31",
-        "stale": true,
+        "stale": false,
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.243421+00:00",
+        "updated_at": "2026-11-15T18:08:30.102454+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 104808000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -8354,35 +8349,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 234066000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 267834000
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 62.5,
-              "change_pct": 62.0,
-              "val_latest": 234066000,
-              "val_prev": 144498000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.166,
+              "percentile": 58.3,
+              "change_pct": 72.7,
+              "val_latest": 267834000,
+              "val_prev": 155080000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
               "length": 0.084,
               "percentile": 54.2,
-              "change_pct": 16.8,
-              "val_latest": 234066000,
-              "val_prev": 200348000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "change_pct": 14.4,
+              "val_latest": 267834000,
+              "val_prev": 234066000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "GrossProfit": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 27996000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -8417,35 +8412,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 84576000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 90071000
               }
             ],
             "yoy": {
-              "length": 0.218,
-              "percentile": 60.9,
-              "change_pct": 82.3,
-              "val_latest": 84576000,
-              "val_prev": 46388000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.13,
+              "percentile": 56.5,
+              "change_pct": 57.2,
+              "val_latest": 90071000,
+              "val_prev": 57314000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.044,
-              "percentile": 47.8,
-              "change_pct": 10.6,
-              "val_latest": 84576000,
-              "val_prev": 76493000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.218,
+              "percentile": 39.1,
+              "change_pct": 6.5,
+              "val_latest": 90071000,
+              "val_prev": 84576000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OperatingIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -51899000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -8480,35 +8475,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -57514000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -79189000
               }
             ],
             "yoy": {
               "length": 0.13,
-              "percentile": 56.5,
-              "change_pct": 3.6,
-              "val_latest": -57514000,
-              "val_prev": -59639000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "percentile": 43.5,
+              "change_pct": -34.3,
+              "val_latest": -79189000,
+              "val_prev": -58969000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.218,
-              "percentile": 60.9,
-              "change_pct": -2.8,
-              "val_latest": -57514000,
-              "val_prev": -55969000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.478,
+              "percentile": 26.1,
+              "change_pct": -37.7,
+              "val_latest": -79189000,
+              "val_prev": -57514000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "RD": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 47723000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -8543,35 +8538,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 82429000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 98388000
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 41.7,
-              "change_pct": 24.6,
-              "val_latest": 82429000,
-              "val_prev": 66134000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.0,
+              "percentile": 50.0,
+              "change_pct": 39.2,
+              "val_latest": 98388000,
+              "val_prev": 70694000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
               "length": 0.416,
-              "percentile": 29.2,
-              "change_pct": 2.4,
-              "val_latest": 82429000,
-              "val_prev": 80513000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "percentile": 70.8,
+              "change_pct": 19.4,
+              "val_latest": 98388000,
+              "val_prev": 82429000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "NetIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -51939000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -8579,12 +8574,12 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -60616000
               },
               {
                 "end": "2025-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -66414000
               },
               {
@@ -8599,42 +8594,42 @@
               },
               {
                 "end": "2026-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -45022000
               },
               {
                 "end": "2026-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -49258000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -79677000
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 45.8,
-              "change_pct": 25.8,
-              "val_latest": -49258000,
-              "val_prev": -66414000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.666,
+              "percentile": 16.7,
+              "change_pct": -336.4,
+              "val_latest": -79677000,
+              "val_prev": -18257000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 54.2,
-              "change_pct": -9.4,
-              "val_latest": -49258000,
-              "val_prev": -45022000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.416,
+              "percentile": 29.2,
+              "change_pct": -61.8,
+              "val_latest": -79677000,
+              "val_prev": -49258000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OCF": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -30915000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -8669,35 +8664,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -84075000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 7153000
               }
             ],
             "yoy": {
-              "length": 0.75,
-              "percentile": 12.5,
-              "change_pct": -261.7,
-              "val_latest": -84075000,
-              "val_prev": -23242000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.916,
+              "percentile": 95.8,
+              "change_pct": 130.4,
+              "val_latest": 7153000,
+              "val_prev": -23523000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 37.5,
-              "change_pct": -67.0,
-              "val_latest": -84075000,
-              "val_prev": -50332000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.834,
+              "percentile": 91.7,
+              "change_pct": 108.5,
+              "val_latest": 7153000,
+              "val_prev": -84075000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "CapEx": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 11018000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -8732,26 +8727,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 26047000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 31073000
               }
             ],
             "yoy": {
               "length": 0.75,
               "percentile": 12.5,
-              "change_pct": -18.7,
-              "val_latest": 26047000,
-              "val_prev": 32042000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": -32.3,
+              "val_latest": 31073000,
+              "val_prev": 45912000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
               "length": 0.0,
               "percentile": 50.0,
-              "change_pct": -3.8,
-              "val_latest": 26047000,
-              "val_prev": 27065000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "change_pct": 19.3,
+              "val_latest": 31073000,
+              "val_prev": 26047000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           }
         }
@@ -8892,7 +8892,7 @@
         "ev_sales": 25.8,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 537952000.0,
-        "fetched_at": "2026-11-13T21:30:27.467870+00:00",
+        "fetched_at": "2026-11-15T18:08:28.246974+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -8903,7 +8903,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.243593+00:00",
+        "updated_at": "2026-11-15T18:08:30.102695+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -8949,8 +8949,8 @@
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 79.2,
+              "length": 0.666,
+              "percentile": 83.3,
               "change_pct": 258.5,
               "val_latest": 18552000,
               "val_prev": 5175000,
@@ -8959,8 +8959,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.916,
-              "percentile": 95.8,
+              "length": 0.834,
+              "percentile": 91.7,
               "change_pct": 141.9,
               "val_latest": 18552000,
               "val_prev": 7670000,
@@ -9075,8 +9075,8 @@
               }
             ],
             "yoy": {
-              "length": 0.392,
-              "percentile": 69.6,
+              "length": 0.304,
+              "percentile": 65.2,
               "change_pct": 28.5,
               "val_latest": -123176000,
               "val_prev": -172202000,
@@ -9085,8 +9085,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.478,
-              "percentile": 73.9,
+              "length": 0.566,
+              "percentile": 78.3,
               "change_pct": 8.7,
               "val_latest": -123176000,
               "val_prev": -134968000,
@@ -9138,8 +9138,8 @@
               }
             ],
             "yoy": {
-              "length": 0.834,
-              "percentile": 8.3,
+              "length": 0.916,
+              "percentile": 4.2,
               "change_pct": -18.1,
               "val_latest": 99122000,
               "val_prev": 121062000,
@@ -9148,8 +9148,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 62.5,
+              "length": 0.0,
+              "percentile": 50.0,
               "change_pct": 10.6,
               "val_latest": 99122000,
               "val_prev": 89614000,
@@ -9201,8 +9201,8 @@
               }
             ],
             "yoy": {
-              "length": 0.0,
-              "percentile": 50.0,
+              "length": 0.084,
+              "percentile": 45.8,
               "change_pct": 26.6,
               "val_latest": -119036000,
               "val_prev": -162253000,
@@ -9264,8 +9264,8 @@
               }
             ],
             "yoy": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.584,
+              "percentile": 79.2,
               "change_pct": 34.0,
               "val_latest": -77406000,
               "val_prev": -117360000,
@@ -9274,8 +9274,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 79.2,
+              "length": 0.334,
+              "percentile": 66.7,
               "change_pct": 26.9,
               "val_latest": -77406000,
               "val_prev": -105947000,
@@ -9327,8 +9327,8 @@
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.0,
+              "percentile": 50.0,
               "change_pct": 67.5,
               "val_latest": 407000,
               "val_prev": 243000,
@@ -9484,7 +9484,7 @@
         "ev_sales": 6.9,
         "sales_basis": "TTM 2026-07-31",
         "net_cash": 655248000.0,
-        "fetched_at": "2026-11-13T21:30:27.521662+00:00",
+        "fetched_at": "2026-11-15T18:08:28.301074+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -9495,7 +9495,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.243761+00:00",
+        "updated_at": "2026-11-15T18:08:30.102927+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -9541,8 +9541,8 @@
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 29.2,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": 20.6,
               "val_latest": 291981000,
               "val_prev": 242183000,
@@ -9551,8 +9551,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.666,
-              "percentile": 16.7,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": 5.5,
               "val_latest": 291981000,
               "val_prev": 276657000,
@@ -9604,8 +9604,8 @@
               }
             ],
             "yoy": {
-              "length": 0.652,
-              "percentile": 17.4,
+              "length": 0.74,
+              "percentile": 13.0,
               "change_pct": 15.8,
               "val_latest": 210418000,
               "val_prev": 181709000,
@@ -9678,7 +9678,7 @@
             },
             "qoq": {
               "length": 0.044,
-              "percentile": 52.2,
+              "percentile": 47.8,
               "change_pct": -13.9,
               "val_latest": -90761000,
               "val_prev": -79718000,
@@ -9730,8 +9730,8 @@
               }
             ],
             "yoy": {
-              "length": 0.334,
-              "percentile": 33.3,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": 22.5,
               "val_latest": 96882000,
               "val_prev": 79091000,
@@ -9740,8 +9740,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 25.0,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": 1.2,
               "val_latest": 96882000,
               "val_prev": 95770000,
@@ -9793,8 +9793,8 @@
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.334,
+              "percentile": 33.3,
               "change_pct": -29.7,
               "val_latest": -93400000,
               "val_prev": -72019000,
@@ -9803,8 +9803,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 45.8,
+              "length": 0.166,
+              "percentile": 41.7,
               "change_pct": -22.6,
               "val_latest": -93400000,
               "val_prev": -76164000,
@@ -9919,8 +9919,8 @@
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 20.8,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": 9.6,
               "val_latest": 6691000,
               "val_prev": 6105000,
@@ -9929,8 +9929,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": -14.0,
               "val_latest": 6691000,
               "val_prev": 7778000,
@@ -10076,7 +10076,7 @@
         "ev_sales": 22.4,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": -994787000.0,
-        "fetched_at": "2026-11-13T21:30:27.571465+00:00",
+        "fetched_at": "2026-11-15T18:08:28.353515+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -10087,7 +10087,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.243931+00:00",
+        "updated_at": "2026-11-15T18:08:30.103177+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -10133,8 +10133,8 @@
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 75.0,
+              "length": 0.584,
+              "percentile": 79.2,
               "change_pct": 257.4,
               "val_latest": 298671000,
               "val_prev": 83567000,
@@ -10143,8 +10143,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.584,
+              "percentile": 79.2,
               "change_pct": 89.7,
               "val_latest": 298671000,
               "val_prev": 157432000,
@@ -10259,8 +10259,8 @@
               }
             ],
             "yoy": {
-              "length": 0.914,
-              "percentile": 95.7,
+              "length": 0.826,
+              "percentile": 91.3,
               "change_pct": 152.0,
               "val_latest": 8333000,
               "val_prev": -16021000,
@@ -10322,8 +10322,8 @@
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 79.2,
+              "length": 0.5,
+              "percentile": 75.0,
               "change_pct": 108.0,
               "val_latest": 62412000,
               "val_prev": 30009000,
@@ -10385,8 +10385,8 @@
               }
             ],
             "yoy": {
-              "length": 0.916,
-              "percentile": 95.8,
+              "length": 0.834,
+              "percentile": 91.7,
               "change_pct": 154.3,
               "val_latest": 4353000,
               "val_prev": -8014000,
@@ -10395,8 +10395,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 29.2,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": -76.0,
               "val_latest": 4353000,
               "val_prev": 18156000,
@@ -10448,8 +10448,8 @@
               }
             ],
             "yoy": {
-              "length": 0.416,
-              "percentile": 29.2,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": -120.9,
               "val_latest": -6551000,
               "val_prev": 31402000,
@@ -10521,8 +10521,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 25.0,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": -18.1,
               "val_latest": 10194000,
               "val_prev": 12449000,
@@ -10575,14 +10575,14 @@
       },
       "runway": {
         "latest_year": 2025,
-        "cash": 202776000.0,
+        "cash": 207579000.0,
         "monthly_burn": -8593666.666666666,
-        "runway_months": 23.59598153679066,
+        "runway_months": 24.15488150188123,
         "ocf_annual": -98222000,
         "capex_annual": 4902000,
-        "verdict": "WATCH",
-        "verdict_reason": "Runway 24ヶ月（1-2年）要注意",
-        "score": 60.0,
+        "verdict": "SAFE",
+        "verdict_reason": "Runway 24ヶ月（2年超）",
+        "score": 100.0,
         "sti_quarterly_missing": false
       },
       "profitability_path": {
@@ -10634,9 +10634,9 @@
         "reproduction_score": 2,
         "reproduction_label": "限定的な拡大再生産"
       },
-      "overall_score": 78.2,
+      "overall_score": 90.2,
       "overall_verdict": "10x_CANDIDATE",
-      "summary": "【総合スコア判定根拠】\n\n赤字品質 83点　（高成長×積極投資の好例）\n• 売上成長率 75.7%　→　極めて強い成長エンジン\n• 研究開発+販管費 94.7%　→　将来への戦略的投資を継続\n• 粗利率 42.4%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -414.1%→-8.3%（+405.8pt/年）\n\n生存能力 60点　（要注意水準）\n• 現金 $203M・月次バーン $-9M/月　→　ランウェイ24ヶ月確保\n\n黒字化パス 90点　（OCF黒字化 2026年（1年以内））\n• 営業CFトレンド（金額） 加速中\n• 営業CF黒字化予測：2026年頃\n• 純利益黒字化予測：2026年頃",
+      "summary": "【総合スコア判定根拠】\n\n赤字品質 83点　（高成長×積極投資の好例）\n• 売上成長率 75.7%　→　極めて強い成長エンジン\n• 研究開発+販管費 94.7%　→　将来への戦略的投資を継続\n• 粗利率 42.4%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -414.1%→-8.3%（+405.8pt/年）\n\n生存能力 100点　（極めて安全水準）\n• 現金 $208M・月次バーン $-9M/月　→　ランウェイ24ヶ月確保\n\n黒字化パス 90点　（OCF黒字化 2026年（1年以内））\n• 営業CFトレンド（金額） 加速中\n• 営業CF黒字化予測：2026年頃\n• 純利益黒字化予測：2026年頃",
       "records": {
         "2021": {
           "revenue": 21197000,
@@ -10664,30 +10664,25 @@
         "current_price": 3.490000009536743,
         "enterprise_value": 1710501248,
         "total_debt": 8462000,
-        "psr": 9.4,
-        "ev_sales": 8.4,
-        "sales_basis": "TTM 2026-06-30",
-        "net_cash": 202550000.0,
-        "fetched_at": "2026-11-13T21:30:27.648554+00:00",
+        "psr": 8.5,
+        "ev_sales": 7.7,
+        "sales_basis": "TTM 2026-09-30",
+        "net_cash": 207411000.0,
+        "fetched_at": "2026-11-15T18:08:28.449805+00:00",
         "error": null
       },
       "financial_as_of": {
-        "latest_quarter_end": "2026-06-30",
+        "latest_quarter_end": "2026-09-30",
         "scoring_fy": 2025,
         "scoring_fy_end": "2025-12-31",
-        "stale": true,
+        "stale": false,
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.244081+00:00",
+        "updated_at": "2026-11-15T18:08:30.103396+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 25094000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -10722,35 +10717,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 61897000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 62425000
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 58.3,
-              "change_pct": 45.0,
-              "val_latest": 61897000,
-              "val_prev": 42683000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.084,
+              "percentile": 54.2,
+              "change_pct": 48.5,
+              "val_latest": 62425000,
+              "val_prev": 42049000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 70.8,
-              "change_pct": 40.1,
-              "val_latest": 61897000,
-              "val_prev": 44195000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.666,
+              "percentile": 16.7,
+              "change_pct": 0.9,
+              "val_latest": 62425000,
+              "val_prev": 61897000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "GrossProfit": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 12193000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -10785,35 +10780,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 27930000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 21282000
               }
             ],
             "yoy": {
-              "length": 0.13,
-              "percentile": 56.5,
-              "change_pct": 67.6,
-              "val_latest": 27930000,
-              "val_prev": 16662000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.566,
+              "percentile": 21.7,
+              "change_pct": 18.8,
+              "val_latest": 21282000,
+              "val_prev": 17921000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.826,
-              "percentile": 91.3,
-              "change_pct": 103.2,
-              "val_latest": 27930000,
-              "val_prev": 13742000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.914,
+              "percentile": 4.3,
+              "change_pct": -23.8,
+              "val_latest": 21282000,
+              "val_prev": 27930000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OperatingIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -33767000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -10848,35 +10843,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -43298000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -45950000
               }
             ],
             "yoy": {
               "length": 0.566,
               "percentile": 78.3,
-              "change_pct": 44.5,
-              "val_latest": -43298000,
-              "val_prev": -78051000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": 60.4,
+              "val_latest": -45950000,
+              "val_prev": -115891000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.566,
-              "percentile": 21.7,
-              "change_pct": -91.0,
-              "val_latest": -43298000,
-              "val_prev": -22671000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.13,
+              "percentile": 56.5,
+              "change_pct": -6.1,
+              "val_latest": -45950000,
+              "val_prev": -43298000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "RD": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 19545000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -10911,35 +10906,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 27130000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 30867000
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 20.8,
-              "change_pct": 5.1,
-              "val_latest": 27130000,
-              "val_prev": 25805000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.334,
+              "percentile": 33.3,
+              "change_pct": 35.1,
+              "val_latest": 30867000,
+              "val_prev": 22848000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 33.3,
-              "change_pct": 3.5,
-              "val_latest": 27130000,
-              "val_prev": 26200000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.166,
+              "percentile": 58.3,
+              "change_pct": 13.8,
+              "val_latest": 30867000,
+              "val_prev": 27130000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "NetIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -21751000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -10974,35 +10969,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -42817000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -45821000
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 62.5,
-              "change_pct": 42.7,
-              "val_latest": -42817000,
-              "val_prev": -74724000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.334,
+              "percentile": 66.7,
+              "change_pct": 58.1,
+              "val_latest": -45821000,
+              "val_prev": -109271000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.334,
-              "percentile": 33.3,
-              "change_pct": -71.1,
-              "val_latest": -42817000,
-              "val_prev": -25028000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.0,
+              "percentile": 50.0,
+              "change_pct": -7.0,
+              "val_latest": -45821000,
+              "val_prev": -42817000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OCF": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -35315000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11037,35 +11032,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -33711000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -36017000
               }
             ],
             "yoy": {
               "length": 0.166,
               "percentile": 41.7,
-              "change_pct": -37.6,
-              "val_latest": -33711000,
-              "val_prev": -24497000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": -10.3,
+              "val_latest": -36017000,
+              "val_prev": -32654000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 45.8,
-              "change_pct": -28.4,
-              "val_latest": -33711000,
-              "val_prev": -26258000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.166,
+              "percentile": 41.7,
+              "change_pct": -6.8,
+              "val_latest": -36017000,
+              "val_prev": -33711000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "CapEx": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 225000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11100,26 +11095,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 3166000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 2617000
               }
             ],
             "yoy": {
-              "length": 0.75,
-              "percentile": 87.5,
-              "change_pct": 1549.0,
-              "val_latest": 3166000,
-              "val_prev": 192000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.334,
+              "percentile": 33.3,
+              "change_pct": 30.3,
+              "val_latest": 2617000,
+              "val_prev": 2009000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.084,
-              "percentile": 54.2,
-              "change_pct": 3.5,
-              "val_latest": 3166000,
-              "val_prev": 3060000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.5,
+              "percentile": 25.0,
+              "change_pct": -17.3,
+              "val_latest": 2617000,
+              "val_prev": 3166000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           }
         }
@@ -11167,13 +11167,13 @@
       },
       "runway": {
         "latest_year": 2025,
-        "cash": 91672000.0,
+        "cash": 87871000.0,
         "monthly_burn": -7717083.333333333,
-        "runway_months": 11.879099400680309,
+        "runway_months": 11.386555801522597,
         "ocf_annual": -59829000,
         "capex_annual": 32776000,
         "verdict": "DANGER",
-        "verdict_reason": "Runway 12ヶ月（1年未満）危険",
+        "verdict_reason": "Runway 11ヶ月（1年未満）危険",
         "score": 20.0,
         "sti_quarterly_missing": false
       },
@@ -11228,7 +11228,7 @@
       },
       "overall_score": 31.2,
       "overall_verdict": "AVOID",
-      "summary": "【総合スコア判定根拠】\n\n赤字品質 48点　（黒字転換済み）\n• 売上成長率 -3.8%　→　成長鈍化\n• 研究開発+販管費 72.7%　→　将来への戦略的投資を継続\n• 粗利率 40.8%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -93.1%→71.7%（+164.8pt/年）\n\n生存能力 20点　（危険水準）\n• 現金 $92M・月次バーン $-8M/月　→　ランウェイ12ヶ月確保\n\n黒字化パス 20点　（OCFマージン 改善傾向なし）\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化：NO_TREND:-17%→-84%\n• 純利益黒字：達成済み",
+      "summary": "【総合スコア判定根拠】\n\n赤字品質 48点　（黒字転換済み）\n• 売上成長率 -3.8%　→　成長鈍化\n• 研究開発+販管費 72.7%　→　将来への戦略的投資を継続\n• 粗利率 40.8%　→　改善余地はあるが安定基盤\n• 純利益マージン改善: -93.1%→71.7%（+164.8pt/年）\n\n生存能力 20点　（危険水準）\n• 現金 $88M・月次バーン $-8M/月　→　ランウェイ11ヶ月確保\n\n黒字化パス 20点　（OCFマージン 改善傾向なし）\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化：NO_TREND:-17%→-84%\n• 純利益黒字：達成済み",
       "records": {
         "2021": {
           "revenue": 43375000,
@@ -11256,30 +11256,25 @@
         "current_price": 9.210000038146973,
         "enterprise_value": 322560320,
         "total_debt": 9080000,
-        "psr": 6.3,
-        "ev_sales": 5.2,
-        "sales_basis": "TTM 2026-06-30",
-        "net_cash": 91672000.0,
-        "fetched_at": "2026-11-13T21:30:27.709291+00:00",
+        "psr": 5.8,
+        "ev_sales": 4.8,
+        "sales_basis": "TTM 2026-09-30",
+        "net_cash": 87871000.0,
+        "fetched_at": "2026-11-15T18:08:28.514011+00:00",
         "error": null
       },
       "financial_as_of": {
-        "latest_quarter_end": "2026-06-30",
+        "latest_quarter_end": "2026-09-30",
         "scoring_fy": 2025,
         "scoring_fy_end": "2025-12-31",
-        "stale": true,
+        "stale": false,
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.244251+00:00",
+        "updated_at": "2026-11-15T18:08:30.103622+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 28568000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11314,35 +11309,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 18048000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 17998000
               }
             ],
             "yoy": {
-              "length": 0.916,
-              "percentile": 4.2,
-              "change_pct": -5.9,
-              "val_latest": 18048000,
-              "val_prev": 19182000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.0,
+              "percentile": 50.0,
+              "change_pct": 42.1,
+              "val_latest": 17998000,
+              "val_prev": 12670000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.0,
-              "percentile": 50.0,
-              "change_pct": 14.0,
-              "val_latest": 18048000,
-              "val_prev": 15834000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.75,
+              "percentile": 12.5,
+              "change_pct": -0.3,
+              "val_latest": 17998000,
+              "val_prev": 18048000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "GrossProfit": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 12725000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11350,7 +11345,7 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q1",
+                "fp": "Q3",
                 "val": 8712000
               },
               {
@@ -11377,35 +11372,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 6158000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 8299000
               }
             ],
             "yoy": {
-              "length": 0.914,
-              "percentile": 4.3,
-              "change_pct": -34.3,
-              "val_latest": 6158000,
-              "val_prev": 9376000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.218,
+              "percentile": 60.9,
+              "change_pct": 78.7,
+              "val_latest": 8299000,
+              "val_prev": 4643000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.74,
-              "percentile": 13.0,
-              "change_pct": -2.3,
-              "val_latest": 6158000,
-              "val_prev": 6305000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.304,
+              "percentile": 65.2,
+              "change_pct": 34.8,
+              "val_latest": 8299000,
+              "val_prev": 6158000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OperatingIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -13719000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11413,7 +11408,7 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q1",
+                "fp": "Q3",
                 "val": -28288000
               },
               {
@@ -11440,35 +11435,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -19893000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -20165000
               }
             ],
             "yoy": {
-              "length": 0.218,
-              "percentile": 60.9,
-              "change_pct": 15.4,
-              "val_latest": -19893000,
-              "val_prev": -23527000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.13,
+              "percentile": 56.5,
+              "change_pct": 4.2,
+              "val_latest": -20165000,
+              "val_prev": -21051000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.566,
-              "percentile": 78.3,
-              "change_pct": 19.1,
-              "val_latest": -19893000,
-              "val_prev": -24575000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.218,
+              "percentile": 60.9,
+              "change_pct": -1.4,
+              "val_latest": -20165000,
+              "val_prev": -19893000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "RD": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 5631000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11476,7 +11471,7 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q1",
+                "fp": "Q3",
                 "val": 8659000
               },
               {
@@ -11503,35 +11498,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 8180000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 8578000
               }
             ],
             "yoy": {
-              "length": 0.916,
-              "percentile": 4.2,
-              "change_pct": -19.8,
-              "val_latest": 8180000,
-              "val_prev": 10195000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.834,
+              "percentile": 8.3,
+              "change_pct": -5.9,
+              "val_latest": 8578000,
+              "val_prev": 9116000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 20.8,
-              "change_pct": -6.0,
-              "val_latest": 8180000,
-              "val_prev": 8699000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.334,
+              "percentile": 33.3,
+              "change_pct": 4.9,
+              "val_latest": 8578000,
+              "val_prev": 8180000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "NetIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -12473000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11539,12 +11534,12 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -23515000
               },
               {
                 "end": "2025-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": 119590000
               },
               {
@@ -11559,42 +11554,42 @@
               },
               {
                 "end": "2026-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -25843000
               },
               {
                 "end": "2026-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -19969000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -20252000
               }
             ],
             "yoy": {
-              "length": 0.334,
-              "percentile": 33.3,
-              "change_pct": -116.7,
-              "val_latest": -19969000,
-              "val_prev": 119590000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.166,
+              "percentile": 41.7,
+              "change_pct": -2.9,
+              "val_latest": -20252000,
+              "val_prev": -19676000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 70.8,
-              "change_pct": 22.7,
-              "val_latest": -19969000,
-              "val_prev": -25843000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.084,
+              "percentile": 54.2,
+              "change_pct": -1.4,
+              "val_latest": -20252000,
+              "val_prev": -19969000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OCF": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 13988000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11629,35 +11624,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -23373000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -4953000
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 79.2,
-              "change_pct": 33.4,
-              "val_latest": -23373000,
-              "val_prev": -35075000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.666,
+              "percentile": 83.3,
+              "change_pct": 58.9,
+              "val_latest": -4953000,
+              "val_prev": -12048000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.416,
-              "percentile": 70.8,
-              "change_pct": 10.8,
-              "val_latest": -23373000,
-              "val_prev": -26211000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.666,
+              "percentile": 83.3,
+              "change_pct": 78.8,
+              "val_latest": -4953000,
+              "val_prev": -23373000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "CapEx": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 8906000
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -11692,26 +11687,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 5450000
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 8936000
               }
             ],
             "yoy": {
-              "length": 0.334,
-              "percentile": 33.3,
-              "change_pct": 51.1,
-              "val_latest": 5450000,
-              "val_prev": 3606000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.584,
+              "percentile": 20.8,
+              "change_pct": 6.5,
+              "val_latest": 8936000,
+              "val_prev": 8388000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.666,
-              "percentile": 16.7,
-              "change_pct": -31.6,
-              "val_latest": 5450000,
-              "val_prev": 7972000,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.416,
+              "percentile": 70.8,
+              "change_pct": 64.0,
+              "val_latest": 8936000,
+              "val_prev": 5450000,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           }
         }
@@ -11852,7 +11852,7 @@
         "ev_sales": 8.9,
         "sales_basis": "TTM 2026-07-31",
         "net_cash": 1839471000.0,
-        "fetched_at": "2026-11-13T21:30:27.778326+00:00",
+        "fetched_at": "2026-11-15T18:08:28.586112+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -11863,7 +11863,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.244445+00:00",
+        "updated_at": "2026-11-15T18:08:30.103885+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -11909,8 +11909,8 @@
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 37.5,
+              "length": 0.416,
+              "percentile": 29.2,
               "change_pct": 24.9,
               "val_latest": 898185000,
               "val_prev": 719226000,
@@ -11919,8 +11919,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.584,
-              "percentile": 20.8,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": 5.6,
               "val_latest": 898185000,
               "val_prev": 850475000,
@@ -12035,8 +12035,8 @@
               }
             ],
             "yoy": {
-              "length": 0.652,
-              "percentile": 82.6,
+              "length": 0.478,
+              "percentile": 73.9,
               "change_pct": 52.0,
               "val_latest": -15492000,
               "val_prev": -32242000,
@@ -12098,8 +12098,8 @@
               }
             ],
             "yoy": {
-              "length": 0.0,
-              "percentile": 50.0,
+              "length": 0.25,
+              "percentile": 37.5,
               "change_pct": 36.0,
               "val_latest": 241483000,
               "val_prev": 177606000,
@@ -12108,8 +12108,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 37.5,
+              "length": 0.5,
+              "percentile": 25.0,
               "change_pct": 4.0,
               "val_latest": 241483000,
               "val_prev": 232281000,
@@ -12161,8 +12161,8 @@
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 79.2,
+              "length": 0.5,
+              "percentile": 75.0,
               "change_pct": 80.8,
               "val_latest": -3369000,
               "val_prev": -17578000,
@@ -12171,8 +12171,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.666,
-              "percentile": 83.3,
+              "length": 0.584,
+              "percentile": 79.2,
               "change_pct": 75.7,
               "val_latest": -3369000,
               "val_prev": -13883000,
@@ -12224,8 +12224,8 @@
               }
             ],
             "yoy": {
-              "length": 0.084,
-              "percentile": 54.2,
+              "length": 0.0,
+              "percentile": 50.0,
               "change_pct": 11.4,
               "val_latest": 279285000.0,
               "val_prev": 250604000.0,
@@ -12234,8 +12234,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.75,
-              "percentile": 87.5,
+              "length": 0.5,
+              "percentile": 75.0,
               "change_pct": 41.0,
               "val_latest": 279285000.0,
               "val_prev": 198016000,
@@ -12287,8 +12287,8 @@
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 75.0,
+              "length": 0.416,
+              "percentile": 70.8,
               "change_pct": 177.7,
               "val_latest": 218521000.0,
               "val_prev": 78683000.0,
@@ -12351,14 +12351,14 @@
       },
       "runway": {
         "latest_year": 2025,
-        "cash": 12783933.0,
+        "cash": 54460036.0,
         "monthly_burn": -4056345.9166666665,
-        "runway_months": 3.1515884647494006,
+        "runway_months": 13.425885543004417,
         "ocf_annual": -44883648,
         "capex_annual": 3792503,
-        "verdict": "DANGER",
-        "verdict_reason": "Runway 3ヶ月（1年未満）危険",
-        "score": 20.0,
+        "verdict": "WATCH",
+        "verdict_reason": "Runway 13ヶ月（1-2年）要注意",
+        "score": 60.0,
         "sti_quarterly_missing": true
       },
       "profitability_path": {
@@ -12410,9 +12410,9 @@
         "reproduction_score": 0,
         "reproduction_label": "拡大再生産なし"
       },
-      "overall_score": 51.0,
-      "overall_verdict": "WATCH",
-      "summary": "【総合スコア判定根拠】\n\n赤字品質 75点　（高成長×積極投資の好例）\n• 売上成長率 59.4%　→　極めて強い成長エンジン\n• 研究開発+販管費 97.0%　→　将来への戦略的投資を継続\n• 粗利率 4.8%　→　収益構造の改善が課題\n• 純利益マージン改善: -163.2%→-382.8%（-219.6pt/年）\n\n生存能力 20点　（危険水準）\n• 現金 $13M・月次バーン $-4M/月　→　ランウェイ3ヶ月確保\n\n黒字化パス 50点　（OCF黒字化 2029年（4年後））\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化予測：2029年頃\n• 純利益黒字化予測不可",
+      "overall_score": 63.0,
+      "overall_verdict": "PROMISING",
+      "summary": "【総合スコア判定根拠】\n\n赤字品質 75点　（高成長×積極投資の好例）\n• 売上成長率 59.4%　→　極めて強い成長エンジン\n• 研究開発+販管費 97.0%　→　将来への戦略的投資を継続\n• 粗利率 4.8%　→　収益構造の改善が課題\n• 純利益マージン改善: -163.2%→-382.8%（-219.6pt/年）\n\n生存能力 60点　（要注意水準）\n• 現金 $54M・月次バーン $-4M/月　→　ランウェイ13ヶ月確保\n\n黒字化パス 50点　（OCF黒字化 2029年（4年後））\n• 営業CFトレンド（金額） 悪化中\n• 営業CF黒字化予測：2029年頃\n• 純利益黒字化予測不可",
       "records": {
         "2021": {
           "revenue": 2412868,
@@ -12440,30 +12440,25 @@
         "current_price": 1.7200000286102295,
         "enterprise_value": 43250844,
         "total_debt": 2835668,
-        "psr": 6.0,
+        "psr": 5.8,
         "ev_sales": 2.7,
-        "sales_basis": "TTM 2026-06-30",
-        "net_cash": -7216067.0,
-        "fetched_at": "2026-11-13T21:30:27.847443+00:00",
+        "sales_basis": "TTM 2026-09-30",
+        "net_cash": 54460036.0,
+        "fetched_at": "2026-11-15T18:08:28.656119+00:00",
         "error": null
       },
       "financial_as_of": {
-        "latest_quarter_end": "2026-06-30",
+        "latest_quarter_end": "2026-09-30",
         "scoring_fy": 2025,
         "scoring_fy_end": "2025-12-31",
-        "stale": true,
+        "stale": false,
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.244642+00:00",
+        "updated_at": "2026-11-15T18:08:30.104129+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 3185778
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -12482,7 +12477,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 6884840
+                "val": 2488237
               },
               {
                 "end": "2025-12-31",
@@ -12498,35 +12493,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 2080177
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 7396716
               }
             ],
             "yoy": {
-              "length": 1.0,
-              "percentile": 0.0,
-              "change_pct": -43.0,
-              "val_latest": 2080177,
-              "val_prev": 3652471,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.5,
+              "percentile": 75.0,
+              "change_pct": 197.3,
+              "val_latest": 7396716,
+              "val_prev": 2488237,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 1.0,
-              "percentile": 0.0,
-              "change_pct": -47.3,
-              "val_latest": 2080177,
-              "val_prev": 3946430,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.916,
+              "percentile": 95.8,
+              "change_pct": 255.6,
+              "val_latest": 7396716,
+              "val_prev": 2080177,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "GrossProfit": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 2257452
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -12545,7 +12540,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": 628880
+                "val": 421350
               },
               {
                 "end": "2025-12-31",
@@ -12561,35 +12556,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -638933
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 269828
               }
             ],
             "yoy": {
               "length": 1.0,
               "percentile": 0.0,
-              "change_pct": -189.5,
-              "val_latest": -638933,
-              "val_prev": 713710,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": -36.0,
+              "val_latest": 269828,
+              "val_prev": 421350,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 1.0,
-              "percentile": 0.0,
-              "change_pct": -223.5,
-              "val_latest": -638933,
-              "val_prev": 517292,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.826,
+              "percentile": 91.3,
+              "change_pct": 142.2,
+              "val_latest": 269828,
+              "val_prev": -638933,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OperatingIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -1710300
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -12608,7 +12603,7 @@
               {
                 "end": "2025-09-30",
                 "fp": "Q3",
-                "val": -8738576
+                "val": -8744462
               },
               {
                 "end": "2025-12-31",
@@ -12624,35 +12619,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": -11204578
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": -10997897
               }
             ],
             "yoy": {
               "length": 0.044,
               "percentile": 47.8,
-              "change_pct": -18.6,
-              "val_latest": -11204578,
-              "val_prev": -9451040,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "change_pct": -25.8,
+              "val_latest": -10997897,
+              "val_prev": -8744462,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.478,
-              "percentile": 26.1,
-              "change_pct": -51.7,
-              "val_latest": -11204578,
-              "val_prev": -7385177,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.392,
+              "percentile": 69.6,
+              "change_pct": 1.8,
+              "val_latest": -10997897,
+              "val_prev": -11204578,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "RD": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 1232333
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -12687,35 +12682,35 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 2985659
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 5019496
               }
             ],
             "yoy": {
-              "length": 0.25,
-              "percentile": 37.5,
-              "change_pct": 22.5,
-              "val_latest": 2985659,
-              "val_prev": 2436754,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.666,
+              "percentile": 83.3,
+              "change_pct": 116.1,
+              "val_latest": 5019496,
+              "val_prev": 2323010,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
               "length": 0.666,
               "percentile": 83.3,
-              "change_pct": 68.6,
-              "val_latest": 2985659,
-              "val_prev": 1770500,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "change_pct": 68.1,
+              "val_latest": 5019496,
+              "val_prev": 2985659,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "NetIncome": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": -2003764
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -12723,12 +12718,12 @@
               },
               {
                 "end": "2025-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -18806658
               },
               {
                 "end": "2025-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": 8142149
               },
               {
@@ -12743,33 +12738,38 @@
               },
               {
                 "end": "2026-03-31",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -29019844
               },
               {
                 "end": "2026-06-30",
-                "fp": "Q2",
+                "fp": "Q3",
                 "val": -21970816
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 4467794
               }
             ],
             "yoy": {
-              "length": 0.75,
-              "percentile": 12.5,
-              "change_pct": -369.8,
-              "val_latest": -21970816,
-              "val_prev": 8142149,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.916,
+              "percentile": 95.8,
+              "change_pct": 164.1,
+              "val_latest": 4467794,
+              "val_prev": -6973915,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 75.0,
-              "change_pct": 24.3,
-              "val_latest": -21970816,
-              "val_prev": -29019844,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.75,
+              "percentile": 87.5,
+              "change_pct": 120.3,
+              "val_latest": 4467794,
+              "val_prev": -21970816,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           },
           "OCF": {
@@ -12826,8 +12826,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 62.5,
+              "length": 0.084,
+              "percentile": 54.2,
               "change_pct": -3.2,
               "val_latest": -8985865,
               "val_prev": -8704916,
@@ -12837,11 +12837,6 @@
           },
           "CapEx": {
             "series_q": [
-              {
-                "end": "2024-09-30",
-                "fp": "Q3",
-                "val": 47982
-              },
               {
                 "end": "2024-12-31",
                 "fp": "Q4",
@@ -12876,26 +12871,31 @@
                 "end": "2026-06-30",
                 "fp": "Q2",
                 "val": 235173
+              },
+              {
+                "end": "2026-09-30",
+                "fp": "Q3",
+                "val": 1020019
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 25.0,
-              "change_pct": 20.7,
-              "val_latest": 235173,
-              "val_prev": 194821,
-              "end_latest": "2026-06-30",
-              "end_prev": "2025-06-30",
+              "length": 0.666,
+              "percentile": 83.3,
+              "change_pct": 344.5,
+              "val_latest": 1020019,
+              "val_prev": 229477,
+              "end_latest": "2026-09-30",
+              "end_prev": "2025-09-30",
               "fp": ""
             },
             "qoq": {
-              "length": 0.916,
-              "percentile": 4.2,
-              "change_pct": -81.9,
-              "val_latest": 235173,
-              "val_prev": 1296707,
-              "end_latest": "2026-06-30",
-              "end_prev": "2026-03-31"
+              "length": 0.834,
+              "percentile": 91.7,
+              "change_pct": 333.7,
+              "val_latest": 1020019,
+              "val_prev": 235173,
+              "end_latest": "2026-09-30",
+              "end_prev": "2026-06-30"
             }
           }
         }
@@ -13036,7 +13036,7 @@
         "ev_sales": 20.1,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 880888000.0,
-        "fetched_at": "2026-11-13T21:30:27.920150+00:00",
+        "fetched_at": "2026-11-15T18:08:28.730191+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -13047,7 +13047,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.244822+00:00",
+        "updated_at": "2026-11-15T18:08:30.104343+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -13093,8 +13093,8 @@
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.334,
+              "percentile": 33.3,
               "change_pct": 30.9,
               "val_latest": 179170000,
               "val_prev": 136907000,
@@ -13103,8 +13103,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 37.5,
+              "length": 0.166,
+              "percentile": 41.7,
               "change_pct": 9.4,
               "val_latest": 179170000,
               "val_prev": 163772000,
@@ -13219,8 +13219,8 @@
               }
             ],
             "yoy": {
-              "length": 0.826,
-              "percentile": 91.3,
+              "length": 0.74,
+              "percentile": 87.0,
               "change_pct": 91.4,
               "val_latest": -1849000,
               "val_prev": -21590000,
@@ -13229,8 +13229,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.914,
-              "percentile": 95.7,
+              "length": 0.826,
+              "percentile": 91.3,
               "change_pct": 86.0,
               "val_latest": -1849000,
               "val_prev": -13249000,
@@ -13282,8 +13282,8 @@
               }
             ],
             "yoy": {
-              "length": 0.5,
-              "percentile": 25.0,
+              "length": 0.584,
+              "percentile": 20.8,
               "change_pct": 10.1,
               "val_latest": 56353000,
               "val_prev": 51167000,
@@ -13292,8 +13292,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 41.7,
+              "length": 0.416,
+              "percentile": 29.2,
               "change_pct": 4.3,
               "val_latest": 56353000,
               "val_prev": 54028000,
@@ -13345,8 +13345,8 @@
               }
             ],
             "yoy": {
-              "length": 0.75,
-              "percentile": 87.5,
+              "length": 0.666,
+              "percentile": 83.3,
               "change_pct": 139.9,
               "val_latest": 6553000,
               "val_prev": -16431000,
@@ -13418,8 +13418,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.5,
-              "percentile": 75.0,
+              "length": 0.25,
+              "percentile": 62.5,
               "change_pct": 21.5,
               "val_latest": 69314000,
               "val_prev": 57056000,
@@ -13481,8 +13481,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.25,
-              "percentile": 37.5,
+              "length": 0.334,
+              "percentile": 33.3,
               "change_pct": -14.6,
               "val_latest": 2823000,
               "val_prev": 3307000,
@@ -13628,7 +13628,7 @@
         "ev_sales": 0.9,
         "sales_basis": "TTM 2026-09-30",
         "net_cash": 796909000.0,
-        "fetched_at": "2026-11-13T21:30:27.980620+00:00",
+        "fetched_at": "2026-11-15T18:08:28.790252+00:00",
         "error": null
       },
       "financial_as_of": {
@@ -13639,7 +13639,7 @@
         "stale_threshold_days": 135
       },
       "financial_vectors": {
-        "updated_at": "2026-11-13T21:30:29.245004+00:00",
+        "updated_at": "2026-11-15T18:08:30.104566+00:00",
         "fields": {
           "Revenue": {
             "series_q": [
@@ -13685,8 +13685,8 @@
               }
             ],
             "yoy": {
-              "length": 0.584,
-              "percentile": 20.8,
+              "length": 0.75,
+              "percentile": 12.5,
               "change_pct": 8.1,
               "val_latest": 1821822000,
               "val_prev": 1685195000,
@@ -13695,8 +13695,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.75,
-              "percentile": 12.5,
+              "length": 0.834,
+              "percentile": 8.3,
               "change_pct": -1.2,
               "val_latest": 1821822000,
               "val_prev": 1843544000,
@@ -13811,8 +13811,8 @@
               }
             ],
             "yoy": {
-              "length": 0.566,
-              "percentile": 21.7,
+              "length": 0.652,
+              "percentile": 17.4,
               "change_pct": -184.1,
               "val_latest": -19378000,
               "val_prev": 23053000,
@@ -13821,8 +13821,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.74,
-              "percentile": 13.0,
+              "length": 0.826,
+              "percentile": 8.7,
               "change_pct": -140.7,
               "val_latest": -19378000,
               "val_prev": 47566000,
@@ -13947,8 +13947,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.666,
-              "percentile": 16.7,
+              "length": 0.75,
+              "percentile": 12.5,
               "change_pct": -119.3,
               "val_latest": -9731000,
               "val_prev": 50294000,
@@ -14000,8 +14000,8 @@
               }
             ],
             "yoy": {
-              "length": 0.166,
-              "percentile": 58.3,
+              "length": 0.084,
+              "percentile": 54.2,
               "change_pct": 12.8,
               "val_latest": 328436000,
               "val_prev": 291251000,
@@ -14011,7 +14011,7 @@
             },
             "qoq": {
               "length": 0.084,
-              "percentile": 54.2,
+              "percentile": 45.8,
               "change_pct": -6.1,
               "val_latest": 328436000,
               "val_prev": 349925000,
@@ -14073,8 +14073,8 @@
               "fp": ""
             },
             "qoq": {
-              "length": 0.166,
-              "percentile": 58.3,
+              "length": 0.084,
+              "percentile": 45.8,
               "change_pct": 11.4,
               "val_latest": 33758000,
               "val_prev": 30295000,
