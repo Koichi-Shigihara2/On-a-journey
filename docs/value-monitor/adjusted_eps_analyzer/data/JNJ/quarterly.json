@@ -1,6 +1,6 @@
 {
   "ticker": "JNJ",
-  "last_updated": "2026-11-11T01:56:27.468925",
+  "last_updated": "2026-11-15T18:14:46.943000",
   "quarters": [
     {
       "gaap_eps": 0.08576329331046312,
@@ -82,32 +82,32 @@
       "pretax_income": 34000000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目のうちtax_one_time_dtaの-12億ドル規模の一時的DTA税務利益除外が支配的で、GAAP EPSを押し上げて実力以上に良く見せている。SBCや無形資産償却は恒常的コストであり加算調整の妥当性に疑問が残るが、全体としてAdjusted EPSが大幅に悪化（正→負）するため、市場がGAAP EPSで判断する場合に企業の実力が見えにくく、むしろ過大評価リスクが高い。過小評価の可能性は低い。投資家は税務の一時性の持続不可能性とリストラの再発リスクに注目すべき。",
+        "comment": "調整項目の多くはSBCや無形資産償却のような恒常的項目だが、リストラや異常貸倒引当は一過性、税務DTA認識除外は大型の一時的利益除外と判断。GAAP EPSがプラスなのは一時的税務メリットによるもので、Adjusted EPSが大幅マイナスとなるため、市場がGAAP EPSで判断する場合に企業の実力（収益力の弱さ）が見えにくくなっており、過大評価リスクが高い。ただし非現金費用の加戻しを考慮すれば一部過小評価の可能性もある。投資家は税項目の一過性と恒常的調整の妥当性を注視し、過大評価リスクを警戒すべき。",
         "sources": [
           {
-            "item": "tax_one_time_dta",
-            "snippet": "DTA認識（繰延税金資産）除外。一時的な税務利益を除外しGAAP EPSを押し上げていた要因。",
-            "confidence": 1.0
-          },
-          {
             "item": "sbc",
-            "snippet": "株式報酬費用は毎期発生する恒常的な非現金コストであり、調整で加算されている。",
+            "snippet": "非現金費用",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "無形資産償却費は買収関連で継続的に発生する恒常的費用。",
+            "snippet": "買収関連無形資産の償却",
             "confidence": 0.2
           },
           {
+            "item": "loan_loss_provision_abnormal",
+            "snippet": "マクロ変動による一時的影響",
+            "confidence": 0.75
+          },
+          {
             "item": "restructuring",
-            "snippet": "リストラ費用は一過性の事業再編費用として加算調整。",
+            "snippet": "一過性の事業再編費用",
             "confidence": 0.8
           },
           {
-            "item": "loan_loss_provision_abnormal",
-            "snippet": "貸倒引当金繰入（異常変動分）はマクロ変動による一時的影響。",
-            "confidence": 0.75
+            "item": "tax_one_time_dta",
+            "snippet": "DTA認識（繰延税金資産）除外",
+            "confidence": 0.9
           }
         ]
       }

@@ -1,7 +1,78 @@
 {
   "ticker": "ONDS",
-  "last_updated": "2026-11-11T01:52:44.709208",
+  "last_updated": "2026-11-15T18:11:47.685575",
   "quarters": [
+    {
+      "gaap_eps": -0.10464928121581649,
+      "adjusted_eps": -0.10466033439331981,
+      "gaap_net_income": -64672000.0,
+      "adjusted_net_income": -64678830.731058925,
+      "diluted_shares_used": 617988000.0,
+      "adjustments": [
+        {
+          "item_id": "loan_fair_value",
+          "item_name": "ローン公正価値評価損益",
+          "amount": 125100000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "市場金利変動による一時的評価替え",
+          "extracted_from": "us-gaap:FairValueOptionChangesInFairValueGainLoss1",
+          "category": "金融関連",
+          "net_amount": 106815556.93398316,
+          "tax_rate_applied": 0.14615861763402746
+        },
+        {
+          "item_id": "warrant_fv_change",
+          "item_name": "ワラント公正価値変動損益",
+          "amount": -125108000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "非現金・非経常のワラント時価評価変動",
+          "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
+          "category": "公正価値変動関連",
+          "net_amount": -106822387.66504209,
+          "tax_rate_applied": 0.14615861763402746
+        }
+      ],
+      "net_adjustment_total": -6830.73105892539,
+      "filing_date": "2026-09-30",
+      "form": "10-Q",
+      "sector": "通信・インフラ",
+      "revenue": 167489000.0,
+      "diluted_shares": 617988000.0,
+      "period_end": "2026-09-30",
+      "fiscal_year": 2026,
+      "quarter": 3,
+      "tax_expense": 8247000.0,
+      "pretax_income": -56425000.0,
+      "special_flags": [
+        "FAIR_VALUE_ADJUSTED"
+      ],
+      "special_notes": {
+        "fair_value_auto_detect": {
+          "flag": "FAIR_VALUE_ADJUSTED",
+          "note": "公正価値変動（非現金・非経常）が純利益の30%以上を占めると判定されました。GAAP EPSは経済実態を反映していない可能性があります。Adj EPSは以下の項目を除外して再計算しています: ワラント公正価値変動損益"
+        }
+      },
+      "ai_analysis": {
+        "health": "調整小",
+        "comment": "ローン公正価値評価とワラント公正価値変動の調整項目がほぼ同額で完全に相殺されており、GAAP EPSとAdjusted EPSに実質的な差が生じていません。両項目とも市場金利・株価変動による非現金・一時的な公正価値調整であり、企業コア事業の実力とは無関係なノイズです。市場がGAAP EPSで判断していてもネット影響がゼロに近いため、実力が見えにくくなっている可能性は低く、過小評価のリスクも限定的です。ただし、個別項目の絶対額が非常に大きいため、四半期ごとのボラティリティが株価に悪影響を及ぼす過小評価リスクは残ります。投資家はこれらを除いたコアオペレーションのトレンドに着目すべきです。",
+        "sources": [
+          {
+            "item": "loan_fair_value",
+            "snippet": "市場金利変動による一時的評価替え。非現金で一過性の金融関連公正価値変動であり、恒常的な事業コストではない。",
+            "confidence": 0.75
+          },
+          {
+            "item": "warrant_fv_change",
+            "snippet": "非現金・非経常のワラント時価評価変動。公正価値調整だが、ワラントが残存する場合に類似変動が再発する可能性がある。",
+            "confidence": 0.6
+          }
+        ]
+      }
+    },
     {
       "gaap_eps": -0.17552269392148023,
       "adjusted_eps": -0.17544796843554153,
@@ -55,22 +126,6 @@
           "flag": "FAIR_VALUE_ADJUSTED",
           "note": "同じ会計年度のほかの四半期で公正価値変動（非現金・非経常）を調整したため、この四半期の同じ項目も除外して再計算しています（年度内でそろえる）: ワラント公正価値変動損益"
         }
-      },
-      "ai_analysis": {
-        "health": "調整小",
-        "comment": "調整項目はローン公正価値とワラント公正価値変動であり、金額がほぼ相殺されるためAdjusted EPSはGAAP EPSと実質的に同等です。市場がGAAP EPSで判断する場合でも、これら非現金・市場金利/時価 drivenの項目により企業の実力が見えにくくなる可能性は低く、歪みは限定的です。投資家として注目すべきは、これらがコア事業とは無関係なボラティリティ要因である点で、過小評価リスクは小さいものの、将来の金利・株価変動次第で同様の公正価値調整が繰り返される可能性があり、持続的な非経常性に注意が必要です。",
-        "sources": [
-          {
-            "item": "loan_fair_value",
-            "snippet": "市場金利変動による一時的評価替え",
-            "confidence": 0.65
-          },
-          {
-            "item": "warrant_fv_change",
-            "snippet": "非現金・非経常のワラント時価評価変動",
-            "confidence": 0.6
-          }
-        ]
       }
     },
     {
@@ -125,7 +180,7 @@
         {
           "item_id": "warrant_fv_change",
           "item_name": "ワラント公正価値変動損益",
-          "amount": 82225000.0,
+          "amount": 82225000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
@@ -171,37 +226,37 @@
       }
     },
     {
-      "gaap_eps": -0.02878255102840349,
-      "adjusted_eps": -0.04973480791374949,
+      "gaap_eps": -0.02878259698586813,
+      "adjusted_eps": -0.04973404537742056,
       "gaap_net_income": -7480856.0,
-      "adjusted_net_income": -12926544.83,
-      "diluted_shares_used": 259909415.0,
+      "adjusted_net_income": -12926326.0,
+      "diluted_shares_used": 259909000.0,
       "adjustments": [
         {
           "item_id": "investment_fv_change",
           "item_name": "投資公正価値変動損益",
-          "amount": -6893277,
+          "amount": -6893000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "非現金・非経常の投資時価評価変動",
           "extracted_from": "us-gaap:UnrealizedGainLossOnInvestments",
           "category": "公正価値変動関連",
-          "net_amount": -5445688.83,
+          "net_amount": -5445470.0,
           "tax_rate_applied": 0.21
         }
       ],
-      "net_adjustment_total": -5445688.83,
+      "net_adjustment_total": -5445470.0,
       "filing_date": "2025-09-30",
       "form": "10-Q",
       "sector": "通信・インフラ",
-      "revenue": 10098310.0,
-      "diluted_shares": 259909415.0,
+      "revenue": 10098000.0,
+      "diluted_shares": 259909000.0,
       "period_end": "2025-09-30",
       "fiscal_year": 2025,
       "quarter": 3,
-      "tax_expense": 307456.0,
-      "pretax_income": -7173400.0,
+      "tax_expense": 307000.0,
+      "pretax_income": -7173856.0,
       "special_flags": [
         "FAIR_VALUE_ADJUSTED"
       ],
@@ -980,11 +1035,11 @@
   ],
   "execution_metrics": {
     "revenue_growth_acceleration": {
-      "value": 6.132949557940199,
+      "value": 7.0087249643286516,
       "reason": "ok",
       "method": "avg4q_yoy_diff",
-      "recent_4q_avg_yoy": 8.816348211263433,
-      "prior_4q_avg_yoy": 2.6833986533232346
+      "recent_4q_avg_yoy": 11.258053379444963,
+      "prior_4q_avg_yoy": 4.249328415116311
     },
     "roic_trend": {
       "years": [
@@ -1014,7 +1069,7 @@
     "sbc_ratio": {
       "value": null,
       "reason": "no_sbc_data",
-      "period_end": "2026-06-30"
+      "period_end": "2026-09-30"
     }
   }
 }
