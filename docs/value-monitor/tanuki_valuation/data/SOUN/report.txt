@@ -1,5 +1,5 @@
 SOUN INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-14T06:42:39+09:00
+Generated: 2026-11-16T03:16:31+09:00
 Price: $3.49
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -8,10 +8,10 @@ Classification: WATCH
 Classification_Pre_Rounding: HOLD
 Funda_Score: 35/100
 Timing_Score (components):
-  Deviation_Rate: +84.0%
+  Deviation_Rate: +84.3%
   MA200_Deviation: -49.2%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $12 median ($5-$17) | 5 analysts | vs IV: +86.9%
+  Analyst_Consensus: Strong Buy | Target: $12 median ($5-$17) | 5 analysts | vs IV: +86.6%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -34,7 +34,7 @@ Matrix: ④キャッシュ創出力系
 Quadrant: 右下
 Label: 割安×低FCF
 Key_Metric_Y: FCF_Margin = -61.0%
-Deviation_Rate: +84.0%
+Deviation_Rate: +84.3%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,33 +59,33 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $3.49
-Intrinsic_Value_BASE: $6.42
-Deviation_BASE: +84.0%
+Intrinsic_Value_BASE: $6.43
+Deviation_BASE: +84.2%
 Scenarios:
-BEAR: Growth=35.0%, IV=$4.43, Deviation=+26.9%
-BASE: Growth=50.0%, IV=$6.42, Deviation=+84.0%
-BULL: Growth=60.0%, IV=$8.11, Deviation=+132.4%
-Return_Outlook(BASE): 1年後: $9.63 (+175.9%) / 3年後: $21.67 (+520.9%) / 5年後: $33.64 (+863.9%)
-  5yr_Annualized_Return: +57.3%/yr
+BEAR: Growth=35.0%, IV=$4.44, Deviation=+27.2%
+BASE: Growth=50.0%, IV=$6.43, Deviation=+84.2%
+BULL: Growth=60.0%, IV=$8.12, Deviation=+132.7%
+Return_Outlook(BASE): 1年後: $9.64 (+176.2%) / 3年後: $21.70 (+521.8%) / 5年後: $33.69 (+865.3%)
+  5yr_Annualized_Return: +57.4%/yr
 Growth_Rate_Rec: 48.7% (recommended)
 Growth_Rate_Parallel: 採用値 50.0%（segment_xbrl） / 参考 48.7%（実績CAGR等ベース）
-  ⚠️ 実績YoY(直近最大4四半期平均)は55.9%だが、上限50%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
+  ⚠️ 実績YoY(直近最大4四半期平均)は51.1%だが、上限50%でクリップして採用（一時的な変動を複数年DCFへそのまま複利適用しないため。calculate_fcf_cagr()と同じ基準）。
 TTM_YoY_Growth: 99.4%
 (DCF Base vs TTM actual: -49.4pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $2.76 (Deviation: -21.0%)
-  参考②Rf理論上限_IV（Rf 5.15%、^TNX 2026-11-13）: $25.61 (Deviation: +633.7%)
+  参考①β込みWACC_IV: $2.77 (Deviation: -20.7%)
+  参考②Rf理論上限_IV（Rf 5.15%、^TNX 2026-11-13）: $25.62 (Deviation: +634.0%)
   金利感応度チェック: 10年国債利回りが基準4.30%→現在5.15%（^TNX 2026-11-13）に変化すると、Rf基準の必要成長率は-22.0%→-9.8%（+12.2pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 2.5
-FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
+FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
 ⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
    [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
     以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
     評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
-FCF_Base: $45.63M (5yr平均 + R&D補正) [実績avg: $-92.4M]
-FCF_Breakdown（TTM 2026-06-30）: OCF=$-115M / CapEx=$11M / SBC(非現金)=$79M / D&A=$19M
+FCF_Base: $45.63M (5yr平均 + R&D補正) [実績avg: $-96.5M]
+FCF_Breakdown（TTM 2026-09-30）: OCF=$-118M / CapEx=$11M / SBC(非現金)=$81M / D&A=$21M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
@@ -96,28 +96,31 @@ DCF_FCF_PV: $0.42B (4yr discounted FCF sum, pre-alpha, Rm=10%)
 DCF_TV_PV:  $2.51B (terminal value present value, pre-alpha, Rm=10%)
 DCF_v0:     $2.93B (= FCF_PV + TV_PV, Rm=10% enterprise value)
 Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
-RPO_PV: $0 (RPO/Revenue=0.30 < 0.3, not applied)
+RPO_PV: $0
 Growth_Option_PV: $0
-Equity_Value: $3.14B (= v0 + RPO_PV + GO_PV + Net_Cash $0.20B)
+Equity_Value: $3.14B (= v0 + RPO_PV + GO_PV + Net_Cash $0.21B)
 Shares_Used: 488.4M (source: yf_implied)
-→ Intrinsic_Value: $6.42 (= Equity_Value ÷ Shares_Used)
+→ Intrinsic_Value: $6.43 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $4.05  $7.61  $14.34
-  10.0%       $3.48  $6.42  $11.88
-  11.0%       $3.07  $5.55  $10.10
+  9.0%       $4.06  $7.61  $14.35
+  10.0%       $3.49  $6.43  $11.89
+  11.0%       $3.08  $5.56  $10.11
+一過性費用の定性評価（AI・参考情報、action判定には未使用）:
+  Assessment: 一時的な問題と判断（参考）
+  Reasoning: マクロ変動による一時的影響と明記されており、事業運営上の構造的問題や収益力悪化を示す内容ではないため。
 Financial_Health:
-  Net_Debt: $-0.20B (negative=net cash)
-  Total_Debt: $0.00B  Cash: $0.20B
+  Net_Debt: $-0.21B (negative=net cash)
+  Total_Debt: $0.00B  Cash: $0.21B
   Debt内訳: LTDebt=$0.00B (推定ゼロ、最終確認: FY2024)  STDebt=$0.00B (推定ゼロ、最終確認: FY2023)
-  Net_Debt_Period: Cash=2026Q2/Debt=FY2025
-  Finance_Lease: +$0.00B をLTDebtに含む（2026-06-30、400日以内の最新（10-Kの値）、FinanceLeaseLiabilityCurrent）
+  Net_Debt_Period: Cash=2026Q3/Debt=FY2025
+  Finance_Lease: +$0.00B をLTDebtに含む（2026-09-30、400日以内の最新（10-Kの値）、FinanceLeaseLiabilityCurrent）
   SBC_TTM: $81M
   Dilution_3yr_Annual: +37.56%/yr  深刻な希薄化 ⚠️ 株主価値毀損リスク大
   Dilution_Comment: 継続なら1株価値を年率37.6%毀損。株主価値毀損リスク大。
   ⚠️ 期中に大規模な株式発行の可能性（+19.3%乖離: yf=488M vs SEC=409M）
   Next_Earnings_Date: 2026-11-06
-  DuPont_ROE: 純利益率-67.4% × 資産回転率0.30x × 財務レバレッジ1.36x = ROE-27.9%
+  DuPont_ROE: 純利益率-32.9% × 資産回転率0.22x × 財務レバレッジ1.24x = ROE-9.1%
     ⚠️ DuPont_Reliability: LOW (単四半期NI集中（一過性要因の可能性）)
 FCF_History:
   2021: $-0.00B (FCF_Margin: -4.1%)
@@ -126,8 +129,8 @@ FCF_History:
   2024: $-0.11B (FCF_Margin: -129.3%)
   2025: $-0.10B (FCF_Margin: -61.0%)
 Segment_Breakdown:
-  Voice AI: $0.2B (100%, YoY 56%)
-  Segment_Weighted_Growth: 55.9%
+  Voice AI: $0.2B (100%, YoY 51%)
+  Segment_Weighted_Growth: 51.1%
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -182,7 +185,7 @@ Phase1成長率 : 50.0%
 成長モデル: セグメント加重モデル（Layer 1）  HypePhase=4
 DCF適用値:  50.0%（セグメント加重平均 → DCF G として直接使用）
 推奨成長率: 48.7%（Layer 2 参考値・DCF未適用）
-推奨成長率の候補: 今の伸び(TTM売上の前年比) 54.6%
+推奨成長率の候補: 今の伸び(TTM売上の前年比) 50.7%
 判定         : PLAUSIBLE
 業界ベンチマーク: Software (System & Application) / 21.6% (Damodaran 2025)
 signals:
@@ -283,7 +286,7 @@ Compare with TANUKI G scenario for cross-validation
 [7. HYPECORE]
 Current_Phase: Phase4 (期待剥落期)
 Alpha_Premium: 0.0
-HYPE_Signal: 長期調整・実体強 — S4が13ヶ月継続。売上+54.6%・純利益-42.7%と実体は強い。バリュエーション訂正が長引く典型的な長期調整局面。
+HYPE_Signal: 長期調整・実体強 — S4が13ヶ月継続。売上+50.7%・純利益-58.1%と実体は強い。バリュエーション訂正が長引く典型的な長期調整局面。
 Phase_History (recent 6 months):
 2026-06: Phase4 (期待剥落期)
 2026-07: Phase4 (期待剥落期)
@@ -338,9 +341,9 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 
 [8. STONKS SILO]
 Short_Report_Target: yes
-Short_Interest: 37.7%
+Short_Interest: 36.2%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $12 median ($5-$17) | 5 analysts | vs IV: +86.9%
+Analyst_Consensus: Strong Buy | Target: $12 median ($5-$17) | 5 analysts | vs IV: +86.6%
 Insider_Activity: Sell優勢 | 買い0件 / 売り6件 | 直近90日
 Runway_Months: 23.6
 Revenue_Growth_YoY: 99.4%
