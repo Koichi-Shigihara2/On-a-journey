@@ -100,8 +100,16 @@ def test_latest_balance_requires_same_cash(tmp_path):
 
 
 def test_saved_records_crwv():
-    lb = bl.latest_balance("CRWV", 5524000000)
-    assert lb["end"] == "2026-06-30" and lb["short_term_debt"] == 7513000000 and lb["long_term_debt"] == 27555000000
+    # 新しい四半期が保存されても壊れない形（2026-11-16: 現金を2026-06-30の値で決め打ちしていてQ3の保存で壊れた）。
+    # 最新の記録の現金を使って最新の残高が取れること・2026-06-30の記録のCRWVの型の行（借入金）が取れること
+    recs = [r for r in bl.load_records("CRWV").values() if r.get("status") == "ok"]
+    latest = max(recs, key=lambda r: r["filed"])
+    rv = bl.record_values(latest)
+    end = max(d for _k, d in rv)
+    lb = bl.latest_balance("CRWV", rv[("cash_and_equivalents", end)])
+    assert lb["end"] == end and lb["short_term_debt"] > 0 and lb["long_term_debt"] > 0
+    q2 = {(k, d): v for r in recs for (k, d), v in bl.record_values(r).items() if d == "2026-06-30"}
+    assert q2[("short_term_debt", "2026-06-30")] == 7513000000 and q2[("long_term_debt", "2026-06-30")] == 27555000000
     st = {}
     for t in os.listdir(bl.DATA_DIR):
         for r in bl.load_records(t).values():
