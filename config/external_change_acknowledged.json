@@ -91,6 +91,48 @@
       "match": "2026-10-30",
       "acknowledged_date": "2026-11-04",
       "comment": "Yahooが2026-10-30の行で月の記号の無い限月「NQ.CME」を返した（前後の日はNQZ26.CME）。Market Pulseが限月を扱うのはCL=F・GC=Fだけで、NQ=Fは表示だけ（[[MARKETDATA-FUTURES-ROLL-1]]）"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "RCAT",
+      "match": "depreciation_and_amortization Depreciation+AmortizationOfIntangibleAssets→DepreciationDepletionAndAmortization",
+      "acknowledged_date": "2026-11-16",
+      "comment": "内訳（Depreciation＋Amortization）から合計のタグに変わっただけで、2026上半期は内訳の和2.3Mと合計2.284Mが一致。Q2の1.47M（Q1の1.81倍）は実際の増加（docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "KULR",
+      "match": "revenue RevenueFromContractWithCustomerExcludingAssessedTax→Revenues",
+      "acknowledged_date": "2026-11-16",
+      "comment": "2つのタグが同じ値で出ている（Q3 7,396,716・Q2 2,080,177）。3.56倍は実際の増加。上半期の下方修正による四半期の値の混在は別件（FINDINGS 2026-11-16、docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
+    },
+    {
+      "kind": "contract",
+      "ticker": "NIY=F",
+      "match": "2026-11-09",
+      "acknowledged_date": "2026-11-16",
+      "comment": "Yahooが2026-11-09の行で月の記号の無い限月「NIY.CME」を返した（前後の日はNIYZ26.CME）。終値60,935は翌日の前日終値と一致し値は正しい。NIY=Fは表示だけ（[[MARKETDATA-FUTURES-ROLL-1]]、docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
+    },
+    {
+      "kind": "tag_switch",
+      "ticker": "COHR",
+      "match": "depreciation_and_amortization Depreciation+AmortizationOfIntangibleAssets→Depreciation",
+      "acknowledged_date": "2026-11-16",
+      "comment": "誤り・欠け。[[SEC-RETAG-RECONCILE-1]] で直す（直ったら外す）。無形資産の償却が OtherAmortizationOfDeferredCharges 69,451,000 に付け替わり、Layer3はDepreciation 77.7Mだけを採った（実際は147.1M）。理論株価・判定は0（docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
+    },
+    {
+      "kind": "tag_gap",
+      "ticker": "SPIR",
+      "match": "short_term_investments",
+      "acknowledged_date": "2026-11-16",
+      "comment": "誤り・欠け。[[SEC-RETAG-RECONCILE-1]] で直す（直ったら外す）。同じバランスシートの行が AvailableForSaleSecuritiesDebtSecurities（2026-09-30 47,052,000）に付け替わり、短期投資がFY2025の56.97Mのまま。理論株価・判定は0（docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
+    },
+    {
+      "kind": "tag_gap",
+      "ticker": "KULR",
+      "match": "operating_cash_flow",
+      "acknowledged_date": "2026-11-16",
+      "comment": "誤り・欠け。[[SEC-RETAG-RECONCILE-1]] で直す（直ったら外す）。最新の10-Qは継続事業のタグ（NetCashProvidedByUsedInOperatingActivitiesContinuingOperations）だけで、前年の比較も廃止事業を除く組み替え。最新のTTMのOCF・FCFが欠け、最新期の欠けの守りが効く。理論株価・判定・収益の段階は0（docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
     }
   ]
 }

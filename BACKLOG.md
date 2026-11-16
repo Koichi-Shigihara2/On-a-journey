@@ -2582,6 +2582,36 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 
 ---
 
+### [SEC-RETAG-RECONCILE-1] 申告のタグの付け替え・漏れで、Layer3とbs_linesが値を取りこぼす（COHR D&A・SPIR・DOCNの短期投資・KULRの営業CF）
+**型・処置:** 型A・根治策
+**優先度:** 中
+**分類:** SEC層 / `common/sec_data/layer3_builder.py`（候補選び）・`common/sec_data/bs_lines.py`（分類）・`config/sec_concept_definitions.json`
+**登録日:** 2026-11-16
+**着手条件:** 公開の列（[[TANUKI-CALC-CONTINUITY-1]]・[[DILUTION-DEFINITION-UNIFY-1]]・[[DEFICIT-QUALITY-ADOPT-1]]・[[MULTIPLES-ADOPT-1]]・[[TANUKI-SHARES-SINGLE-SOURCE-1]]）の後
+**発見:** System Health Check [P] ExternalChange の新しい6件（2026-11-15の日曜の更新）の調べ（`docs/architecture/EXTERNAL_CHANGE_2026-11-15.md`）。確認済みの台帳には「誤り・欠け。[[SEC-RETAG-RECONCILE-1]]で直す（直ったら外す）」として3件を入れた。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 該当（原本の申告で確認済み）:
+  - COHRのD&A: 最新の10-Qで無形資産の償却が`AmortizationOfIntangibleAssets`→`OtherAmortizationOfDeferredCharges`に付け替わり、Layer3は`Depreciation`だけ（147.1M→77.7M）。ttm D&Aが69.5M少ない。理論株価・判定は0
+  - SPIRの短期投資: バランスシートの同じ行が`MarketableSecuritiesCurrent`→`AvailableForSaleSecuritiesDebtSecurities`（2025-12-31は同額56,969,000）。`bs_adjustment`が古い値（FY2025の56.97M、実際は47.05M）。理論株価・判定は0
+  - DOCNの短期投資: `MarketableSecurities` 178.6M（2026-09-30）が候補にも`bs_lines`の分類にも無く、短期投資が0（`sti_estimated_zero`）。正味現金が約1.5ドル/株少ない＝理論株価の約2%（概算。**値に効く唯一の件**）
+  - KULRの営業CF: 最新の10-Qが継続事業のタグ（`NetCashProvidedByUsedInOperatingActivitiesContinuingOperations`）だけで、前年の比較も廃止事業を除く組み替え（9か月 −31.04M→−22.58M）。最新のTTMでOCF・FCFが欠ける（最新期の欠けの守りが効く。IV・判定・収益の段階は0）
+- 同じ型の未調査（FINDINGS 2026-11-16の行）: LITEの株式報酬（最新のTTMに無い）、APP 0.46倍・ENTG 0.78倍・FROG 0.80倍・MO 0.79倍のttm D&Aの落ち
+- 方針:
+  - Layer3の候補選びの1か所に「再タグの突き合わせ」を入れる: 最新の申告で候補のタグが欠けた項目について、同じ申告の前年同期（または前の期末）の比較値が、前の申告の候補のタグの同じ期の値と一致する（0.5%以内）別のタグを、その申告の別名として採る（印`retag_tie_out`）。合わないものは採らず、今の「最新期が欠けた」守りに任せる
+  - `bs_lines`の分類の漏れも同じ件で直す: `short_term_investments`に`MarketableSecurities`（Current無し）と`AvailableForSaleSecuritiesDebtSecurities`を足す。ただし後者は注記の合計（現金同等物を含む）で出す会社もある（CAT・NVDA・KLAC・SOFI等）ので、バランスシートの行（`bs_lines`の`role`）に限る
+  - 継続事業だけの申告（KULR）は、継続事業の値を正にし、基準が変わった期に`basis_mix`の印を付ける（自動の別名にはしない）。Q3単独の差し引きは上半期が旧基準なので混ざる点を扱う
+  - 銘柄名を手で書かない。全銘柄の試算と、計算方法の変更の手順（`CLAUDE_CODE_PROCEDURES.md`）で行う。直ったら確認済みの台帳（`config/external_change_acknowledged.json`）の3件を外す
+- **STEP 0の最初**: APP（保有）のttm D&A 0.46倍（289.9M→133.2M）が何に効くか（事業の売却・廃止の組み替えか、タグの欠けか）を出す。D&Aの読み手は`fcf_estimation`の表示・STONKS・`common/sec_data/q4_implied.py`
+
+#### 投資判断への影響
+DOCNだけ理論株価に効く（約+2%、判定は境に近い）。COHR・SPIR・KULRは表示と履歴（今の公開の値は変わらない）。APPのD&Aの落ちは未調査
+
+#### 規模の見込み
+中
+
+---
+
 ### [TEST-ISOLATION-GUARD-1] テストが実データ・今日の日付・外部の通信に依っていて、日付が進むと失敗し（2028・2029年）、新しい段を足すと本物の取得・書き込みが動く
 **型・処置（2026-11-11 束ね）:** 型C・型A・根治策
 **優先度:** 低
