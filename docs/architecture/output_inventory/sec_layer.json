@@ -3650,8 +3650,8 @@
    "launched_by": [
     ".github/workflows/SEC_Data_Update.yml"
    ],
-   "files_tracked": 2266,
-   "top_keys_sampled_files": 2266,
+   "files_tracked": 2276,
+   "top_keys_sampled_files": 2276,
    "top_keys": [
     {
      "key": "accn",
@@ -3775,6 +3775,14 @@
      "file": "common/sec_data/newfield_q4_cutoff_check.py",
      "line": 133,
      "func": "check_ticker",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/bs_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/quarterly_bs.py",
+     "line": 129,
+     "func": "_build_store",
      "how": "保存済みファイル",
      "via": "common/sec_data/bs_lines.py::load_records",
      "type": "Python"
@@ -4238,7 +4246,7 @@
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 25,
+   "reader_count": 26,
    "reader_count_test": 8,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -4259,8 +4267,8 @@
    "launched_by": [
     ".github/workflows/SEC_Data_Update.yml"
    ],
-   "files_tracked": 2266,
-   "top_keys_sampled_files": 2266,
+   "files_tracked": 2276,
+   "top_keys_sampled_files": 2276,
    "top_keys": [
     {
      "key": "accn",
@@ -4380,6 +4388,14 @@
      "file": "common/sec_data/parser.py",
      "line": 3971,
      "func": "SECParser._apply_cf_lines_capex",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/cf_lines.py::load_records",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/quarterly_bs.py",
+     "line": 129,
+     "func": "_build_store",
      "how": "保存済みファイル",
      "via": "common/sec_data/cf_lines.py::load_records",
      "type": "Python"
@@ -4765,7 +4781,7 @@
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 23,
+   "reader_count": 24,
    "reader_count_test": 3,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -4985,6 +5001,30 @@
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/parser.py::SECParser.parse_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/quarterly_bs.py",
+     "line": 129,
+     "func": "_build_store",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/quarterly_bs.py",
+     "line": 141,
+     "func": "replace_from_layer3",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/quarterly_bs.py",
+     "line": 157,
+     "func": "regenerate",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
      "type": "Python"
     },
     {
@@ -6092,6 +6132,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_quarterly_bs.py",
+     "line": 77,
+     "func": "test_committed_files_match_layer3_for_cake",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/layer3_builder.py::load_company_facts",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_registration_consistency_gate.py",
      "line": 64,
      "func": "test_include_provisioning_targets_provisioning_ticker",
@@ -6934,8 +6982,8 @@
     "HypeCore（TANUKI のtiming・判定の入力）",
     "保有銘柄の監視（TANUKI TAIL）"
    ],
-   "reader_count": 30,
-   "reader_count_test": 22,
+   "reader_count": 31,
+   "reader_count_test": 23,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "SECから取った、その銘柄の全XBRLの申告の生データ",
@@ -6955,12 +7003,12 @@
    "launched_by": [
     ".github/workflows/SEC_Data_Update.yml"
    ],
-   "files_tracked": 3489,
-   "top_keys_sampled_files": 3489,
+   "files_tracked": 3499,
+   "top_keys_sampled_files": 3499,
    "top_keys": [
     {
      "key": "bs",
-     "reader_files": 6
+     "reader_files": 8
     },
     {
      "key": "bs_tag_sources",
@@ -6968,7 +7016,7 @@
     },
     {
      "key": "cf",
-     "reader_files": 8
+     "reader_files": 9
     },
     {
      "key": "cf_provenance",
@@ -6980,23 +7028,23 @@
     },
     {
      "key": "form",
-     "reader_files": 4
+     "reader_files": 5
     },
     {
      "key": "other",
-     "reader_files": 3
+     "reader_files": 4
     },
     {
      "key": "period",
-     "reader_files": 9
+     "reader_files": 11
     },
     {
      "key": "pl",
-     "reader_files": 9
+     "reader_files": 10
     },
     {
      "key": "shares",
-     "reader_files": 3
+     "reader_files": 4
     },
     {
      "key": "ticker",
@@ -7004,6 +7052,22 @@
     }
    ],
    "readers": [
+    {
+     "file": "common/sec_data/quarterly_bs.py",
+     "line": 156,
+     "func": "regenerate",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/sec_data/quarterly_bs.py",
+     "line": 175,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/sec_data/quarterly_bs.py::regenerate",
+     "type": "Python"
+    },
     {
      "file": "common/sec_data/reader.py",
      "line": 135,
@@ -7637,6 +7701,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_quarterly_bs.py",
+     "line": 79,
+     "func": "test_committed_files_match_layer3_for_cake",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_reader_fcf_list_with_dates.py",
      "line": 22,
      "func": "test_get_fcf_list_with_dates_returns_paired_periods",
@@ -7794,8 +7866,8 @@
    "decision_effect": [
     "理論株価・判定（TANUKI VALUATION）"
    ],
-   "reader_count": 7,
-   "reader_count_test": 13,
+   "reader_count": 8,
+   "reader_count_test": 14,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "生データから1四半期分ずつ取り出した四半期の財務",
@@ -13845,9 +13917,7 @@
    "lines": 46,
    "workflows": [],
    "code": [],
-   "same_dir": [
-    "common/sec_data/parser.py"
-   ],
+   "same_dir": [],
    "tests": []
   },
   {
@@ -14142,6 +14212,7 @@
    "same_dir": [
     "common/sec_data/basis_mix.py",
     "common/sec_data/newfield_q4_cutoff_check.py",
+    "common/sec_data/quarterly_bs.py",
     "common/sec_data/reader.py",
     "common/sec_data/rotce.py",
     "common/sec_data/source_watch.py",
@@ -14239,6 +14310,7 @@
     "tests/test_pipeline_logic.py",
     "tests/test_pl_field_cross_accn_alignment.py",
     "tests/test_preflight_check.py",
+    "tests/test_quarterly_bs.py",
     "tests/test_tag_fallback_selection.py",
     "tests/test_tangible_equity_tags.py",
     "tests/test_total_liabilities_backfill.py"
@@ -14298,6 +14370,20 @@
     "tests/test_quarterly_classify_period.py",
     "tests/test_retention_and_fcf_points.py",
     "tests/test_tag_fallback_selection.py"
+   ]
+  },
+  {
+   "dir": "common/sec_data",
+   "file": "common/sec_data/quarterly_bs.py",
+   "decision": "残す（2026-10-20）",
+   "lines": 178,
+   "workflows": [],
+   "code": [],
+   "same_dir": [
+    "common/sec_data/parser.py"
+   ],
+   "tests": [
+    "tests/test_quarterly_bs.py"
    ]
   },
   {
@@ -14652,6 +14738,7 @@
     "common/sec_data/update_notify.py"
    ],
    "tests": [
+    "tests/test_quarterly_bs.py",
     "tests/test_sec_freshness.py",
     "tests/test_sec_update_ticker_failure.py"
    ]
@@ -14792,7 +14879,14 @@
  "stop_condition": {
   "outputs": 24,
   "outputs_with_writer_outside_layer": [],
-  "unresolved_write_sites": [],
+  "unresolved_write_sites": [
+   {
+    "file": "common/sec_data/quarterly_bs.py",
+    "line": 166,
+    "func": "regenerate",
+    "path": "{p}"
+   }
+  ],
   "python_read_sites_into_layer_resolved": 68,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
@@ -14802,7 +14896,7 @@
     "path": "docs/common/sec_data/rotce/<?>"
    }
   ],
-  "name_hit_sites_resolved": 85,
+  "name_hit_sites_resolved": 86,
   "name_hit_sites_undetermined": [
    {
     "file": ".github/workflows/SEC_Data_Update.yml",
@@ -14817,14 +14911,20 @@
     "text": "\"rotce_summary\": (\"docs/common/sec_data/rotce\", \"_summary.json\"),"
    },
    {
+    "file": "common/sec_data/quarterly_bs.py",
+    "line": 154,
+    "output": "common/sec_data/data/{T}/quarterly_{Q}.json",
+    "text": "tickers = tickers or sorted(os.path.basename(d) for d in glob.glob(os.path.join(data_dir, \"*\")) if glob.glob(os.path.joi"
+   },
+   {
     "file": "tools/sim/parser_l3/parser_vs_l3.py",
     "line": 138,
     "output": "common/sec_data/data/{T}/annual_{YYYY}.json",
     "text": "tk = sys.argv[1:] or sorted(os.path.basename(x) for x in glob.glob(\"common/sec_data/data/*\") if glob.glob(x + \"/annual_*"
    }
   ],
-  "ratio_writer": 0.0,
-  "ratio_reader": 0.025,
+  "ratio_writer": 0.04,
+  "ratio_reader": 0.031,
   "threshold": 0.1,
   "hit": false
  },
@@ -15366,7 +15466,7 @@
     "note": ""
    }
   ],
-  "written_key_count": 480,
+  "written_key_count": 481,
   "stale_keys": [
    {
     "key": "acquisition",
