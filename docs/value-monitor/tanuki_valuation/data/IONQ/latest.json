@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -27.3,
-  "calculation_date": "2026-11-16T03:30:45+09:00",
+  "calculation_date": "2026-11-16T17:38:41+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -167,7 +167,7 @@
     "base_fcf": 10401280.0,
     "method": "avg_5yr",
     "fcf_5yr_avg": 10401280.0,
-    "fcf_2yr_avg": -472401500.0,
+    "fcf_2yr_avg": -474354000.0,
     "cv": 999.0,
     "cv_threshold": 0.5,
     "ratio": 999.0,
@@ -178,7 +178,7 @@
     "rule": "latest_negative",
     "fiscal_year": 2025,
     "period_label": "TTM 2026-09-30",
-    "fcf_value": -688541000.0,
+    "fcf_value": -685580000.0,
     "threshold_pct": 0.0,
     "deviation_pct": null,
     "transient_evidence": {
@@ -189,7 +189,7 @@
       "ai_assessment": null
     },
     "action": "flagged",
-    "note": "TTM 2026-09-30 FCF($-688.5M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
+    "note": "TTM 2026-09-30 FCF($-685.6M)がマイナス。一過性費用はEPSアナライザーの同じ期の調整に無い。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-09-30",
@@ -198,7 +198,7 @@
     "method": "bottom_up",
     "estimated_fcf": 10401280.0,
     "raw_fcf": 10401280.0,
-    "capex": 43713000.0,
+    "capex": 40752000.0,
     "sbc": 523934000.0,
     "ocf": -644828000.0,
     "da": 257503000,
@@ -266,31 +266,31 @@
   "rice": {
     "available": true,
     "q": -0.8276,
-    "cf_conversion": 0.4728,
-    "cf_adj": 4.5125,
+    "cf_conversion": 0.4633,
+    "cf_adj": 4.3975,
     "wacc": 0.1,
     "q_years": 1,
     "cf_years": 3,
-    "avg_intensity": 4.5025,
+    "avg_intensity": 4.5717,
     "warnings": true,
     "note": "SBC補正済み（純利益+SBCを分母に使用） / Q: 1年のみ使用（3年要求）",
     "bear": {
       "growth_rate": 0.383,
-      "rice": -1.498,
-      "rice_per_ratio": -0.0761,
-      "rice_adj": -14.303
+      "rice": -1.468,
+      "rice_per_ratio": -0.088,
+      "rice_adj": -13.938
     },
     "base": {
       "growth_rate": 0.548,
-      "rice": -2.144,
-      "rice_per_ratio": -0.1089,
-      "rice_adj": -20.465
+      "rice": -2.101,
+      "rice_per_ratio": -0.1259,
+      "rice_adj": -19.943
     },
     "bull": {
       "growth_rate": 0.657,
-      "rice": -2.57,
-      "rice_per_ratio": -0.1306,
-      "rice_adj": -24.535
+      "rice": -2.519,
+      "rice_per_ratio": -0.1509,
+      "rice_adj": -23.91
     }
   },
   "fcf_source": "ttm_series",
@@ -299,16 +299,16 @@
   "latest_period_missing": null,
   "rice_data_source": "ttm_series",
   "components": {
-    "fcf_5yr_avg": -236967600.0,
-    "fcf_2yr_avg": -472401500.0,
+    "fcf_5yr_avg": -238660200.0,
+    "fcf_2yr_avg": -474354000.0,
     "structural_deficit": true,
     "fcf_base_used": 225064280.0,
     "fcf_base_method": "avg_5yr",
     "fcf_outlier_excl_avg": null,
     "fcf_list_raw": [
-      -688541000.0,
-      -256262000.0,
-      -114373000.0,
+      -685580000.0,
+      -263128000.0,
+      -118931000.0,
       -78415000.0,
       -47247000.0
     ],
@@ -338,7 +338,7 @@
     "pv_high": 1340718717.0910053,
     "pv_terminal": 2314046015.781527,
     "roe_used": -0.3874348251894227,
-    "fcf_floor_applied": 247368880.0,
+    "fcf_floor_applied": 249061480.0,
     "fcf_floor_used_in_base": true,
     "fcf_growth_floor": 0.15,
     "fcf_growth_cap": 0.5,
@@ -347,15 +347,15 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 19.687862,
+    "per": 16.693642,
     "per_is_forward": false,
     "per_adjusted": null,
     "peg": null,
-    "ps": 41.603367,
+    "ps": 35.276134,
     "ev_ebitda": null,
     "ma200": 41.23465008735657,
-    "forward_eps": -1.40417,
-    "next_quarter_eps": -0.79,
+    "forward_eps": -1.4208,
+    "next_quarter_eps": -0.82,
     "analyst_target_median": 50.0,
     "analyst_target_mean": 54.275,
     "analyst_target_low": 40.0,
@@ -378,6 +378,48 @@
     "max_eps_shares": 355024814.75,
     "max_eps_shares_basis": "ttm_weighted_avg"
   },
+  "val_guard_marks": [
+    {
+      "field": "capital_expenditure",
+      "end": "2023-12-31",
+      "kind": "年次",
+      "rule": "components_dropped:software",
+      "val": 18261000,
+      "other": 18261000
+    },
+    {
+      "field": "capital_expenditure",
+      "end": "2024-12-31",
+      "kind": "年次",
+      "rule": "components_dropped:software",
+      "val": 21897000,
+      "other": 21897000
+    },
+    {
+      "field": "capital_expenditure",
+      "end": "2025-03-31",
+      "kind": "四半期",
+      "rule": "components_dropped:software",
+      "val": 3190000,
+      "other": 3190000
+    },
+    {
+      "field": "capital_expenditure",
+      "end": "2025-06-30",
+      "kind": "四半期",
+      "rule": "components_dropped:software",
+      "val": 2197000,
+      "other": 2197000
+    },
+    {
+      "field": "capital_expenditure",
+      "end": "2025-09-30",
+      "kind": "四半期",
+      "rule": "components_dropped:software",
+      "val": 5202000,
+      "other": 5202000
+    }
+  ],
   "validation": {
     "model": "basic_checks_only",
     "checks": {
@@ -419,10 +461,11 @@
     "matrix": "①投資効率系",
     "quadrant": "左下",
     "label": "割高×N/A (OCF赤字)",
-    "key_metric_y": "RICE = -2.144",
+    "key_metric_y": "RICE = -2.101",
     "qx": false,
     "qy": false
   },
+  "method_change": "PARSER-LAYER3-SINGLE-SOURCE-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -436,7 +479,8 @@
     "SECTOR-MASTER-ADOPT-1-2",
     "SECTOR-MASTER-ADOPT-1-3",
     "SECTOR-MASTER-ADOPT-1-4",
-    "PARSER-LAYER3-SINGLE-SOURCE-1-0"
+    "PARSER-LAYER3-SINGLE-SOURCE-1-0",
+    "PARSER-LAYER3-SINGLE-SOURCE-1-1"
   ],
   "fcf_history": [
     {
@@ -559,7 +603,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.1002,
+  "erp": -0.1007,
   "dilution_severity": "high",
   "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
 }
