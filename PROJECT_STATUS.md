@@ -11,7 +11,14 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-12 終業 更新〈それまでは2026-11-11 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+**次の作業（2026-11-16 終業 更新〈それまでは2026-11-12 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+1. 11-17（火）朝: 手順34（`[[PARSER-LAYER3-SINGLE-SOURCE-1]]`段1の2回目は印0件）→ `[[TANUKI-CALC-CONTINUITY-1]]`の公開【Opus】。以降1日1件: DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES（手順33のSECの原本の確認はSHARESの公開の前）。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧を作る。順・衝突・段取りは`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`のとおり。移設は各々の2回目の確認の後
+2. 公開の列の後: `[[SEC-RETAG-RECONCILE-1]]`（STEP 0はAPPのD&Aの落ちから）→ `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)（倍率の履歴の株数をas-ofに）→ `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`の段2以降
+3. `[[STAGE-V2-ROLLOUT-1]]`の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）→ `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）【Opus】。②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
+4. いつでも・起きた回: 手順9（RSS 取得エラー）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+**注記（2026-11-16）**: 未公開のコードの置き場所は5つ（CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARES。ブランチ`tanuki-calc-continuity-1`・`dilution-unify-1`・`deficit-quality-adopt-1`・`multiples-adopt-1`・`tanuki-shares-single-source-1`で、いずれもkaihatsuには無くoriginに控えがある。PARSER段1は2026-11-16に公開済み）。Layer3はその場で計算されるため、定義のコードをpushするとそのまま公開になる（FINDINGS 2026-11-11）。モデルの使い分けは`CHAT_RULES.md`「モデルの使い分け」（依頼文の見出しの【Opus】【Sonnet】）
+
+**（旧）次の作業（2026-11-12 終業。2026-11-16 終業に上へ置き換えた。記録として残す）**:
 1. （2026-11-16 済）手順30〜32。`[[SECTOR-MASTER-ADOPT-1]]`はBACKLOG_DONE.mdへ移設（アクティブ14→13）。`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`は移設せず(4)（倍率の履歴の株数をas-ofに）を足した。着手は公開の列（MULTIPLES・SHARES）の後【Sonnet】
 2. 未公開3つの公開【Opus】（**PARSER段1は2026-11-16に公開済み**。確認は手順34）。順は **CONTINUITY → DILUTION → DEFICIT**（その後 MULTIPLES・TANUKI-SHARES）。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧を作る。手順は各STEP 0の文書の末尾（ブランチ`tanuki-calc-continuity-1`・`dilution-unify-1`・`deficit-quality-adopt-1`）。DEFICITは公開の前に`python common/profitability.py --all`、`method_change.json`に登録しない
 3. `[[MULTIPLES-ADOPT-1]]`のSTEP 0【Opus】（公開は未公開の4つの後。STEP 0は先に進めてよい）
@@ -57,6 +64,13 @@
 3. `[[STAGE-V2-ROLLOUT-1]]` の並行計算（定義v2は2026-11-06に確定。定義v2のstageを今の定義と並べて毎月記録、公開の値は変えない。寄せる件を待たずに始める。12か月の並びの評価は2027-11ごろ）
 4. 寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+
+**2026-11-16 の作業（終業、アクティブ14件）**:
+- 手順30〜32: 30・32は合格、31は段0の確認として合格（②の差はCRWV・ONDSの2025-11〜2026-02の`shares`の丸めで、原因は`split_adjust.py::shares_by_end`が最新の申告のvalを取ること。段0とは無関係）。`[[SECTOR-MASTER-ADOPT-1]]`をBACKLOG_DONE.mdへ移設（14→13）。`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`は移設せず(4)（倍率の履歴の株数をas-ofに。着手は公開の列の後）を足した（54936b74fd）
+- `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`段1の公開: ブランチ`parser-layer3-stage1`をkaihatsuにrebase（ttm 4ファイルの競合は`regen_derived`で作り直し）、試算は予行と同じ（10銘柄・CAKE +29.1%・判定0・保有APP −0.06%ほか±0.0%）、scopeは17銘柄（新四半期の4銘柄7セル増）。TANUKI `43832337705`→HypeCore `43834462211`→TANUKI `43834776503`、1回目の印はscope 17銘柄だけ・3回目0件、CAKE 50.00・KO 24.29が試算と一致。method_change ID `PARSER-LAYER3-SINGLE-SOURCE-1-1`。次回の確認手順34
+- `test_bs_lines::test_saved_records_crwv`を新しい四半期の保存で壊れない形に直した（70cb234321、CRWVの現金を2026-06-30の値で決め打ちしていた）
+- ExternalChange（System Health [P]）の新しい6件の調べ（`docs/architecture/EXTERNAL_CHANGE_2026-11-15.md`、5a581ff055）: 理論株価・判定・保有・funda・stageへの効きは0（RCAT D&A・KULR売上・NIY=Fは実際の値か欄の異常、COHR D&A・SPIR短期投資・KULR営業CFは申告のタグの付け替え・組み替え）。同じ型のDOCNの短期投資が0に読まれる件だけ値に効く（約2%）。台帳に6件を入れて[P]の新しい件を0にし、`[[SEC-RETAG-RECONCILE-1]]`（中）を登録（967696749f）。FINDINGS 5行（4行は登録済み）
+- 終業の数: BACKLOGアクティブ14件、rcc NG 0・WARN 232、pytest 2,975件通過・失敗1（kaihatsu。SITMの既知の`test_stonks_flag_rule`。コマンドは`CLAUDE_CODE_START.md`の「今の状態」のとおり）
 
 **2026-11-12 の作業（終業、アクティブ13件）**:
 - 朝の確認: 手順15（TAILのレビューの対象の期、APP・CELH・PLTR・SOFI・SOUNは`data_as_of`あり・`backfilled: false`・期は対象まで、ADBE・NVDA・TSLAは直し〈f9a7563010〉より前の生成で対象外）を合格にして外した（BACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」）。手順30は11-12朝の分が合格（TANUKI run `43104058687`、印なし・applied 4つ）、残りは11-15の分
