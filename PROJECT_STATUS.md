@@ -13,7 +13,7 @@
 
 **次の作業（2026-11-12 終業 更新〈それまでは2026-11-11 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
 1. （2026-11-16 済）手順30〜32。`[[SECTOR-MASTER-ADOPT-1]]`はBACKLOG_DONE.mdへ移設（アクティブ14→13）。`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`は移設せず(4)（倍率の履歴の株数をas-ofに）を足した。着手は公開の列（MULTIPLES・SHARES）の後【Sonnet】
-2. 未公開4つの公開【Opus】。順は **PARSER段1 → CONTINUITY → DILUTION → DEFICIT**。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧（理論株価が5%を超えて動く銘柄・判定が変わる銘柄・保有を原本で確かめたもの）を作る。段1は`git revert`の戻し（`PARSER_LAYER3_STAGE1.md` §4: `0544696ddc`→`1ebce36a25`の順にrevertの戻し→出力の一覧→派生ファイル→`sim.py scope --write`→TANUKI→HypeCore→TANUKI）、ほかの3つはブランチ（`tanuki-calc-continuity-1`・`dilution-unify-1`・`deficit-quality-adopt-1`。手順は各STEP 0の文書の末尾）。DEFICITは公開の前に`python common/profitability.py --all`（月末の履歴が無いとSTONKSの対象が空になる）。DEFICITは`method_change.json`に登録しない（表示だけ）
+2. 未公開3つの公開【Opus】（**PARSER段1は2026-11-16に公開済み**。確認は手順34）。順は **CONTINUITY → DILUTION → DEFICIT**（その後 MULTIPLES・TANUKI-SHARES）。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧を作る。手順は各STEP 0の文書の末尾（ブランチ`tanuki-calc-continuity-1`・`dilution-unify-1`・`deficit-quality-adopt-1`）。DEFICITは公開の前に`python common/profitability.py --all`、`method_change.json`に登録しない
 3. `[[MULTIPLES-ADOPT-1]]`のSTEP 0【Opus】（公開は未公開の4つの後。STEP 0は先に進めてよい）
 4. `[[STAGE-V2-ROLLOUT-1]]`の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）→ `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）【Opus】。②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8

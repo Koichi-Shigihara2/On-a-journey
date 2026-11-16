@@ -6,7 +6,7 @@
 ## 今の状態（2026-11-12 終業）
 
 - BACKLOG.md のアクティブは **13件**（`^### [` の機械カウント）。rcc NG 0・WARN 223、pytest 2960件通過・失敗2（kaihatsu。ruffの無い環境の1件と、SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
-- **未公開のコードの置き場所は6つ**（Layer3の定義のコードをpushするとそのまま公開になる。公開の順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES、各々の前に前の公開の上にrebaseして試算し直す）: (1) PARSER-LAYER3 段1はブランチ`parser-layer3-stage1`（`6ae6ca8534`、守りと定義のrevertの戻し＋四半期BSの置き換え〈`quarterly_bs.py`〉。originに控えあり。手順は`PARSER_LAYER3_STAGE1.md` §4。公開の前に`python common/sec_data/quarterly_bs.py`）。kaihatsuでは`0544696ddc`・`1ebce36a25`でrevert済みのまま、(2) TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（originにも控えあり〈7b8a432d2b〉）、(3) DILUTION-DEFINITION-UNIFY-1はブランチ`dilution-unify-1`（470d521ec1、手順は`DILUTION_UNIFY_STEP0.md`末尾）、(4) DEFICIT-QUALITY-ADOPT-1はブランチ`deficit-quality-adopt-1`（d4f824cf0e〈コード〉・c9aadc065d〈作り直した`profitability.json`〉、公開の前に`python common/profitability.py --all`、手順は`DEFICIT_QUALITY_STEP0.md`末尾）。(5) MULTIPLES-ADOPT-1はブランチ`multiples-adopt-1`（`2741efd6e7`、kaihatsu `7a6a5acd2b`から。公開の手順は`MULTIPLES_ADOPT_STEP0.md`末尾。公開の前に`python common/multiples.py --all`と`python common/sec_data/rotce.py`）。(6) TANUKI-SHARES-SINGLE-SOURCE-1はブランチ`tanuki-shares-single-source-1`（`8cdf37598c`、`multiples-adopt-1`の上。公開の手順は`TANUKI_SHARES_STEP0.md`末尾。公開の前に`python common/multiples.py --all`）。(1)〜(6)はkaihatsuには無く、originに控えがある。6つを公開の順に重ねた予行（衝突・各段の試算・公開の日の段取りの案）は`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`
+- **未公開のコードの置き場所は5つ**（Layer3の定義のコードをpushするとそのまま公開になる。**PARSER-LAYER3 段1は2026-11-16に公開済み**〈TANUKI `43832337705`→HypeCore `43834462211`→TANUKI `43834776503`、1回目の印はscopeの17銘柄だけ・3回目0件・CAKE 50.00・KO 24.29が試算と一致。確認は手順34〉。残りの公開の順は CONTINUITY → DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES、各々の前に前の公開の上にrebaseして試算し直す）: (2) TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（originにも控えあり〈7b8a432d2b〉）、(3) DILUTION-DEFINITION-UNIFY-1はブランチ`dilution-unify-1`（470d521ec1、手順は`DILUTION_UNIFY_STEP0.md`末尾）、(4) DEFICIT-QUALITY-ADOPT-1はブランチ`deficit-quality-adopt-1`（d4f824cf0e〈コード〉・c9aadc065d〈作り直した`profitability.json`〉、公開の前に`python common/profitability.py --all`、手順は`DEFICIT_QUALITY_STEP0.md`末尾）。(5) MULTIPLES-ADOPT-1はブランチ`multiples-adopt-1`（`2741efd6e7`、kaihatsu `7a6a5acd2b`から。公開の手順は`MULTIPLES_ADOPT_STEP0.md`末尾。公開の前に`python common/multiples.py --all`と`python common/sec_data/rotce.py`）。(6) TANUKI-SHARES-SINGLE-SOURCE-1はブランチ`tanuki-shares-single-source-1`（`8cdf37598c`、`multiples-adopt-1`の上。公開の手順は`TANUKI_SHARES_STEP0.md`末尾。公開の前に`python common/multiples.py --all`）。(2)〜(6)はkaihatsuには無く、originに控えがある。6つを公開の順に重ねた予行（衝突・各段の試算・公開の日の段取りの案）は`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
 - 報告は20行以内（結論・変わった数・判定の変化・決めてほしいこと）。詳しい表はファイルに置き、場所だけ書く（`CHAT_RULES.md`「報告の形」）
@@ -32,6 +32,11 @@
    - 日時: 環境変数に`SEC_USER_AGENT_EMAIL`（定時と同じ連絡先。値は会話・文書・commitに書かない）を置いた回
    - 期限: 本件の公開の前
    - 確認の手順: ASTS・PLTR・SOUNの表紙の発行済（クラスごと）、TSLAの10-Qの本文（表紙3,953M と加重平均の差412Mの内訳）、IONQ（yfinanceの implied 464.7 が表紙432.5より+7.5%の理由）。読み取りだけ・10件/秒以下。結果は`TANUKI_SHARES_STEP0.md`末尾に書く。TSLAの未確定の株は確かめるまで分母に入れない（決定2）
+
+34. **PARSER-LAYER3-SINGLE-SOURCE-1 段1（`-1`）の次の定時の実行の確認**（公開は2026-11-16 手動: TANUKI `43832337705`→HypeCore `43834462211`→TANUKI `43834776503`。1回目の印はscopeの17銘柄だけ・3回目は0件を確認済み）
+   - 日時: 2026-11-17（火）06:30 JST ごろのTANUKI VALUATIONの定時の実行と、2026-11-22（日）のSEC_Data_Update（四半期BSの置き換え`quarterly_bs.py`が`parse_and_save`で動く）の連鎖の後
+   - 期限: 2026-11-23
+   - 確認の手順: ①`latest.json`の`method_change`が付かない（`method_change_applied`に`-1`が入っている）②日曜の作り直しで`common/sec_data/data/{T}/quarterly_*.json`の`bs`が、Layer3のvalのままで（新しい四半期の分だけ増える）CAKE・KOの理論株価（50.00・24.29）が動かない ③`tests/test_bs_lines.py::test_saved_records_crwv`の失敗はFINDINGS 2026-11-16（本件とは無関係）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
