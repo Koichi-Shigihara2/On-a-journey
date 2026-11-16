@@ -3323,3 +3323,30 @@ Update workflows実装・本番消費者8ファイル中3/8切替完了〉へ既
    - 期限: Vの7月の10-Q（`0001403161-26-000104`）がcompanyfactsに入るまで
    - 確認の手順: `common/sec_data/data/_freshness.json`でVがREFRESHEDになったか。なっていれば`config/warn_acknowledged.json`のVの1件を消して移設する。入らないままなら直し方の候補2をチャット側が判断
 
+
+
+## 済んだ確認手順（2026-11-16）: 30・31・32
+
+結果: 30・32は合格、31は段0の確認として合格（②の差は段0ではなく`shares_by_end`の作り。`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)に記録）。`[[SECTOR-MASTER-ADOPT-1]]`はBACKLOG_DONE.mdへ移設（アクティブ14→13）。`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`は(4)を足したため移設しない。
+
+- 30: 11-12朝・11-16 03:26/03:42のTANUKIで96銘柄とも印なし、EPS 95銘柄とも sector あり（チャット側の確認）
+- 31: ①11-15夜のSEC_Data_Update（`7e98498d86`）でttm 19銘柄のD&Aは`generated_at`以外差なし（ONDS・RKLBは新四半期ttm_end 09-30が加わっただけ）、normalizedは新四半期の10銘柄以外`generated_at`だけ。②`docs/common/multiples/`はCRWV・ONDSの2025-11〜2026-02の4か月の`shares`だけが丸めで変わった（497,886,000→498,000,000、259,909,415→259,909,000。差は最大0.02%）。原因は`split_adjust.py::shares_by_end`が最新の申告のvalを取ること（11-09の10-Qの前年比較）。③印なし（チャット側）
+- 32: Market Data Weekly run `43752143180`（bot `85c02da6fe`）の「Reconcile daily rows with provider」が「走査 580銘柄、当たり 0銘柄」。APH 1,423行・CTVA 1,442行の`_corrections`は`split_adjust`が1行1回だけ。手元の`split_reconcile.py`も0銘柄
+
+### 外した手順の本文
+
+30. **SECTOR-MASTER-ADOPT-1 の印が次の定時の実行で付かないこと**（`[[SECTOR-MASTER-ADOPT-1]]` 段1〜4、段4の公開は2026-11-11 手動のEPS ANALYZER run `42941456669`→TANUKI `42942898607`）
+   - 日時: 2026-11-12（木）06:30 JST ごろのTANUKI VALUATIONの定時の実行（`gh run list --workflow TANUKI_VALUATION_Update.yml`で先に確かめる）と、2026-11-15（日）のSEC_Data_Updateの連鎖のEPS ANALYZER・TANUKI
+   - 期限: 2026-11-16
+   - 確認の手順: 各銘柄の`latest.json`の`method_change`が`SECTOR-MASTER-ADOPT-1-1`〜`-4`で付いていない（`method_change_applied`に4つとも入っている）こと。EPSの`quarterly.json`の`sector`が95銘柄とも付いたままであること
+   - 付かなければ、BACKLOG.mdの`[[SECTOR-MASTER-ADOPT-1]]`をBACKLOG_DONE.mdへ移設する（残る段は無い。アクティブ13→12）。付けば原因を報告する
+   - **11-12朝の分は合格**（TANUKI VALUATION run `43104058687`〈workflow_run、success〉。96銘柄とも印なし・`method_change_applied`に4つ、EPS 95銘柄とも sector あり。チャット側の確認）。**残りは11-15の分**。移設は手順31と一緒に11-16に行う
+31. **PARSER-LAYER3-SINGLE-SOURCE-1 段0（`-0`）の次の定時の実行の確認**（公開は2026-11-11 手動: TANUKI `42960814475`→HypeCore `42962427012`→TANUKI `42962625921`。1回目の印はscopeの9銘柄だけ・3回目は0件を確認済み）
+   - 日時: 2026-11-15（日）のSEC_Data_Update（ttm・normalizedを日曜に作り直す）と、次のMarket Data Weekly（`common/multiples.py --all`が倍率の履歴を作り直す）の後
+   - 確認の手順: ①日曜の作り直しで`common/sec_data/ttm/`の19銘柄のD&A・`normalized/`の年次11年が、コミットした値のまま（新しい四半期の分だけ増える）②`docs/common/multiples/`は12か月より前の月だけが変わり（64銘柄、`net_income_5y_*`・`pe_5y_avg_earnings`）、直近12か月は変わらない ③`latest.json`の`method_change`が付かない
+   - 期限: 2026-11-16。次の段は`PARSER_LAYER3_STAGE0.md`の§7（段1の前に、動く銘柄の理由を原本の申告で確かめた一覧）
+32. **日足の分割の割り戻しの2回目が0件であること**（`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]` (1)、`common/market_data/split_reconcile.py`。公開は手動のMarket Data Weekly run `43199988826`〈bot commit `21809efb32`、APH 1,423行・CTVA 1,442行を割り戻し、手元の走査は2回目0件を確認済み〉）
+   - 日時: 2026-11-15（日）13:20 UTC（22:20 JST）の定時のMarket Data Weeklyの後
+   - 確認の手順: 該当の段（Reconcile daily rows with provider）のログが「当たり 0銘柄」。`common/market_data/daily/APH.json`・`CTVA.json`の境の日より前の行に`_corrections`（reason `split_adjust`）が1回分だけ付いている。`python common/market_data/split_reconcile.py`（走査だけ）が手元で0銘柄。APHの200日線が約75・CTVAの50日線が約12台（Yahooの調整後の値）
+   - 期限: 2026-11-16。合格したら`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`をBACKLOG_DONE.mdへ移設（アクティブ13→12）、`PROJECT_STATUS.md`の次の作業4番を外す
+

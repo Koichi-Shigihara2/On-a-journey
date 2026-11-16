@@ -2,6 +2,62 @@
 
 ---
 
+## 2026-11-16（完了）
+
+### ✅ [SECTOR-MASTER-ADOPT-1] 業種の決め方が8か所に分かれ、5か所は銘柄を手で書いた一覧。読み手をsector_master.jsonに寄せる
+**完了（2026-11-16）:** 段1〜4の公開後の確認に合格。11-12 06:30 JSTのTANUKI VALUATION（run `43104058687`）と11-16 03:26・03:42 JSTのTANUKI（日曜の連鎖）で、96銘柄とも`method_change`が付かず（`method_change_applied`に`SECTOR-MASTER-ADOPT-1-1`〜`-4`）、EPSの`quarterly.json`の`sector`は95銘柄とも付いたまま（チャット側の確認）。残る段は無い
+**型・処置:** 型B（同じ規則の二重実装）・根治策
+**優先度:** 中
+**分類:** 共通の設定 / `config/sector_master.json`（`common/sector_master.py`）とその読み手（TANUKI VALUATION・EPS ANALYZER・STONKS SILO・Market Pulse・画面）
+**登録日:** 2026-11-05
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後。段1・段2は[[GROWTH-SANITY-CONTINUITY-1]]の公開の後（2026-11-06に満たした。段1は業種のベンチマークが初めて付く銘柄でLOAR −90%等の飛びを起こすため、今は連続な推奨成長率の上で出せる）。段3・段4は先に進めてよい
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-1のSTEP 0（2026-11-05）
+**経緯:** 2026-10-19の初回の束ねで[[SECTOR-MASTER-UNIFY-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行）。段B-1でマスターだけを作った（読み手は今のまま）
+
+#### 今ある業種の定義の場所（2026-11-05、段B-1のSTEP 0）
+| # | 場所 | 中身 | 読み手 |
+|---|---|---|---|
+| 1 | `common/market_data/attributes/{T}.json`のyfinanceのsector・industry | 98銘柄すべて（11 sector・38 industry、うち19は1銘柄だけ） | TANUKI（αとPhase2の上限・WACCの既定のβ・保険と金融の判定→純現金・RICEの除外）、STONKSとSECのreader（`get_net_cash`の金融ガード）、rcc、Market Pulse（ETF）、画面（TANUKI SCOREのサイクリカルの罠・stock.htmlのFCFの信頼性） |
+| 2 | `config/sectors.yaml`（EPS ANALYZERの9区分） | SICコードの一覧と、ティッカーを書いたキーワード | EPS ANALYZERの業種別の除外・成熟度の監視 |
+| 3 | `config/cik_lookup.csv`の`eps_sector` | 手で設定（3銘柄） | 2より優先 |
+| 4 | `config/beta_config.json`の`overrides[T].sector` | 手で書いたDamodaranの業種のキー（35銘柄） | TANUKIの成長率の確かめ（`check_growth_sanity`→推奨成長率→理論株価） |
+| 5 | `growth_sanity.py`の`TICKER_INDUSTRY_OVERRIDES` | 手で書いた26銘柄（うち9銘柄は登録に無い） | Damodaranのベンチマーク・永久成長率 |
+| 6 | `maturity_config.py`の`_TICKER_TV_G`・`maturity_config.json`の`_mega_tech_tickers` | 手で書いた63銘柄・数銘柄 | 永久成長率・Phase2の上限 |
+| 7 | `config/financial_institution_config.json` | 手で書いた金融機関の一覧（SOFIだけ） | TANUKIのFCFEの経路 |
+| 8 | TANUKI SCOREの画面の`CYCLICAL_KEYWORDS` | yfinanceのindustryのキーワード | 画面のサイクリカルピークトラップ |
+
+#### 食い違い（2026-11-05）
+- EPS ANALYZERで業種が出ていない銘柄が41（EPSの対象95のうち。AMZN・WMT・XOM・V・CAT・KLAC・LRCX・HON・PM等）。SICが`sectors.yaml`の一覧に無く、業種別の除外・成熟度の監視が効いていない
+- Damodaranの業種が無い（4にも5にも無い）銘柄が43（TANUKIの対象では42）。成長率の確かめが業種のベンチマーク無しで動いている
+- 同じyfinanceの業種でDamodaranの業種が違う: ABBVはDrugs_Biotech、LLY・JNJはDrugs_Pharma（どれもDrug Manufacturers - General）
+- EPSの区分とyfinanceのsectorが合わない: RCAT・SPIR・VRT（yfinanceはIndustrials、EPSはTechnology。SPIR・VRTは`eps_sector`の手設定）
+- 景気循環株の判定が2通り（画面のキーワードはTSLA〈Auto〉を含みCATを含まない、定義v2の段Aの4業種はその逆）。マスターは和集合
+- SECのSICは手元に保存されていなかった（EPS ANALYZERは実行のたびにSECから取る）。段B-1で`submissions.json`に保存するようにした
+
+#### 決定（チャット側、2026-11-05）
+1. 主はyfinanceのindustry、SECのSICは控え
+2. 手書きの一覧（`beta_config.overrides.sector`・`growth_sanity`の`TICKER_INDUSTRY_OVERRIDES`・`maturity_config`の`_TICKER_TV_G`／`_mega_tech_tickers`・`financial_institution_config`・`sectors.yaml`のティッカー）は、写像で決まるものを外し、残りを理由つきの例外の台帳へ（寄せる段で）
+3. 景気循環株は画面の`CYCLICAL_KEYWORDS`と段Aの4業種の和集合を、業種の名前の規則として1か所に（`common/sector_master.py`）
+4. 段B-1ではマスターを作るだけ（読み手は今のまま）
+
+#### 進め方
+寄せるのはTANUKI・EPS ANALYZERを1つずつ。全銘柄の試算（理論株価・判定・調整後EPS・STONKS）と、計算方法の変更の手順（`CLAUDE_CODE_START.md`「計算方法の変更の手順」）で公開する。見込み: TANUKIは4・5のDamodaranの業種（手で書いた業種が写像の結果に変わる銘柄と、業種が新しく付く43銘柄）で推奨成長率→理論株価・判定が変わりうる。EPS ANALYZERは業種の出ない41銘柄に区分が付き、業種別の除外が効き始める（調整後EPS→TANUKIの最大EPSに波及しうる）。STONKSの金融ガード・Market PulseのETFは同じ見込み
+
+#### 寄せる段（STEP 0 2026-11-06、手元の試算。段ごとに公開する）
+- 段1（TANUKIのDamodaranの業種→写像、例外の台帳）: **実装済み（2026-11-06、scope `SECTOR-MASTER-ADOPT-1-1`。公開の結果は下）**。`config/sector_exceptions.json`（理由つき6銘柄: APP・META・NET・CIX・KULR・PAYS）→業種のマスターの写像の順で `growth_sanity.industry_for_ticker` が引く。手書きの `TICKER_INDUSTRY_OVERRIDES`（35銘柄、登録に無い9銘柄を含む）と `beta_config.overrides.sector` の読みをやめた。案t（逓減の終点は業種が正のときだけ、0以下は0）は [[GROWTH-SANITY-CONTINUITY-1]] 段1で入っている（`max(業種, 0)`・`tapering_g_end`）。永久成長率（型D）は段2に回した: `maturity_config` の業種の経路は VST の2.0%だけで使われていたので VST を `_TICKER_TV_G` に移し値を変えない。マスターの業種を永久成長率に使うと21銘柄が動く（試算: VZ −28%・ENTG +9%・PEP −8%・DELL +8%…、判定2〈HQY・RMBS〉）ため段2で決める。試算（成長率の段2の公開の後を前に）: 業種が新しく付く42銘柄を含む46銘柄で業種が変わり、理論株価29銘柄・判定6（FICO WATCH→BUY・HQY WATCH→HOLD・IOT HOLD→TRIM・RBRK HOLD→TRIM・RMBS BUY→WATCH・ZETA BUY→WATCH）、保有9銘柄は変化0。LOAR −44%（推奨成長率 33→21%、業種10.9%が候補に入り重み合計 1.5→2.5）・RXRX −40%（業種が−1.6%で逓減の終点が10%→0%）・RCAT −26%（同、終点10%→10.9%）は飛びでなく候補・終点の変化。**公開（2026-11-06、8093a5f689）**: TANUKI 42158201513 → HypeCore 42159776491 → TANUKI 42159962030 すべて success。1回目は試算と96銘柄で理論株価・推奨成長率・判定・funda・乖離率が一致、印（SECTOR-MASTER-ADOPT-1-1）は46銘柄、2回目は印0・試算と一致のまま（HypeCoreを読んでも判定の動きなし）。Discordの🛠の文面は実行ログでは確認できず未確認。例外の台帳に残すのはAPP・META・NET・CIX・KULR・PAYS（チャット側の決定 2026-11-06）、ABBV・ASTS・CRWV・HQYは写像に寄せる、`TICKER_INDUSTRY_OVERRIDES`の登録に無い9銘柄は消す。公開の前に成長率の確かめ（LOAR −90%等）を確かめる
+- 段2（永久成長率の直引き`_TICKER_TV_G`・Phase2の上限`_mega_tech_tickers`→業種の規則）: **実装済み（2026-11-06、scope `SECTOR-MASTER-ADOPT-1-2`。公開の結果は下）**。永久成長率は 例外の台帳（`sector_exceptions.json`の`terminal_growth`、理由つき、**今は0件**＝直引き63銘柄はWACC-1〈2026-05-31〉で『業種の規則を当てた結果のキャッシュ』として入れたもので銘柄ごとの理由の記録が無く規則に寄せた）→ 業種（段1の`industry_for_ticker`）の`_DAMODARAN_TV_G` → 既定3.0%。業種の表に無い業種（Hotel/Gaming・Metals & Mining・Tobacco・Diversified等）は既定3.0%のまま: Damodaranの表の値（g_ebit・roc・rr）から機械的に決められるかを調べたが、表の中でg_ebitと段階が対応しない（Information Services −5.9%が3.5%、Aerospace/Defense +10.9%が3.0%）ので足さない。Phase2の上限・αの上限のメガテックは、時価総額1兆ドル以上かつyfinanceの業種がSoftware - *・Internet *・Semiconductors・Consumer Electronicsの規則（`common/sector_master.py`の1か所、マスターの`mega_tech`）で、今の登録銘柄では以前の手書きの6銘柄（MSFT・AMZN・GOOGL・AAPL・META・NVDA）と同じ。`maturity_config.json`の`_mega_tech_tickers`は廃止。試算（段1の公開の後を前に）: 永久成長率が39銘柄で変わり、理論株価38銘柄・判定3（HQY HOLD→WATCH・RMBS WATCH→BUY・VRT WATCH→HOLD）、保有はSOUN +6.5%・TSLA −3.7%（判定は変わらず）。大きい順にCEG −28%（3.0%→2.0%）・VZ −28%（3.0%→2.0%）・HON +13%（2.5%→3.0%）・LITE −12%・CART −10%・AMZN −9%。**公開（2026-11-06、fce4e59a79）**: TANUKI 42165064694 → HypeCore 42166893928 → TANUKI 42167097115 すべて success。1回目は試算と96銘柄で理論株価・推奨成長率・判定・funda・乖離率が一致、印（SECTOR-MASTER-ADOPT-1-2）は38銘柄、2回目は印0・試算と一致のまま。Discordの🛠の文面は実行ログでは確認できず未確認。残りは段3（金融、11-08のSICの後）・段4（EPS ANALYZER、別の計算方法の変更）。
+- 段3（金融の判定→マスターの`financial`）: **実装済み（2026-11-11、scope `SECTOR-MASTER-ADOPT-1-3`。公開の結果は下に追記）**。仕様は`docs/architecture/SECTOR_MASTER_ADOPT_STAGE3_STEP0.md`。`common/sector_master.py`の`is_financial_ticker`1か所に寄せた: `reader.get_net_cash`の金融ガード・`rice`の除外・`adjustments`のFintech 50%・FCFEの対象（保険を除く）・report.txtの表示・rccのPS確かめ・stock.html（TANUKIの出力のcomponents.financial）。保険の判定（`_is_insurance`）・sector別の既定β・UtilitiesとHealthcare Plansの文字列の判定は別の概念として残した。試算: V 327.44→325.83（−0.5%、短期負債$2.996Bを捨てなくなる）・MSCI 399.08→398.79（−0.1%、RPO $21Mが消える）、ほか0、判定の変化0、保有銘柄0。`config/financial_institution_config.json`は廃止（SOFIだけだった手書きの一覧）。**JPM・GSの注記（移し先）**: JPM・GSを登録するとマスターの`financial`で自動的にFCFEの対象になる（`register_ticker`のStep 1.6がマスターを作る）。登録後にFCFEの結果とマスターの区分を目視する。**公開の結果（2026-11-11）**: TANUKI run `42928269132`（手動）→HypeCore `42930265663`→TANUKI `42930541613`（HypeCore完了で自動）。公開の理論株価・判定は試算と一致（V 325.83・MSCI 398.79、SOFI・ほかは同じ）、`components.financial`はV・MSCI false・SOFI true。印（`method_change`）は1回目（`974d779fff`）でV・MSCIの2銘柄だけ、2回目（`9636280e6a`）は0件
+- 段4（EPS ANALYZERの区分→マスターの写像）: **実装済み（2026-11-11、scope `SECTOR-MASTER-ADOPT-1-4`。公開の結果は下に追記）**。仕様は`docs/architecture/SECTOR_MASTER_ADOPT_STAGE4_STEP0.md`。区分は`config/sector_master.json`の`eps_category`だけ（`SectorClassifierV2.classify(ticker)`。マスターに無い銘柄は属性・SICから同じ規則で）。写像は`financial`に従う（金融でないFinancial ServicesはTechnology＝V・MSCI）。`sectors.yaml`は`name`・`exclusions`だけ、`cik_lookup.csv`の`eps_sector`列は読み手を全部外して削除（手設定はRKLB・SPIR・VRTの3銘柄だけだった）。RCAT・SPIR・VRTは写像に寄せ、`sector_exceptions.json`への追加は0件。試算: 区分が付く・変わる44銘柄、調整後EPSが変わる15銘柄（保有0。大きいのはAVAV TTM 5.27→1.76・HEI・LITE・ASTS）、TANUKIは理論株価・判定の変化0、`per_adjusted`が変わるのは8銘柄＋`fcf_outlier`の注記1銘柄（QBTS）。段4のSTEP 0の試算（マスターの写像のまま）より1銘柄少ないのは、MSCIがTechnologyに寄って調整後EPSが今と同じになったため。**公開の結果（2026-11-11）**: EPS ANALYZER run `42941456669`（手動・全銘柄）→TANUKI `42942898607`（自動）。公開の区分は95銘柄すべてに付き、試算と一致（不一致0）。TANUKIの理論株価・判定は変化0、`per_adjusted`は試算と一致（AVAV 69.94・HEI 57.42・LOAR 127.02ほか）、印（`method_change`）は9銘柄（scopeどおり）。公開のEPSが試算と違う9銘柄（ASTS・KULR・MRVL・PAYS・RKLB・SOUN・SPIR・VST・ZETA）は、本番がSECから取った新しい四半期（2026-09-30）・旧CIKの統合を含むため（区分の違いではない。手元の試算はSECを呼ばず保存済みのデータで回す）。VSTの`per_adjusted`は試算23.01・公開20.91。次の定時実行で印が付かないことは次の実行で確認する
+- 段5（TANUKI SCOREの画面の`CYCLICAL_KEYWORDS`→マスターの景気循環株）: **済 2026-11-06**。`common/sector_master.py`が区分だけを`docs/common/sector_class.json`に書き（公開はdocs/の下だけのため。同じ書き手・手で書かない）、画面はその`cyclical`を読む。表示だけ、CATが景気敏感に入る（TSLAは前から入っている）
+
+#### 投資判断への影響
+今あり（成長率の確かめに業種のベンチマークが無い銘柄、EPSの業種別の除外が効かない銘柄がある）。寄せると理論株価・判定が変わりうる
+
+#### 規模の見込み
+中〜大（読み手が多い）
+
+---
+
 ## 2026-11-11（完了）
 
 ### ✅ [SEC-COMPANYFACTS-API-LAG-1] CDNS・KO・RMBS・V・XOMのQ2の10-Q（2026-07-28〜08-03提出）が、EDGARのcompanyfacts APIに入っておらず、手元でも取り込めない
