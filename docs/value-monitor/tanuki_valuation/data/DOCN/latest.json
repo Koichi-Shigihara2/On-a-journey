@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 56.025928751201405,
   "intrinsic_value_beta": 30.94,
-  "upside_percent_beta": -60.8,
-  "intrinsic_value_rf": 257.82,
-  "upside_percent_rf": 226.9,
-  "intrinsic_value_rf_rate": 0.05120999813079834,
+  "upside_percent_beta": -61.0,
+  "intrinsic_value_rf": 260.85,
+  "upside_percent_rf": 228.4,
+  "intrinsic_value_rf_rate": 0.051029996871948244,
   "v0": 4182892965.6815553,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 68.28,
       "value_growth_pct": 21.9,
-      "expected_return_pct": -13.4
+      "expected_return_pct": -14.0
     },
     "2年後": {
       "future_value": 83.21,
       "value_growth_pct": 48.5,
-      "expected_return_pct": 5.5
+      "expected_return_pct": 4.7
     },
     "3年後": {
       "future_value": 101.4,
       "value_growth_pct": 81.0,
-      "expected_return_pct": 28.5
+      "expected_return_pct": 27.6
     },
     "4年後": {
       "future_value": 123.57,
       "value_growth_pct": 120.5,
-      "expected_return_pct": 56.7
+      "expected_return_pct": 55.6
     },
     "5年後": {
       "future_value": 150.59,
       "value_growth_pct": 168.8,
-      "expected_return_pct": 90.9
+      "expected_return_pct": 89.6
     }
   },
-  "upside_percent": -29.0,
-  "calculation_date": "2026-11-17T18:56:18+09:00",
+  "upside_percent": -29.5,
+  "calculation_date": "2026-11-18T06:43:47+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -221,7 +221,7 @@
       "total_transient_amount": 17726000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性費用と判断される。"
+        "reasoning": "すべての項目の理由が「マクロ変動による一時的影響」と明記されており、事業運営の一時的な問題を示す。"
       }
     },
     "action": "flagged",
@@ -354,7 +354,7 @@
     "roe_10yr_avg": -0.30911451289923597,
     "roe_years_used": 2,
     "roe_outlier_adj": false,
-    "current_price": 78.87999725341797,
+    "current_price": 79.44000244140625,
     "latest_revenue": 901427000.0,
     "rpo": 5882000.0,
     "beta": 1.701,
@@ -387,11 +387,11 @@
     "alpha_uncapped": 0.0,
     "per": 297.65518,
     "per_is_forward": false,
-    "per_adjusted": 190.7,
+    "per_adjusted": 192.06,
     "peg": 1.54,
     "ps": 9.2371025,
     "ev_ebitda": 34.017,
-    "ma200": 113.01544984817504,
+    "ma200": 113.11359985351562,
     "forward_eps": 1.96956,
     "next_quarter_eps": 0.32,
     "analyst_target_median": 160.0,
@@ -403,14 +403,14 @@
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
-    "insider_sell_count": 5,
+    "insider_sell_count": 4,
     "insider_net_direction": "Sell優勢",
     "insider_latest_date": "2026-10-02",
     "revenue_ttm": 1102671000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 185.6,
     "max_eps": 1.2697,
-    "max_eps_per": 62.1,
+    "max_eps_per": 62.6,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
     "max_eps_shares": 114622000.0,
@@ -440,14 +440,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.21863279619541728,
-  "required_growth_rf_base": -0.1740754028164443,
-  "risk_free_rate_live": 0.05120999813079834,
-  "risk_free_rate_live_date": "2026-11-16",
+  "required_growth_rf_base": -0.1729059956654435,
+  "risk_free_rate_live": 0.051029996871948244,
+  "risk_free_rate_live_date": "2026-11-17",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.048784330728585124,
+  "required_growth_rf_live": -0.04956250122554273,
   "tanuki_score": "HOLD",
   "funda_score": 50,
-  "score_comment": "割高(-29%超)、FCF黒字、売上成長加速",
+  "score_comment": "割高(-30%超)、FCF黒字、売上成長加速",
   "timing_score": 25,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -540,7 +540,7 @@
     "shares_yr_3ago": 100806000,
     "buyback_ttm": 0
   },
-  "net_current_assets_ratio": 0.0154,
+  "net_current_assets_ratio": 0.0153,
   "dupont": {
     "ni_ttm": 34259000,
     "revenue_ttm": 1102671000,

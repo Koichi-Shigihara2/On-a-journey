@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 6.095347134367588,
   "intrinsic_value_beta": 3.53,
-  "upside_percent_beta": 120.5,
-  "intrinsic_value_rf": 15.66,
-  "upside_percent_rf": 878.7,
-  "intrinsic_value_rf_rate": 0.05120999813079834,
+  "upside_percent_beta": 129.1,
+  "intrinsic_value_rf": 15.76,
+  "upside_percent_rf": 923.4,
+  "intrinsic_value_rf_rate": 0.051029996871948244,
   "v0": 108788999.4997595,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 9.16,
       "value_growth_pct": 50.2,
-      "expected_return_pct": 472.5
+      "expected_return_pct": 494.8
     },
     "2年後": {
       "future_value": 13.75,
       "value_growth_pct": 125.4,
-      "expected_return_pct": 759.4
+      "expected_return_pct": 792.9
     },
     "3年後": {
       "future_value": 20.64,
       "value_growth_pct": 238.4,
-      "expected_return_pct": 1190.0
+      "expected_return_pct": 1240.3
     },
     "4年後": {
       "future_value": 30.99,
       "value_growth_pct": 408.0,
-      "expected_return_pct": 1836.9
+      "expected_return_pct": 1912.3
     },
     "5年後": {
       "future_value": 31.77,
       "value_growth_pct": 420.8,
-      "expected_return_pct": 1885.6
+      "expected_return_pct": 1963.0
     }
   },
-  "upside_percent": 281.0,
-  "calculation_date": "2026-11-17T18:55:27+09:00",
+  "upside_percent": 295.8,
+  "calculation_date": "2026-11-18T06:42:43+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -195,7 +195,7 @@
       "total_transient_amount": 780643,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的な貸倒引当金の計上で、事業運営上の構造的な問題ではなく外部要因による一過性の影響と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。収益力の構造的悪化を示す兆候ではない。"
       }
     },
     "action": "flagged",
@@ -315,7 +315,7 @@
     "roe_10yr_avg": -0.6296839227208106,
     "roe_years_used": 7,
     "roe_outlier_adj": true,
-    "current_price": 1.600000023841858,
+    "current_price": 1.5399999618530273,
     "latest_revenue": 16170404.0,
     "rpo": 107267.0,
     "beta": 2.332,
@@ -352,7 +352,7 @@
     "peg": null,
     "ps": 5.189377,
     "ev_ebitda": null,
-    "ma200": 2.789599999189377,
+    "ma200": 2.7795999991893763,
     "forward_eps": 0.0,
     "next_quarter_eps": null,
     "analyst_target_median": 7.0,
@@ -443,14 +443,14 @@
     "ai_comment": null
   },
   "phase1_growth": 0.5013391731944579,
-  "required_growth_rf_base": -0.28742876183886523,
-  "risk_free_rate_live": 0.05120999813079834,
-  "risk_free_rate_live_date": "2026-11-16",
+  "required_growth_rf_base": -0.2928550684342629,
+  "risk_free_rate_live": 0.051029996871948244,
+  "risk_free_rate_live_date": "2026-11-17",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.23181258897284762,
+  "required_growth_rf_live": -0.23871240154746431,
   "tanuki_score": "PASS",
   "funda_score": 0,
-  "score_comment": "割安圏(281%)で買い余地大、FCFマイナス（投資フェーズ）",
+  "score_comment": "割安圏(296%)で買い余地大、FCFマイナス（投資フェーズ）",
   "timing_score": 65,
   "sell_reason": null,
   "pre_rounding_score": null,
@@ -542,7 +542,7 @@
     "shares_yr_3ago": 105655773
   },
   "computed_runway_months": 13.425885543004417,
-  "net_current_assets_ratio": 0.8696,
+  "net_current_assets_ratio": 0.9035,
   "dupont": {
     "ni_ttm": -90784224,
     "revenue_ttm": 16287284,
@@ -590,7 +590,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.0512,
+  "erp": -0.051,
   "dilution_severity": "severe",
   "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
 }
