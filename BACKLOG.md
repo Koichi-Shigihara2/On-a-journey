@@ -2520,6 +2520,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **分類:** TANUKI VALUATION / `adjustments.py`（`DEFAULT_FCF_CV_THRESHOLD`）・Layer3の逆算のQ4・`check_growth_sanity`
 **登録日:** 2026-11-11
 **着手条件:** なし（登録のみ）。実装の前に[[GROWTH-SANITY-CONTINUITY-1]]の結果を読む
+**公開済み（2026-11-17）:** コードと派生ファイルをkaihatsuに出した（method_change ID `TANUKI-CALC-CONTINUITY-1-1`、scope 16銘柄。記録は`docs/architecture/TANUKI_CALC_CONTINUITY_STEP0.md` §7、確認は`CLAUDE_CODE_START.md`手順35）。移設は2回目の確認の後
 **発見:** FINDINGS 2026-11-04（fcf_baseのCV）・2026-11-05（逆算のQ4の負）・2026-11-06（check_growth_sanityの残り）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
 
 #### 内容

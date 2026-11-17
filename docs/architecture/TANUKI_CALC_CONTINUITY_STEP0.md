@@ -126,3 +126,16 @@
 - **FICO・TASK・ASTSは旧と同じ**: TASKは latest.json 全体が旧と一致。ASTSも latest.json・HypeCoreの出力（34か月ぶんの rev_yoy 等）が旧と一致。FICOは `buyback_ttm` 3,045,991,000 が旧のままで、latest.json の差は BULL の理論株価（(3)のtaper）だけ。
 - ゲート（ブランチ上）: 同じコマンドで2,955件が通り、失敗は SITM の1件（既知の例外）。rcc は NG 0・WARN 215、audit は通過。
 - 公開の手順（上）の5は不要になった（許容幅は同じブランチに入っている）。
+
+
+## 7. 公開の記録（2026-11-17）— 段1（PARSER）の公開の後の上で試算し直して公開
+
+- 手順: ブランチ`tanuki-calc-continuity-1`を kaihatsu（`b3fc5b4ef2`）に rebase（衝突0）→`regen_derived`＋`revert_noise`（実質の変更9ファイル）→`sim.py chain`（前＝kaihatsu・後＝ブランチ＋派生。TANUKI→HypeCore→TANUKI、96銘柄）→`sim.py scope --id TANUKI-CALC-CONTINUITY-1-1 --write`（scope 16銘柄）。ゲート: pytest 2982通過・失敗1（既知の例外`test_stonks_flag_rule::test_production_flags_match_plan_c`）・skip 6、audit通過、rcc NG 0・WARN 230
+- 試算は予行（`PUBLISH_REHEARSAL_2026-11.md`の2段目）と**理論株価が一致**: 11銘柄・保有9銘柄は±0.0%・stage 0。CAKE 50.00→41.25（−17.5%）・DOCN 64.44→56.03（−13.1%）・LOAR 28.14→25.09（−10.8%）・KO 24.29→26.17（+7.7%）・TER +4.7%・HWM −3.1%・HEI +2.2%・HQY −1.4%・CIX +1.2%・ALAB −0.7%・DDOG +0.3%
+- 決定(a)の一覧（5%超・判定が変わる・保有）と理由（原本の確認は§2.1の`_movers.csv`・10-Kの申告）:
+  - CAKE −17.5%: FCFのCV（変動係数）が境目0.5の近くで、基準が5年平均125.0Mへ全量寄っていたのを傾斜（0.40〜0.60）で中間に寄せる。段1の後の基準（50.00）からの変化なので単独の−22.6%と違う（§3）。入力のFCFは10-Kの申告と一致
+  - DOCN −13.1%・LOAR −10.8%: 同じ傾斜。入力のFCFは`cf_lines`のcapex（ソフト開発費を含む定義）どおり
+  - KO +7.7%: 同じ傾斜（境目の反対側）。入力のFCFは10-Kと一致
+  - 保有9銘柄: すべて±0.0%（判定の変化0）
+  - **DOCNの判定はHOLDのまま**（予行では HOLD→TRIM だった）。理由は株価の動き: 予行の試算の時点（11-13）の株価は86.32（乖離率 −25.4%）で、理論株価−13.1%の後は約−35%となりTRIMの帯に入った。公開前の試算（11-17朝の公開の値）は株価78.88（乖離率 −18.3%）で、理論株価−13.1%の後も−29.0%にとどまりHOLDのまま（funda 50・timing 25は前後で同じ）。理論株価の変化は予行と一致しており、計算の食い違いではない（チャット側の確認、2026-11-17）。株価が86付近に戻れば判定はTRIMに動く
+- 判定の変化は0、funda・stageの変化は0（scope 16銘柄の内訳: 理論株価が変わる11＋表示だけ5）
