@@ -1,5 +1,5 @@
 QBTS INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-17T06:39:43+09:00
+Generated: 2026-11-17T18:35:28+09:00
 Price: $8.67
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -61,7 +61,7 @@ Current_Price: $8.67
 Intrinsic_Value_BASE: $2.33
 Deviation_BASE: -73.1%
 Growth_Rate_Original: -44.2% (TTM実績)
-Growth_Rate_Adjusted: 10.4% (推奨値・中央値ベース)
+Growth_Rate_Adjusted: 10.4% (推奨値・重み付き平均)
 Scenarios:
 BEAR: Growth=7.3%, IV=$2.21 （推奨値ベース）
 BASE: Growth=10.4%, IV=$2.33 （推奨値ベース）
@@ -129,7 +129,7 @@ FCF_History:
   2025: $-0.08B (FCF_Margin: -310.3%)
 Segment_Breakdown:
   General: $0.0B (100%, YoY 10%)
-  Segment_Weighted_Growth: 10.4% (推奨値・中央値を自動適用)
+  Segment_Weighted_Growth: 10.4% (推奨値・重み付き平均を自動適用)
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -182,9 +182,9 @@ market-priced future potential.
 [4. 成長率根拠]
 Phase1成長率 : 10.4% (DCF適用値・推奨成長率)
 元成長率      : -44.2% (推奨適用前)
-成長モデル: 中央値モデル（CAGR_max=50.8%のため候補の重み付き平均モデル適用（逓減モデルとの混合 s=0.00））  HypePhase=4
+成長モデル: 重み付き平均モデル（CAGR_max=50.8%のため候補の重み付き平均モデル適用（逓減モデルとの混合 s=0.00））  HypePhase=4
 推奨成長率内訳:
-  中央値ベース:          10.3%
+  重み付き平均:          10.3%
   最終推奨値:            10.4%
 推奨成長率の候補: 今の伸び(TTM売上の前年比) -44.2%
 判定         : PLAUSIBLE

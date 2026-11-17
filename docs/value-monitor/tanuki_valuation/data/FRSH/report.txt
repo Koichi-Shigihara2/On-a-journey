@@ -1,5 +1,5 @@
 FRSH INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-17T06:43:49+09:00
+Generated: 2026-11-17T18:39:21+09:00
 Price: $13.23
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -32,7 +32,7 @@ PASS: Funda<25, excluded from consideration
 Matrix: ①投資効率系
 Quadrant: 右下
 Label: 割安×低効率
-Key_Metric_Y: RICE = 0.112
+Key_Metric_Y: RICE = 0.175
 Deviation_Rate: +166.3%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
@@ -61,11 +61,11 @@ Current_Price: $13.23
 Intrinsic_Value_BASE: $35.24
 Deviation_BASE: +166.4%
 Growth_Rate_Original: 50.0% (TTM実績)
-Growth_Rate_Adjusted: 20.8% (推奨値・中央値ベース)
+Growth_Rate_Adjusted: 20.8% (推奨値・重み付き平均)
 Scenarios:
 BEAR: Growth=14.6%, IV=$27.07 （推奨値ベース）
 BASE: Growth=20.8%, IV=$35.24 （推奨値ベース）
-BULL: Growth=25.0%, IV=$41.92 （推奨値ベース）
+BULL: Growth=25.0%, IV=$38.58 （推奨値ベース）
 Return_Outlook(BASE): 1年後: $42.58 (+221.8%) / 3年後: $62.15 (+369.8%) / 5年後: $90.72 (+585.7%)
   5yr_Annualized_Return: +47.0%/yr
 TTM_YoY_Growth: 15.2%
@@ -79,7 +79,7 @@ Terminal_Growth_Rate: 3.5%
 Beta: 0.894
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
 FCF_Base: $234.81M (直近2yr平均 + R&D補正) [ボトムアップ: OCF-CapEx]
-FCF_Breakdown（TTM 2026-09-30）: OCF=$261M / CapEx=$25M / SBC(非現金)=$118M / D&A=$32M
+FCF_Breakdown（TTM 2026-09-30）: OCF=$261M / CapEx=$25M / SBC(非現金)=N/A / D&A=$32M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
    加減算していません（参考表示のみ）。ΔNWCの汎用開示は既存データからの
    直接算出が困難なため見送り、OCF自体の年次推移で代替してください。]
@@ -100,7 +100,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $21.78  $30.50  $41.75
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的費用と判断されるため。
+  Reasoning: 両項目とも理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。
 Financial_Health:
   Net_Debt: $-0.70B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.47B  ST_Invest: $0.23B
@@ -171,9 +171,9 @@ market-priced future potential.
 [4. 成長率根拠]
 Phase1成長率 : 20.8% (DCF適用値・推奨成長率)
 元成長率      : 50.0% (推奨適用前)
-成長モデル: 中央値モデル（CAGR_max=50.0%のため候補の重み付き平均モデル適用）  HypePhase=4
+成長モデル: 重み付き平均モデル（CAGR_max=50.0%のため候補の重み付き平均モデル適用）  HypePhase=4
 推奨成長率内訳:
-  中央値ベース:          20.8%
+  重み付き平均:          20.8%
   最終推奨値:            20.8%
 推奨成長率の候補: 今の伸び(TTM売上の前年比) 15.2%
 判定         : PLAUSIBLE
@@ -199,15 +199,15 @@ Industry benchmark: Damodaran 2025 fundgrEB.xls
 [5. RICE METRICS]
 Available: true
 Exclusion_Reason: N/A
-BEAR: RICE=0.079
-BASE: RICE=0.112
-BULL: RICE=0.135
+BEAR: RICE=0.123
+BASE: RICE=0.175
+BULL: RICE=0.211
 Components (BASE scenario):
 G  = 20.8%  [TANUKI forward growth rate]
-Q  = 0.8003   [OCF / (NetIncome + SBC), 3yr avg]
+Q  = 1.2535   [OCF / (NetIncome + SBC), 3yr avg]
 CF = 0.2241  [RevGrowth / InvestmentIntensity, 1yr lag, 3yr avg]
 CF_adj = 8.5079  [R&D除外・CapExのみ投資強度]
-RICE_adj = 4.249  [参考：R&D資本化想定]
+RICE_adj = 6.655  [参考：R&D資本化想定]
 WACC = 10.0%
 VC_Factor = 0.30  [RICE-1: clamp(ROIC/WACC,0.3,2.0)]
 ROIC_WACC_Ratio = 0.23  [NOPAT/InvestedCapital / 0.10]

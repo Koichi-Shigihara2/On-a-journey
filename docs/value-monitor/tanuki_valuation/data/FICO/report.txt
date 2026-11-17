@@ -1,5 +1,5 @@
 FICO INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-17T06:43:15+09:00
+Generated: 2026-11-17T18:38:51+09:00
 Price: $717.28
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -61,11 +61,11 @@ Current_Price: $717.28
 Intrinsic_Value_BASE: $1,370.64
 Deviation_BASE: +91.1%
 Growth_Rate_Original: 19.7% (TTM実績)
-Growth_Rate_Adjusted: 18.5% (推奨値・中央値ベース)
+Growth_Rate_Adjusted: 18.5% (推奨値・重み付き平均)
 Scenarios:
 BEAR: Growth=13.0%, IV=$820.53 （推奨値ベース）
 BASE: Growth=18.5%, IV=$1,370.64 （推奨値ベース）
-BULL: Growth=22.3%, IV=$1,879.37 （推奨値ベース）
+BULL: Growth=22.3%, IV=$1,622.83 （推奨値ベース）
 Return_Outlook(BASE): 1年後: $1,624.84 (+126.5%) / 3年後: $2,283.43 (+218.3%) / 5年後: $3,208.96 (+347.4%)
   5yr_Annualized_Return: +34.9%/yr
 TTM_YoY_Growth: 27.3%
@@ -100,7 +100,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $585.00  $1,111.98  $1,844.17
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: マクロ変動による一時的影響と明記されており、金額も極めて小さく事業運営上の一過性要因と判断される。
+  Reasoning: マクロ変動による一時的影響と明記された貸倒引当金の変動であり、事業の構造的悪化を示す内容ではない。
 Financial_Health:
   Net_Debt: $+5.34B (negative=net cash)
   Total_Debt: $5.59B  Cash: $0.25B
@@ -172,9 +172,9 @@ market-priced future potential.
 [4. 成長率根拠]
 Phase1成長率 : 18.5% (DCF適用値・推奨成長率)
 元成長率      : 19.7% (推奨適用前)
-成長モデル: 中央値モデル（CAGR_max=19.7%のため候補の重み付き平均モデル適用）  HypePhase=2
+成長モデル: 重み付き平均モデル（CAGR_max=19.7%のため候補の重み付き平均モデル適用）  HypePhase=2
 推奨成長率内訳:
-  中央値ベース:          18.5%
+  重み付き平均:          18.5%
   最終推奨値:            18.5%
 推奨成長率の候補: 今の伸び(TTM売上の前年比) 27.3%
 判定         : PLAUSIBLE

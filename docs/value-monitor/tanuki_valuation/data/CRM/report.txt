@@ -1,5 +1,5 @@
 CRM INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-17T06:36:21+09:00
+Generated: 2026-11-17T18:32:23+09:00
 Price: $214.83
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -61,11 +61,11 @@ Current_Price: $214.83
 Intrinsic_Value_BASE: $363.11
 Deviation_BASE: +69.0%
 Growth_Rate_Original: 11.2% (TTM実績)
-Growth_Rate_Adjusted: 14.3% (推奨値・中央値ベース)
+Growth_Rate_Adjusted: 14.3% (推奨値・重み付き平均)
 Scenarios:
 BEAR: Growth=10.0%, IV=$280.05 （推奨値ベース）
 BASE: Growth=14.3%, IV=$363.11 （推奨値ベース）
-BULL: Growth=17.1%, IV=$429.11 （推奨値ベース）
+BULL: Growth=17.1%, IV=$396.78 （推奨値ベース）
 Return_Outlook(BASE): 1年後: $414.87 (+93.1%) / 3年後: $541.57 (+152.1%) / 5年後: $706.96 (+229.1%)
   5yr_Annualized_Return: +26.9%/yr
 TTM_YoY_Growth: 11.2%
@@ -100,7 +100,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $237.41  $305.74  $380.27
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄にすべて『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断されるため。
+  Reasoning: すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。
 Financial_Health:
   Net_Debt: $+28.52B (negative=net cash)
   Total_Debt: $39.92B  Cash: $8.31B  ST_Invest: $3.09B
@@ -121,7 +121,7 @@ FCF_History:
   FCF_CAGR_3yr: +31.6%
 Segment_Breakdown:
   General: $43.9B (100%, YoY 14%)
-  Segment_Weighted_Growth: 14.3% (推奨値・中央値を自動適用)
+  Segment_Weighted_Growth: 14.3% (推奨値・重み付き平均を自動適用)
   (= basis for TANUKI forward growth rate G)
 Definition:
 
@@ -174,9 +174,9 @@ market-priced future potential.
 [4. 成長率根拠]
 Phase1成長率 : 14.3% (DCF適用値・推奨成長率)
 元成長率      : 11.2% (推奨適用前)
-成長モデル: 中央値モデル（CAGR_max=14.3%のため候補の重み付き平均モデル適用）  HypePhase=4
+成長モデル: 重み付き平均モデル（CAGR_max=14.3%のため候補の重み付き平均モデル適用）  HypePhase=4
 推奨成長率内訳:
-  中央値ベース:          14.3%
+  重み付き平均:          14.3%
   最終推奨値:            14.3%
 推奨成長率の候補: 今の伸び(TTM売上の前年比) 11.2%
 判定         : PLAUSIBLE

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 166.3,
-  "calculation_date": "2026-11-17T06:43:49+09:00",
+  "calculation_date": "2026-11-17T18:39:21+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -113,7 +113,7 @@
     },
     "bull": {
       "growth_rate": 0.25,
-      "intrinsic_value_per_share": 41.92
+      "intrinsic_value_per_share": 38.58
     }
   },
   "growth_options": {
@@ -209,7 +209,7 @@
       "total_transient_amount": 7032000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業再編に伴う一時的費用と判断されるため。"
+        "reasoning": "両項目とも理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -223,7 +223,7 @@
     "estimated_fcf": 217564500.0,
     "raw_fcf": 217564500.0,
     "capex": 24851000.0,
-    "sbc": 117903000.0,
+    "sbc": null,
     "ocf": 260947000.0,
     "da": 31681000.0,
     "note": "OCF$0.26B - CapEx$0.02B（TTM 2026-09-30。5yr/2yr平均・外れ値除外後の採用値は$0.22B）"
@@ -286,7 +286,7 @@
   },
   "rice": {
     "available": true,
-    "q": 0.8003,
+    "q": 1.2535,
     "cf_conversion": 0.2241,
     "cf_adj": 8.5079,
     "wacc": 0.1,
@@ -299,21 +299,21 @@
     "roic_wacc_ratio": 0.225,
     "bear": {
       "growth_rate": 0.146,
-      "rice": 0.079,
-      "rice_per_ratio": 0.0045,
-      "rice_adj": 2.982
+      "rice": 0.123,
+      "rice_per_ratio": 0.007,
+      "rice_adj": 4.671
     },
     "base": {
       "growth_rate": 0.208,
-      "rice": 0.112,
-      "rice_per_ratio": 0.0064,
-      "rice_adj": 4.249
+      "rice": 0.175,
+      "rice_per_ratio": 0.01,
+      "rice_adj": 6.655
     },
     "bull": {
       "growth_rate": 0.25,
-      "rice": 0.135,
-      "rice_per_ratio": 0.0076,
-      "rice_adj": 5.106
+      "rice": 0.211,
+      "rice_per_ratio": 0.012,
+      "rice_adj": 7.999
     }
   },
   "fcf_source": "ttm_series",
@@ -394,9 +394,9 @@
     "revenue_ttm": 934178000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": -54.6,
-    "max_eps": 1.1682,
-    "max_eps_per": 11.3,
-    "max_eps_reliability": "HIGH",
+    "max_eps": 0.7458,
+    "max_eps_per": 17.7,
+    "max_eps_reliability": "MED",
     "max_eps_ttm_end": "2026-09-30",
     "max_eps_shares": 279122250.0,
     "max_eps_shares_basis": "ttm_weighted_avg"
@@ -442,10 +442,11 @@
     "matrix": "①投資効率系",
     "quadrant": "右下",
     "label": "割安×低効率",
-    "key_metric_y": "RICE = 0.112",
+    "key_metric_y": "RICE = 0.175",
     "qx": true,
     "qy": false
   },
+  "method_change": "TANUKI-CALC-CONTINUITY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -460,7 +461,8 @@
     "SECTOR-MASTER-ADOPT-1-3",
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
-    "PARSER-LAYER3-SINGLE-SOURCE-1-1"
+    "PARSER-LAYER3-SINGLE-SOURCE-1-1",
+    "TANUKI-CALC-CONTINUITY-1-1"
   ],
   "fcf_history": [
     {
