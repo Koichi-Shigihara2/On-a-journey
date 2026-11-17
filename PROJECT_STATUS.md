@@ -12,7 +12,7 @@
 自体とは無関係な話題であることに留意）**
 
 **次の作業（2026-11-16 終業 更新〈それまでは2026-11-12 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
-1. 11-17（火）朝: 手順34（`[[PARSER-LAYER3-SINGLE-SOURCE-1]]`段1の2回目は印0件）→ `[[TANUKI-CALC-CONTINUITY-1]]`の公開【Opus】。以降1日1件: DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES（手順33のSECの原本の確認はSHARESの公開の前）。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧を作る。順・衝突・段取りは`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`のとおり。移設は各々の2回目の確認の後
+1. 11-17（火）: 手順34の11-17朝の分は合格・**`[[TANUKI-CALC-CONTINUITY-1]]`は2026-11-17に公開済み**（確認は手順35、移設は2回目の確認の後）。次は 以降1日1件: DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES（手順33のSECの原本の確認はSHARESの公開の前）。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧を作る。順・衝突・段取りは`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`のとおり。移設は各々の2回目の確認の後
 2. 公開の列の後: `[[SEC-RETAG-RECONCILE-1]]`（STEP 0はAPPのD&Aの落ちから）→ `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)（倍率の履歴の株数をas-ofに）→ `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`の段2以降
 3. `[[STAGE-V2-ROLLOUT-1]]`の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）→ `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）【Opus】。②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
 4. いつでも・起きた回: 手順9（RSS 取得エラー）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
