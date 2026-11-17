@@ -34,7 +34,7 @@
    - 確認の手順: ASTS・PLTR・SOUNの表紙の発行済（クラスごと）、TSLAの10-Qの本文（表紙3,953M と加重平均の差412Mの内訳）、IONQ（yfinanceの implied 464.7 が表紙432.5より+7.5%の理由）。読み取りだけ・10件/秒以下。結果は`TANUKI_SHARES_STEP0.md`末尾に書く。TSLAの未確定の株は確かめるまで分母に入れない（決定2）
 
 34. **PARSER-LAYER3-SINGLE-SOURCE-1 段1（`-1`）の次の定時の実行の確認**（公開は2026-11-16 手動: TANUKI `43832337705`→HypeCore `43834462211`→TANUKI `43834776503`。1回目の印はscopeの17銘柄だけ・3回目は0件を確認済み）
-   - 日時: 2026-11-17（火）06:30 JST ごろのTANUKI VALUATIONの定時の実行と、2026-11-22（日）のSEC_Data_Update（四半期BSの置き換え`quarterly_bs.py`が`parse_and_save`で動く）の連鎖の後
+   - 日時: 2026-11-22（日）のSEC_Data_Update（四半期BSの置き換え`quarterly_bs.py`が`parse_and_save`で動く）の連鎖の後。**11-17朝の分は合格済み**（TANUKI 06:49 JSTの定時、96銘柄とも印0件。チャット側で確認、確認の手順の①）
    - 期限: 2026-11-23
    - 確認の手順: ①`latest.json`の`method_change`が付かない（`method_change_applied`に`-1`が入っている）②日曜の作り直しで`common/sec_data/data/{T}/quarterly_*.json`の`bs`が、Layer3のvalのままで（新しい四半期の分だけ増える）CAKE・KOの理論株価（50.00・24.29）が動かない ③`tests/test_bs_lines.py::test_saved_records_crwv`の失敗はFINDINGS 2026-11-16（本件とは無関係）
 
