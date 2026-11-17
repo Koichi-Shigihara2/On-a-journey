@@ -39,7 +39,7 @@
    - 確認の手順: ①`latest.json`の`method_change`が付かない（`method_change_applied`に`-1`が入っている）②日曜の作り直しで`common/sec_data/data/{T}/quarterly_*.json`の`bs`が、Layer3のvalのままで（新しい四半期の分だけ増える）CAKE・KOの理論株価（50.00・24.29）が動かない ③`tests/test_bs_lines.py::test_saved_records_crwv`の失敗はFINDINGS 2026-11-16（本件とは無関係）
 
 35. **TANUKI-CALC-CONTINUITY-1（`-1-1`）の次の定時の実行の確認**（公開は2026-11-17 手動: TANUKI `44056048730`→HypeCore `44058384410`→TANUKI `44058703497`。1回目の印はscopeの16銘柄だけ・3回目は0件を確認済み。CAKE 41.25・DOCN 56.03〈HOLDのまま〉が試算と一致）
-   - 日時: 2026-11-18（水）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（11-22の日曜のSEC_Data_Updateの後の分は手順34と同じ回で見る）
+   - 日時: 2026-11-18（水）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（11-22の日曜のSEC_Data_Updateの後の分は手順34と同じ回で見る）。**11-18朝の分は合格済み**（TANUKI 06:48 JSTの定時、96銘柄とも method_change 0件・`method_change_applied`に`TANUKI-CALC-CONTINUITY-1-1`。残りは11-22の分）
    - 期限: 2026-11-23
    - 確認の手順: ①`latest.json`の`method_change`が付かない（`method_change_applied`に`TANUKI-CALC-CONTINUITY-1-1`が入っている）②日曜の作り直し後も`ttm/`の9ファイル（APP・ASTS・BBAI・BSY・DELL・FRSH・HWM・ONDS・RCAT）と、CAKE・KO・DOCNの理論株価が動かない（動くのは新しい四半期の分だけ）。済んだら`[[TANUKI-CALC-CONTINUITY-1]]`をBACKLOG_DONEへ移設する
 
