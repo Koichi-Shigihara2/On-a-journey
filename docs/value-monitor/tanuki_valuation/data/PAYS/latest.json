@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 663.2,
-  "calculation_date": "2026-11-18T06:42:03+09:00",
+  "calculation_date": "2026-11-18T08:11:21+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -423,7 +423,7 @@
   "tanuki_score": "BUY",
   "funda_score": 100,
   "score_comment": "割安圏(663%)で買い余地大、FCF黒字、売上成長加速",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -436,6 +436,7 @@
     "qx": true,
     "qy": true
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -451,7 +452,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -507,9 +509,15 @@
       "debt_end": "2026-09-30",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": 4.06,
-    "shares_yr_now": 59648531,
-    "shares_yr_3ago": 52933255,
+    "dilution_3yr_annual_pct": 5.45,
+    "shares_yr_now": 62719220.0,
+    "shares_yr_3ago": 53484674.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": -9.4,
     "buyback_ttm": 0
   },
   "net_current_assets_ratio": 0.0752,

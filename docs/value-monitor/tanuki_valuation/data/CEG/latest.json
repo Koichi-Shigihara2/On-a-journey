@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -89.2,
-  "calculation_date": "2026-11-18T06:34:09+09:00",
+  "calculation_date": "2026-11-18T08:04:34+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -203,7 +203,7 @@
       "total_transient_amount": 33000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由にマクロ変動による一時的影響と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動分であり、事業運営上の一過性問題と判断される。"
       }
     },
     "action": "flagged",
@@ -406,7 +406,7 @@
   "tanuki_score": "WATCH",
   "funda_score": 65,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "TRIM",
   "pre_rounding_comment": "割高(-89%超)、FCF黒字、売上成長加速",
@@ -419,6 +419,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -434,7 +435,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -490,9 +492,15 @@
       "debt_end": "2026-06-30",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": -1.54,
-    "shares_yr_now": 314000000,
-    "shares_yr_3ago": 329000000
+    "dilution_3yr_annual_pct": 3.47,
+    "shares_yr_now": 360000000.0,
+    "shares_yr_3ago": 325000000.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-06-30",
+      "2026-06-30"
+    ],
+    "outstanding_gap_pct": -1.4
   },
   "net_current_assets_ratio": 0.0629,
   "dupont": {
@@ -576,6 +584,6 @@
     "fcf_margin_note": null
   },
   "erp": -0.0009,
-  "dilution_severity": "positive",
-  "dilution_comment": "自社株買いによる株主還元 ✅"
+  "dilution_severity": "medium",
+  "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
 }

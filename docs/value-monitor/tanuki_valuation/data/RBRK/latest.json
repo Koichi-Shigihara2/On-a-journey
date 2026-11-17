@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -29.7,
-  "calculation_date": "2026-11-18T06:38:28+09:00",
+  "calculation_date": "2026-11-18T08:09:06+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -387,9 +387,9 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": 0.011427744883708346,
   "tanuki_score": "HOLD",
-  "funda_score": 65,
+  "funda_score": 90,
   "score_comment": "割高(-30%超)、FCF黒字、売上成長加速",
-  "timing_score": 30,
+  "timing_score": 45,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -402,6 +402,7 @@
     "qx": false,
     "qy": true
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -417,7 +418,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -473,9 +475,14 @@
       "debt_end": "2026-07-31",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": 48.84,
-    "shares_yr_now": 196468000,
-    "shares_yr_3ago": 59590000
+    "dilution_3yr_annual_pct": 7.05,
+    "shares_yr_now": 206097000.0,
+    "shares_yr_3ago": 179851000.0,
+    "dilution_basis": "quarterly_weighted_since_listing",
+    "dilution_window": [
+      "2024-07-31",
+      "2026-07-31"
+    ]
   },
   "net_current_assets_ratio": 0.0429,
   "dupont": {
@@ -527,6 +534,6 @@
     "fcf_margin_note": null
   },
   "erp": -0.0434,
-  "dilution_severity": "severe",
-  "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
+  "dilution_severity": "medium",
+  "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
 }

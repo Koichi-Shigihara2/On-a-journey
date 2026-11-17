@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -78.1,
-  "calculation_date": "2026-11-18T06:34:56+09:00",
+  "calculation_date": "2026-11-18T08:05:31+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 31100000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、経済環境の一時的要因によるもので事業の構造的悪化を示す兆候ではない。"
+        "reasoning": "いずれもマクロ変動による一時的影響と明記されており、事業運営上の一過性問題と判断される。"
       }
     },
     "action": "flagged",
@@ -421,7 +421,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 90,
   "score_comment": "割高(-78%超)、FCF黒字、売上成長加速",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -434,6 +434,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -449,7 +450,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -508,9 +510,15 @@
       "debt_end": "2026-09-30",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": 1.88,
-    "shares_yr_now": 420700000,
-    "shares_yr_3ago": 397800000,
+    "dilution_3yr_annual_pct": -0.44,
+    "shares_yr_now": 401900000.0,
+    "shares_yr_3ago": 407200000.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": 4.0,
     "buyback_ttm": 1053000000.0
   },
   "net_current_assets_ratio": 0.0187,
@@ -576,6 +584,6 @@
     "fcf_margin_note": null
   },
   "erp": 0.0068,
-  "dilution_severity": "low",
-  "dilution_comment": "許容範囲内 ✅"
+  "dilution_severity": "positive",
+  "dilution_comment": "自社株買いによる株主還元 ✅"
 }

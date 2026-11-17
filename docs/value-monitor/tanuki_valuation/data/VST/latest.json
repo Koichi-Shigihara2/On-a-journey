@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -65.8,
-  "calculation_date": "2026-11-18T06:42:45+09:00",
+  "calculation_date": "2026-11-18T08:12:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -342,7 +342,7 @@
     "insider_buy_count": 3,
     "insider_sell_count": 6,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-10-08",
+    "insider_latest_date": "2026-11-17",
     "revenue_ttm": 20588000000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 351.2,
@@ -384,7 +384,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 80,
   "score_comment": "割高(-66%超)、FCF黒字、売上安定成長",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -397,6 +397,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -412,7 +413,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -468,9 +470,15 @@
       "debt_end": "2026-09-30",
       "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
     },
-    "dilution_3yr_annual_pct": -6.47,
-    "shares_yr_now": 345656067,
-    "shares_yr_3ago": 422447074,
+    "dilution_3yr_annual_pct": -3.17,
+    "shares_yr_now": 337852657.0,
+    "shares_yr_3ago": 372149099.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": -0.9,
     "buyback_ttm": 1169000000.0
   },
   "net_current_assets_ratio": 0.0421,

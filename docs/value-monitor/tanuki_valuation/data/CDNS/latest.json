@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -49.5,
-  "calculation_date": "2026-11-18T06:42:01+09:00",
+  "calculation_date": "2026-11-18T08:11:19+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -227,7 +227,7 @@
       "total_transient_amount": 44021000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が理由欄で『一過性の事業再編費用』と明記されており、構造的悪化ではなく一時的な再編費用と判断される。"
+        "reasoning": "すべての項目が『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
@@ -406,9 +406,9 @@
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
-    "insider_sell_count": 17,
+    "insider_sell_count": 18,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-11-12",
+    "insider_latest_date": "2026-11-17",
     "revenue_ttm": 6132096000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 170.7,
@@ -451,7 +451,7 @@
   "tanuki_score": "TRIM",
   "funda_score": 70,
   "score_comment": "割高(-50%超)、FCF黒字、売上安定成長",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -464,6 +464,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -479,7 +480,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -535,9 +537,15 @@
       "debt_end": "2026-09-30",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": -0.21,
-    "shares_yr_now": 273312000,
-    "shares_yr_3ago": 275011000,
+    "dilution_3yr_annual_pct": 0.35,
+    "shares_yr_now": 275278000.0,
+    "shares_yr_3ago": 272427000.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": -1.3,
     "buyback_ttm": 1000034000.0
   },
   "net_current_assets_ratio": 0.0105,
@@ -588,6 +596,6 @@
     "fcf_margin_note": null
   },
   "erp": -0.019,
-  "dilution_severity": "positive",
-  "dilution_comment": "自社株買いによる株主還元 ✅"
+  "dilution_severity": "low",
+  "dilution_comment": "許容範囲内 ✅"
 }

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 105.8,
-  "calculation_date": "2026-11-18T06:42:16+09:00",
+  "calculation_date": "2026-11-18T08:11:32+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 293000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的費用と判断される。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。"
       }
     },
     "action": "flagged",
@@ -438,7 +438,7 @@
   "tanuki_score": "BUY",
   "funda_score": 80,
   "score_comment": "割安圏(106%)で買い余地大、FCF黒字、売上安定成長",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -451,6 +451,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -466,7 +467,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -522,9 +524,15 @@
       "debt_end": "2026-04-30",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": -0.71,
-    "shares_yr_now": 277000000,
-    "shares_yr_3ago": 283000000,
+    "dilution_3yr_annual_pct": -0.83,
+    "shares_yr_now": 276000000.0,
+    "shares_yr_3ago": 283000000.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-04-30",
+      "2026-04-30"
+    ],
+    "outstanding_gap_pct": -2.8,
     "buyback_ttm": 5412000000.0
   },
   "net_current_assets_ratio": 0.0649,

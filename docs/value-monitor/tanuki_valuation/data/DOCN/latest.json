@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -29.5,
-  "calculation_date": "2026-11-18T06:43:47+09:00",
+  "calculation_date": "2026-11-18T08:12:57+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -221,7 +221,7 @@
       "total_transient_amount": 17726000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「マクロ変動による一時的影響」と明記されており、事業運営の一時的な問題を示す。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業運営上の一過性費用と判断される。"
       }
     },
     "action": "flagged",
@@ -448,7 +448,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 50,
   "score_comment": "割高(-30%超)、FCF黒字、売上成長加速",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -461,6 +461,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -476,7 +477,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -535,9 +537,15 @@
       "debt_end": "2026-09-30",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": 1.48,
-    "shares_yr_now": 105343000,
-    "shares_yr_3ago": 100806000,
+    "dilution_3yr_annual_pct": 3.75,
+    "shares_yr_now": 114682000.0,
+    "shares_yr_3ago": 102674000.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": 2.8,
     "buyback_ttm": 0
   },
   "net_current_assets_ratio": 0.0153,
@@ -592,6 +600,6 @@
     "fcf_margin_note": null
   },
   "erp": -0.0262,
-  "dilution_severity": "low",
-  "dilution_comment": "許容範囲内 ✅"
+  "dilution_severity": "medium",
+  "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
 }

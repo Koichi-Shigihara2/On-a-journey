@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -11.4,
-  "calculation_date": "2026-11-18T06:38:30+09:00",
+  "calculation_date": "2026-11-18T08:09:09+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -336,10 +336,10 @@
     "analyst_rec_key": "buy",
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
-    "insider_buy_count": 0,
+    "insider_buy_count": 1,
     "insider_sell_count": 1,
-    "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-09-25",
+    "insider_net_direction": "中立",
+    "insider_latest_date": "2026-11-17",
     "revenue_ttm": 431875000,
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 116.4,
@@ -380,9 +380,9 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.034299953807390704,
   "tanuki_score": "WATCH",
-  "funda_score": 75,
+  "funda_score": 65,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 25,
+  "timing_score": 40,
   "sell_reason": null,
   "pre_rounding_score": "HOLD",
   "pre_rounding_comment": "フェアバリュー近辺、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -395,6 +395,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -410,7 +411,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -469,9 +471,15 @@
       "debt_end": "2026-09-30",
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": 23.59,
-    "shares_yr_now": 119544268,
-    "shares_yr_3ago": 63324416
+    "dilution_3yr_annual_pct": 56.84,
+    "shares_yr_now": 250050615.0,
+    "shares_yr_3ago": 64795985.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": 0.1
   },
   "computed_runway_months": 30.697825061579582,
   "net_current_assets_ratio": 0.324,
@@ -532,6 +540,6 @@
     "fcf_margin_note": null
   },
   "erp": -0.0956,
-  "dilution_severity": "high",
-  "dilution_comment": "高い希薄化 ⚠️ SBC・増資を確認"
+  "dilution_severity": "critical",
+  "dilution_comment": "極度の希薄化 🚨 IPO直後か継続増資か要確認"
 }

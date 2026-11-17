@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -14.4,
-  "calculation_date": "2026-11-18T06:45:09+09:00",
+  "calculation_date": "2026-11-18T08:14:19+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -397,7 +397,7 @@
   "tanuki_score": "HOLD",
   "funda_score": 90,
   "score_comment": "フェアバリュー近辺、FCF黒字、売上成長加速",
-  "timing_score": 30,
+  "timing_score": 45,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -410,6 +410,7 @@
     "qx": false,
     "qy": true
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -425,7 +426,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -481,9 +483,15 @@
       "debt_end": null,
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": 5.4,
-    "shares_yr_now": 116200900,
-    "shares_yr_3ago": 99243894,
+    "dilution_3yr_annual_pct": 7.52,
+    "shares_yr_now": 129461337.0,
+    "shares_yr_3ago": 104134649.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": -3.7,
     "buyback_ttm": 0
   },
   "net_current_assets_ratio": 0.0441,

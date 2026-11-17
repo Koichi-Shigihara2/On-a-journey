@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 255.5,
-  "calculation_date": "2026-11-18T06:38:41+09:00",
+  "calculation_date": "2026-11-18T08:09:23+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -188,7 +188,7 @@
       "total_transient_amount": 1320000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に一過性の事業再編費用と明記されており、通常の非経常的なリストラ費用と判断できるため。"
+        "reasoning": "理由に『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。"
       }
     },
     "action": "flagged",
@@ -390,9 +390,9 @@
   "risk_free_rate_live_source": "tnx",
   "required_growth_rf_live": -0.3233899877494065,
   "tanuki_score": "WATCH",
-  "funda_score": 60,
+  "funda_score": 55,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
-  "timing_score": 65,
+  "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": "BUY",
   "pre_rounding_comment": "割安圏(256%)で買い余地大、FCFマイナス（投資フェーズ）、売上成長加速",
@@ -405,6 +405,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -420,7 +421,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -476,9 +478,15 @@
       "debt_end": "2026-09-30",
       "included_in_debt": "LongTermDebtAndCapitalLeaseObligationsと一致"
     },
-    "dilution_3yr_annual_pct": 36.6,
-    "shares_yr_now": 447446109,
-    "shares_yr_3ago": 175537487
+    "dilution_3yr_annual_pct": 36.32,
+    "shares_yr_now": 543000977.0,
+    "shares_yr_3ago": 214327186.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": 3.3
   },
   "computed_runway_months": 17.44286858571893,
   "net_current_assets_ratio": 0.2908,

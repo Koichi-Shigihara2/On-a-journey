@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 46.3,
-  "calculation_date": "2026-11-18T06:45:00+09:00",
+  "calculation_date": "2026-11-18T08:14:11+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -209,7 +209,7 @@
       "total_transient_amount": 2743000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的な貸倒引当金の増加であり、事業運営の一過性問題を示す内容のためtransientと判断。"
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、事業運営上の一過性要因と判断される。"
       }
     },
     "action": "flagged",
@@ -433,7 +433,7 @@
   "tanuki_score": "BUY",
   "funda_score": 100,
   "score_comment": "割安圏(46%)で買い余地大、FCF黒字、売上成長加速",
-  "timing_score": 70,
+  "timing_score": 85,
   "sell_reason": null,
   "pre_rounding_score": null,
   "pre_rounding_comment": null,
@@ -446,6 +446,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "DILUTION-DEFINITION-UNIFY-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -461,7 +462,8 @@
     "SECTOR-MASTER-ADOPT-1-4",
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
-    "TANUKI-CALC-CONTINUITY-1-1"
+    "TANUKI-CALC-CONTINUITY-1-1",
+    "DILUTION-DEFINITION-UNIFY-1-1"
   ],
   "fcf_history": [
     {
@@ -517,9 +519,15 @@
       "debt_end": null,
       "included_in_debt": null
     },
-    "dilution_3yr_annual_pct": 5.78,
-    "shares_yr_now": 127747476,
-    "shares_yr_3ago": 107935514
+    "dilution_3yr_annual_pct": 1.11,
+    "shares_yr_now": 129703126.0,
+    "shares_yr_3ago": 125480393.0,
+    "dilution_basis": "quarterly_weighted_3y",
+    "dilution_window": [
+      "2023-09-30",
+      "2026-09-30"
+    ],
+    "outstanding_gap_pct": -5.6
   },
   "net_current_assets_ratio": 0.0892,
   "dupont": {
@@ -571,6 +579,6 @@
     "fcf_margin_note": "FCFマージン悪化(18.0%→15.9%) BEAR補正係数=0.882"
   },
   "erp": 0.0118,
-  "dilution_severity": "medium",
-  "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
+  "dilution_severity": "low",
+  "dilution_comment": "許容範囲内 ✅"
 }
