@@ -73,6 +73,7 @@
 - 終業の数: BACKLOGアクティブ14件、rcc NG 0・WARN 232、pytest 2,975件通過・失敗1（kaihatsu。SITMの既知の`test_stonks_flag_rule`。コマンドは`CLAUDE_CODE_START.md`の「今の状態」のとおり）
 
 **2026-11-12 の作業（終業、アクティブ13件）**:
+- 2026-11-18: `[[DILUTION-DEFINITION-UNIFY-1]]`を公開（`f0a914b814`、ID `-1-1`、scope 90銘柄〈判定・funda・stageが変わるのは10銘柄〉）。手順35の11-18朝の分は合格。予行とのfundaの違い（SOUN 43→46・SPIR 1→6）は、Q3の10-Qで窓の終点が06-30→09-30に進んだため（終点06-30で再現、`DILUTION_UNIFY_STEP0.md`末尾）。確認は手順36。公開の残りの順は DEFICIT → MULTIPLES → TANUKI-SHARES
 - 朝の確認: 手順15（TAILのレビューの対象の期、APP・CELH・PLTR・SOFI・SOUNは`data_as_of`あり・`backfilled: false`・期は対象まで、ADBE・NVDA・TSLAは直し〈f9a7563010〉より前の生成で対象外）を合格にして外した（BACKLOG_DONE.mdの`[[TAIL-REVIEW-PERIOD-FILTER-1]]`の「確認」）。手順30は11-12朝の分が合格（TANUKI run `43104058687`、印なし・applied 4つ）、残りは11-15の分
 - `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`: STEP 0（`POINT_IN_TIME_STEP0.md`）→実装・公開。`common/market_data/split_reconcile.py`（Yahooの終値との比が一定の銘柄を`correct_daily_rows(reason="split_adjust")`で割り戻す、Market Data Weeklyの段）、手動のMarket Data Weekly run `43199988826`でAPH・CTVAを割り戻し（bot `21809efb32`）、HONの`price_factor 0.9535`を台帳に、(3)は案A。移設は手順32（11-15の2回目が0件）の後
 - `[[DILUTION-DEFINITION-UNIFY-1]]`: STEP 0（`DILUTION_UNIFY_STEP0.md`、Q4が無い四半期の窓の訂正を含む）→実装（**ブランチ`dilution-unify-1` 470d521ec1・未公開**。株数の変化を`common/dilution.py`の1つに、減点は傾斜だけ、上場の前後は上場後の最初の四半期を基準、STONKSの`dilution_risk`→`sbc_burden`）

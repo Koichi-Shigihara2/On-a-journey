@@ -2318,6 +2318,7 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 **優先度:** 中
 **分類:** 共通の定義 / TANUKI VALUATION（`financial_health.dilution_3yr_annual_pct`、report・画面の重大度）・STONKS SILO（`dilution_risk`）・定義v2
 **登録日:** 2026-11-05
+**状態:** 公開済み（2026-11-18、`-1-1`。確認は`CLAUDE_CODE_START.md`手順36、済んだら移設）
 **着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
 **発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-3のSTEP 0（2026-11-05）
 **実装（2026-11-12、ブランチ`dilution-unify-1`・未公開）:** 株数の変化を`common/dilution.py`の1つの部品に寄せ、STONKSの`dilution_risk`を`sbc_burden`に改名。試算は理論株価・判定・保有とも変化0（funda点の段と傾斜の2通りは`DILUTION_UNIFY_STEP0.md`末尾）。公開はPARSER段1→CONTINUITYの後にrebaseして試算し直す。**公開までこの項目は残す**
