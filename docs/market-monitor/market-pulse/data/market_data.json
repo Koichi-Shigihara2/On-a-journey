@@ -218593,5 +218593,2400 @@
       "failed": [],
       "status": "ok"
     }
+  },
+  {
+    "date": "2026-11-19T06:32:06+09:00",
+    "judgment": "曇り",
+    "indicators": {
+      "米10年債": {
+        "value": 5.07,
+        "change": -0.04,
+        "change_percent": -0.73,
+        "volume_ratio": null,
+        "date": "2026-11-18",
+        "change_bp": -3.7
+      },
+      "VIX指数": {
+        "value": 24.55,
+        "change": -0.98,
+        "change_percent": -3.84,
+        "volume_ratio": null,
+        "date": "2026-11-18"
+      },
+      "VIX9D（短期VIX）": {
+        "value": 23.96,
+        "change": -3.04,
+        "change_percent": -11.26,
+        "date": "2026-11-18"
+      },
+      "ドル円": {
+        "value": 159.35,
+        "change": -0.17,
+        "change_percent": -0.11,
+        "volume_ratio": null,
+        "date": "2026-11-18",
+        "provisional": true,
+        "provisional_kind": "日中"
+      },
+      "日経平均": {
+        "value": 58860.43,
+        "change": -801.59,
+        "change_percent": -1.34,
+        "volume_ratio": 1.0,
+        "date": "2026-11-17"
+      },
+      "S&P500": {
+        "value": 7323.63,
+        "change": -16.9,
+        "change_percent": -0.23,
+        "volume_ratio": 0.96,
+        "date": "2026-11-18"
+      },
+      "NASDAQ": {
+        "value": 24429.88,
+        "change": 101.5,
+        "change_percent": 0.42,
+        "volume_ratio": 0.84,
+        "date": "2026-11-18"
+      },
+      "WTI原油": {
+        "value": 82.18,
+        "change": -2.46,
+        "change_percent": -2.91,
+        "volume_ratio": 1.18,
+        "date": "2026-11-18",
+        "provisional": true,
+        "provisional_kind": "清算前",
+        "contract": "CLF27.NYM",
+        "contract_roll": {
+          "from": "CLZ26.NYM",
+          "to": "CLF27.NYM",
+          "raw_change_percent": -4.45,
+          "method": "same_contract",
+          "prev_date": "2026-11-17",
+          "prev_close": 84.6500015258789,
+          "close": 82.19000244140625
+        }
+      },
+      "金（GOLD）": {
+        "value": 3729.0,
+        "change": -135.2,
+        "change_percent": -3.5,
+        "volume_ratio": 1.46,
+        "date": "2026-11-18",
+        "provisional": true,
+        "provisional_kind": "清算前",
+        "contract": "GCZ26.CMX"
+      },
+      "NYSE Composite": {
+        "value": 23559.61,
+        "change_percent": -1.06,
+        "volume_ratio": null,
+        "date": "2026-11-18",
+        "divergence_vs_sp": -0.83
+      },
+      "S&P500グロース(IVW)": {
+        "value": 128.0,
+        "change_percent": 0.02,
+        "date": "2026-11-18"
+      },
+      "S&P500バリュー(IVE)": {
+        "value": 235.25,
+        "change_percent": -0.6,
+        "date": "2026-11-18"
+      },
+      "Russell2000小型(RUT)": {
+        "value": 2714.31,
+        "change_percent": 0.46,
+        "date": "2026-11-18"
+      },
+      "グロース対バリュー比": {
+        "diff_percent": 0.63
+      },
+      "大型対小型比": {
+        "diff_percent": -0.69
+      },
+      "VIX9D対VIX比": {
+        "value": 0.976,
+        "contango": true,
+        "date": "2026-11-18"
+      },
+      "HYG（ハイイールド債ETF）": {
+        "value": 76.65,
+        "change": 0.02,
+        "change_percent": 0.03,
+        "volume_ratio": 0.86,
+        "date": "2026-11-18"
+      },
+      "LQD（投資適格債ETF）": {
+        "value": 103.15,
+        "change": 0.41,
+        "change_percent": 0.4,
+        "volume_ratio": 1.27,
+        "date": "2026-11-18"
+      },
+      "HYG対LQD比": {
+        "value": 0.7431,
+        "change": -0.002771,
+        "date": "2026-11-18",
+        "prev_date": "2026-11-17"
+      }
+    },
+    "sentiment": {
+      "score": 36.6,
+      "label": "FEAR",
+      "sub_scores": {
+        "vix_level": {
+          "score": 45.4,
+          "weight": 0.225,
+          "raw": 24.55
+        },
+        "sp500_ma_dev": {
+          "score": 23.4,
+          "weight": 0.18,
+          "raw": -4.25
+        },
+        "ad_ratio": {
+          "score": 4.0,
+          "weight": 0.135,
+          "raw": 0.56
+        },
+        "hyg_lqd_dir": {
+          "score": 22.3,
+          "weight": 0.108,
+          "raw": -0.002771
+        },
+        "nh_nl": {
+          "score": 43.0,
+          "weight": 0.09,
+          "raw": -7
+        },
+        "growth_value": {
+          "score": 60.5,
+          "weight": 0.09,
+          "raw": 0.63
+        },
+        "distribution": {
+          "score": 50.0,
+          "weight": 0.072,
+          "raw": {
+            "vol_ratio": 0.96,
+            "chg_pct": -0.23
+          }
+        },
+        "rsp_spy_divergence": {
+          "score": 62.7,
+          "weight": 0.1,
+          "raw": 0.253
+        }
+      },
+      "breadth": {
+        "advances": 237,
+        "declines": 263,
+        "unchanged": 3,
+        "ad_ratio_1d": 0.9,
+        "ad_ratio_5d": 0.56,
+        "new_highs_52w": 3,
+        "new_lows_52w": 10,
+        "nh_nl_diff": -7,
+        "total_stocks": 503,
+        "pct_above_50ma": 56.3,
+        "pct_above_200ma": 55.7,
+        "rsp_return_1d": -0.171,
+        "spy_return_1d": -0.306,
+        "rsp_spy_divergence_1d": 0.134,
+        "rsp_spy_divergence_20d_avg": 0.253,
+        "ad_line": 832,
+        "mcclellan_oscillator": -21.5,
+        "stocks_excluded_date_mismatch": 0,
+        "stocks_counted_5d": 503,
+        "date": "2026-11-18"
+      },
+      "signal": {
+        "signal": "HOLD",
+        "reason": "BUY・TAKE PROFITの条件に当たらない",
+        "window_start": "2026-10-22",
+        "peak": 68.0,
+        "n": 21
+      }
+    },
+    "fear_greed": {
+      "score": 24.6,
+      "rating": "extreme fear",
+      "previous_close": 25.23,
+      "one_week_ago": 35.94,
+      "one_month_ago": 18.21
+    },
+    "tech_pulse": {
+      "score": 15,
+      "label": "EXTREME FEAR",
+      "components": {
+        "qqq_vs_ma125": -7.8,
+        "vxn_latest": 34.44,
+        "vxn_vs_ma50": 39.22,
+        "qqq_vs_spy_20d": -3.51,
+        "fg_score": 33.0,
+        "vxn_available": true
+      },
+      "divergence": {
+        "value": -9.6,
+        "zscore": -0.79,
+        "signal": ""
+      }
+    },
+    "asset_flow": {
+      "ultra_short": {
+        "label": "超短期国債",
+        "ticker": "SHV",
+        "desc": "1-3ヶ月T-Bill ETF",
+        "value": 110.22,
+        "change_pct": 0.018,
+        "date": "2026-11-18"
+      },
+      "short_bond": {
+        "label": "短期国債",
+        "ticker": "DGS3MO",
+        "desc": "3ヶ月T-Bill利回り",
+        "value": 4.34,
+        "change_pct": 0.463,
+        "date": "2026-11-16"
+      },
+      "gold": {
+        "label": "金",
+        "ticker": "GLD",
+        "desc": "金ETF",
+        "value": 341.19,
+        "change_pct": -3.203,
+        "date": "2026-11-18"
+      },
+      "long_bond": {
+        "label": "長期国債",
+        "ticker": "TLT",
+        "desc": "20年超米国債ETF",
+        "value": 80.22,
+        "change_pct": 0.842,
+        "date": "2026-11-18"
+      },
+      "ig_bond": {
+        "label": "投資適格社債",
+        "ticker": "LQD",
+        "desc": "投資適格社債ETF",
+        "value": 103.15,
+        "change_pct": 0.399,
+        "date": "2026-11-18"
+      },
+      "hy_bond": {
+        "label": "HY社債",
+        "ticker": "HYG",
+        "desc": "ハイイールド社債ETF",
+        "value": 76.65,
+        "change_pct": 0.026,
+        "date": "2026-11-18"
+      },
+      "equity": {
+        "label": "株式",
+        "ticker": "SPY",
+        "desc": "S&P500 ETF",
+        "value": 730.2,
+        "change_pct": -0.306,
+        "date": "2026-11-18"
+      }
+    },
+    "credit": {
+      "stock": "リスクオン",
+      "bond": "中立",
+      "credit": "リスクオフ",
+      "risk_off_score": 33
+    },
+    "take_profit_checklist": {
+      "triggered": false,
+      "fg_score": 24.6,
+      "points": 2,
+      "action": "PARTIAL",
+      "checks": [
+        {
+          "key": "ma200",
+          "label": "S&P500 200日MA",
+          "passed": false,
+          "point": 1,
+          "detail": "終値＜MA200 / MA200傾き↑上向き"
+        },
+        {
+          "key": "hy_spread",
+          "label": "HYスプレッド",
+          "passed": false,
+          "point": 1,
+          "detail": "スプレッド拡大中（90日最小値+30bps超）"
+        },
+        {
+          "key": "hindenburg",
+          "label": "ヒンデンブルグ・オーメン",
+          "passed": true,
+          "point": 0,
+          "detail": "シグナルなし"
+        }
+      ]
+    },
+    "buy_checklist": {
+      "triggered": true,
+      "extreme": false,
+      "points": 2,
+      "action": "BUY（積極的に拾う）",
+      "fg_score": 24.6,
+      "checks": {
+        "sp500_ma200": {
+          "above": false,
+          "slope_up": true,
+          "point": 1
+        },
+        "hy_spread": {
+          "current": 3.43,
+          "max_90d": 3.48,
+          "is_contracting": false,
+          "point": 0
+        },
+        "hindenburg": {
+          "active": false,
+          "point": 1
+        }
+      }
+    },
+    "summary": "2026年11月18日のS&P500は小動きで終わった。同時に大きく動いたものはなかった。市場全体に方向感はなく上昇銘柄と下落銘柄の数は均衡していた。リスク資産と安全資産の間にも偏りは見られなかった。グロースが優勢で複数のセクターが強含んだ。M7が市場をけん引した。資金が向かっているセクターに位置する監視銘柄が確認された。5営業日後の動向は平常時と差がなかった。",
+    "comments_history": [
+      {
+        "date": "2026-11-19T06:32:06+09:00",
+        "summary": "2026年11月18日のS&P500は小動きで終わった。同時に大きく動いたものはなかった。市場全体に方向感はなく上昇銘柄と下落銘柄の数は均衡していた。リスク資産と安全資産の間にも偏りは見られなかった。グロースが優勢で複数のセクターが強含んだ。M7が市場をけん引した。資金が向かっているセクターに位置する監視銘柄が確認された。5営業日後の動向は平常時と差がなかった。"
+      },
+      {
+        "date": "2026-11-18T06:31:26+09:00",
+        "summary": "S&P500は-1.03%で大幅安となりVIXは+11.0%の急変を示した。上昇75銘柄に対し下落427銘柄と広く売られた下落となった。リスク資産は-0.57%で安全資産は+0.05%となり偏りなしの状態だった。IVWとIVEの差は+0.34ptで拮抗しXLYからXLBまでのセクターがStrongを示した。半導体はSOXで+1.37ptのけん引となりTSLAやSOFIなどが資金向かうセクターに位置した。5営業日後の結果は182件で-0.2ptの平常時と差なしだった。株はリスクオフ債は中立クレジットはリスクオフを示しセンチメント指数は37.3でFEAR天気は曇りとなった。"
+      },
+      {
+        "date": "2026-11-17T06:31:12+09:00",
+        "summary": "S&P500は-1.92%で終えた。NASDAQは-2.49%であった。VIX指数は18.99%上昇し原油は-3.57%となった。広く売られた下落で上昇145銘柄に対し下落356銘柄であった。全面安の様相を示しリスク資産は-1.08%安全資産は-0.36%であった。バリューが優勢でIVW−IVEは-1.58ptとなり半導体とM7が重しとなった。センチメント指数は37.3でFEARラベルとなりCNN Fear Greedは31.0でfearを示した。5営業日後の実績は平常時と差がなかった。"
+      },
+      {
+        "date": "2026-11-14T06:32:09+09:00",
+        "summary": "2026年11月13日の米国市場ではS&P500が-0.40%の下落で終値をつけた。段階2で同時に大きく動いたものはなかった。指数主導の下落となり上昇315下落184銘柄となった。リスク資産と安全資産の動きに偏りは見られなかった。バリューが優勢となりXLREからXLCまでのセクターが強い動きを示した。半導体が重しとなりM7はS&P500比で小幅プラスだった。資金が向かっているセクターにTSLAやSOFIなどの監視銘柄が存在した。5営業日後の過去実績では平常時より上昇が多い結果が観測されている。天気は曇りであった。"
+      },
+      {
+        "date": "2026-11-13T06:32:11+09:00",
+        "summary": "S&P500は0.35%下落しNASDAQは0.39%下落した。上昇123銘柄に対し下落375銘柄となり広く売られた下落となった。リスク資産は0.42%下落し安全資産は2.15%下落した。IVWとIVEの差は0.17ptで拮抗しXLY XLRE XLF XLU XLI XLV XLB XLPが強い動きを示した。SOXはS&P500比で0.19pt下落しM7は0.20pt上昇で特定分野の突出はなかった。資金が向かっているセクターにTSLA SOFIほか1銘柄がある。VIX指数は6.8%上昇し10年債は10.5bp上昇ドル円は0.73%上昇金は3.06%下落WTI原油は2.76%上昇した。5営業日後には平常時より上昇が多い結果が267件で確認された。"
+      },
+      {
+        "date": "2026-11-12T06:32:27+09:00",
+        "summary": "S&P500は1.31%上昇した。VIXは低下しドル円は上昇した。331銘柄が上昇し168銘柄が下落した。リスク資産は上昇し安全資産は下落した。グロースが優勢でXLYからXLPまでの複数セクターが強含んだ。半導体関連はS&P500比で上昇した一方M7は下落した。資金が向かうセクターにTSLAやSOFIなどの監視銘柄がある。5営業日後の結果は平常時と差がなかった。"
+      },
+      {
+        "date": "2026-11-11T06:31:21+09:00",
+        "summary": "S&P500は7520.93で前日比-0.38%の終値となった。NASDAQは-0.74%の動きを示した。米10年債は4.98で+2.45%となり金は-1.84%だった。上昇銘柄は246銘柄に対し下落銘柄は248銘柄でやや広い下落の範囲に収まった。リスク資産は-0.40%安全資産は-2.00%の水準で全面安の様相だった。バリューが優勢でIVW-IVEは-0.92ptとなりM7はS&P500比で-0.57ptだった。XLYからXLCまでの複数セクターがStrongに該当しTSLAやSOFIが資金の向き先として挙げられた。5営業日後には平常時より上昇が多い結果が267件で確認された。"
+      },
+      {
+        "date": "2026-11-10T06:31:39+09:00",
+        "summary": "2026年11月9日のS&P500は2.35%の上昇で終了した。NASDAQは2.74%上昇した。VIX指数は21.85%低下し原油は4.13%下落した。金は1.8%上昇した。上昇銘柄423に対し下落銘柄は78であった。リスク資産は1.36%上昇し安全資産は0.96%上昇した。グロースが優勢で半導体がけん引しXLYからXLPまでのセクターが強かった。5営業日後の結果は平常時と差がなかった。"
+      },
+      {
+        "date": "2026-11-07T06:30:51+09:00",
+        "summary": "S&P500は上昇した。同時に大きく動いたものはなかった。一部主導の上昇で上昇184銘柄下落318銘柄だった。偏りなしの状況でリスク資産は上昇し安全資産は下落した。グロースが優勢でXLRE・XLP・XLU・XLB・XLF・XLV・XLYが強い動きを示した。半導体とM7がS&P500比でけん引した。資金が向かっているセクターにCELH・SOFIほか2銘柄が監視対象にある。5営業日後の実績は平常時と差がなかった。"
+      },
+      {
+        "date": "2026-11-06T06:32:11+09:00",
+        "summary": "2026-11-05の終値でS&P500は-4.36%となった。同時にVIXが大きく動いた。広く売られた下落となり上昇73銘柄に対し下落429銘柄となった。リスク資産は-2.36%で安全資産は+0.51%となった。バリューが優勢でIVW−IVEは-2.94ptだった。XLRE・XLP・XLU・XLB・XLF・XLV・XLYが強い一方で半導体が重しとなった。資金が向かっているセクターにいる監視銘柄としてCELH・SOFIほか2銘柄がある。5営業日後については平常時と差なしの結果だった。"
+      },
+      {
+        "date": "2026-11-05T06:32:12+09:00",
+        "summary": "2026年11月4日のS&P500は1.58%の上昇となった。VIX指数と原油が同時に大きく動いた。375銘柄が上昇し127銘柄が下落した。リスク資産は1.18%上昇し安全資産は2.24%上昇した。バリューが優勢でIVWとIVEの差は-0.81ptとなりXLRE XLP XLB XLY XLF XLV XLUが強いセクターだった。半導体とM7は逆方向の動きとなりSOXは-4.71pt M7は+0.74ptだった。CELH TSLAほか1銘柄が資金が向かうセクターの監視銘柄となり5営業日後の結果は平常時と差がなかった。"
+      },
+      {
+        "date": "2026-11-04T06:34:02+09:00",
+        "summary": "2026-11-03の米国市場ではS&P500が+0.36%上昇した。同時に大きく動いたものはなかった。一部主導の上昇で上昇189銘柄下落313銘柄となった。リスク資産は+0.20%安全資産は-0.69%で偏りなしを示した。グロースが優勢でIVW-IVEは+1.73ptとなりXLRE XLU XLB XLP XLF XLV XLY XLI XLEが強いセクターだった。半導体とM7がけん引しSOXは+2.27pt M7は+0.58ptだった。5営業日後の結果は平常時と差なしだった。"
+      }
+    ],
+    "data_freshness": {
+      "checked_at": "2026-11-18T21:31:04Z",
+      "expected_close_date": "2026-11-18",
+      "daily_latest": {
+        "^GSPC": "2026-11-18",
+        "SPY": "2026-11-18"
+      },
+      "stale": false
+    },
+    "stage_conclusions": {
+      "0": {
+        "label": "complete",
+        "line": "2026-11-18の終値"
+      },
+      "1": {
+        "label": "小動き",
+        "line": "S&P500 -0.23%（小動き）",
+        "tags": [
+          "NASDAQ優位（+0.65pt）",
+          "金（-3.50%）"
+        ],
+        "inputs": {
+          "sp500_pct": -0.23
+        }
+      },
+      "2": {
+        "label": "同時に大きく動いたもの：なし",
+        "line": "同時に大きく動いたもの：なし",
+        "items": []
+      },
+      "3": {
+        "label": "方向感なし",
+        "line": "方向感なし（上昇237・下落263銘柄）",
+        "inputs": {
+          "sp500_pct": -0.23,
+          "advances": 237,
+          "declines": 263,
+          "breadth_date": "2026-11-18"
+        }
+      },
+      "4": {
+        "label": "偏りなし",
+        "line": "偏りなし（リスク資産-0.14%・安全資産-1.18%）",
+        "inputs": {
+          "risk_avg_pct": -0.14,
+          "safe_avg_pct": -1.18
+        }
+      },
+      "5": {
+        "label": "グロース優勢",
+        "line": "グロース優勢（IVW−IVE +0.63pt）／Strong: XLY・XLRE・XLI・XLU・XLC・XLP・XLF・XLB・XLV",
+        "inputs": {
+          "ivw_minus_ive_pt": 0.63
+        }
+      },
+      "6": {
+        "label": "M7がけん引",
+        "line": "M7がけん引（SOX +0.33pt・M7 +0.63pt、S&P500比）",
+        "inputs": {
+          "sox_vs_sp500_pt": 0.33,
+          "m7_vs_sp500_pt": 0.63
+        }
+      },
+      "7": {
+        "label": 4,
+        "line": "資金が向かっているセクターにいる監視銘柄：TSLA・APP ほか2銘柄",
+        "flowing": [
+          "TSLA",
+          "APP",
+          "CELH",
+          "SOFI"
+        ]
+      },
+      "8": {
+        "as_of": "2026-11-18",
+        "history_from": "2021-01-04",
+        "signals": {
+          "stage1_vix": {
+            "signal": "小動き|VIX20-30",
+            "outcomes": [
+              {
+                "horizon": 1,
+                "n": 81,
+                "base_n": 1476,
+                "base_up_pct": 53.4,
+                "up_pct": 55.6,
+                "diff_pt": 2.2,
+                "z": 0.39,
+                "mean_pct": 0.145,
+                "median_pct": 0.292,
+                "label": "平常時と差なし",
+                "guide": "偶然でも出る範囲の差"
+              },
+              {
+                "horizon": 5,
+                "n": 81,
+                "base_n": 1472,
+                "base_up_pct": 58.4,
+                "up_pct": 61.7,
+                "diff_pt": 3.4,
+                "z": 0.62,
+                "mean_pct": 0.731,
+                "median_pct": 1.117,
+                "label": "平常時と差なし",
+                "guide": "偶然でも出る範囲の差"
+              },
+              {
+                "horizon": 20,
+                "n": 81,
+                "base_n": 1457,
+                "base_up_pct": 65.6,
+                "up_pct": 66.7,
+                "diff_pt": 1.1,
+                "z": 0.2,
+                "mean_pct": 1.263,
+                "median_pct": 1.659,
+                "label": "平常時と差なし",
+                "guide": "偶然でも出る範囲の差"
+              }
+            ]
+          },
+          "stage1": {
+            "signal": "小動き",
+            "outcomes": [
+              {
+                "horizon": 1,
+                "n": 461,
+                "base_n": 1476,
+                "base_up_pct": 53.4,
+                "up_pct": 51.8,
+                "diff_pt": -1.5,
+                "z": -0.66,
+                "mean_pct": -0.011,
+                "median_pct": 0.028,
+                "label": "平常時と差なし",
+                "guide": "偶然でも出る範囲の差"
+              },
+              {
+                "horizon": 5,
+                "n": 461,
+                "base_n": 1472,
+                "base_up_pct": 58.4,
+                "up_pct": 57.3,
+                "diff_pt": -1.1,
+                "z": -0.47,
+                "mean_pct": 0.21,
+                "median_pct": 0.3,
+                "label": "平常時と差なし",
+                "guide": "偶然でも出る範囲の差"
+              },
+              {
+                "horizon": 20,
+                "n": 460,
+                "base_n": 1457,
+                "base_up_pct": 65.6,
+                "up_pct": 67.6,
+                "diff_pt": 2.0,
+                "z": 0.9,
+                "mean_pct": 0.896,
+                "median_pct": 1.396,
+                "label": "平常時と差なし",
+                "guide": "偶然でも出る範囲の差"
+              }
+            ]
+          }
+        },
+        "headline_signal": "stage1",
+        "label": "平常時と差なし",
+        "line": "5営業日後: 平常時と差なし（461件、-1.1pt、z=-0.47）"
+      }
+    },
+    "weather": {
+      "label": "曇り",
+      "reason": "晴れ・嵐のどちらの条件にも当たらない",
+      "rule": "v3",
+      "inputs": {
+        "stage3": "方向感なし",
+        "stage4": "偏りなし"
+      }
+    },
+    "data_quality": {
+      "expected_close_date": "2026-11-18",
+      "as_of": {
+        "S&P500": "2026-11-18",
+        "NASDAQ": "2026-11-18",
+        "VIX指数": "2026-11-18",
+        "米10年債": "2026-11-18",
+        "ドル円": "2026-11-18",
+        "WTI原油": "2026-11-18",
+        "金（GOLD）": "2026-11-18",
+        "S&P500グロース(IVW)": "2026-11-18",
+        "S&P500バリュー(IVE)": "2026-11-18",
+        "asset_flow.ultra_short": "2026-11-18",
+        "asset_flow.gold": "2026-11-18",
+        "asset_flow.long_bond": "2026-11-18",
+        "asset_flow.ig_bond": "2026-11-18",
+        "asset_flow.hy_bond": "2026-11-18",
+        "asset_flow.equity": "2026-11-18",
+        "breadth": "2026-11-18"
+      },
+      "status": "complete",
+      "old_elements": [],
+      "old_stages": [],
+      "provisional_elements": [],
+      "expected_provisional_elements": {
+        "WTI原油": "清算前",
+        "ドル円": "日中",
+        "金（GOLD）": "清算前"
+      },
+      "unavailable": []
+    },
+    "haiku": "曇り空に グロース優勢の 市場かな",
+    "ai_facts": {
+      "今日の結論": {
+        "段階0": "2026-11-18の終値",
+        "段階1": "S&P500 -0.23%（小動き）",
+        "段階2": "同時に大きく動いたもの：なし",
+        "段階3": "方向感なし（上昇237・下落263銘柄）",
+        "段階4": "偏りなし（リスク資産-0.14%・安全資産-1.18%）",
+        "段階5": "グロース優勢（IVW−IVE +0.63pt）／Strong: XLY・XLRE・XLI・XLU・XLC・XLP・XLF・XLB・XLV",
+        "段階6": "M7がけん引（SOX +0.33pt・M7 +0.63pt、S&P500比）",
+        "段階7": "資金が向かっているセクターにいる監視銘柄：TSLA・APP ほか2銘柄",
+        "段階8": "5営業日後: 平常時と差なし（461件、-1.1pt、z=-0.47）"
+      },
+      "天気": {
+        "label": "曇り",
+        "reason": "晴れ・嵐のどちらの条件にも当たらない",
+        "rule": "v3",
+        "inputs": {
+          "stage3": "方向感なし",
+          "stage4": "偏りなし"
+        }
+      },
+      "データ基準日": {
+        "expected_close_date": "2026-11-18",
+        "status": "complete",
+        "old_elements": [],
+        "old_stages": [],
+        "provisional_elements": [],
+        "expected_provisional_elements": {
+          "WTI原油": "清算前",
+          "ドル円": "日中",
+          "金（GOLD）": "清算前"
+        },
+        "unavailable": []
+      },
+      "指標": {
+        "S&P500": {
+          "value": 7323.63,
+          "change_percent": -0.23,
+          "date": "2026-11-18"
+        },
+        "NASDAQ": {
+          "value": 24429.88,
+          "change_percent": 0.42,
+          "date": "2026-11-18"
+        },
+        "VIX指数": {
+          "value": 24.55,
+          "change_percent": -3.84,
+          "date": "2026-11-18"
+        },
+        "米10年債": {
+          "value": 5.07,
+          "change_percent": -0.73,
+          "change_bp": -3.7,
+          "date": "2026-11-18"
+        },
+        "ドル円": {
+          "value": 159.35,
+          "change_percent": -0.11,
+          "date": "2026-11-18"
+        },
+        "WTI原油": {
+          "value": 82.18,
+          "change_percent": -2.91,
+          "date": "2026-11-18"
+        },
+        "金（GOLD）": {
+          "value": 3729.0,
+          "change_percent": -3.5,
+          "date": "2026-11-18"
+        }
+      },
+      "段階1の事実タグ": [
+        "NASDAQ優位（+0.65pt）",
+        "金（-3.50%）"
+      ],
+      "資産の前営業日比": {
+        "ultra_short": 0.018,
+        "short_bond": 0.463,
+        "gold": -3.203,
+        "long_bond": 0.842,
+        "ig_bond": 0.399,
+        "hy_bond": 0.026,
+        "equity": -0.306
+      },
+      "センチメント指数": {
+        "score": 36.6,
+        "label": "FEAR"
+      },
+      "CNN_Fear_Greed": {
+        "score": 24.6,
+        "rating": "extreme fear"
+      },
+      "Tech_Pulse": {
+        "score": 15
+      },
+      "市場の広がり": {
+        "date": "2026-11-18",
+        "advances": 237,
+        "declines": 263,
+        "new_highs_52w": 3,
+        "new_lows_52w": 10,
+        "pct_above_50ma": 56.3
+      },
+      "過去の実績（段階8）": {
+        "stage1_vix": {
+          "signal": "小動き|VIX20-30",
+          "outcomes": [
+            {
+              "horizon": 1,
+              "n": 81,
+              "base_n": 1476,
+              "base_up_pct": 53.4,
+              "up_pct": 55.6,
+              "diff_pt": 2.2,
+              "z": 0.39,
+              "mean_pct": 0.145,
+              "median_pct": 0.292,
+              "label": "平常時と差なし",
+              "guide": "偶然でも出る範囲の差"
+            },
+            {
+              "horizon": 5,
+              "n": 81,
+              "base_n": 1472,
+              "base_up_pct": 58.4,
+              "up_pct": 61.7,
+              "diff_pt": 3.4,
+              "z": 0.62,
+              "mean_pct": 0.731,
+              "median_pct": 1.117,
+              "label": "平常時と差なし",
+              "guide": "偶然でも出る範囲の差"
+            },
+            {
+              "horizon": 20,
+              "n": 81,
+              "base_n": 1457,
+              "base_up_pct": 65.6,
+              "up_pct": 66.7,
+              "diff_pt": 1.1,
+              "z": 0.2,
+              "mean_pct": 1.263,
+              "median_pct": 1.659,
+              "label": "平常時と差なし",
+              "guide": "偶然でも出る範囲の差"
+            }
+          ]
+        },
+        "stage1": {
+          "signal": "小動き",
+          "outcomes": [
+            {
+              "horizon": 1,
+              "n": 461,
+              "base_n": 1476,
+              "base_up_pct": 53.4,
+              "up_pct": 51.8,
+              "diff_pt": -1.5,
+              "z": -0.66,
+              "mean_pct": -0.011,
+              "median_pct": 0.028,
+              "label": "平常時と差なし",
+              "guide": "偶然でも出る範囲の差"
+            },
+            {
+              "horizon": 5,
+              "n": 461,
+              "base_n": 1472,
+              "base_up_pct": 58.4,
+              "up_pct": 57.3,
+              "diff_pt": -1.1,
+              "z": -0.47,
+              "mean_pct": 0.21,
+              "median_pct": 0.3,
+              "label": "平常時と差なし",
+              "guide": "偶然でも出る範囲の差"
+            },
+            {
+              "horizon": 20,
+              "n": 460,
+              "base_n": 1457,
+              "base_up_pct": 65.6,
+              "up_pct": 67.6,
+              "diff_pt": 2.0,
+              "z": 0.9,
+              "mean_pct": 0.896,
+              "median_pct": 1.396,
+              "label": "平常時と差なし",
+              "guide": "偶然でも出る範囲の差"
+            }
+          ]
+        }
+      },
+      "株・債券・クレジット": {
+        "stock": "リスクオン",
+        "bond": "中立",
+        "credit": "リスクオフ",
+        "risk_off_score": 33
+      }
+    },
+    "hindenburg": {
+      "active": false,
+      "conditions": {
+        "nh_nl_both_2_2pct": false,
+        "sp500_uptrend_50d": false,
+        "mcclellan_negative": true,
+        "nh_le_2x_nl": true
+      },
+      "new_highs": 3,
+      "new_lows": 10,
+      "total_stocks": 503
+    },
+    "sector_rotation": {
+      "as_of": "2026-11-18",
+      "ratio_weeks": 13,
+      "momentum_lag_weeks": 4,
+      "sectors": {
+        "XLK": {
+          "name": "情報技術",
+          "ratio": 92.82,
+          "momentum": 94.5,
+          "quadrant": "Weak",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 106.29,
+              "momentum": 106.36
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 104.22,
+              "momentum": 103.16
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 97.99,
+              "momentum": 95.46
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 98.22,
+              "momentum": 93.78
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 96.66,
+              "momentum": 90.95
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 91.71,
+              "momentum": 87.99
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 92.95,
+              "momentum": 94.86
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 92.82,
+              "momentum": 94.5
+            }
+          ],
+          "change_pct": 0.32
+        },
+        "XLF": {
+          "name": "金融",
+          "ratio": 104.2,
+          "momentum": 104.3,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 93.51,
+              "momentum": 92.41
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 94.93,
+              "momentum": 94.77
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 98.52,
+              "momentum": 100.62
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 99.91,
+              "momentum": 105.0
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 101.72,
+              "momentum": 108.78
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 105.38,
+              "momentum": 111.02
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 105.17,
+              "momentum": 106.75
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 104.2,
+              "momentum": 104.3
+            }
+          ],
+          "change_pct": -1.16
+        },
+        "XLE": {
+          "name": "エネルギー",
+          "ratio": 98.56,
+          "momentum": 89.55,
+          "quadrant": "Weak",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 101.59,
+              "momentum": 94.68
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 103.0,
+              "momentum": 94.39
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 108.93,
+              "momentum": 102.01
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 110.06,
+              "momentum": 108.88
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 110.46,
+              "momentum": 108.73
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 99.04,
+              "momentum": 96.16
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 101.17,
+              "momentum": 92.87
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 98.56,
+              "momentum": 89.55
+            }
+          ],
+          "change_pct": -3.27
+        },
+        "XLV": {
+          "name": "ヘルスケア",
+          "ratio": 107.47,
+          "momentum": 101.0,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 98.66,
+              "momentum": 96.06
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 100.03,
+              "momentum": 100.52
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 105.01,
+              "momentum": 104.05
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 106.41,
+              "momentum": 105.37
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 109.3,
+              "momentum": 110.78
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 110.89,
+              "momentum": 110.86
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 109.2,
+              "momentum": 103.99
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 107.47,
+              "momentum": 101.0
+            }
+          ],
+          "change_pct": -2.21
+        },
+        "XLI": {
+          "name": "資本財",
+          "ratio": 101.3,
+          "momentum": 106.4,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 94.63,
+              "momentum": 99.76
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 93.89,
+              "momentum": 99.49
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 95.62,
+              "momentum": 101.89
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 95.21,
+              "momentum": 101.41
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 98.0,
+              "momentum": 103.56
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 98.5,
+              "momentum": 104.9
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 100.19,
+              "momentum": 104.77
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 101.3,
+              "momentum": 106.4
+            }
+          ],
+          "change_pct": -0.05
+        },
+        "XLY": {
+          "name": "一般消費財",
+          "ratio": 108.42,
+          "momentum": 108.68,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 94.98,
+              "momentum": 98.2
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 96.8,
+              "momentum": 100.55
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 98.81,
+              "momentum": 103.49
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 99.76,
+              "momentum": 105.53
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 102.49,
+              "momentum": 107.9
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 107.06,
+              "momentum": 110.6
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 106.15,
+              "momentum": 107.42
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 108.42,
+              "momentum": 108.68
+            }
+          ],
+          "change_pct": 1.79
+        },
+        "XLP": {
+          "name": "生活必需品",
+          "ratio": 109.98,
+          "momentum": 104.53,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 94.68,
+              "momentum": 97.19
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 97.25,
+              "momentum": 100.04
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 104.17,
+              "momentum": 107.33
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 105.22,
+              "momentum": 110.02
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 106.87,
+              "momentum": 112.87
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 109.69,
+              "momentum": 112.79
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 108.78,
+              "momentum": 104.42
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 109.98,
+              "momentum": 104.53
+            }
+          ],
+          "change_pct": -0.31
+        },
+        "XLU": {
+          "name": "公益",
+          "ratio": 107.29,
+          "momentum": 105.67,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 91.39,
+              "momentum": 96.59
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 94.82,
+              "momentum": 100.47
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 99.34,
+              "momentum": 107.35
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 101.53,
+              "momentum": 113.72
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 104.46,
+              "momentum": 114.3
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 106.28,
+              "momentum": 112.08
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 105.62,
+              "momentum": 106.31
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 107.29,
+              "momentum": 105.67
+            }
+          ],
+          "change_pct": 0.28
+        },
+        "XLB": {
+          "name": "素材",
+          "ratio": 102.78,
+          "momentum": 101.73,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 94.24,
+              "momentum": 95.37
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 94.67,
+              "momentum": 97.45
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 99.62,
+              "momentum": 103.73
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 101.03,
+              "momentum": 106.19
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 104.16,
+              "momentum": 110.53
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 105.16,
+              "momentum": 111.09
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 102.88,
+              "momentum": 103.27
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 102.78,
+              "momentum": 101.73
+            }
+          ],
+          "change_pct": -0.75
+        },
+        "XLRE": {
+          "name": "不動産",
+          "ratio": 105.71,
+          "momentum": 106.67,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 91.63,
+              "momentum": 95.73
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 93.03,
+              "momentum": 97.03
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 96.92,
+              "momentum": 102.46
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 99.1,
+              "momentum": 107.42
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 101.51,
+              "momentum": 110.78
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 106.08,
+              "momentum": 114.03
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 104.23,
+              "momentum": 107.54
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 105.71,
+              "momentum": 106.67
+            }
+          ],
+          "change_pct": 0.07
+        },
+        "XLC": {
+          "name": "通信",
+          "ratio": 100.87,
+          "momentum": 105.06,
+          "quadrant": "Strong",
+          "trail": [
+            {
+              "week": "2026-10-02",
+              "date": "2026-10-02",
+              "ratio": 98.32,
+              "momentum": 98.92
+            },
+            {
+              "week": "2026-10-09",
+              "date": "2026-10-09",
+              "ratio": 97.56,
+              "momentum": 96.75
+            },
+            {
+              "week": "2026-10-16",
+              "date": "2026-10-16",
+              "ratio": 99.69,
+              "momentum": 100.07
+            },
+            {
+              "week": "2026-10-23",
+              "date": "2026-10-23",
+              "ratio": 96.01,
+              "momentum": 95.78
+            },
+            {
+              "week": "2026-10-30",
+              "date": "2026-10-30",
+              "ratio": 92.04,
+              "momentum": 93.61
+            },
+            {
+              "week": "2026-11-06",
+              "date": "2026-11-06",
+              "ratio": 99.29,
+              "momentum": 101.78
+            },
+            {
+              "week": "2026-11-13",
+              "date": "2026-11-13",
+              "ratio": 100.49,
+              "momentum": 100.8
+            },
+            {
+              "week": "2026-11-20",
+              "date": "2026-11-18",
+              "ratio": 100.87,
+              "momentum": 105.06
+            }
+          ],
+          "change_pct": 0.3
+        }
+      },
+      "excluded": [],
+      "by_quadrant": {
+        "Strong": [
+          "XLY",
+          "XLRE",
+          "XLI",
+          "XLU",
+          "XLC",
+          "XLP",
+          "XLF",
+          "XLB",
+          "XLV"
+        ],
+        "Improving": [],
+        "Weakening": [],
+        "Weak": [
+          "XLK",
+          "XLE"
+        ]
+      }
+    },
+    "semis_m7": {
+      "as_of": "2026-11-18",
+      "sox_pct": 0.1,
+      "sox_value": 9652.8,
+      "sox_date": "2026-11-18",
+      "m7_pct": 0.4,
+      "m7_members": {
+        "AAPL": 0.15,
+        "MSFT": 0.4,
+        "NVDA": -2.89,
+        "AMZN": 3.82,
+        "GOOGL": 0.8,
+        "META": -0.4,
+        "TSLA": 0.95
+      },
+      "sp500_pct": -0.23,
+      "sox_vs_sp500_pt": 0.33,
+      "m7_vs_sp500_pt": 0.63
+    },
+    "commodity_fx": [
+      {
+        "name": "WTI原油",
+        "symbol": "CL=F",
+        "value": 82.18,
+        "change_pct": -4.45,
+        "date": "2026-11-18",
+        "prev_date": "2026-11-17",
+        "provisional": true,
+        "provisional_kind": "清算前"
+      },
+      {
+        "name": "金",
+        "symbol": "GC=F",
+        "value": 3729.0,
+        "change_pct": -3.5,
+        "date": "2026-11-18",
+        "prev_date": "2026-11-17",
+        "provisional": true,
+        "provisional_kind": "清算前"
+      },
+      {
+        "name": "ドル円",
+        "symbol": "JPY=X",
+        "value": 159.354,
+        "change_pct": -0.11,
+        "date": "2026-11-18",
+        "prev_date": "2026-11-17",
+        "provisional": true,
+        "provisional_kind": "日中"
+      },
+      {
+        "name": "ドル指数",
+        "symbol": "DX-Y.NYB",
+        "value": 103.795,
+        "change_pct": 0.29,
+        "date": "2026-11-18",
+        "prev_date": "2026-11-17",
+        "provisional": true,
+        "provisional_kind": "日中"
+      }
+    ],
+    "watch_list": {
+      "tickers": {
+        "held": [
+          "ADBE",
+          "APP",
+          "CELH",
+          "CRWV",
+          "NVDA",
+          "PLTR",
+          "SOFI",
+          "SOUN",
+          "TSLA"
+        ],
+        "tail": [
+          "ADBE",
+          "APP",
+          "CELH",
+          "CRWV",
+          "NVDA",
+          "PLTR",
+          "SOFI",
+          "SOUN",
+          "TSLA"
+        ],
+        "all": [
+          "ADBE",
+          "APP",
+          "CELH",
+          "CRWV",
+          "NVDA",
+          "PLTR",
+          "SOFI",
+          "SOUN",
+          "TSLA"
+        ]
+      },
+      "flowing": [
+        "TSLA",
+        "APP",
+        "CELH",
+        "SOFI"
+      ],
+      "rows": [
+        {
+          "ticker": "TSLA",
+          "held": true,
+          "tail": true,
+          "sector": "Consumer Cyclical",
+          "sector_etf": "XLY",
+          "sector_name": "一般消費財",
+          "quadrant": "Strong",
+          "momentum": 108.68,
+          "tanuki_score": "WATCH",
+          "tanuki_calculated_at": "2026-11-18T08:43:40+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:27+09:00"
+        },
+        {
+          "ticker": "APP",
+          "held": true,
+          "tail": true,
+          "sector": "Communication Services",
+          "sector_etf": "XLC",
+          "sector_name": "通信",
+          "quadrant": "Strong",
+          "momentum": 105.06,
+          "tanuki_score": "BUY",
+          "tanuki_calculated_at": "2026-11-18T08:38:02+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:17+09:00"
+        },
+        {
+          "ticker": "CELH",
+          "held": true,
+          "tail": true,
+          "sector": "Consumer Defensive",
+          "sector_etf": "XLP",
+          "sector_name": "生活必需品",
+          "quadrant": "Strong",
+          "momentum": 104.53,
+          "tanuki_score": "WATCH",
+          "tanuki_calculated_at": "2026-11-18T08:38:59+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:19+09:00"
+        },
+        {
+          "ticker": "SOFI",
+          "held": true,
+          "tail": true,
+          "sector": "Financial Services",
+          "sector_etf": "XLF",
+          "sector_name": "金融",
+          "quadrant": "Strong",
+          "momentum": 104.3,
+          "tanuki_score": "WATCH",
+          "tanuki_calculated_at": "2026-11-18T08:43:23+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:27+09:00"
+        },
+        {
+          "ticker": "ADBE",
+          "held": true,
+          "tail": true,
+          "sector": "Technology",
+          "sector_etf": "XLK",
+          "sector_name": "情報技術",
+          "quadrant": "Weak",
+          "momentum": 94.5,
+          "tanuki_score": "BUY",
+          "tanuki_calculated_at": "2026-11-18T08:44:05+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:28+09:00"
+        },
+        {
+          "ticker": "CRWV",
+          "held": true,
+          "tail": true,
+          "sector": "Technology",
+          "sector_etf": "XLK",
+          "sector_name": "情報技術",
+          "quadrant": "Weak",
+          "momentum": 94.5,
+          "tanuki_score": "SELL",
+          "tanuki_calculated_at": "2026-11-18T08:39:41+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:20+09:00"
+        },
+        {
+          "ticker": "NVDA",
+          "held": true,
+          "tail": true,
+          "sector": "Technology",
+          "sector_etf": "XLK",
+          "sector_name": "情報技術",
+          "quadrant": "Weak",
+          "momentum": 94.5,
+          "tanuki_score": "BUY",
+          "tanuki_calculated_at": "2026-11-18T08:42:21+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:24+09:00"
+        },
+        {
+          "ticker": "PLTR",
+          "held": true,
+          "tail": true,
+          "sector": "Technology",
+          "sector_etf": "XLK",
+          "sector_name": "情報技術",
+          "quadrant": "Weak",
+          "momentum": 94.5,
+          "tanuki_score": "HOLD",
+          "tanuki_calculated_at": "2026-11-18T08:42:34+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:25+09:00"
+        },
+        {
+          "ticker": "SOUN",
+          "held": true,
+          "tail": true,
+          "sector": "Technology",
+          "sector_etf": "XLK",
+          "sector_name": "情報技術",
+          "quadrant": "Weak",
+          "momentum": 94.5,
+          "tanuki_score": "WATCH",
+          "tanuki_calculated_at": "2026-11-18T08:43:32+09:00",
+          "hype_phase": "期待剥落期",
+          "hype_calculated_at": "2026-11-18T08:30:27+09:00"
+        }
+      ],
+      "calculated": {
+        "tanuki_score": [
+          "2026-11-18",
+          "2026-11-18"
+        ],
+        "hype_phase": [
+          "2026-11-18",
+          "2026-11-18"
+        ]
+      }
+    },
+    "headlines": {
+      "fetched_at": "2026-11-18T21:31:06Z",
+      "items": [
+        {
+          "title": "How major US stock indexes fared Wednesday 11/18/2026",
+          "published_utc": "2026-11-18T21:20:09Z",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/major-us-stock-indexes-fared-212009825.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "主要米株指数の11/18/2026水曜日の推移",
+          "market": true
+        },
+        {
+          "title": "How Much Upside Is Left In Micron Stock?",
+          "published_utc": "2026-11-18T21:07:42Z",
+          "link": "https://www.trefis.com/stock/mu/articles/626211/how-much-upside-is-left-in-micron-stock-2/2026-11-18?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "Micron株の上昇余地はどれくらいか",
+          "market": true
+        },
+        {
+          "title": "Anthropic IPO live: Company set to price stock between $70 and $78, as trading starts Thursday",
+          "published_utc": "2026-11-18T21:00:04Z",
+          "link": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxPamJkbzdrTFY2U1dMVGFkeDNhQ2FVUmhBamE1azk4MTBxV0FUTDVhZDRfNGVMVzhEdXQ2WGxLOG1HckJwa19BYkIyZHFVOW41Q2RhcTluQllzaThjV2dsWHZ3Sk1nSHpxNnU0RHVxbFdjYUIzTTB6TTM5cTFPaXVaeGVvQkMxU0FEbkNhVW03b2VyYUVRd0QxaFR0OUswM0lzRjY3T2RxTmpnNndONWs4UDgyVF9YNGtkRU1oLW16WEd3dlZoajl6a1Y1V3dWajYtQWMwRDkySkcwWmVXbGhiTA?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Yahoo Finance",
+          "title_ja": "Anthropic IPOライブ：木曜日取引開始、株価を70〜78ドルに設定",
+          "market": true
+        },
+        {
+          "title": "‘Nvidia’s turmoil has me spooked’: Should I sell my stocks and buy real estate — or ride out the storm?",
+          "published_utc": "2026-11-18T21:00:00Z",
+          "link": "https://www.marketwatch.com/story/nvidia-spooked-me-should-i-sell-my-stocks-or-ride-out-the-market-turmoil-560583c6?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "「Nvidiaの混乱に怖気づいた」：株を売って不動産を買うべきか、それとも嵐を乗り切るか",
+          "market": true
+        },
+        {
+          "title": "What Sent Intel Stock Lower Since May?",
+          "published_utc": "2026-11-18T20:55:25Z",
+          "link": "https://www.trefis.com/stock/intc/articles/626180/what-sent-intel-stock-lower-since-may/2026-11-18?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "5月以降Intel株を押し下げた要因は？",
+          "market": true
+        },
+        {
+          "title": "Update: US Equity Indexes Mixed as Nvidia Undermines Risk Sentiment, Fed Minutes Favor Policy Tightening",
+          "published_utc": "2026-11-18T20:52:07Z",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/us-equity-indexes-mixed-nvidia-205207511.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "更新：Nvidiaがリスクセンチメントを損ない、FOMC議事要旨が政策引き締めを示唆し、米株指数はまちまち",
+          "market": true
+        },
+        {
+          "title": "Nike's Extra $5 Billion Still Leaves Sales Below 2024",
+          "published_utc": "2026-11-18T20:45:56Z",
+          "link": "https://www.trefis.com/stock/nke/articles/626119/nike-s-extra-5-billion-still-leaves-sales-below-2024/2026-11-18?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "Nikeの追加50億ドルでも売上高は2024年を下回る",
+          "market": true
+        },
+        {
+          "title": "Can UnitedHealth Group Stock Crash From Here?",
+          "published_utc": "2026-11-18T20:29:45Z",
+          "link": "https://www.trefis.com/stock/unh/articles/626177/can-unitedhealth-group-stock-crash-from-here/2026-11-18?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "UnitedHealth Group株はここから急落する可能性があるか",
+          "market": true
+        },
+        {
+          "title": "Should You Sell Your Archer Aviation Stock As Boeing Comes Aboard?",
+          "published_utc": "2026-11-18T20:21:42Z",
+          "link": "https://www.trefis.com/stock/achr/articles/626170/should-you-sell-your-archer-aviation-stock-as-boeing-comes-aboard/2026-11-18?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "Boeingが参入する中、Archer Aviation株を売却すべきか",
+          "market": true
+        },
+        {
+          "title": "Stock Market Today: Dow Falls as Nvidia Earnings Fail to Soothe Investors' Nerves",
+          "published_utc": "2026-11-18T20:21:00Z",
+          "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNWF9SSWdwQ1BBTkhfMnRGdVRodTBUeEpibW9RRlgzWURreHZVY2RKYXM5el9YQU1XeVpnTnl3QWJnbzRpdEVBT1JDbWNodTRKWHBsdnFKOGFYM1lGaUtNbmRlYUJhaTZrandnaFpUVHFDaEV6UUVaSW9jU05fakc1UVRTRkhibWM?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "WSJ",
+          "title_ja": "本日の株式市場：Nvidia決算が投資家の不安を和らげず、Dowは下落",
+          "market": true
+        },
+        {
+          "title": "Stock Market Today: Dow Drops On Heightened Fed Rate-Hike Fears; Palo Alto Jumps (Live Coverage)",
+          "published_utc": "2026-11-18T20:15:32Z",
+          "link": "https://finance.yahoo.com/m/3b6d51d3-7bfb-3b08-a92e-3b70e9f0655b/stock-market-today%3A-dow-drops.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "本日の株式市場：Fedの利上げ懸念が高まりDowは下落、Palo Altoは急伸（ライブ中継）",
+          "market": true
+        },
+        {
+          "title": "Stock Market Today: Dow Drops As Nvidia Probe Deepens; Fed Minutes Loom (Live Coverage)",
+          "published_utc": "2026-11-18T20:15:00Z",
+          "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNWXBraTU4T2FpajlyR1NvUy10anpSNi0weU02QkhIbU01NGVsNHc0dU9ENHVaaTlWblBSMHdFWXR0WmFCdFpCS2YzRlR1YzgtOE1BUUw0Mlo2c3p4RjVDcDE3bm5uYUNxdHY4SnlfbnlLMWVrTk1MWUY2bzAxUVhsMTc0dHBHQXZDWUxMRDZLRk0tcGE3aVFsVEN2d2RMTUJ1MUt3R3J4akcyTzlqelBIX2F6MHVNeVFsMWktSFM1T1RXM2ozQkpJekMta00xZw?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Investor's Business Daily",
+          "title_ja": "本日の株式市場：Nvidia調査が深まる中Dowは下落、FOMC議事要旨に注目（ライブ中継）",
+          "market": true
+        },
+        {
+          "title": "Stocks Fall as Nvidia’s Earnings Rally Sputters: Markets Wrap",
+          "published_utc": "2026-11-18T20:00:02Z",
+          "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOUHhZZG5FcFhON3BCMkRyY201M2FVdVRTaUF2a29ScWc3ZTd4TkI1Zm44SXNOcmZoOE9tN29nalFxMllaQV9ZQVp5SFNKbFlmVWtxVmtjdGl4WVVRRnpFeVZaVjVCVGozeFVWYzF6NnM1dERENnQ5SWpLTlNsejBDS21mS2k2aUhQeHZHNU80V2dvbG9h?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Bloomberg.com",
+          "title_ja": "Nvidiaの決算ラリーが失速し株安：市場まとめ",
+          "market": true
+        },
+        {
+          "title": "In 2008, The “Walmart Recession Signal” Neared A Record As The Market Collapsed. One Economist Says It Is Starting To Rise Again",
+          "published_utc": "2026-11-18T19:52:47Z",
+          "link": "https://247wallst.com/investing/2026/11/18/in-2008-the-walmart-recession-signal-neared-a-record-as-the-market-collapsed-one-economist-says-it-is-starting-to-rise-again-2/?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "2008年、「Walmartリセッションシグナル」は市場崩壊直前に過去最高に近づいた。あるエコノミストは再び上昇し始めていると指摘",
+          "market": true
+        },
+        {
+          "title": "Warren Buffett's Most Valuable Bear Market Wisdom Every Investor Should Hear",
+          "published_utc": "2026-11-18T19:50:00Z",
+          "link": "https://www.fool.com/investing/2026/11/18/warren-buffett-most-valuable-bear-market-wisdom/?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "Warren Buffettの弱気相場における知恵、投資家必聴",
+          "market": true
+        },
+        {
+          "title": "Trump and Xi to Discuss Trade at APEC Summit. What Isn’t Said May Matter More.",
+          "published_utc": "2026-11-18T19:25:00Z",
+          "link": "https://finance.yahoo.com/m/c539aeb8-6fe1-37d6-ab41-d28e4742890e/trump-and-xi-to-discuss-trade.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "TrumpとXi、APECサミットで貿易協議。不明瞭な部分がより重要か",
+          "market": false
+        },
+        {
+          "title": "Fed Minutes Show Almost All Officials Expect More Rate Hikes",
+          "published_utc": "2026-11-18T19:18:51Z",
+          "link": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNT3JhS0Q0alA5RWNIWGxURDlLSWhic0NQQmY1MTJkTXlCclZDMWh4Z18xRGdhWXRsdWp2OTJjRExiSHZqRXFqSHU5VFB3WnNSV2hFWnNHdlRmRENzaDBsVGpWeTNGQU5ZRlJ0MzQza2tkUDFDdmxqMVlYNGlnM0dqajdnWVI3eVUxNVhibGhSXzZsQ2gxYlZuTk9MQ1VPUzV3ZWNxQ0NkRlZqOE9DUGpCbA?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Bloomberg.com",
+          "title_ja": "FOMC議事要旨、ほぼ全ての当局者が追加利上げを予想",
+          "market": true
+        },
+        {
+          "title": "Dow Jones Discount Retail Giant Walmart Poised To Hit Buy Point With Earnings Due",
+          "published_utc": "2026-11-18T19:14:17Z",
+          "link": "https://finance.yahoo.com/m/59ad709c-e0ee-3110-9a36-4c0c9d4e24d2/dow-jones-discount-retail.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "Dowのディスカウント小売大手Walmart、決算発表を控え買いポイント到達へ",
+          "market": true
+        },
+        {
+          "title": "Nvidia, Micron and TSMC Face a Massive Wave of Bearish Bets",
+          "published_utc": "2026-11-18T19:11:12Z",
+          "link": "https://finance.yahoo.com/markets/options/articles/nvidia-micron-tsmc-face-massive-191112704.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "Nvidia、Micron、TSMCに大量の弱気ベットが集中",
+          "market": true
+        },
+        {
+          "title": "Amer Sports Stocks Rise 3.92% as Salomon and Arc'teryx Drive 24% Growth",
+          "published_utc": "2026-11-18T19:10:46Z",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/amer-sports-stocks-rise-3-191046297.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "Amer Sports株が3.92%上昇、SalomonとArc'teryxが24%成長を牽引",
+          "market": true
+        },
+        {
+          "title": "Nvidia interim CEO Kress tells employees ‘let’s move forward’ at first all-hands meeting since Jensen Huang exit",
+          "published_utc": "2026-11-18T19:09:18Z",
+          "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOUHlsTnZZSU9BNjZuZUZvQXBGUkZnc2hxZ2U4cE5WWkE2OG81eUZxVTVsRHdaMTVGdFBTWnBSQUZhS0lBOEhJdVhCNjJ5ZURrOGlCekFWU010bWRjRXJQd1JuVFRSbGRtYWl4STNlVFNrREdVV3BXYW4zRDlMNGFoek5TbkVLaVlaWGpCcjJrVXJzb2xHQ0xNUm50U2V2YUVPRlJrYdIBqgFBVV95cUxNNzZwUmstbGVkVFNDZ3FfTkNYRHZmUlhMRGJvbENlNG1sRl9MZjJjSVpORzVvRTZ2ZWNJWWRTQ2pkYlY4ZTdpMzhfN1AwVzZzSWUxR1hPR2pCWDJPLTIxZGdMT0JMLVdZUUlyWWVxT2ZsNXFwZ2VEZ2czRl9Ya3NDVEFBZF9wb0lOMVlnczBIazh1OHdJTFRCYXVNTWU1RVVjQnBWREQxQ005Zw?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "CNBC",
+          "title_ja": "Nvidia暫定CEOのKress、Jensen Huang退任後初の全社集会で「前進しよう」と従業員に呼びかけ",
+          "market": true
+        },
+        {
+          "title": "Update: US Equity Indexes Mixed as Nvidia Hits Risk Sentiment While Investors Await Fed Minutes, Anthropic's IPO Pricing",
+          "published_utc": "2026-11-18T18:59:33Z",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/us-equity-indexes-mixed-nvidia-185933786.html?.tsrc=rss",
+          "source": "Yahoo Finance S&P 500",
+          "region": "米国",
+          "title_ja": "更新：Nvidiaがリスクセンチメントを圧迫、FOMC議事要旨とAnthropicのIPO価格決定を控え米株指数はまちまち",
+          "market": true
+        },
+        {
+          "title": "Ford is 'officially in the battery business' as its first Fathom cells ship — built on Chinese tech",
+          "published_utc": "2026-11-18T18:50:56Z",
+          "link": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxNd1hsNFpMQlN4ajlsTHJfR1daSTN4bTNxNnBzSGZXY0g0U3Q3VnlXZzRBSlhYa1psaTVjX2NQQmVsOTlPYW9ZcV9vMDAxdTZsRjZ2dHdIVFhZRDN4bVd5VXVJWFZPaXBacTJiRjI2QUdEZEs2NXFiZDZXdlgxZGM1Z0UxbW83UDJWaWZVZDh6TExQRXFrWWM1eEVmVGI1eXh0QTNzeVV2QXVrRW1ITWlIcHUtVUFhcXNCMHNPUkNDbnJacXl5am84TVVOamE5VnBYSEMtclI2M0FKb25Qb1d5aUJHSnI3UTZ3aXVDZm10Z1FvZw?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Yahoo Finance",
+          "title_ja": "Ford、初のFathomセルが出荷され「正式にバッテリー事業に参入」——中国技術を基盤に",
+          "market": true
+        },
+        {
+          "title": "DOT Secretary Sean Duffy keeps blaming L3Harris after FAA ground stop, even as cause remains unknown",
+          "published_utc": "2026-11-18T18:49:00Z",
+          "link": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPZW1PRm53Ti1nVTlRejJTV3loQl9QbkxGWVdoVTFucEVid1BXZjJYbFpVc2RPVjhLRndBc1pyeVpmNk52Wl9lTnBCZUFpUFVGdy1PdkJteVA0Y05rbXNQX3VRVjVnSTMyenBOaTF5TlE5THBBYURRNkZhRk9taGJLem9LaVFBZFA2a1JYcQ?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "AP News",
+          "title_ja": "DOT長官Sean Duffy、原因不明でもFAA地上停止の責任をL3Harrisに転嫁し続ける",
+          "market": false
+        },
+        {
+          "title": "Lowe's posts strong online sales, raises outlook despite slow housing market",
+          "published_utc": "2026-11-18T18:27:52Z",
+          "link": "https://www.cnbc.com/2026/11/18/lowes-low-q3-2026-earnings.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Lowe's、住宅市場の低迷にもかかわらずオンライン売上好調で業績見通しを上方修正",
+          "market": true
+        },
+        {
+          "title": "Off-price retailer TJX keeps its promise and the stock soars. We’re satisfied, for now",
+          "published_utc": "2026-11-18T18:06:59Z",
+          "link": "https://www.cnbc.com/investingclub/2026/11/18/off-price-retailer-tjx-keeps-its-promise-and-the-stock-soars-were-satisfied-for-now.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "オフプライス小売のTJX、約束を守り株価急騰。当面は満足",
+          "market": true
+        },
+        {
+          "title": "Target shares rise 7% as retailer posts best sales growth in five years, hikes guidance",
+          "published_utc": "2026-11-18T17:56:50Z",
+          "link": "https://www.cnbc.com/2026/11/18/target-tgt-q3-2026-earnings.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Target株が7%上昇、5年ぶりの最高売上成長を達成しガイダンスを引き上げ",
+          "market": true
+        },
+        {
+          "title": "Largest U.S. data centers use as much electricity as some states and countries, study finds",
+          "published_utc": "2026-11-18T17:52:00Z",
+          "link": "https://news.google.com/rss/articles/CBMihgFBVV95cUxPRG5vLWl6a25MM3doTnRwQ0FnVDRrWGhkSGhhOHJINlBTb21IYWZQLUtabnotNjlkczltRGJDRXRIUDhpNXlhT056cEtvWXgwQmJ0WFVIUl9NalNHY3hQc0pyczhGMWY4elZiYi1keW5nZFFPdkQzYXdTc0Q4NTdnZ2ZVcllFdw?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "CBS News",
+          "title_ja": "米最大級のデータセンター、電力消費量が一部の州や国並み——調査",
+          "market": false
+        },
+        {
+          "title": "Jensen Huang Scandal: Timeline That Led To His Resignation—And Potential Comeback",
+          "published_utc": "2026-11-18T17:49:00Z",
+          "link": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxPSUxjeXQ3ZkpFa0ROaG1lWTl4QTBEUWk5aVktc3ZYeGdZakVqUm1IczNFNWFjN090NWNNZkUzNmJ5Z2dYX0JBZDNRLWJad3NzbWtQeUR3VEVUQm1DYWduMmRvLWhwZmN6cjlOazlzMUlOaC1YWUQ4dWJkaDlwczNRY3laSDIxbVBBUDlKMi03b2psZWlpcF8ycDZ3MTZfd2t5MGNpSVJPeG9nU0FncEZVQXFFUUdrczlsNEI0NEVYZ2NORllWaFVjS3hQS0lfend2NjVnRFVLcUZlX09WUF9wMVJ3?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Forbes",
+          "title_ja": "Jensen Huangスキャンダル：辞任に至った経緯と復帰の可能性",
+          "market": true
+        },
+        {
+          "title": "Hospitals Rush to Patch Java Vulnerabilities",
+          "published_utc": "2026-11-18T17:48:19Z",
+          "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOdXpiSTJkZjlmR0l3Wms5TG1ad0xZS0VYUzgtbzcyN0pMbkFqTDZqVnM4a1pLdVF2eWlzc2NYdDNtYmI5LXU4ckhfSXRxUDNmMVJXcmZwb0RmUGRTN1FnNHVtSzhzN1F6eE96U2NkeXg3NmQtM1V5eFZKSHZGSFNkZldYN1NQZGRjdi1HOXlGeFU?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "The New York Times",
+          "title_ja": "病院、Java脆弱性の修正を急ぐ",
+          "market": false
+        },
+        {
+          "title": "UnitedHealth and other insurance stocks drag down the Dow after CMS proposes new anti-fraud rule",
+          "published_utc": "2026-11-18T17:38:51Z",
+          "link": "https://news.google.com/rss/articles/CBMi7AFBVV95cUxNTGxORnNpTklJSlJwbTBHQWVxSFBMTGZoalQzMnhtY0M4MFgxUWhPZU90SFVXVThaT25qTjVhZV9pSVRtT3NqcEhpOXFlUFdGa1hXeWY0REhZaEJPRlVxUjVPNV9hcGoxSzg0dkxiQ1I2OER5VW0yWnd3Y2xyVmxJUnpxV3V1UHliNFkzZHM0T3ZZT21XRnRVVXBfLVhha3FubWd3cl91a0hCVkRNSWVWQkZZbnpaWFBrd29IVnZWOFFHQmNxSDZ5MW9NVzZ3Y19RS09XVG9yMWdqSWJ4V2N2QlhkaFlOekpUZXd4ag?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Yahoo Finance",
+          "title_ja": "UnitedHealthなど保険株が、CMSの新不正防止規則案でDowを押し下げ",
+          "market": true
+        },
+        {
+          "title": "Nvidia stock erases earnings pop as investors face life after Jensen Huang",
+          "published_utc": "2026-11-18T17:35:47Z",
+          "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQUzhvYkxzRld1VG11TlpOSE5wWjE5WE94RkMwVkJJWnRReDFRTUZ1X1FQWU55Rnh5b1hqU0VvTzBCay10WE5iVzJYWHdtVWJ0dlU5aFhhX2Yxa09Ub0otUkVUQ0hCTC1OUHBhRTU5UDBlRVZfNEx4cUtoVXRRanEwazFaQTBwYmpBREc2MVlsaVlDNWptenNNZkpDNzd2blFtS3pJX0oxWDl2RlcyMFNucDRILTRlRF9iUWFPRTA3VFo5NGRVZUJTaDkyTmpYcF9xcGJtMw?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Yahoo Finance",
+          "title_ja": "Nvidia株、決算後の上昇を帳消し——Jensen Huang不在後の投資家心理",
+          "market": true
+        },
+        {
+          "title": "Google Buys Worker Data From Spirit Airlines in a New Market to Feed A.I.",
+          "published_utc": "2026-11-18T17:02:13Z",
+          "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxOekFZXzgzY1dvR1VRWTJDMTUyblZmZ3Y5aXFZd2R4ZlpldkZ3WVFvUEZsVWc2WkVpS1dwR2ZUT0dBaFZtOXRIWUdZZldFTzhITmVJN1BxbUdsR0hCeEJGa3hvZm5Ud05RTWFVSElFdzc2REtnNUsxMVBQek5uT1hYb2ZjTHp5T0l6UzNXZGxoc3o?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "The New York Times",
+          "title_ja": "Google、Spirit Airlinesから従業員データを購入——AI学習用の新市場を開拓",
+          "market": false
+        },
+        {
+          "title": "Vulcan failure caused by inadequate fuel supply to engines, ULA says",
+          "published_utc": "2026-11-18T16:58:32Z",
+          "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNVmJRbjIzX3NqOGw1SEpYSXhGSVpvam8zSlhHb3ZNT3NSODgzbUxYQ3NHVWFGRlpXQk0yRV94QzRha29hdnpBdE15dGs5RG5LRnk5aWs3S2FXeC1iTXBxUHVVY2JXMnY0SGFXWEVUMV83LWFpTUN5ejdWUzgzcmxNTzhUemlJaGRrbF9GbVByd1ltbEpRa1pFWFZOMjRTMFd2XzN0NDFqLXBSUQ?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Ars Technica",
+          "title_ja": "Vulcanの失敗、エンジンへの燃料供給不足が原因——ULA",
+          "market": false
+        },
+        {
+          "title": "Elon Musk Has Invested in Skydance, David Ellison Confirms: ‘To Have Him as a Shareholder Is an Honor’",
+          "published_utc": "2026-11-18T16:49:00Z",
+          "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPVmEtOGZaSng4VGlPYVFCNjZERmg3SDd2UmJiOTAySkJOb28tdUU1TWJEV1kxcl9ENG9yY1o4Tk11aVliaW5LZ0VTYkZTa0o3aEUzanZsLWx5SWtEVWkzc3VuMjhYLXN5TDRZRW93NGliaEFrUFBROEpYU0ZvcmpaZ0JOMTFDQkQtcmVvRG9SN1Q4bWFwZy1ZckU5N29Ebk1sTkE0TDIySU52UQ?oc=5",
+          "source": "Google News ビジネス（US）",
+          "region": "米国",
+          "publisher": "Variety",
+          "title_ja": "Elon Musk、Skydanceに出資——David Ellison「株主として迎えられるのは名誉」",
+          "market": true
+        },
+        {
+          "title": "Nvidia's Colette Kress tells Cramer: Employees and customers are not going anywhere",
+          "published_utc": "2026-11-18T15:00:01Z",
+          "link": "https://www.cnbc.com/2026/11/17/nvidias-colette-kress-tells-cramer-customers-and-employees-are-not-going-anywhere.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "NvidiaのColette Kress、Cramerに「従業員も顧客も離れない」と強調",
+          "market": true
+        },
+        {
+          "title": "'Who and what comes next': Analysts expect Nvidia investor uncertainty despite earnings beat",
+          "published_utc": "2026-11-18T06:21:45Z",
+          "link": "https://www.cnbc.com/2026/11/18/nvidia-earnings-market-analysis.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "「次に来るのは誰と何」：決算は上回ったがNvidiaへの投資家不安は残るとアナリスト",
+          "market": true
+        },
+        {
+          "title": "With Jensen Huang gone, Colette Kress shows Nvidia is still at the center of AI",
+          "published_utc": "2026-11-18T03:15:00Z",
+          "link": "https://www.cnbc.com/2026/11/17/jensen-huang-may-be-gone-nvidia-shows-its-still-at-the-center-of-ai-.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Jensen Huang不在でも、Colette Kressが示すNvidiaのAI中心性",
+          "market": true
+        },
+        {
+          "title": "Nvidia takes positive step forward with stronger sales outlook. Here’s our thoughts on the stock",
+          "published_utc": "2026-11-18T01:18:41Z",
+          "link": "https://www.cnbc.com/investingclub/2026/11/17/nvidia-takes-positive-step-forward-with-stronger-sales-outlook-heres-our-thoughts-on-the-stock.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Nvidia、売上見通しを上方修正し前進——当社見解",
+          "market": true
+        },
+        {
+          "title": "Home Depot names Richard McPhail as new CEO, beats earnings expectations",
+          "published_utc": "2026-11-17T20:01:12Z",
+          "link": "https://www.cnbc.com/2026/11/17/home-depot-hd-q3-earnings-2026.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Home Depot、新CEOにRichard McPhailを任命、決算は予想を上回る",
+          "market": true
+        },
+        {
+          "title": "Why Home Depot shares are falling despite an earnings beat — and how to proceed",
+          "published_utc": "2026-11-17T18:32:59Z",
+          "link": "https://www.cnbc.com/investingclub/2026/11/17/why-home-depot-shares-are-falling-despite-an-earnings-beat-and-how-to-proceed.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Home Depot、決算は上回ったが株価下落——今後の対応は",
+          "market": true
+        },
+        {
+          "title": "Disney beats fourth-quarter estimates, targets $3 billion in savings through cost-cutting efforts",
+          "published_utc": "2026-11-17T16:40:25Z",
+          "link": "https://www.cnbc.com/2026/11/17/disney-dis-earnings-q-2026.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Disney、4Q予想を上回る——コスト削減で30億ドルの節減目標",
+          "market": true
+        },
+        {
+          "title": "Cerebras pops after beating on quarterly revenue and announcing Microsoft deal",
+          "published_utc": "2026-11-13T16:23:43Z",
+          "link": "https://www.cnbc.com/2026/11/12/cerebras-systems-cbrs-q3-earnings-report-2026.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Cerebras、売上高が予想を上回りMicrosoftとの提携を発表し急伸",
+          "market": true
+        },
+        {
+          "title": "Cisco beats on earnings, says AI infrastructure revenue will double this fiscal year",
+          "published_utc": "2026-11-13T14:26:04Z",
+          "link": "https://www.cnbc.com/2026/11/12/cisco-csco-q1-2027-earnings.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Cisco、決算は上回る——AIインフラ売上は今期2倍の見込み",
+          "market": true
+        },
+        {
+          "title": "Nebius falls 16% as company expects increased 2026 capex spend, issues weak outlook",
+          "published_utc": "2026-11-12T17:53:31Z",
+          "link": "https://www.cnbc.com/2026/11/12/nebius-q3-earnings-report-2026.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "Nebius、2026年の設備投資増加と弱い見通しで16%下落",
+          "market": true
+        },
+        {
+          "title": "CoreWeave beats on revenue and lifts guidance, easing AI slowdown concerns",
+          "published_utc": "2026-11-11T21:13:41Z",
+          "link": "https://www.cnbc.com/2026/11/10/coreweave-crwv-q3-earnings-report-2026.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "CoreWeave、売上高が予想を上回りガイダンスを引き上げ——AI減速懸念を和らげる",
+          "market": true
+        },
+        {
+          "title": "CoreWeave soars more than 24% for best day since April 2025 after strong Q3 report",
+          "published_utc": "2026-11-11T21:11:26Z",
+          "link": "https://www.cnbc.com/2026/11/11/coreweave-crwv-outlook-earnings-ai.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "CoreWeave、好決算で4月以来の最高となる24%超急伸",
+          "market": true
+        },
+        {
+          "title": "CoreWeave CEO Intrator tells CNBC he has canceled his planned share sale program",
+          "published_utc": "2026-11-11T15:53:36Z",
+          "link": "https://www.cnbc.com/2026/11/11/coreweave-ceo-election-data-center-buildout.html",
+          "source": "CNBC Earnings",
+          "region": "米国",
+          "title_ja": "CoreWeaveのCEO Intrator、CNBCに計画していた株式売却プログラムを中止したと明かす",
+          "market": true
+        }
+      ],
+      "failed": [],
+      "failed_reasons": {},
+      "status": "ok",
+      "sources": [
+        "CNBC Earnings",
+        "Yahoo Finance S&P 500",
+        "Google News ビジネス（US）"
+      ],
+      "translation": {
+        "status": "ok",
+        "model": "grok-4.3"
+      },
+      "relevance": {
+        "status": "ok",
+        "model": "grok-4.3",
+        "true": 42,
+        "false": 6
+      }
+    },
+    "calendar": {
+      "fetched_at": "2026-11-18T21:31:40Z",
+      "start_et": "2026-11-18",
+      "end_et": "2026-11-24",
+      "events": [
+        {
+          "date_et": "2026-11-18",
+          "time_et": "13:35",
+          "time_jst": "2026-11-19 03:35",
+          "kind": "FRB要人の講演",
+          "title": "Speech - Governor Michael S. Barr",
+          "detail": "At Making Missing Markets: Catalyzing Capital and Igniting Innovation, Federal Reserve Bank of New York, New York, N.Y.",
+          "source": "Federal Reserve"
+        },
+        {
+          "date_et": "2026-11-18",
+          "time_et": "14:00",
+          "time_jst": "2026-11-19 04:00",
+          "kind": "FOMC",
+          "title": "FOMC Minutes",
+          "detail": null,
+          "source": "Federal Reserve"
+        },
+        {
+          "date_et": "2026-11-18",
+          "time_et": null,
+          "time_jst": null,
+          "kind": "決算",
+          "title": "NVDA 決算発表",
+          "detail": null,
+          "source": "TANUKI VALUATION"
+        },
+        {
+          "date_et": "2026-11-19",
+          "time_et": "09:25",
+          "time_jst": "2026-11-19 23:25",
+          "kind": "FRB要人の講演",
+          "title": "Discussion - Vice Chair Philip N. Jefferson",
+          "detail": "At the International Monetary Fund (IMF) and Central Bank of Brazil conference A Quarter Century of Inflation Targeting in Latin America: Progress, Challenges, and the Road Ahead (virtual)",
+          "source": "Federal Reserve"
+        },
+        {
+          "date_et": "2026-11-19",
+          "time_et": "14:15",
+          "time_jst": "2026-11-20 04:15",
+          "kind": "FRB要人の講演",
+          "title": "Discussion - Governor Michael S. Barr",
+          "detail": "At the FinRegLab 2026 AI Symposium, Washington, D.C.",
+          "source": "Federal Reserve"
+        },
+        {
+          "date_et": "2026-11-19",
+          "time_et": null,
+          "time_jst": null,
+          "kind": "経済指標",
+          "title": "新規失業保険申請件数",
+          "detail": "Unemployment Insurance Weekly Claims Report",
+          "source": "FRED"
+        },
+        {
+          "date_et": "2026-11-20",
+          "time_et": "08:25",
+          "time_jst": "2026-11-20 22:25",
+          "kind": "FRB要人の講演",
+          "title": "Speech - Governor Christopher J. Waller",
+          "detail": "At the College Fed Challenge Finals",
+          "source": "Federal Reserve"
+        },
+        {
+          "date_et": "2026-11-20",
+          "time_et": "12:15",
+          "time_jst": "2026-11-21 02:15",
+          "kind": "FRB要人の講演",
+          "title": "Speech - Governor Lisa D. Cook",
+          "detail": "At the Annual Conference of the Central Bank of Chile, Santiago, Chile",
+          "source": "Federal Reserve"
+        },
+        {
+          "date_et": "2026-11-20",
+          "time_et": null,
+          "time_jst": null,
+          "kind": "満期",
+          "title": "米国 月次オプション満期",
+          "detail": null,
+          "source": "計算（第3金曜）",
+          "region": "米国"
+        },
+        {
+          "date_et": "2026-11-20",
+          "time_et": null,
+          "time_jst": null,
+          "kind": "経済指標",
+          "title": "ミシガン大学消費者信頼感",
+          "detail": "Surveys of Consumers",
+          "source": "FRED"
+        },
+        {
+          "date_local": "2026-11-23",
+          "time_et": null,
+          "time_jst": null,
+          "kind": "休場",
+          "title": "日本市場 休場",
+          "detail": null,
+          "source": "JPXカレンダー",
+          "region": "日本"
+        },
+        {
+          "date_et": "2026-11-24",
+          "time_et": null,
+          "time_jst": null,
+          "kind": "経済指標",
+          "title": "鉱工業生産・設備稼働率",
+          "detail": "G.17 Industrial Production and Capacity Utilization",
+          "source": "FRED"
+        }
+      ],
+      "failed": [],
+      "status": "ok",
+      "earnings_tickers": [
+        "AAPL",
+        "ADBE",
+        "AMZN",
+        "APP",
+        "CELH",
+        "CRWV",
+        "GOOGL",
+        "META",
+        "MSFT",
+        "NVDA",
+        "PLTR",
+        "SOFI",
+        "SOUN",
+        "TSLA"
+      ]
+    },
+    "futures": {
+      "fetched_at": "2026-11-18T21:31:44Z",
+      "items": [
+        {
+          "symbol": "ES=F",
+          "name": "S&P500先物",
+          "region": "米国",
+          "value": 7348.5,
+          "previous_close": 7372.5,
+          "change_pct": -0.33,
+          "bar_time_utc": "2026-11-18T21:15:00Z",
+          "contract": "ESZ26.CME",
+          "status": "ok",
+          "provisional": true,
+          "provisional_kind": "清算前"
+        },
+        {
+          "symbol": "NQ=F",
+          "name": "NASDAQ100先物",
+          "region": "米国",
+          "value": 27253.5,
+          "previous_close": 27181.5,
+          "change_pct": 0.26,
+          "bar_time_utc": "2026-11-18T21:15:00Z",
+          "contract": "NQZ26.CME",
+          "status": "ok",
+          "provisional": true,
+          "provisional_kind": "清算前"
+        },
+        {
+          "symbol": "NIY=F",
+          "name": "日経平均先物（CME、円建て）",
+          "region": "日本",
+          "value": 58870.0,
+          "previous_close": 59075.0,
+          "change_pct": -0.35,
+          "bar_time_utc": "2026-11-18T21:15:00Z",
+          "contract": "NIYZ26.CME",
+          "status": "ok",
+          "provisional": true,
+          "provisional_kind": "清算前"
+        },
+        {
+          "symbol": "JPY=X",
+          "name": "ドル円",
+          "region": "日本",
+          "value": 159.364,
+          "previous_close": 159.52,
+          "change_pct": -0.1,
+          "bar_time_utc": "2026-11-18T21:30:00Z",
+          "contract": null,
+          "status": "ok",
+          "provisional": true,
+          "provisional_kind": "日中"
+        }
+      ],
+      "failed": [],
+      "status": "ok"
+    }
   }
 ]
