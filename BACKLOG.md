@@ -2270,6 +2270,7 @@ BACKLOG_DONE.md「2026-09-13（完了）」参照）
 **分類:** 共通の部品 / `docs/common/profitability.json`（`common/profitability.py`）とその読み手（TANUKI VALUATION・STONKS SILO・rcc・登録の検証）
 **登録日:** 2026-11-05
 **着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**公開済み（2026-11-19）:** method_changeには登録しない（表示だけ）。確認は次回の確認手順37。記録は`docs/architecture/DEFICIT_QUALITY_STEP0.md`末尾
 **発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-2のSTEP 0（2026-11-05）
 **実装（2026-11-12、ブランチ`deficit-quality-adopt-1`・未公開）:** 黒字化の予測を`common/profitability.py`の1つに（STONKSの純利益率の回帰・TANUKIの調整後EPSの黒字化は廃止、ocf_breakevenはキャッシュの軸として残す）、STONKSの対象を月末ごとのTTM営業利益の符号＋stage_v2の持続の条件に（手書きの`stonks_silo`列を削除）、粗利率の導出、型④の表示。試算は理論株価・判定・保有とも変化0。公開はPARSER段1→CONTINUITY→DILUTIONの後（`DEFICIT_QUALITY_STEP0.md`末尾）。**公開までこの項目は残す**
 **経緯:** 2026-10-19の初回の束ねで[[DEFICIT-QUALITY-COMMON-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行）。段B-2で部品だけを作った（読み手は今のまま）

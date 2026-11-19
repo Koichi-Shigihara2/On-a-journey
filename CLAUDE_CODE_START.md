@@ -6,7 +6,7 @@
 ## 今の状態（2026-11-12 終業）
 
 - BACKLOG.md のアクティブは **14件**（`^### [` の機械カウント）。rcc NG 0・WARN 223、pytest 2960件通過・失敗2（kaihatsu。ruffの無い環境の1件と、SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
-- **未公開のコードの置き場所は5つ**（Layer3の定義のコードをpushするとそのまま公開になる。**PARSER-LAYER3 段1は2026-11-16に公開済み**〈TANUKI `43832337705`→HypeCore `43834462211`→TANUKI `43834776503`、1回目の印はscopeの17銘柄だけ・3回目0件・CAKE 50.00・KO 24.29が試算と一致。確認は手順34〉。残りの公開の順は CONTINUITY → DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES、各々の前に前の公開の上にrebaseして試算し直す）: (2) TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（originにも控えあり〈7b8a432d2b〉）、(3) DILUTION-DEFINITION-UNIFY-1は**2026-11-18に公開済み**（ID `-1-1`、scope 90銘柄。確認は手順36）、(4) DEFICIT-QUALITY-ADOPT-1はブランチ`deficit-quality-adopt-1`（d4f824cf0e〈コード〉・c9aadc065d〈作り直した`profitability.json`〉、公開の前に`python common/profitability.py --all`、手順は`DEFICIT_QUALITY_STEP0.md`末尾）。(5) MULTIPLES-ADOPT-1はブランチ`multiples-adopt-1`（`2741efd6e7`、kaihatsu `7a6a5acd2b`から。公開の手順は`MULTIPLES_ADOPT_STEP0.md`末尾。公開の前に`python common/multiples.py --all`と`python common/sec_data/rotce.py`）。(6) TANUKI-SHARES-SINGLE-SOURCE-1はブランチ`tanuki-shares-single-source-1`（`8cdf37598c`、`multiples-adopt-1`の上。公開の手順は`TANUKI_SHARES_STEP0.md`末尾。公開の前に`python common/multiples.py --all`）。(2)〜(6)はkaihatsuには無く、originに控えがある。6つを公開の順に重ねた予行（衝突・各段の試算・公開の日の段取りの案）は`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`
+- **未公開のコードの置き場所は5つ**（Layer3の定義のコードをpushするとそのまま公開になる。**PARSER-LAYER3 段1は2026-11-16に公開済み**〈TANUKI `43832337705`→HypeCore `43834462211`→TANUKI `43834776503`、1回目の印はscopeの17銘柄だけ・3回目0件・CAKE 50.00・KO 24.29が試算と一致。確認は手順34〉。残りの公開の順は CONTINUITY → DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES、各々の前に前の公開の上にrebaseして試算し直す）: (2) TANUKI-CALC-CONTINUITY-1はブランチ`tanuki-calc-continuity-1`（originにも控えあり〈7b8a432d2b〉）、(3) DILUTION-DEFINITION-UNIFY-1は**2026-11-18に公開済み**（ID `-1-1`、scope 90銘柄。確認は手順36）、(4) DEFICIT-QUALITY-ADOPT-1は**2026-11-19に公開済み**（method_change登録なし。確認は手順37）。(5) MULTIPLES-ADOPT-1はブランチ`multiples-adopt-1`（`2741efd6e7`、kaihatsu `7a6a5acd2b`から。公開の手順は`MULTIPLES_ADOPT_STEP0.md`末尾。公開の前に`python common/multiples.py --all`と`python common/sec_data/rotce.py`）。(6) TANUKI-SHARES-SINGLE-SOURCE-1はブランチ`tanuki-shares-single-source-1`（`8cdf37598c`、`multiples-adopt-1`の上。公開の手順は`TANUKI_SHARES_STEP0.md`末尾。公開の前に`python common/multiples.py --all`）。(2)・(5)・(6)はkaihatsuには無く、originに控えがある。6つを公開の順に重ねた予行（衝突・各段の試算・公開の日の段取りの案）は`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
 - 報告は20行以内（結論・変わった数・判定の変化・決めてほしいこと）。詳しい表はファイルに置き、場所だけ書く（`CHAT_RULES.md`「報告の形」）
@@ -44,9 +44,14 @@
    - 確認の手順: ①`latest.json`の`method_change`が付かない（`method_change_applied`に`TANUKI-CALC-CONTINUITY-1-1`が入っている）②日曜の作り直し後も`ttm/`の9ファイル（APP・ASTS・BBAI・BSY・DELL・FRSH・HWM・ONDS・RCAT）と、CAKE・KO・DOCNの理論株価が動かない（動くのは新しい四半期の分だけ）。済んだら`[[TANUKI-CALC-CONTINUITY-1]]`をBACKLOG_DONEへ移設する
 
 36. **DILUTION-DEFINITION-UNIFY-1（`-1-1`）の次の定時の実行の確認**（公開は2026-11-18 手動: Stonks `44195625531`・TANUKI `44195630510`〈Stonksの完了で`44196135444`も自動で起動〉→HypeCore `44199705052`→TANUKI `44200008042`。1回目の印はscopeの90銘柄だけ・2回目以降0件、SOUN funda 35→46・SPIR 0→6〈予行の43・1とはQ3の10-Qで窓の終点が進んだ分の違い、原因は確定〉、STONKS `results.json`は`sbc_burden` 24件・`dilution_risk` 0件を確認済み）
-   - 日時: 2026-11-19（木）06:30 JST ごろのStonks→TANUKIの定時の実行の後（11-22の日曜のSEC_Data_Updateの後の分は手順34と同じ回で見る）
+   - 日時: 2026-11-19（木）06:30 JST ごろのStonks→TANUKIの定時の実行の後。**11-19朝の分は合格済み**（Stonks `44401956898`・TANUKI `44402530106`〈11-18 21:29Z・21:32Z〉、96銘柄とも印0件・`method_change_applied`に`DILUTION-DEFINITION-UNIFY-1-1`、`results.json`は`sbc_burden` 24件・`dilution_risk` 0件、画面はSBC負担のラベルがDOMにあり旧ラベルは無い・JSエラー0〈折りたたみの中のため可視の目視は手元の確認まで〉）。残りは11-22の日曜のSEC_Data_Updateの後の分（手順34と同じ回で見る）
    - 期限: 2026-11-24
    - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`DILUTION-DEFINITION-UNIFY-1-1`）②`results.json`の`sbc_burden`のまま（旧キーが戻らない）③画面（stock.html・tanuki_score・stonks-silo）で希薄化の欄・SBC負担のラベルが出る。済んだら`[[DILUTION-DEFINITION-UNIFY-1]]`をBACKLOG_DONEへ移設する
+
+37. **DEFICIT-QUALITY-ADOPT-1 の次の定時の実行の確認**（公開は2026-11-19 手動。method_changeには登録しない〈表示だけ〉。公開直後の確認は合格済み: 対象24銘柄・`op_breakeven_*`・`structural_deficit_kind` 18銘柄・印0件）
+   - 日時: 2026-11-20（金）06:30 JST ごろのStonks→TANUKIの定時の実行の後
+   - 期限: 2026-11-25
+   - 確認の手順: ①`results.json`が24銘柄のまま・`gaap_breakeven_*`が戻らない②`latest.json`に`breakeven_estimate`・`breakeven_reason`が戻らず、`method_change`が付かない③画面（stonks-silo・tanuki_score）の黒字化・構造的赤字の型の表示。SOUN（保有）は2026 PREDICTED〈R² 0.696、TTM 2026-09-30で成立。予行は「不明」だった〉、CRWV（保有）はNO_TREND。SITMの対象からの出入りは12月末以降（持続の規則）。済んだら`[[DEFICIT-QUALITY-ADOPT-1]]`をBACKLOG_DONEへ移設する
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

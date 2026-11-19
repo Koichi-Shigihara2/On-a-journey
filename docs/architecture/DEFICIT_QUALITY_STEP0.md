@@ -209,3 +209,13 @@ kaihatsuには入っていない（`origin/deficit-quality-adopt-1`に控え。P
 
 - `config/method_change.json`には**登録しない**（理論株価・判定・funda点が変わらない表示だけの変更。`sim.py scope`は`latest.json`のキーの出入りで94銘柄になるが、🛠の通知は出さない）
 - 公開の順の手順（上）の2の`python common/profitability.py --all`は、月末の履歴の行が3列になった今の形で作り直す。**これを公開の前にしないと、STONKSの対象が空になる前に`stonks_target.targets()`が止まる**（空の対象で走らせない）
+
+---
+
+## 公開の記録（2026-11-19）
+
+- **DEFICIT-QUALITY-ADOPT-1は2026-11-19に公開済み**（ID `なし`＝method_changeには登録しない〈表示だけ。STEP 0の決定〉。kaihatsu `0588f76434`〈コード52cc737eab・27ae0c1de3、データ・一覧0588f76434〉。Stonks `44504887950`→TANUKI `44504892126`〈Stonksの完了で`44505527538`も自動〉→HypeCore `44509816077`→TANUKI `44510125547`。試算は理論株価・判定・funda・stageの変化0〈96銘柄、scope 94はキーの出入りだけ〉。STONKSの対象24銘柄で出入りなし、`op_breakeven_*` 24銘柄・`gaap_breakeven_*` 0、`latest.json`から`breakeven_*`が消え`structural_deficit_kind` 18銘柄、印0件）
+- rebase: `kaihatsu 3f5ee391a4`の上へ。衝突は出力の一覧6ファイルだけ（kaihatsu側を取り`build_output_inventory.py --layer sec|tanuki|stonks`で作り直し）。データの2コミットは空になり、`python common/profitability.py --all`で作り直し（`operating_state_history`は98銘柄に有り・STONKSの対象24）
+- 試算（`tools/sim`のchain base/after、`compare`・`scope --id DEFICIT-QUALITY-ADOPT-1-0`）: 理論株価・判定が変わる0・funda・stage 0。pytest 3002通過・失敗0（ruffの1件を除く）、audit・rcc NG 0
+- STONKSの黒字化の表示の前後（`analyze()`だけを両方のコードで24銘柄に回した）: 予行の14銘柄と**13銘柄が一致**。**SOUNだけ違う**: 予行は「不明」（LOW_FIT、R² 0.393）、今回は2026 PREDICTED。理由は新しい四半期（TTM 2026-06-30→2026-09-30）で、直近8点が傾き0.43・R² 0.696になり規則が成立したため（TTMの営業利益率 −68.6%→−31.0%）。規則は変えていない。CRWVは想定どおりNO_TREND
+- method_changeには登録しない（表示だけ）。印は0件
