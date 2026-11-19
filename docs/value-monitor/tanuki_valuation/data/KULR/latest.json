@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 278.6,
-  "calculation_date": "2026-11-19T06:47:48+09:00",
+  "calculation_date": "2026-11-19T19:32:55+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -193,7 +193,10 @@
         }
       ],
       "total_transient_amount": 780643,
-      "ai_assessment": null
+      "ai_assessment": {
+        "assessment": "transient",
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動であり、事業運営上の構造的問題ではなく一過性の金融費用と判断される。"
+      }
     },
     "action": "flagged",
     "note": "TTM 2025-09-30 FCF($-36.9M)がマイナス。一過性費用$1Mは5年平均の10%（$2M）に届かず除外しない。要確認。"
@@ -366,6 +369,7 @@
     "insider_latest_date": "2026-09-11",
     "revenue_ttm": 16287284,
     "revenue_ttm_end": "2026-09-30",
+    "structural_deficit_kind": "cash_loss",
     "analyst_vs_iv": 14.8,
     "max_eps": null,
     "max_eps_per": null,
@@ -559,7 +563,6 @@
     "dupont_bs_period": "2026Q3"
   },
   "next_earnings_date": "2026-11-10",
-  "breakeven_reason": "ACHIEVED",
   "segment_configured": false,
   "phase1_growth_original": 0.25,
   "phase1_growth_auto_adjusted": true,

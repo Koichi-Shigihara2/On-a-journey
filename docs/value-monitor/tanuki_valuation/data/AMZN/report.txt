@@ -1,5 +1,5 @@
 AMZN INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-19T06:34:20+09:00
+Generated: 2026-11-19T19:23:15+09:00
 Price: $267.74
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -86,10 +86,9 @@ Valuation_Gap_Analysis:
   Current_FCF:      $57.35B
   Required_Growth:  31%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
-⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
-   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
-    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
-    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
+ℹ️ FCFが負（設備投資）: TTMの営業利益は黒字ですが、5年・2年平均とも実績FCF（営業CF−設備投資）が負です。
+   [成長のための設備投資を分けずに、売上×8%の下限でFCFを支えて計算しているため、
+    以下のDCF/IVは参考値程度に留めてください。営業利益の赤字（会計の赤字）ではありません。]
 FCF_Base: $57,353.92M (5yr平均) [実績avg: $-556.2M]
 FCF_Breakdown（TTM 2026-09-30）: OCF=$168,300M / CapEx=$215,192M / SBC(非現金)=$19,873M / D&A=$79,353M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
@@ -355,7 +354,7 @@ Insider_Activity: Sell優勢 | 買い0件 / 売り27件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 15.4%
 Next_Earnings_Date: 2026-10-30
-Breakeven_Estimate: 黒字化：達成済み
+Breakeven_Estimate: 営業黒字：達成済み（TTM営業利益）
 Definition:
 
 Short_Interest: % of float sold short
@@ -368,7 +367,7 @@ Revenue_Growth_YoY: TTM vs prior TTM
 Note: TTM may reflect restated (continuing operations) figures for
 companies that divested business units (e.g., APP Apps segment 2024).
 Primary growth metric for RICE-excluded tickers
-Breakeven_Estimate: Projected year when adjusted EPS turns positive
+Breakeven_Estimate: Projected year when TTM operating income turns positive (common/profitability.py)
 based on recent 4Q linear trend. Rough estimate only.
 
 ==============================================

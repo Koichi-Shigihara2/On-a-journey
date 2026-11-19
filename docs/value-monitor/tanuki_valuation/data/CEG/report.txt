@@ -1,5 +1,5 @@
 CEG INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-19T06:35:05+09:00
+Generated: 2026-11-19T19:24:07+09:00
 Price: $262.74
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -87,10 +87,9 @@ Valuation_Gap_Analysis:
   Current_FCF:      $2.04B
   Required_Growth:  35%/yr (現在FCFから必要成長率を逆算)
 FCF_TTM_End: 2026-06-30 (FCF/RICE算出に用いたTTM期末日)
-⚠️ 構造的赤字銘柄: 5年・2年平均とも実績FCFが負です。
-   [会計処理上の問題ではなく実際にキャッシュを消費している状態のため、
-    以下のDCF/IVは参考値程度に留めてください。STONKS SILOの赤字銘柄
-    評価枠組み（赤字品質スコア・損益分岐予測等）を参照することを推奨します。]
+ℹ️ FCFが負（設備投資）: TTMの営業利益は黒字ですが、5年・2年平均とも実績FCF（営業CF−設備投資）が負です。
+   [成長のための設備投資を分けずに、売上×8%の下限でFCFを支えて計算しているため、
+    以下のDCF/IVは参考値程度に留めてください。営業利益の赤字（会計の赤字）ではありません。]
 FCF_Base: $2,042.64M (5yr平均) [実績avg: $-3,613.0M]
 FCF_Breakdown（TTM 2026-06-30）: OCF=$4,206M / CapEx=$3,897M / SBC(非現金)=N/A / D&A=$1,369M
   [SBCは非現金項目としてOCFに既に加算済みのため、FCF計算には別途
@@ -115,7 +114,7 @@ Sensitivity_Matrix (WACC×成長期間 → IV/share):
   11.0%       $8.42  $18.00  $27.35
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: マクロ変動による一時的影響と明記されており、事業運営上の構造的な問題ではなく一過性の費用である。
+  Reasoning: すべての項目がマクロ変動による一時的影響と明記されており、構造的な問題ではなく一過性のものと判断。
 Financial_Health:
   Net_Debt: $+23.64B (negative=net cash)
   Total_Debt: $24.34B  Cash: $0.70B
@@ -358,7 +357,7 @@ Insider_Activity: 中立 | 買い0件 / 売り0件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 26.0%
 Next_Earnings_Date: 2026-11-09
-Breakeven_Estimate: 黒字化：達成済み
+Breakeven_Estimate: 営業黒字：達成済み（TTM営業利益）
 Definition:
 
 Short_Interest: % of float sold short
@@ -371,7 +370,7 @@ Revenue_Growth_YoY: TTM vs prior TTM
 Note: TTM may reflect restated (continuing operations) figures for
 companies that divested business units (e.g., APP Apps segment 2024).
 Primary growth metric for RICE-excluded tickers
-Breakeven_Estimate: Projected year when adjusted EPS turns positive
+Breakeven_Estimate: Projected year when TTM operating income turns positive (common/profitability.py)
 based on recent 4Q linear trend. Rough estimate only.
 
 ==============================================
