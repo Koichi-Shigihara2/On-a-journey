@@ -2360,6 +2360,7 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 **分類:** 共通の導出データ / `docs/common/multiples/{T}.json`（`common/multiples.py`）とその読み手（TANUKI VALUATION・TANUKI SCORE・ROTCE・HypeCore・STONKS・画面）
 **登録日:** 2026-11-05
 **着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**公開済み（2026-11-20）:** 確認は`CLAUDE_CODE_START.md`手順38・39
 **発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-4のSTEP 0（2026-11-05）
 **経緯:** 2026-10-19の初回の束ねで[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行と同じ形）。段B-4で部品を作った
 
