@@ -1,10 +1,10 @@
 {
   "intrinsic_value_per_share": 1063.328384097498,
   "intrinsic_value_beta": 2143.95,
-  "upside_percent_beta": 58.7,
-  "intrinsic_value_rf": 4340.43,
-  "upside_percent_rf": 221.2,
-  "intrinsic_value_rf_rate": 0.05052000045776367,
+  "upside_percent_beta": 59.2,
+  "intrinsic_value_rf": 4682.8,
+  "upside_percent_rf": 247.6,
+  "intrinsic_value_rf_rate": 0.049119997024536136,
   "v0": 1954334223931.174,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.7,
@@ -20,31 +20,31 @@
     "1年後": {
       "future_value": 1320.62,
       "value_growth_pct": 24.2,
-      "expected_return_pct": -2.3
+      "expected_return_pct": -2.0
     },
     "2年後": {
       "future_value": 1640.16,
       "value_growth_pct": 54.2,
-      "expected_return_pct": 21.4
+      "expected_return_pct": 21.8
     },
     "3年後": {
       "future_value": 2037.02,
       "value_growth_pct": 91.6,
-      "expected_return_pct": 50.8
+      "expected_return_pct": 51.2
     },
     "4年後": {
       "future_value": 2529.9,
       "value_growth_pct": 137.9,
-      "expected_return_pct": 87.2
+      "expected_return_pct": 87.8
     },
     "5年後": {
       "future_value": 3142.05,
       "value_growth_pct": 195.5,
-      "expected_return_pct": 132.6
+      "expected_return_pct": 133.2
     }
   },
-  "upside_percent": -21.3,
-  "calculation_date": "2026-11-20T12:55:18+09:00",
+  "upside_percent": -21.1,
+  "calculation_date": "2026-11-21T06:37:43+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -296,19 +296,19 @@
     "bear": {
       "growth_rate": 0.169,
       "rice": 3.295,
-      "rice_per_ratio": 0.0753,
+      "rice_per_ratio": 0.0755,
       "rice_adj": 10.774
     },
     "base": {
       "growth_rate": 0.242,
       "rice": 4.719,
-      "rice_per_ratio": 0.1078,
+      "rice_per_ratio": 0.1081,
       "rice_adj": 15.428
     },
     "bull": {
       "growth_rate": 0.29,
       "rice": 5.655,
-      "rice_per_ratio": 0.1292,
+      "rice_per_ratio": 0.1296,
       "rice_adj": 18.488
     }
   },
@@ -335,7 +335,7 @@
     "roe_10yr_avg": 0.5325182713825203,
     "roe_years_used": 10,
     "roe_outlier_adj": true,
-    "current_price": 1351.1199951171875,
+    "current_price": 1347.1099853515625,
     "latest_revenue": 65179000000.0,
     "rpo": 0.0,
     "beta": 0.453,
@@ -366,16 +366,16 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 2.236576739806585,
-    "per_gaap_ttm_sec": 43.76735800743646,
+    "per_gaap_ttm_sec": 43.63746019402263,
     "per_forward_yf": 28.504753,
-    "market_cap_sec": 1207090603637.6953,
+    "market_cap_sec": 1203508060913.086,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": 0.06519800165881029,
-    "per_adjusted_ttm": 43.06,
+    "market_cap_yf_gap": 0.06836882990254955,
+    "per_adjusted_ttm": 42.93,
     "peg": 1.3341,
-    "ps_ttm_sec": 13.960937795074083,
+    "ps_ttm_sec": 13.91950291356996,
     "ev_ebitda": 28.618,
-    "ma200": 1116.270302734375,
+    "ma200": 1117.9016525268555,
     "forward_eps": 50.64068,
     "next_quarter_eps": 11.22,
     "analyst_target_median": 1570.0,
@@ -394,7 +394,7 @@
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 47.6,
     "max_eps": 31.575,
-    "per_max_eps_ttm": 42.8,
+    "per_max_eps_ttm": 42.7,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
     "max_eps_shares": 895575000.0,
@@ -424,11 +424,11 @@
     "ai_comment": null
   },
   "phase1_growth": 0.2419639034656278,
-  "required_growth_rf_base": -0.040093598028165034,
-  "risk_free_rate_live": 0.05052000045776367,
-  "risk_free_rate_live_date": "2026-11-19",
+  "required_growth_rf_base": -0.040664059851635126,
+  "risk_free_rate_live": 0.049119997024536136,
+  "risk_free_rate_live_date": "2026-11-20",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": 0.05166081151331858,
+  "required_growth_rf_live": 0.036285946637133915,
   "tanuki_score": "HOLD",
   "funda_score": 90,
   "score_comment": "割高(-21%超)、FCF黒字、売上成長加速",
@@ -584,7 +584,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.013,
+  "erp": -0.0115,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

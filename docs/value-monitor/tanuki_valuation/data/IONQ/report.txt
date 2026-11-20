@@ -1,15 +1,15 @@
 IONQ INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-20T12:54:38+09:00
-Price: $22.71
+Generated: 2026-11-21T06:37:00+09:00
+Price: $20.72
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
 [1. TANUKI SCORE]
 Classification: WATCH
-Classification_Pre_Rounding: HOLD
+Classification_Pre_Rounding: WATCH
 Funda_Score: 93/100
 Timing_Score (components):
-  Deviation_Rate: -7.5%
-  MA200_Deviation: -44.6%
+  Deviation_Rate: +1.4%
+  MA200_Deviation: -49.4%
   HypeCore_Phase: Phase4 (期待剥落期)
   Analyst_Consensus: Strong Buy | Target: $50 median ($40-$70) | 14 analysts | vs IV: +138.0%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
@@ -31,10 +31,10 @@ PASS: Funda<25, excluded from consideration
 
 [2. MATRIX POSITION]
 Matrix: ①投資効率系
-Quadrant: 左下
-Label: 割高×N/A (OCF赤字)
+Quadrant: 右下
+Label: 割安×N/A (OCF赤字)
 Key_Metric_Y: RICE = -2.101
-Deviation_Rate: -7.5%
+Deviation_Rate: +1.4%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,24 +58,24 @@ Positive deviation = undervalued (intrinsic > current)
 
 
 [3. TANUKI VALUATION]
-Current_Price: $22.71
+Current_Price: $20.72
 Intrinsic_Value_BASE: $21.00
-Deviation_BASE: -7.5%
+Deviation_BASE: +1.4%
 Growth_Rate_Original: 15.0% (TTM実績)
 Growth_Rate_Adjusted: 54.8% (推奨値・逓減モデル)
 Scenarios:
 BEAR: Growth=38.3%, IV=$17.06 （推奨値ベース）
 BASE: Growth=54.8%, IV=$21.00 （推奨値ベース）
 BULL: Growth=65.7%, IV=$23.96 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $32.50 (+43.1%) / 3年後: $77.87 (+242.9%) / 5年後: $124.75 (+449.3%)
-  5yr_Annualized_Return: +40.6%/yr
+Return_Outlook(BASE): 1年後: $32.50 (+56.9%) / 3年後: $77.87 (+275.8%) / 5年後: $124.75 (+502.1%)
+  5yr_Annualized_Return: +43.2%/yr
 TTM_YoY_Growth: 201.9%
 (DCF Base vs TTM actual: -147.1pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $9.81 (Deviation: -56.8%)
-  参考②Rf理論上限_IV（Rf 5.05%、^TNX 2026-11-19）: $84.22 (Deviation: +270.9%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在5.05%（^TNX 2026-11-19）に変化すると、Rf基準の必要成長率は-18.4%→-6.8%（+11.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $9.81 (Deviation: -52.7%)
+  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $92.46 (Deviation: +346.2%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.91%（^TNX 2026-11-20）に変化すると、Rf基準の必要成長率は-19.9%→-10.2%（+9.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 2.5
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
@@ -271,7 +271,7 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 35.7x
+  Market_PER_GAAP: 32.5x
   Adjusted_EPS_PER: N/A
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-06
@@ -298,10 +298,10 @@ Phase_History (recent 6 months):
 2026-10: Phase4 (期待剥落期)
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
-  PER: 35.7x
+  PER: 32.5x
   PER_Forward_yf: -20.3x
   PEG: N/A
-  PS:  23.9x
+  PS:  21.8x
   EV_EBITDA: N/A
   PS_Signal: 高水準（売上対比で高い期待が織り込み済み）
 Definition:
@@ -321,10 +321,10 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: -6.26%  (ForwardEPS $-1.42 / Price $22.71)
-  Risk_Free_Rate (10Y):  5.05%  (^TNX 2026-11-19)
-  ERP: -11.31%
-  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 5.05%, ^TNX 2026-11-19]
+  Forward_Earnings_Yield: -6.86%  (ForwardEPS $-1.42 / Price $20.72)
+  Risk_Free_Rate (10Y):  4.91%  (^TNX 2026-11-20)
+  ERP: -11.77%
+  ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 4.91%, ^TNX 2026-11-20]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
 PER: Price / GAAP EPS (trailing)
