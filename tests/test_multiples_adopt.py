@@ -64,7 +64,7 @@ def test_market_cap_is_built_in_one_place():
             assert m.group(1) == "market_cap" and ("yf_market_cap" in line or "current_multiples" in line), (rel, line)
     html = _src("docs/value-monitor/tanuki_valuation/stock.html")
     assert "ps_ttm_sec" in html
-    assert all("旧キー読み" in l for l in html.splitlines() if "currentPrice * dilutedSharesVal" in l)   # 旧データ用の読みだけ
+    assert "currentPrice * dilutedSharesVal" not in html   # 画面で時価総額を作らない（旧キー読みは2026-11-20に外した）
 
 
 def test_per_column_never_mixes_forward():
@@ -72,9 +72,8 @@ def test_per_column_never_mixes_forward():
     assert "per_is_forward" not in s and "_trailing_pe or _forward_pe" not in s
     assert "per_forward_yf" in s
     sc = _src("docs/value-monitor/tanuki_score/index.html")
-    # 旧キー読み（MULTIPLES-ADOPT-1の残り）の行以外に per_is_forward を使わない
     assert "perIsFwd" not in sc and "per_forward_yf" in sc
-    assert all("旧キー読み" in l for l in sc.splitlines() if "per_is_forward" in l)
+    assert "per_is_forward" not in sc   # 旧キー読みは2026-11-20に外した
 
 
 def test_rotce_ptbv_history_uses_first_val_tce():
@@ -82,15 +81,19 @@ def test_rotce_ptbv_history_uses_first_val_tce():
     assert "_tce_pit(q)" in s and "tce_first_val" in s
 
 
-def test_old_key_fallback_never_turns_forward_into_gaap_per():
-    """公開直後の旧データ（per_is_forward=true のとき per は予想PER）でも、GAAP PERの列には入らない"""
+def test_old_keys_are_not_read_any_more():
+    """旧キー読みは公開の連鎖の後（2026-11-20）に外した。旧キー（per・ps・per_adjusted・max_eps_per・per_is_forward）の
+    データでは、GAAP PERもFの判定も出ない（forwardに落とさない）"""
     from common.screening.dcf_validity_checker import check_f_eps_analyzer_delta as F
     assert F({"components": {"per": 28.0, "per_is_forward": True, "per_adjusted": 68.0}})[0] is False
-    assert F({"components": {"per": 14.0, "per_adjusted": 3.5}})[0] is True            # 旧データ（GAAP）
+    assert F({"components": {"per": 14.0, "per_adjusted": 3.5}})[0] is False
     assert F({"components": {"per_gaap_ttm_sec": 14.0, "per_adjusted_ttm": 3.5}})[0] is True
 
 
-def test_every_renamed_key_reader_has_old_key_fallback_marker():
+def test_screens_read_new_keys_only():
+    old = re.compile(r"(?:components|comps|tk\?\.components)\??\.(?:per|ps|per_adjusted|max_eps_per|per_is_forward)\b")
     for rel in ("docs/value-monitor/tanuki_score/index.html", "docs/value-monitor/tanuki_valuation/stock.html",
                 "docs/value-monitor/adjusted_eps_analyzer/stock.html", "docs/value-monitor/hypecore/detail.html"):
-        assert "旧キー読み" in _src(rel), rel
+        src = _src(rel)
+        assert not old.search(src), rel
+        assert "旧キー読み" not in src, rel
