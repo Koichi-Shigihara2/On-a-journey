@@ -2,6 +2,21 @@
 
 ---
 
+## 2026-11-20（完了）
+
+### ✅ [EXTRACTED-FILINGS-MISMATCH-1] `data/extracted_filings/` の6ファイル（APP・SOUN・ONDS）が別の会社の10-K・10-Q
+**完了（2026-11-20）:** `data/extracted_filings/`（26ファイル・`git rm`）をフォルダごと削除（案1）。削除の前に`git grep`で読み手0件を再確認。保存した記録の点検: 全98銘柄の`common/sec_data/data/{T}/`の全JSONの`accn`・`source_accn`（約9.3万件）、`bs_lines/`・`cf_lines/`のファイル名（各2,276件）、`normalized`・`ttm`・`docs/common/sec_data`の派生（約5.7万件×2）、`fact_overrides.json`（15件）が、その銘柄の`company_facts`・旧CIKの`company_facts_legacy`・`submissions`の申告の一覧にあるかを確かめ、**無いもの0件**（DELLの`company_facts_legacy_0000826083.json`は旧CIK〈Dell International L.L.C.〉の正当な申告で、旧CIKの一覧に含めて解消）。点検は`tests/test_sec_accn_belongs_to_ticker.py`に残した（今後の取り違えの守り。約7秒）。ONDSのCIKの履歴検索は上の点検で代わりになるため不要。案3（`cik_lookup.csv`にCIKを入れる時の照合）は別件にしていない（今のCIKは全98銘柄で一致、点検が守る）。調べは`docs/architecture/EXTRACTED_FILINGS_MISMATCH.md`
+**型・処置:** 型A（孤立ファイル）・型B（入力の取り違えを検査しない）。調べだけ済み・実装は不許可
+**優先度:** 高
+**分類:** 孤立データ / `data/extracted_filings/`・`config/cik_lookup.csv`の登録
+**登録日:** 2026-11-20
+**着手条件:** Koichiさんの判断（案1 フォルダ削除・案2 取り直し＋守り・案3 CIK登録時の照合）
+**発見:** SOUN 2025Q4の確認（FINDINGS 2026-11-20）。調べは`docs/architecture/EXTRACTED_FILINGS_MISMATCH.md`
+**要点:** 26ファイル中6ファイル・3銘柄が取り違え（APP=Alta Equipment・SOUN=Payoneer・ONDS=Purple Innovation）。原因は2026-04-01の一括取得が、当時`cik_lookup.csv`に入っていた誤ったCIKを表紙と照合せずに使ったため（CIKは2026-04-18に正しく直ったがファイルは作り直されず）。今の読み手は0件で、どの出力（TAILを含む）にも入っていない。今の`cik_lookup.csv`は全98銘柄で`company_facts`のCIKと一致
+
+
+---
+
 ## 2026-11-16（完了）
 
 ### ✅ [SECTOR-MASTER-ADOPT-1] 業種の決め方が8か所に分かれ、5か所は銘柄を手で書いた一覧。読み手をsector_master.jsonに寄せる
