@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 92.9,
-  "calculation_date": "2026-11-20T06:35:33+09:00",
+  "calculation_date": "2026-11-20T12:38:43+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -227,7 +227,7 @@
       "total_transient_amount": 11000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく一過性の金融費用であるため。"
+        "reasoning": "すべての項目の理由が「マクロ変動による一時的影響」と明記されており、事業運営上の恒常的要因ではなく一過性の外部要因によるものと判断される。"
       }
     },
     "action": "flagged",
@@ -366,11 +366,14 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 30.82199,
-    "per_is_forward": false,
-    "per_adjusted": 17.67,
+    "per_gaap_ttm_sec": 29.64940678629273,
+    "per_forward_yf": 11.798399,
+    "market_cap_sec": 14320663477.779388,
+    "market_cap_source": "sec",
+    "market_cap_yf_gap": -0.027250861832269102,
+    "per_adjusted_ttm": 17.67,
     "peg": 2.3742,
-    "ps": 3.3575351,
+    "ps_ttm_sec": 3.451593993198214,
     "ev_ebitda": 20.564,
     "ma200": 44.73114986419679,
     "forward_eps": 4.98966,
@@ -391,7 +394,7 @@
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": -41.7,
     "max_eps": 3.5854,
-    "max_eps_per": 16.1,
+    "per_max_eps_ttm": 16.1,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-09-30",
     "max_eps_shares": 257436000.0,

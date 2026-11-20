@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -42.1,
-  "calculation_date": "2026-11-20T06:44:44+09:00",
+  "calculation_date": "2026-11-20T12:47:22+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -239,7 +239,7 @@
       "total_transient_amount": 29000000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が一過性の事業再編費用と明記されており、リストラ関連の一時的費用であるため、事業運営上の一時的な問題と判断される。"
+        "reasoning": "すべてリストラ費用で理由が一過性の事業再編費用と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -380,11 +380,14 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per": 29.045258,
-    "per_is_forward": false,
-    "per_adjusted": 25.26,
+    "per_gaap_ttm_sec": 27.157604685238468,
+    "per_forward_yf": 22.001476,
+    "market_cap_sec": 290830788574.21875,
+    "market_cap_source": "sec",
+    "market_cap_yf_gap": 0.06629056572826109,
+    "per_adjusted_ttm": 25.26,
     "peg": 2.6227,
-    "ps": 7.1887927,
+    "ps_ttm_sec": 6.741870011920319,
     "ev_ebitda": 17.553,
     "ma200": 183.4961999511719,
     "forward_eps": 9.04303,
@@ -405,7 +408,7 @@
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 101.6,
     "max_eps": 6.868,
-    "max_eps_per": 27.1,
+    "per_max_eps_ttm": 27.1,
     "max_eps_reliability": "MED",
     "max_eps_ttm_end": "2026-09-30",
     "max_eps_shares": 1559250000.0,

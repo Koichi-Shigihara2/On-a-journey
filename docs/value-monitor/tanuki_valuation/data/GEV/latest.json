@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 4.7,
-  "calculation_date": "2026-11-20T06:44:22+09:00",
+  "calculation_date": "2026-11-20T12:46:56+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -239,7 +239,7 @@
       "total_transient_amount": 69000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動や一過性の事業再編による一時的費用と明記されており、構造的悪化を示す内容ではない。"
+        "reasoning": "すべての項目の理由が「マクロ変動による一時的影響」または「一過性の事業再編費用」と明記されており、事業運営上の一時的要因と判断される。"
       }
     },
     "action": "flagged",
@@ -330,19 +330,19 @@
     "bear": {
       "growth_rate": 0.082,
       "rice": 9.026,
-      "rice_per_ratio": 0.4281,
+      "rice_per_ratio": 0.4617,
       "rice_adj": 19.538
     },
     "base": {
       "growth_rate": 0.117,
       "rice": 12.879,
-      "rice_per_ratio": 0.6108,
+      "rice_per_ratio": 0.6588,
       "rice_adj": 27.878
     },
     "bull": {
       "growth_rate": 0.14,
       "rice": 15.411,
-      "rice_per_ratio": 0.7309,
+      "rice_per_ratio": 0.7883,
       "rice_adj": 33.358
     }
   },
@@ -398,11 +398,14 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.7566291326584976,
-    "per": 21.085062,
-    "per_is_forward": false,
-    "per_adjusted": 18.82,
+    "per_gaap_ttm_sec": 19.548905078275705,
+    "per_forward_yf": 30.813625,
+    "market_cap_sec": 202683047851.5625,
+    "market_cap_source": "sec",
+    "market_cap_yf_gap": 0.04878083228587715,
+    "per_adjusted_ttm": 18.82,
     "peg": 1.4826,
-    "ps": 4.8267508,
+    "ps_ttm_sec": 4.602144543756102,
     "ev_ebitda": 39.847,
     "ma200": 952.1093981933594,
     "forward_eps": 26.06412,
@@ -423,7 +426,7 @@
     "revenue_ttm_end": "2026-09-30",
     "analyst_vs_iv": 51.5,
     "max_eps": 38.1878,
-    "max_eps_per": 19.8,
+    "per_max_eps_ttm": 19.8,
     "max_eps_reliability": "MED",
     "max_eps_ttm_end": "2026-09-30",
     "max_eps_shares": 271500000.0,
