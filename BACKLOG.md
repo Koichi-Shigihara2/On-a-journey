@@ -2354,6 +2354,17 @@ TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・�
 
 ---
 
+### [EXTRACTED-FILINGS-MISMATCH-1] `data/extracted_filings/` の6ファイル（APP・SOUN・ONDS）が別の会社の10-K・10-Q
+**型・処置:** 型A（孤立ファイル）・型B（入力の取り違えを検査しない）。調べだけ済み・実装は不許可
+**優先度:** 高
+**分類:** 孤立データ / `data/extracted_filings/`・`config/cik_lookup.csv`の登録
+**登録日:** 2026-11-20
+**着手条件:** Koichiさんの判断（案1 フォルダ削除・案2 取り直し＋守り・案3 CIK登録時の照合）
+**発見:** SOUN 2025Q4の確認（FINDINGS 2026-11-20）。調べは`docs/architecture/EXTRACTED_FILINGS_MISMATCH.md`
+**要点:** 26ファイル中6ファイル・3銘柄が取り違え（APP=Alta Equipment・SOUN=Payoneer・ONDS=Purple Innovation）。原因は2026-04-01の一括取得が、当時`cik_lookup.csv`に入っていた誤ったCIKを表紙と照合せずに使ったため（CIKは2026-04-18に正しく直ったがファイルは作り直されず）。今の読み手は0件で、どの出力（TAILを含む）にも入っていない。今の`cik_lookup.csv`は全98銘柄で`company_facts`のCIKと一致
+
+---
+
 ### [MULTIPLES-ADOPT-1] 倍率の計算が9か所でほぼ今のスナップショットだけ、「PER」の名前で中身の違う値が3つ（15銘柄で50%以上の差）、TANUKIの画面のPSRが年次の売上、時価総額の作り方が2通り。今の読み手を倍率の部品に寄せ、名前を付け直す
 **型・処置:** 型B（同じ規則の二重実装）・型E（名前と中身のずれ）・根治策
 **優先度:** 中
