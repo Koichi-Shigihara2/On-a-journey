@@ -48,7 +48,7 @@
    - 期限: 2026-11-24
    - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`DILUTION-DEFINITION-UNIFY-1-1`）②`results.json`の`sbc_burden`のまま（旧キーが戻らない）③画面（stock.html・tanuki_score・stonks-silo）で希薄化の欄・SBC負担のラベルが出る。済んだら`[[DILUTION-DEFINITION-UNIFY-1]]`をBACKLOG_DONEへ移設する
 
-37. **DEFICIT-QUALITY-ADOPT-1 の次の定時の実行の確認**（公開は2026-11-19 手動。method_changeには登録しない〈表示だけ〉。公開直後の確認は合格済み: 対象24銘柄・`op_breakeven_*`・`structural_deficit_kind` 18銘柄・印0件）
+37. **DEFICIT-QUALITY-ADOPT-1 の次の定時の実行の確認**（公開は2026-11-19 手動。method_changeには登録しない〈表示だけ〉。公開直後の確認は合格済み: 対象24銘柄・`op_breakeven_*`・`structural_deficit_kind` 18銘柄・印0件。**2026-11-20朝（06:30 JSTの定時の後）の分は合格**: results.json 24銘柄・`gaap_breakeven_*`無し・latest.jsonに`breakeven_estimate`/`breakeven_reason`/`method_change`無し・`structural_deficit_kind` 18銘柄・SOUN 2026 PREDICTED・CRWV NO_TREND。画面の目視は未〈コードは`op_*`を先に読む〉。SOUNの2025Q4+42.6Mは条件付対価の公正価値の変動が原因に見える→FINDINGS 11-20）
    - 日時: 2026-11-20（金）06:30 JST ごろのStonks→TANUKIの定時の実行の後
    - 期限: 2026-11-25
    - 確認の手順: ①`results.json`が24銘柄のまま・`gaap_breakeven_*`が戻らない②`latest.json`に`breakeven_estimate`・`breakeven_reason`が戻らず、`method_change`が付かない③画面（stonks-silo・tanuki_score）の黒字化・構造的赤字の型の表示。SOUN（保有）は2026 PREDICTED〈R² 0.696、TTM 2026-09-30で成立。予行は「不明」だった〉、CRWV（保有）はNO_TREND。SITMの対象からの出入りは12月末以降（持続の規則）。済んだら`[[DEFICIT-QUALITY-ADOPT-1]]`をBACKLOG_DONEへ移設する
