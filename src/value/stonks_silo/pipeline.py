@@ -158,6 +158,8 @@ def run(tickers: list[str] | None = None) -> dict:
 
             result["valuation"] = {
                 "market_cap":       val["market_cap"],
+                "market_cap_source": val.get("market_cap_source"),   # sec=株価×部品の株数 / yf_fallback=株数が欠ける銘柄の代わり（MULTIPLES-ADOPT-1）
+                "market_cap_yf_gap": val.get("market_cap_yf_gap"),
                 "current_price":    val["current_price"],
                 "enterprise_value": val["enterprise_value"],
                 "total_debt":       val["total_debt"],

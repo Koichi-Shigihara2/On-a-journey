@@ -42,6 +42,13 @@ def _patch_market_data(monkeypatch, module, latest_price=None, attrs=None, has_m
     monkeypatch.setattr(module, "HAS_MARKET_DATA", has_market_data)
     monkeypatch.setattr(module, "_md_get_latest_price", lambda ticker: latest_price)
     monkeypatch.setattr(module, "_md_get_attributes", lambda ticker: attrs)
+    # [[MULTIPLES-ADOPT-1]]: 時価総額・EVは倍率の部品（common/multiples.py）の値。実ファイルは読まず、価格が無ければ全てNone
+    def _fake_current(ticker, price, yf_market_cap=None):
+        if not price:
+            return {"market_cap": None, "enterprise_value": None, "market_cap_source": None, "market_cap_yf_gap": None}
+        return {"market_cap": 1_000_000_000, "enterprise_value": 1_050_000_000, "market_cap_source": "sec",
+                "market_cap_yf_gap": None if yf_market_cap is None else yf_market_cap / 1_000_000_000 - 1}
+    monkeypatch.setattr("common.multiples.current_multiples", _fake_current)
 
 
 class TestFetchValuationNormalCase:
@@ -78,7 +85,7 @@ class TestFetchValuationNormalCase:
         result = vf.fetch_valuation("XYZ")
         assert set(result.keys()) == {
             "market_cap", "current_price", "enterprise_value", "total_debt",
-            "sector", "industry", "fetched_at", "error",
+            "sector", "industry", "fetched_at", "error", "market_cap_source", "market_cap_yf_gap",
         }
 
 
@@ -93,7 +100,8 @@ class TestFetchValuationNeutralDefaults:
         )
         result = vf.fetch_valuation("XYZ")
         assert result["current_price"] is None
-        assert result["market_cap"] == 1.0
+        assert result["market_cap"] is None      # 株価が無ければ部品の時価総額は出さない（yfinanceの値で埋めない）
+        assert result["total_debt"] == 3.0
         assert result["error"] is None
 
     def test_missing_attributes_falls_back_to_none_for_all_attribute_fields(self, vf, monkeypatch):
@@ -107,8 +115,8 @@ class TestFetchValuationNeutralDefaults:
             latest_price={"date": "2026-08-10", "close": 100.0}, attrs=None,
         )
         result = vf.fetch_valuation("XYZ")
-        assert result["market_cap"] is None
-        assert result["enterprise_value"] is None
+        # 時価総額・EVは倍率の部品から（yfinanceのattributesが無くても株価があれば出る。MULTIPLES-ADOPT-1）
+        assert result["market_cap"] == 1_000_000_000 and result["market_cap_yf_gap"] is None
         assert result["total_debt"] is None
         assert result["current_price"] == 100.0
         assert result["sector"] == "default"
