@@ -1,5 +1,7 @@
 # On-a-journey — 改善バックログ（全システム）
 
+最終更新: 2026-11-22（極端な相場で見つかった問題を登録: [[PORTFOLIO-PRICE-WEEKLY-STALE-1]]〈高〉・[[HYPECORE-MARKET-WIDE-DRAWDOWN-1]]・[[MACROPULSE-DATA-LAG-AND-REGIME-DRIFT-1]]。[[MARKETPULSE-REVIEW-EPIC-1]]の3-aに影響範囲を追記。コード変更なし）
+
 最終更新: 2026-11-22（[[MARKETPULSE-REVIEW-EPIC-1]]を新規登録〈MARKET PULSEの点検結果、優先度1〜3の子項目〉。コード変更なし）
 
 最終更新: 2026-11-22（[[UNIVERSE-TWO-TIER-1]]を新規登録〈登録の範囲を深い段と浅い段の2段に分ける、Koichi決定〉。[[EVENT-RISK-UNMODELED-1]]にガバナンスの印を追記。コード変更なし）
@@ -1871,6 +1873,30 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 ## 優先度：高
 
+### [PORTFOLIO-PRICE-WEEKLY-STALE-1] ポートフォリオの株価が週1回しか更新されず、損益が止まる
+**型・処置:** 型A（入力の時点のずれ）・不具合
+**優先度:** 高
+**分類:** Portfolio / `src/portfolio/snapshot.py`・`history.json`
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6の極端な相場で、画面の数字を実際の終値・外部の情報と突き合わせた）
+**着手条件:** 月曜の確認の行列（手順34〜37・39 → Dailyの取り消しの原因 → 手順33 → [[TANUKI-SHARES-SINGLE-SOURCE-1]]の公開）の完了後、最初に着手
+
+#### 内容
+- `src/portfolio/snapshot.py` は株価を HypeCore の出力（`docs/value-monitor/hypecore/data/*_poc.json` の `monthly[-1].price`）から取っている。HypeCore は週1回（日曜の SEC Data Update の連鎖＋月曜04:00 UTCの安全網）で、最後の実行は 2026-11-19 19:55 JST（11/18の終値）
+- スナップショットは毎日作られるが、11/19〜11/22 の4日分が同じ株価で、損益は +37.42% のまま
+- 表示と実際（11/20終値、`common/market_data/daily`）：NVDA 150.96→125.53、SOFI 14.11→12.48、CRWV 47.83→39.51
+- 株価の日付を保存しておらず、古さが画面で分からない。ドル円は Market Pulse の値（日中の暫定値）で、取れなければ 150.0 を黙って使う
+- 直す：株価の取得元を `common/market_data/daily`（日次の終値）に変える／株価の日付を保存・表示する／ドル円の既定値 150.0 をやめて欠損を明示する
+- 影響範囲（着手時に洗い出す）：`history.json`（過去分の訂正の要否）、ポートフォリオの画面、HypeCore の出力を株価の元にしている他の読み手の有無
+
+#### 投資判断への影響
+今あり（保有の損益が実際より良く見える）
+
+#### 規模の見込み
+小〜中
+
+---
+
 （[[MACRODATA-FRED-IMPORT-PATH-1]]は2026-11-01、次回の確認手順16の確認〈Macro Data Update 成功25件・System Health ✅・MACRO PULSEとMarket PulseのFREDの日付〉で完了、BACKLOG_DONE.md「2026-11-01（完了）」参照）
 
 ---
@@ -2975,6 +3001,7 @@ DOCNだけ理論株価に効く（約+2%、判定は境に近い）。COHR・SPI
 **3-a データファイル `market_data.json` が12.9MBで、画面を開くたびに全部読み込む（1日約53KB増える）**
 - うち2.6MBは `comments_history`（毎日、直近12件の要約を丸ごと複製）、1.2MBは `sector_rotation` の軌跡（毎日8週分を複製）
 - 直す：最新用と履歴用の分割、重複の削除（影響：画面の読み込み、Tech Pulseの履歴読込、`_load_*` 関数群）
+- 追記（2026-11-22）: TANUKI の `_load_live_fg`（`pipeline.py`）が、F&G の1つの値のために `market_data.json`（12.9MB）を丸ごと読んでいる（分割の影響範囲に加える）
 
 **3-b 軽微**
 - Tech Pulse の `components.fg_score`（feargreedchart.com、18.0）が CNN（9.6）と食い違って表示（計算には不使用）
@@ -2993,6 +3020,56 @@ NH-NL、TAKE PROFIT（未発動の日は画面で隠す）、Tech Pulseの計算
 
 #### 規模の見込み
 大（子項目が多い。着手時に影響の洗い出しから）
+
+---
+
+### [HYPECORE-MARKET-WIDE-DRAWDOWN-1] 市場全体の急落で、HypeCore の stage と TANUKI SCORE が売り寄りに振れる
+**型・処置:** 型A（定義のずれ）・調査から
+**優先度:** 中
+**分類:** HypeCore・TANUKI SCORE / `src/value/hypecore/hypecore.py`・`src/value/tanuki_valuation/pipeline.py`
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6の極端な相場で、画面の数字を実際の終値・外部の情報と突き合わせた）
+**着手条件:** 上の行列の後
+**関連:** [[FEAR-REGIME-CANDIDATE-SCREEN-1]]、[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]
+
+#### 内容
+- 11/21 の TANUKI SCORE は全98銘柄中 TRIM 26・BUY 19（F&G 9.6 の日）
+- TRIM は「funda≥50、upside<−30%、HypeCore の stage≥3」（`pipeline.py`）。stage は株価の絶対値（ピーク比・MA200乖離・RSI・3か月の値動き）で決まり（`hypecore.py` `determine_stage`、S4の条件C・D）、市場全体の下落と個別の期待剥落を区別しない。下落で stage 2→4 に移った割高な銘柄が機械的に TRIM になる（例：CDNS・TDY が HOLD→TRIM）。SELL（tech）も同じ（FCX が HOLD→SELL）
+- TANUKI SCORE は毎日の株価と、週1回の HypeCore の stage（11/21の判定は11/18終値ベース）を組み合わせている
+- 直す案：stage の判定に市場（SPY または業種ETF）と比べた相対の下落を使う／市場全体の急落の局面（VIX・F&Gの帯）では TRIM・SELL（tech）に注記または保留
+- 軽微：`_calc_timing` は F&G<30 で一律+40（9.6でも29でも同じ）
+- 影響範囲：TANUKI SCORE、score_history、Market Pulse の監視銘柄の表、TAIL
+- 点検して問題なし（記録）: TANUKI の本体の IV は割引率10%・Rf 4.3%の固定で、10年債の1日の変動（−14bp）は IV に入らない／STONKS SILO は11/20終値で更新済み／TANUKI TAIL は株価で警告を出す作りではない
+
+#### 投資判断への影響
+今あり（市場全体の急落で売りの判定が増える）
+
+#### 規模の見込み
+中
+
+---
+
+### [MACROPULSE-DATA-LAG-AND-REGIME-DRIFT-1] MACRO PULSE の S&P500 の1日遅れと、FRB の局面の判定の揺れ
+**型・処置:** 型A（入力の時点のずれ）・不具合
+**優先度:** 中
+**分類:** MACRO PULSE / `05_liquidity.csv`・`05_fed_context.csv`
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6の極端な相場で、画面の数字を実際の終値・外部の情報と突き合わせた）
+**着手条件:** 上の行列の後
+**関連:** [[BANK-ACL-MACRO-SIGNAL-1]]
+
+#### 内容
+- `05_liquidity.csv` の S&P500 が1日遅れ：11/20 の行が 7,175.83（＝11/19終値）、11/19 の行が 7,323.63（＝11/18終値）。`sp500_5d_pct` も1日古い。土曜（11/21）の行が11/20の行の複製
+- `05_fed_context.csv`：同じ FOMC 声明（10/28）を、10/28 の記録は BALANCED（次の一手へのシグナルなし）、11/07 の記録は TIGHTENING（利上げ方向を示唆）と判定。入力が同じなのに Grok の再分析で局面が変わる。11/07 の記録は 11/22 に更新されたが `record_date` は 11/07 のまま
+- 軽微：AI の文章が月次の指標（フィラデルフィア連銀製造業指数 −14.6）を「週差」と書く
+- 直す案：S&P500 の取得日を終値日に揃え、日付を保存／同じ FOMC 声明の判定は初回の結果に固定する（再分析しない、または再分析で変わったら記録して知らせる）
+- 点検して問題なし（記録）: MACRO PULSE の景気スコア（27→33、踊り場）は HY スプレッド+0.32 とフィラデルフィア連銀 −14.6 で説明がつく
+
+#### 投資判断への影響
+あり（S&P500の水準・FRBの局面の読み違い）
+
+#### 規模の見込み
+小〜中
 
 ---
 
