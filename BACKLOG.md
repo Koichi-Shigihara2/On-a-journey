@@ -1,5 +1,7 @@
 # On-a-journey — 改善バックログ（全システム）
 
+最終更新: 2026-11-22（チャットの買いの検討で見つかった欠点と方針を登録: [[TANUKI-GUIDANCE-REVISION-BLIND-1]]・[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]・[[EXPECTATIONS-INVESTING-EPIC-1]]・[[FEAR-REGIME-CANDIDATE-SCREEN-1]]・[[EVENT-RISK-UNMODELED-1]]・[[EARNINGS-REFLECTION-LAG-1]]・[[BANK-ACL-MACRO-SIGNAL-1]]・[[UNIVERSE-REBALANCE-2026Q4-1]]。あわせて[[STONKS-DEFICIT-REALITY-EPIC-1]]の着手条件と②の置き場所を修正。コード変更なし）
+
 最終更新: 2026-11-22（[[STONKS-DEFICIT-REALITY-EPIC-1]]の修正: ②を[[DEFICIT-QUALITY-ADOPT-1]]からEPICの中へ移し、同項目を手順37で閉じられる状態に戻した。着手条件を公開・確認の行列〈手順34〜37・39 → Dailyの取り消しの原因 → 手順33 → TANUKI-SHARESの公開〉の後に変更。コード変更なし）
 
 最終更新: 2026-11-22（[[STONKS-DEFICIT-REALITY-EPIC-1]]を新規登録〈①資金の持ちの流出を四半期TTMに・②黒字化予測の評価損益除外は[[DEFICIT-QUALITY-ADOPT-1]]へ追記・③MD&A本文の保存・④開示本文のリスクの印〉。発見は保有のSOUNの10-Q/8-Kの確認。コード変更なし）
@@ -2077,7 +2079,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 **優先度:** 中
 **分類:** STONKS SILO / `src/value/stonks_silo/analyzer.py`・`common/profitability.py`・`src/tail/sec_items_fetcher.py`・TANUKIの`computed_runway_months`
 **登録日:** 2026-11-22
-**着手条件:** 公開・確認の行列（CLAUDE_CODE_START.mdの手順34〜37・39 → Dailyの取り消しの原因 → 手順33 → [[TANUKI-SHARES-SINGLE-SOURCE-1]]の公開とその次の定時の確認）がすべて済んだ後。①②は値を変える（results.json・latest.json）ため、それまで読み取りの調査も含めて始めない。③④は値を変えないが、順番どおり①②の後
+**着手条件:** 公開と確認の行列（手順34〜37・39 → Dailyの取り消しの原因 → 手順33 → [[TANUKI-SHARES-SINGLE-SOURCE-1]]の公開とその次の定時の確認）の後、かつ [[UNIVERSE-REBALANCE-2026Q4-1]] の削除の後。①②は値（results.json・latest.json）を変えるので、それまで読み取りの調査も始めない
 **発見:** 2026-11-22 チャット（STONKSの登録銘柄から早く黒字化しそうな銘柄を選ぶ→SOUNのFCF悪化の理由→2026/Q3の10-Qを読む→倒産リスク、の流れで判明）
 **経緯:** STONKS SILOとprofitability.jsonはSOUNを「資金の持ち24か月」「約0.72四半期後に黒字化（R² 0.696）」としていた。10-Q（0001840856-26-000028、2026-11-09提出）と8-K（2026-11-05）で確認した実態は、営業CFのTTMが−109.5M→−117.9Mで4四半期続けて悪化（−21.9→−26.3→−33.7→−36.0）、現金207.6Mで資金の持ちは約18〜19か月、営業利益は条件付き対価（買収のアーンアウト）の評価損益で大きく振れる（2025/Q1 +128.1M、9か月2026で評価益67.1M）。会社の目標は調整後EBITDAの黒字化を2027年後半、人員の27%削減（現金の費用16〜19M）、株式売出し枠の残り300M、内部統制のmaterial weaknessあり
 
@@ -2109,6 +2111,153 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 
 #### 規模の見込み
 ①小〜中、②中（DEFICIT-QUALITY-ADOPT-1に含む）、③中、④中〜大
+
+---
+
+### [TANUKI-GUIDANCE-REVISION-BLIND-1] 会社が業績見通しを下げてもTANUKIのIVに反映されず、IVが動かずに株価だけ下がると割安に見える
+**型・処置:** 型A（入力の時点のずれ）・調査から
+**優先度:** 中
+**分類:** TANUKI VALUATION / 判定・HypeCore
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**着手条件:** 上の行列の後
+
+#### 内容
+- INTU: 11/19に今年度の売上の伸びの見通しを9〜10%→8〜9%、Credit Karmaを11〜13%→3〜7%に下げたが、TANUKIはBUY・割安度+144%・IVの30日の変化−1%のまま。NOWも契約残高（cRPO）の伸びの見通し18.5%（2年超で最も遅い）・GAAP営業利益率17%→9.5%がIVに出ない
+- IVは過去の決算数字から計算するため、見通しの変更は次の決算書類まで入らない
+- 決めること（Koichi）: 見通しの変更を (a) 印として出すだけ (b) 判定に入れる。取り方（決算発表の文書・外部データ）
+
+#### 投資判断への影響
+今あり（見通しを下げて売られた銘柄が割安に見える）
+
+#### 規模の見込み
+中〜大
+
+---
+
+### [TANUKI-UPSIDE-MAGNITUDE-INFLATED-1] 割安度の絶対値が大きく出すぎる（NVDA +484%、BUY 19銘柄の多くが+100%前後）
+**型・処置:** 調査
+**優先度:** 中
+**分類:** TANUKI VALUATION / DCFの前提
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**着手条件:** 上の行列の後
+
+#### 内容
+- NVDAはIV 734ドル・株価125.5ドル。PAYS +665%・FICO +97%はIVが30日で2倍超（計算方法の変更による）
+- 原因の切り分け（成長率の上限0.5・phase1の年数・ターミナル・割引率）から。推移（自分の過去との比較）は判断に使えている
+
+#### 投資判断への影響
+今あり（絶対値をそのまま信じられない）
+
+#### 規模の見込み
+中
+
+---
+
+### [EXPECTATIONS-INVESTING-EPIC-1] 市場が織り込んだ期待の逆算・コンセンサスとの差・弱気シナリオがない
+**型・処置:** 新機能・設計から
+**優先度:** 中
+**分類:** TANUKI VALUATION・HypeCore・TANUKI TAIL
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**着手条件:** 上の行列の後
+
+#### 内容
+- ① 期待の逆算: `required_growth_rf`は割引率が安全資産の金利のため全銘柄が大きなマイナス（NVDA −26%・INTU −38%・NOW −30%）で、銘柄の間で差が出ない。判定にも使っていない。成長率だけで、利益率・投資効率・成長の続く年数に分解していない
+- ② コンセンサスとの差: アナリスト予想・会社見通しを持っていない（[[TANUKI-GUIDANCE-REVISION-BLIND-1]]と関係）
+- ③ 弱気シナリオ: 年次報告書からの組み立てがない（TAILはリスク要因・訴訟・MD&Aの冒頭2,000文字だけ。[[STONKS-DEFICIT-REALITY-EPIC-1]]の③と関係）
+- AIでの組み立ては参考表示にとどめ、判定・IVに入れない（FCF-OUTLIER-QUAL-1と同じ原則）
+- 3つのサブシステムにかかわるので、全体の設計から始める
+
+#### 投資判断への影響
+今あり（良い事業と良い投資を区別できない）
+
+#### 規模の見込み
+大
+
+---
+
+### [FEAR-REGIME-CANDIDATE-SCREEN-1] F&Gが10未満でも候補が少ない。絶対的な割安さだけで判定するため、質の高い成長株はいつも割高と出る
+**型・処置:** 新機能
+**優先度:** 中
+**分類:** TANUKI SCORE / Market Pulseとの連携
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**着手条件:** 上の行列の後
+
+#### 内容
+- 2026-11-21（F&G 9.6）のBUYは19銘柄で、確認するとソフトウェアの多くは見通しの悪化による下落だった
+- 試算（チャット側、手元）: 割安度が5月以降の自分の推移の上位10% ＋ IVの30日の変化±10%以内 ＋ ファンダ70以上 ＋ 希薄化high未満 → 11銘柄（VRT・RMBS・SCCO・KLAC・TER・ALAB・NET・NVDA・AMAT・ADBE・INTU）。TRIMの半導体装置・AIインフラが自分の過去で最も安い水準に出た
+- 方針の「乖離率の推移を重視」に沿う。F&Gが閾値を下回ったときに出す
+- 候補には外部の材料の確認が要る（INTUは確認で見送り）ので、[[TANUKI-GUIDANCE-REVISION-BLIND-1]]と組で考える
+
+#### 投資判断への影響
+あり（Extreme Fearのときの候補の数と質）
+
+#### 規模の見込み
+中
+
+---
+
+### [EVENT-RISK-UNMODELED-1] 経営体制・訴訟・規制の出来事を評価していない
+**型・処置:** 調査
+**優先度:** 低
+**分類:** TANUKI TAIL・HypeCore
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**着手条件:** 上の行列の後
+
+#### 内容
+- NVDA: 11/12のCEO辞任、集団訴訟、11/19からの輸出規則（東南アジア5か国・遠隔利用の許可）がどこにも出ない
+- 8-Kの項目（役員の異動・重要な訴訟など）を印として出せるかを調べる。[[EXPECTATIONS-INVESTING-EPIC-1]]の③と取り方を共通にする
+
+#### 投資判断への影響
+あり
+
+#### 規模の見込み
+中
+
+---
+
+### [EARNINGS-REFLECTION-LAG-1] 最新の決算の反映が遅い（NVDA 11/17の決算が、11/21朝の時点で7月末までの数字）
+**型・処置:** 調査
+**優先度:** 低
+**分類:** SEC_Data_Update の連鎖
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**着手条件:** 上の行列の後
+
+#### 内容
+- 10-Q提出から反映までの経路（週1回の日曜の更新か、取得の遅れか）を読み取りで確かめ、決算の直後に間に合わせる必要があるかを決める
+
+#### 投資判断への影響
+あり（決算直後の判断に古い数字を使う）
+
+#### 規模の見込み
+小〜中
+
+---
+
+### [BANK-ACL-MACRO-SIGNAL-1] 銀行の貸倒引当金の増減から、銀行が6か月〜1年先の景気をどう見ているかを読み、MACRO PULSEに還元する
+**型・処置:** 新機能
+**優先度:** 中
+**分類:** 銘柄の登録・Layer3・MACRO PULSE
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**着手条件:** 上の行列の後
+
+#### 内容
+- 2026-10-19の希望（基盤の整備の後）。登録: JPM・BAC・WFC・C・USB・PNC（[[UNIVERSE-REBALANCE-2026Q4-1]]）
+- Layer3に貸倒引当金の残高・繰入額・正味貸倒額を追加（XBRLのタグは登録前に確認）
+- MACRO PULSEの整理し直し（3か月後の景気後退を予測する画面）の先行指標に組み込む
+- 株主資本DCF（TANUKI-FIN-2）とは独立。融資・預金型の金融（SOFI・銀行・HOOD・AFRM等）はTANUKI-FIN-2までTANUKIの判定は参考外とし、ROTCE・P/TBV・正味貸倒率で見る。決済・手数料型（V・MA・PYPL・FLYW・PAYS）はFCF型DCFのまま
+
+#### 投資判断への影響
+あり（SOFIの比較・景気の先行指標）
+
+#### 規模の見込み
+中〜大
 
 ---
 
@@ -2714,6 +2863,32 @@ DOCNだけ理論株価に効く（約+2%、判定は境に近い）。COHR・SPI
 ---
 
 （[[LAYER3-LATEST-FILING-TAG-DROP-1]]は2026-10-14、実装・push済みで完了、BACKLOG_DONE.md「2026-10-14（完了）」参照）
+
+---
+
+### [UNIVERSE-REBALANCE-2026Q4-1] 登録銘柄の入れ替え（削除→データの修正→登録）
+**型・処置:** 運用
+**優先度:** 中
+**分類:** 全サブシステム（CLAUDE_CODE_START.md Step 8.5）
+**登録日:** 2026-11-22
+**着手条件:** 上の行列の後。削除は[[STONKS-DEFICIT-REALITY-EPIC-1]]の①より前
+
+#### 内容
+- 削除（Koichi決定）: KULR・QBTS・SPIR・BBAI・RDW・ONDS（投資対象の水準に達していない）、RXRX・FCX・SCCO・XOM（機能が構造的に働かない）、PEP・PM・MO・VZ（守り株のうち役割が重なる。KO・JNJ・CAKE・WMTは景気後退期の指標として残す）
+- データを直して残す: HON（分社。[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]と一緒に）、ASTS（profitabilityのTTMの期末が2021-03-31で止まっている。複数の種類の株は[[TANUKI-SHARES-SINGLE-SOURCE-1]]の決定に合わせる）
+- 登録の順: 銀行（[[BANK-ACL-MACRO-SIGNAL-1]]）とAI投資の確認用 → 景気指標を兼ねる銘柄 → その他。数銘柄ずつ、定時の実行の合間に
+  - AI投資の確認用: ORCL・AVGO・ANET・MU・SMCI・CRDO・PWR・ETN・MPWR・BE・FIX・MTZ・POWL・NVT・CIEN・WDC・SMTC・APLD
+  - 景気指標を兼ねる: ADP・LOW・WYNN
+  - 質の高い成長株: CRWD・PANW・SNOW・MDB・WDAY・TEAM・HUBS・TTD・NFLX・UBER・DASH・ABNB・DUOL・MELI・VEEV・FIG・PATH
+  - 金融: MA・AXP・PYPL・HOOD・COIN・AFRM・UPST・IBKR・SCHW・CHYM・HNGE・OSCR
+  - ヘルスケア・消費・防衛・電力: ISRG・VRTX・REGN・UNH・TMO・DXCM・HIMS・COST・MCD・CMG・NKE・LULU・RTX・NOC・GD・KTOS・NEE・NRG・BWXT・GE（分社後の期間の扱いを先に決める）
+  - STONKS向け: OKLO・SMR・ACHR・TEM・RGTI・LUNR・RIVN・AUR・SYM・SERV・OUST
+  - 最初の決算書類の後: ANT・SPCX・AMBQ
+  - 20-Fの可能性があり要確認: SHOP・NBIS・ARM・CLS・MNDY・GLBE・ONON・BLSH
+- 登録しない: TSM・ASML・NVO・SPOT・NU・PONY・RZLV・GRRR・POET（20-F等）、EDIT（創薬）、SHEL（資源）、VWAV・ASPI・BLND
+
+#### 規模の見込み
+大（銘柄数が多い。1回ごとに全銘柄の検証）
 
 ---
 
