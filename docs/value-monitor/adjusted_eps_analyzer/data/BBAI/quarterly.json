@@ -1,6 +1,6 @@
 {
   "ticker": "BBAI",
-  "last_updated": "2026-11-15T18:10:06.327881",
+  "last_updated": "2026-11-22T18:53:19.822709",
   "quarters": [
     {
       "gaap_eps": -0.19123334577909445,
@@ -110,36 +110,36 @@
       },
       "ai_analysis": {
         "health": "調整大",
-        "comment": "のれん減損76M超という大規模な非現金一過性項目がGAAP EPSを大幅に悪化させており(-0.191→-0.018)、市場がGAAPベースで評価する場合、BBAIの事業実力(調整後収益性)が過小評価されるリスクが高い。ただしSBCや無形資産償却は恒常的に発生するコストのため、調整の質は中程度で過大調整の懸念もある。投資家はコアオペレーションの持続可能性を注視し、一過性項目除去後の実力を見極めるべき。",
+        "comment": "調整項目の大部分をのれん減損(非現金・一過性)と無形資産償却・SBC(恒常的)が占めており、GAAP EPS(-0.19)が調整後(-0.018)に大幅改善。市場がGAAP EPSで判断する場合、非現金項目により企業の実力(コア収益力)が過小評価される可能性が高い。ただしSBCや償却は恒常コストのため調整後EPSが過大評価されるリスクもあり、買収戦略の持続可能性に注意が必要。投資家はキャッシュフローと調整項目の再発リスクを注視し、過小評価の機会を探るべき。",
         "sources": [
           {
-            "item": "goodwill_impairment",
-            "snippet": "非現金減損としてadd_backされており、一過性ののれん減損費用である。",
-            "confidence": 0.8
-          },
-          {
             "item": "sbc",
-            "snippet": "株式報酬費用は非現金だが、テック企業では恒常的に発生するコストである。",
+            "snippet": "非現金費用だが恒常的な株式報酬コスト",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は定期的に発生する非現金費用。",
-            "confidence": 0.25
+            "snippet": "買収関連無形資産の償却で毎期発生する恒常的費用",
+            "confidence": 0.2
           },
           {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コストとしてadd_back。",
+            "snippet": "一過性の買収統合コスト",
             "confidence": 0.8
           },
           {
+            "item": "goodwill_impairment",
+            "snippet": "非現金減損、一過性とみなされるが大規模",
+            "confidence": 0.75
+          },
+          {
             "item": "restructuring",
-            "snippet": "一過性の事業再編費用。",
+            "snippet": "一過性の事業再編費用",
             "confidence": 0.8
           },
           {
             "item": "derivative_fv_change",
-            "snippet": "非現金・非経常のデリバティブ時価評価変動。",
+            "snippet": "非現金・非経常のデリバティブ公正価値変動",
             "confidence": 0.65
           }
         ]

@@ -1,6 +1,6 @@
 {
   "ticker": "SNPS",
-  "last_updated": "2026-11-15T18:14:55.479819",
+  "last_updated": "2026-11-22T18:57:41.297558",
   "quarters": [
     {
       "gaap_eps": 2.837993126004191,
@@ -88,31 +88,31 @@
       "pretax_income": 684016000.0,
       "ai_analysis": {
         "health": "調整大",
-        "comment": "調整項目のうちSBCと無形資産償却が大半を占め、調整後EPSがGAAPの約1.58倍に跳ね上がっている。市場がGAAP EPSで判断する場合、非現金・買収関連費用によりSNPSの本業の実力（キャッシュ生成力）が過小評価される可能性が高い。ただしSBCや償却は恒常的コストであり一過性調整として扱うのは限界があるため、過大評価リスクも伴う。投資家は調整の持続可能性とフリーキャッシュフローを注視し、買収依存のビジネスモデルを考慮すべき。",
+        "comment": "調整の大部分を占めるsbc（株式報酬）とamortization_intangibles（無形資産償却）は恒常的なコストであり、毎期発生する性質が強い一方、ma_integration、restructuring、loan_loss_provision_abnormalは一過性項目です。GAAP EPS 2.84に対しAdjusted EPS 4.49と大きな開きがあるため、市場がGAAPベースで評価する場合、企業の非現金費用を控除した実力（キャッシュ生成力）が過小評価される可能性があります。ただし恒常的項目のadd_backが大きいため過大評価リスクもあり、投資家はSBCの希薄化影響や買収依存の償却費の持続可能性を慎重に検証すべきです。全体として過小評価リスクがやや優勢ですが調整の質に注意が必要です。",
         "sources": [
           {
             "item": "sbc",
-            "snippet": "非現金費用として毎期発生する株式報酬費用（恒常的コスト）",
+            "snippet": "非現金費用だが恒常的に発生する株式報酬費用であり、毎期の事業運営コストとして考慮すべき",
             "confidence": 0.2
           },
           {
             "item": "amortization_intangibles",
-            "snippet": "買収関連無形資産の償却は継続的に発生する非現金費用",
+            "snippet": "買収関連無形資産の償却で、過去の買収が継続的に影響する恒常的項目",
             "confidence": 0.2
           },
           {
             "item": "ma_integration",
-            "snippet": "一過性の買収統合コスト（M&A関連）",
+            "snippet": "一過性の買収統合コストであり、M&A完了後に終了する可能性が高い",
             "confidence": 0.8
           },
           {
             "item": "loan_loss_provision_abnormal",
-            "snippet": "マクロ変動による一時的な貸倒引当金繰入（異常変動分）",
-            "confidence": 0.65
+            "snippet": "マクロ変動による異常変動分として一時的な影響と位置づけられる",
+            "confidence": 0.7
           },
           {
             "item": "restructuring",
-            "snippet": "一過性の事業再編・リストラ費用",
+            "snippet": "一過性の事業再編費用で、リストラ完了後は発生しなくなる",
             "confidence": 0.8
           }
         ]

@@ -1,15 +1,15 @@
 {
   "ticker": "QBTS",
-  "last_updated": "2026-11-15T18:12:01.216610",
+  "last_updated": "2026-11-22T18:55:01.418564",
   "years": [
     {
       "year": "2025",
       "filing_date": "2025-12-31",
       "gaap_net_income": -355062000.0,
-      "adjusted_net_income": -88610940.0,
+      "adjusted_net_income": -61676000.0,
       "diluted_shares_used": 313029005.75,
       "gaap_eps": -1.134278272868967,
-      "adjusted_eps": -0.28307581205675536,
+      "adjusted_eps": -0.19702966455848955,
       "adjustments": [
         {
           "item_id": "sbc",
@@ -27,14 +27,14 @@
         {
           "item_id": "amortization_intangibles",
           "item_name": "無形資産償却費",
-          "amount": 160000.0,
+          "amount": 100000,
           "unit": "USD",
           "direction": "add_back",
           "pre_tax": true,
           "reason": "買収関連無形資産の償却",
           "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
           "category": "買収・統合関連",
-          "net_amount": 160000.0,
+          "net_amount": 100000.0,
           "tax_rate_applied": 0.0
         },
         {
@@ -60,8 +60,21 @@
           "reason": "非現金費用",
           "extracted_from": "us-gaap:ShareBasedCompensation",
           "category": "株式報酬関連",
-          "net_amount": 5099450.0,
-          "tax_rate_applied": 0.21
+          "net_amount": 6455000.0,
+          "tax_rate_applied": 0.0
+        },
+        {
+          "item_id": "amortization_intangibles",
+          "item_name": "無形資産償却費",
+          "amount": 49000,
+          "unit": "USD",
+          "direction": "add_back",
+          "pre_tax": true,
+          "reason": "買収関連無形資産の償却",
+          "extracted_from": "us-gaap:AmortizationOfIntangibleAssets",
+          "category": "買収・統合関連",
+          "net_amount": 49000.0,
+          "tax_rate_applied": 0.0
         },
         {
           "item_id": "warrant_fv_change",
@@ -73,8 +86,8 @@
           "reason": "非現金・非経常のワラント時価評価変動",
           "extracted_from": "us-gaap:FairValueAdjustmentOfWarrants",
           "category": "公正価値変動関連",
-          "net_amount": 96268610.0,
-          "tax_rate_applied": 0.21
+          "net_amount": 121859000.0,
+          "tax_rate_applied": 0.0
         },
         {
           "item_id": "sbc",
@@ -142,7 +155,7 @@
           "tax_rate_applied": 0.0
         }
       ],
-      "net_adjustment_total": 266451060.0
+      "net_adjustment_total": 293386000.0
     },
     {
       "year": "2024",
