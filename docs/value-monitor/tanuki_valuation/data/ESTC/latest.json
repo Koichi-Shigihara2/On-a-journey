@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 106.1,
-  "calculation_date": "2026-11-23T03:56:28+09:00",
+  "calculation_date": "2026-11-23T04:14:38+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -194,6 +194,12 @@
       "source": "adjusted_eps_analyzer",
       "items": [
         {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
+          "amount": 2385000,
+          "reason": "一過性の事業再編費用"
+        },
+        {
           "category": "金融関連",
           "item_name": "貸倒引当金繰入（異常変動分）",
           "amount": -1495000,
@@ -218,14 +224,14 @@
           "reason": "マクロ変動による一時的影響"
         }
       ],
-      "total_transient_amount": 22485000,
+      "total_transient_amount": 24870000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による貸倒引当金と一過性のリストラ費用であり、いずれも一時的な性質を示す"
+        "reasoning": "すべての項目の理由が「一過性の事業再編費用」または「マクロ変動による一時的影響」と明記されており、構造的悪化を示す内容ではない。"
       }
     },
     "action": "flagged",
-    "note": "TTM 2026-10-31 FCF($367M)が5年平均($187M)から96%乖離。一過性費用$22Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
+    "note": "TTM 2026-10-31 FCF($367M)が5年平均($187M)から96%乖離。一過性費用$25Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-10-31",
@@ -385,7 +391,7 @@
     "market_cap_sec": 8111606303.366661,
     "market_cap_source": "sec",
     "market_cap_yf_gap": 0.15170193850786484,
-    "per_adjusted_ttm": 36.79,
+    "per_adjusted_ttm": 29.26,
     "peg": 1.37,
     "ps_ttm_sec": 4.327062364234849,
     "ev_ebitda": null,
@@ -407,12 +413,12 @@
     "revenue_ttm": 1874622000,
     "revenue_ttm_end": "2026-10-31",
     "analyst_vs_iv": -23.4,
-    "max_eps": 6.9416,
+    "max_eps": 6.8994,
     "per_max_eps_ttm": 10.8,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-10-31",
-    "max_eps_shares": 105980172,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 106628774.5,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",

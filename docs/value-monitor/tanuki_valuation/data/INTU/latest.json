@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 148.0,
-  "calculation_date": "2026-11-23T04:02:25+09:00",
+  "calculation_date": "2026-11-23T04:18:46+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -208,18 +208,24 @@
         {
           "category": "リストラ・事業再編関連",
           "item_name": "リストラ費用",
+          "amount": 11000000,
+          "reason": "一過性の事業再編費用"
+        },
+        {
+          "category": "リストラ・事業再編関連",
+          "item_name": "リストラ費用",
           "amount": 293000000,
           "reason": "一過性の事業再編費用"
         }
       ],
-      "total_transient_amount": 293000000,
+      "total_transient_amount": 304000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に「一過性の事業再編費用」と明記されており、典型的な非 recurring 費用として事業運営上の一時的問題と判断される。"
+        "reasoning": "理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。"
       }
     },
     "action": "flagged",
-    "note": "TTM 2026-10-31 FCF($9005M)が5年平均($5733M)から57%乖離。一過性費用$293Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
+    "note": "TTM 2026-10-31 FCF($9005M)が5年平均($5733M)から57%乖離。一過性費用$304Mはあるが、上方乖離のため一過性費用では除外しない。要確認。"
   },
   "fcf_estimation": {
     "period_label": "TTM 2026-10-31",
@@ -381,7 +387,7 @@
     "market_cap_sec": 72477920654.29688,
     "market_cap_source": "sec",
     "market_cap_yf_gap": 0.2598946522700274,
-    "per_adjusted_ttm": 11.05,
+    "per_adjusted_ttm": 10.7,
     "peg": 1.0844,
     "ps_ttm_sec": 3.306927072788104,
     "ev_ebitda": 13.511,
@@ -403,12 +409,12 @@
     "revenue_ttm": 21917000000,
     "revenue_ttm_end": "2026-10-31",
     "analyst_vs_iv": -40.3,
-    "max_eps": 25.5317,
-    "per_max_eps_ttm": 10.6,
+    "max_eps": 24.7884,
+    "per_max_eps_ttm": 10.9,
     "max_eps_reliability": "HIGH",
     "max_eps_ttm_end": "2026-10-31",
-    "max_eps_shares": 267236000,
-    "max_eps_shares_basis": "current_diluted_fallback"
+    "max_eps_shares": 275250000.0,
+    "max_eps_shares_basis": "ttm_weighted_avg"
   },
   "validation": {
     "model": "basic_checks_only",
