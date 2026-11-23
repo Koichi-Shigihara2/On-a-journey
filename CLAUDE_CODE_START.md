@@ -28,10 +28,10 @@
    - 期限: 起きた回（10-16・10-22の実行はRSS 取得エラー0件で、この経路は通っていない）
    - 確認の手順: 「RSS 取得エラー」が出た回のログで、その銘柄に「★ 新規提出」が出ず「新規提出の判定をしない」が出ている。確かめたら、BACKLOG_DONE.mdの2件の「確認」の欄に書き足す
 
-33. **TANUKI-SHARES-SINGLE-SOURCE-1 の原本の確認（SECの取得）**（`[[TANUKI-SHARES-SINGLE-SOURCE-1]]`、`SEC_USER_AGENT_EMAIL`が環境変数に無く未実施）
+33. **TANUKI-SHARES-SINGLE-SOURCE-1 の原本の確認（SECの取得）の残り**（TSLAの412Mは2026-11-23にチャット側で確認済み＝2025 CEO報酬の未確定の株423,743,904株・決定2のまま〈`TANUKI_SHARES_STEP0.md`末尾〉。公開の前提から外した）
    - 日時: 環境変数に`SEC_USER_AGENT_EMAIL`（定時と同じ連絡先。値は会話・文書・commitに書かない）を置いた回
-   - 期限: 本件の公開の前
-   - 確認の手順: ASTS・PLTR・SOUNの表紙の発行済（クラスごと）、TSLAの10-Qの本文（表紙3,953M と加重平均の差412Mの内訳）、IONQ（yfinanceの implied 464.7 が表紙432.5より+7.5%の理由）。読み取りだけ・10件/秒以下。結果は`TANUKI_SHARES_STEP0.md`末尾に書く。TSLAの未確定の株は確かめるまで分母に入れない（決定2）
+   - 期限: なし（公開の後でよい）
+   - 確認の手順: ASTS・PLTR・SOUNの表紙の発行済（クラスごと）、IONQ（yfinanceの implied 464.7 が表紙432.5より+7.5%の理由）。読み取りだけ・10件/秒以下。結果は`TANUKI_SHARES_STEP0.md`末尾に書く
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

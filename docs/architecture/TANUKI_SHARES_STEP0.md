@@ -352,3 +352,17 @@ IONQ・RXRX・ONDS・RCAT・JOBYは期末後・期中の発行を表紙で補い
 7. 公開後、BACKLOGの`[[TANUKI-SHARES-SINGLE-SOURCE-1]]`をBACKLOG_DONE.mdへ移設
 
 SECの原本（ASTS・PLTR・SOUNの表紙・TSLAの10-Q本文・IONQ）は`SEC_USER_AGENT_EMAIL`が環境変数にある時だけ取る。無ければ次回の確認手順33に残した。
+
+## 公開の日の試算（2026-11-23、kaihatsu `e85f031a72` の上に rebase。前＝kaihatsu・後＝`shares-publish`、TANUKI→HypeCore→TANUKI、96銘柄）
+
+- 理論株価が変わる 88 銘柄。**判定が変わるのは PLTR（保有）WATCH→HOLD の1件**（予行はCPRT・RMBS。今日の試算では両方動かない＝境目の外）。funda・stage の変化 0（別途確認）
+- **PLTR の判定の変化の理由**: 理論株価は予行と同じ −6.4%（144.46→135.23）。原因は分母が yfinance implied 2,409M → SEC の希薄化後加重平均 2,574M（オプション・RSU +168M。表紙は次元つきで補正なし＝`no_cover`）に変わったこと（STEP 0 で確認済みの内容どおり）。乖離率は +0.70 → −5.80 で、境目（0付近）をまたぐ。予行（11-13）の時点は公開の判定がすでに HOLD だったため判定の変化に出なかった。今日は価格（143.49）に対し公開の理論株価が境目の上にあり（WATCH）、−6.4% で下に出る＝判定の変化は価格の位置による
+- **SOUN の予行との差（+11.3% → +7.5%）の理由**: 前の理論株価は同じ（6.43）。後の分母が予行の 438.6M から 454.5M に増えた。11-22 の SEC_Data_Update で Layer3 に Q3 の 10-Q（11-09 提出）が追いつき、加重平均が新しい四半期に進んだため（予行は「次の日曜に追いつく」と書いた分）。表紙は2022年の旧値のみで補正なし（`cover_not_after_period_end:2022-03-09`）は同じ。funda 35→46 は DILUTION で公開済み
+- ASTS +33.5%（予行 +30.4%）・TSLA +11.5%（同じ）・LITE −10.8%・PAYS −9.6%（予行 −9.2%）・FICO −7.0%・CART −5.9%・ALAB −5.4%。保有: ADBE −0.1・APP −1.0・CELH −0.9・CRWV −0.5・NVDA −0.2・SOFI −4.8（変化なし）
+- 表は `scratchpad/sim/cmp_before_after.txt`（作業用）
+
+## 手順33の記録（TSLA分、2026-11-23、チャット側で確認済み）
+
+- TSLA の表紙3,953M と加重平均の差412Mの中身は、**2025 CEO Performance Award の業績連動の制限付き株 423,743,904株**（2025-11-06 発行、**未確定**。10-K/A の未確定の株の表・Form 4）。確定は2033〜2035年に条件を満たした場合だけ
+- **決定2のまま**（分母に入れない。`outstanding_gap_pct` で表示）。`stock.html` の注記に「業績連動の未確定の株（2025 CEO報酬）」と理由を出す（文言だけ）
+- ASTS・PLTR・SOUN の表紙と IONQ の+7.5%（yfinance implied 464.7 が表紙 432.5 より高い理由）は**公開の前提から外す**。`SEC_USER_AGENT_EMAIL` を置いた回の確認として手順33に残す
