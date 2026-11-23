@@ -33,6 +33,11 @@
    - 期限: なし（公開の後でよい）
    - 確認の手順: ASTS・PLTR・SOUNの表紙の発行済（クラスごと）、IONQ（yfinanceの implied 464.7 が表紙432.5より+7.5%の理由）。読み取りだけ・10件/秒以下。結果は`TANUKI_SHARES_STEP0.md`末尾に書く
 
+40. **TANUKI-SHARES-SINGLE-SOURCE-1（`-1-1`）の2回目の確認**（公開は2026-11-23 手動。1回目の印は96銘柄・2回目以降0件・全96銘柄が試算と一致を確認済み。BACKLOG_DONEへ移設済み）
+   - 日時: 2026-11-24（火）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後
+   - 期限: 2026-11-25
+   - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`TANUKI-SHARES-SINGLE-SOURCE-1-1`）②TSLAの理論株価が43.18前後・`components.outstanding_gap_pct`が+11.5・PLTRの`diluted_shares`が2,574M（`_shares_source`＝`sec_weighted`）③判定はPLTR HOLDのまま。**不合格なら`[[TANUKI-SHARES-SINGLE-SOURCE-1]]`をBACKLOGに戻して報告する**
+
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |

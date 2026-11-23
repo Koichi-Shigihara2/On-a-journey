@@ -11,13 +11,25 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
-**次の作業（2026-11-16 終業 更新〈それまでは2026-11-12 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+**次の作業（2026-11-23 更新〈それまでは2026-11-16 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
+1. 11-24（火）朝: 手順40（TANUKI-SHARES-SINGLE-SOURCE-1の2回目。印0件・TSLA 43.18前後・PLTRの分母2,574M。不合格ならBACKLOGへ戻して報告）
+2. `[[UNIVERSE-REBALANCE-2026Q4-1]]`の削除（14銘柄）を先に行う（以降の直しの対象を減らすため）。修正・登録は後
+3. `[[SEC-RETAG-RECONCILE-1]]`（STEP 0はAPPのD&Aから）→ `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)
+4. 買いの判断に効く件のSTEP 0【Opus】: `[[EARNINGS-REFLECTION-LAG-1]]` → `[[TANUKI-GUIDANCE-REVISION-BLIND-1]]` → `[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`
+5. `[[STONKS-DEFICIT-REALITY-EPIC-1]]`の① → `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`の段2以降 → `[[STAGE-V2-ROLLOUT-1]]`の③④
+6. 画面・市況: `[[MARKETPULSE-REVIEW-EPIC-1]]`・`[[HYPECORE-MARKET-WIDE-DRAWDOWN-1]]`・`[[MACROPULSE-DATA-LAG-AND-REGIME-DRIFT-1]]`。11-22メモの未登録3件（金利見通しの表示・政策金利の専用ページ・景気後退スコアの段）は、ここで登録する
+7. 急がない: `[[PORTFOLIO-PRICE-WEEKLY-STALE-1]]`・`[[UNIVERSE-TWO-TIER-1]]`・`[[EXPECTATIONS-INVESTING-EPIC-1]]`・`[[BANK-ACL-MACRO-SIGNAL-1]]`ほか優先度 低
+8. 手順33（SECの原本。ASTS・PLTR・SOUNの表紙・IONQ）は、`SEC_USER_AGENT_EMAIL`を置いた回に行う
+9. いつでも・起きた回: 手順9（RSS 取得エラー）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8。手順29は2027-11ごろ
+**注記（2026-11-16→2026-11-23に更新）**: 未公開のコードの置き場所は**無い**（PARSER段1・CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARESは2026-11-23までに全部公開済み。ブランチ`tanuki-calc-continuity-1`・`dilution-unify-1`・`deficit-quality-adopt-1`・`multiples-adopt-1`・`tanuki-shares-single-source-1`は役目を終えた）。Layer3はその場で計算されるため、定義のコードをpushするとそのまま公開になる（FINDINGS 2026-11-11）。モデルの使い分けは`CHAT_RULES.md`「モデルの使い分け」（依頼文の見出しの【Opus】【Sonnet】）
+
+**（旧）次の作業（2026-11-16 終業 更新〈それまでは2026-11-12 終業〉。2026-11-23 に上へ置き換えた。記録として残す）**:
 1. 11-19（木）: **DEFICIT-QUALITY-ADOPT-1は2026-11-19に公開済み**（ID `なし`＝method_changeには登録しない〈表示だけ。STEP 0の決定〉。kaihatsu `0588f76434`〈コード52cc737eab・27ae0c1de3、データ・一覧0588f76434〉。Stonks `44504887950`→TANUKI `44504892126`〈Stonksの完了で`44505527538`も自動〉→HypeCore `44509816077`→TANUKI `44510125547`。試算は理論株価・判定・funda・stageの変化0〈96銘柄、scope 94はキーの出入りだけ〉。STONKSの対象24銘柄で出入りなし、`op_breakeven_*` 24銘柄・`gaap_breakeven_*` 0、`latest.json`から`breakeven_*`が消え`structural_deficit_kind` 18銘柄、印0件）。確認は手順37、移設は2回目の確認の後。次は MULTIPLES → TANUKI-SHARES（各々の前に前の公開の上にrebaseして試算し直す）。11-17（火）: 手順34の11-17朝の分は合格・**`[[TANUKI-CALC-CONTINUITY-1]]`は2026-11-17に公開済み**（確認は手順35、移設は2回目の確認の後）。次は 以降1日1件: DILUTION → DEFICIT → MULTIPLES → TANUKI-SHARES（手順33のSECの原本の確認はSHARESの公開の前）。各々の前に、前の公開の上にrebaseして試算し直し、決定(a)の一覧を作る。順・衝突・段取りは`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`のとおり。移設は各々の2回目の確認の後
 2. 公開の列の後: `[[SEC-RETAG-RECONCILE-1]]`（STEP 0はAPPのD&Aの落ちから）→ `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)（倍率の履歴の株数をas-ofに）→ `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`の段2以降
 3. `[[STAGE-V2-ROLLOUT-1]]`の③④（§0での使い道・点数・TRIM/SELLの条件、Vの株数）→ `[[OUTPUT-INVENTORY-COMMON-LAYER-1]]`（優先: 中）→ `[[TEST-ISOLATION-GUARD-1]]`（低。2028-01-01までに）→ `[[METHOD-CHANGE-NOTICE-ACCURACY-1]]`（低）【Opus】。②12か月の並びの評価は2027-11ごろ（次回の確認手順29）
 4. **MULTIPLES-ADOPT-1は2026-11-20に公開済み**（ID・method_changeなし。理論株価・判定・funda・timing・stage変化0、Fフラグ反転10銘柄、V=yf_fallback）。旧キー読みは2026-11-20に外し済み。次は手順39（2回目の確認）。残りの公開は TANUKI-SHARES-SINGLE-SOURCE-1 と TANUKI-CALC-CONTINUITY-1
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
-**注記（2026-11-16）**: 未公開のコードの置き場所は5つ（CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARES。ブランチ`tanuki-calc-continuity-1`・`dilution-unify-1`・`deficit-quality-adopt-1`・`multiples-adopt-1`・`tanuki-shares-single-source-1`で、いずれもkaihatsuには無くoriginに控えがある。PARSER段1は2026-11-16に公開済み）。Layer3はその場で計算されるため、定義のコードをpushするとそのまま公開になる（FINDINGS 2026-11-11）。モデルの使い分けは`CHAT_RULES.md`「モデルの使い分け」（依頼文の見出しの【Opus】【Sonnet】）
+
 
 **（旧）次の作業（2026-11-12 終業。2026-11-16 終業に上へ置き換えた。記録として残す）**:
 1. （2026-11-16 済）手順30〜32。`[[SECTOR-MASTER-ADOPT-1]]`はBACKLOG_DONE.mdへ移設（アクティブ14→13）。`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`は移設せず(4)（倍率の履歴の株数をas-ofに）を足した。着手は公開の列（MULTIPLES・SHARES）の後【Sonnet】
@@ -65,6 +77,8 @@
 3. `[[STAGE-V2-ROLLOUT-1]]` の並行計算（定義v2は2026-11-06に確定。定義v2のstageを今の定義と並べて毎月記録、公開の値は変えない。寄せる件を待たずに始める。12か月の並びの評価は2027-11ごろ）
 4. 寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
+
+**2026-11-23 の作業（アクティブ23件）**: ①日曜の連鎖（SEC `45056652563`→EPS・HypeCore・Stonks→TANUKI）の後の確認に合格（手順34・35・36・37・39）。TANUKI-CALC-CONTINUITY-1・DILUTION-DEFINITION-UNIFY-1・DEFICIT-QUALITY-ADOPT-1・MULTIPLES-ADOPT-1を移設、PARSER-LAYER3は段1の確認だけ追記（段2以降が残る）。②Market Data Dailyのcancelledは設計どおり（`daily_guard.py`が`gh run cancel`で取り消す）で、異常は11-11 20:25 UTCの`startup_failure`1件だけ（FINDINGS、直し方の案は(a)Workerの時刻を冬時間で切り替え・(b)取り消しをやめsuccessで終える）。③TANUKI-SHARES-SINGLE-SOURCE-1を公開（`7a9564dd2d`、ID `-1-1`、scope 96銘柄。TANUKI `45089486452`・Stonks `45089489293`→TANUKI `45089744492`→HypeCore `45092316774`→TANUKI `45092527669`。1回目96銘柄・以降0件、全96銘柄が試算と一致）。保有の判定変化はPLTR WATCH→HOLDのみ（−6.4%、分母がyfinance implied 2,409Mから希薄化後加重平均2,574Mに）。TSLAの412Mは2025 CEO報酬の未確定の株423,743,904株で決定2のまま（画面に理由）。SOUNは+7.5%（予行+11.3%との差はLayer3の追いつき）。手順33はSEC原本の残りだけに。前後比較は`tools/sim`（前＝kaihatsuのworktree）。これで未公開の置き場所は無い。次は手順40。
 
 **2026-11-16 の作業（終業、アクティブ14件）**:
 - 手順30〜32: 30・32は合格、31は段0の確認として合格（②の差はCRWV・ONDSの2025-11〜2026-02の`shares`の丸めで、原因は`split_adjust.py::shares_by_end`が最新の申告のvalを取ること。段0とは無関係）。`[[SECTOR-MASTER-ADOPT-1]]`をBACKLOG_DONE.mdへ移設（14→13）。`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`は移設せず(4)（倍率の履歴の株数をas-ofに。着手は公開の列の後）を足した（54936b74fd）
