@@ -3350,3 +3350,29 @@ Update workflows実装・本番消費者8ファイル中3/8切替完了〉へ既
    - 確認の手順: 該当の段（Reconcile daily rows with provider）のログが「当たり 0銘柄」。`common/market_data/daily/APH.json`・`CTVA.json`の境の日より前の行に`_corrections`（reason `split_adjust`）が1回分だけ付いている。`python common/market_data/split_reconcile.py`（走査だけ）が手元で0銘柄。APHの200日線が約75・CTVAの50日線が約12台（Yahooの調整後の値）
    - 期限: 2026-11-16。合格したら`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`をBACKLOG_DONE.mdへ移設（アクティブ13→12）、`PROJECT_STATUS.md`の次の作業4番を外す
 
+## 2026-11-23 済んだ手順（34・35・36・37・39。日曜の連鎖の後の確認に合格、BACKLOG_DONEへ移設）
+
+34. **PARSER-LAYER3-SINGLE-SOURCE-1 段1（`-1`）の次の定時の実行の確認**（公開は2026-11-16 手動: TANUKI `43832337705`→HypeCore `43834462211`→TANUKI `43834776503`。1回目の印はscopeの17銘柄だけ・3回目は0件を確認済み）
+   - 日時: 2026-11-22（日）のSEC_Data_Update（四半期BSの置き換え`quarterly_bs.py`が`parse_and_save`で動く）の連鎖の後。**11-17朝の分は合格済み**（TANUKI 06:49 JSTの定時、96銘柄とも印0件。チャット側で確認、確認の手順の①）
+   - 期限: 2026-11-23
+   - 確認の手順: ①`latest.json`の`method_change`が付かない（`method_change_applied`に`-1`が入っている）②日曜の作り直しで`common/sec_data/data/{T}/quarterly_*.json`の`bs`が、Layer3のvalのままで（新しい四半期の分だけ増える）CAKE・KOの理論株価（50.00・24.29）が動かない ③`tests/test_bs_lines.py::test_saved_records_crwv`の失敗はFINDINGS 2026-11-16（本件とは無関係）
+
+35. **TANUKI-CALC-CONTINUITY-1（`-1-1`）の次の定時の実行の確認**（公開は2026-11-17 手動: TANUKI `44056048730`→HypeCore `44058384410`→TANUKI `44058703497`。1回目の印はscopeの16銘柄だけ・3回目は0件を確認済み。CAKE 41.25・DOCN 56.03〈HOLDのまま〉が試算と一致）
+   - 日時: 2026-11-18（水）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（11-22の日曜のSEC_Data_Updateの後の分は手順34と同じ回で見る）。**11-18朝の分は合格済み**（TANUKI 06:48 JSTの定時、96銘柄とも method_change 0件・`method_change_applied`に`TANUKI-CALC-CONTINUITY-1-1`。残りは11-22の分）
+   - 期限: 2026-11-23
+   - 確認の手順: ①`latest.json`の`method_change`が付かない（`method_change_applied`に`TANUKI-CALC-CONTINUITY-1-1`が入っている）②日曜の作り直し後も`ttm/`の9ファイル（APP・ASTS・BBAI・BSY・DELL・FRSH・HWM・ONDS・RCAT）と、CAKE・KO・DOCNの理論株価が動かない（動くのは新しい四半期の分だけ）。済んだら`[[TANUKI-CALC-CONTINUITY-1]]`をBACKLOG_DONEへ移設する
+
+36. **DILUTION-DEFINITION-UNIFY-1（`-1-1`）の次の定時の実行の確認**（公開は2026-11-18 手動: Stonks `44195625531`・TANUKI `44195630510`〈Stonksの完了で`44196135444`も自動で起動〉→HypeCore `44199705052`→TANUKI `44200008042`。1回目の印はscopeの90銘柄だけ・2回目以降0件、SOUN funda 35→46・SPIR 0→6〈予行の43・1とはQ3の10-Qで窓の終点が進んだ分の違い、原因は確定〉、STONKS `results.json`は`sbc_burden` 24件・`dilution_risk` 0件を確認済み）
+   - 日時: 2026-11-19（木）06:30 JST ごろのStonks→TANUKIの定時の実行の後。**11-19朝の分は合格済み**（Stonks `44401956898`・TANUKI `44402530106`〈11-18 21:29Z・21:32Z〉、96銘柄とも印0件・`method_change_applied`に`DILUTION-DEFINITION-UNIFY-1-1`、`results.json`は`sbc_burden` 24件・`dilution_risk` 0件、画面はSBC負担のラベルがDOMにあり旧ラベルは無い・JSエラー0〈折りたたみの中のため可視の目視は手元の確認まで〉）。残りは11-22の日曜のSEC_Data_Updateの後の分（手順34と同じ回で見る）
+   - 期限: 2026-11-24
+   - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`DILUTION-DEFINITION-UNIFY-1-1`）②`results.json`の`sbc_burden`のまま（旧キーが戻らない）③画面（stock.html・tanuki_score・stonks-silo）で希薄化の欄・SBC負担のラベルが出る。済んだら`[[DILUTION-DEFINITION-UNIFY-1]]`をBACKLOG_DONEへ移設する
+
+37. **DEFICIT-QUALITY-ADOPT-1 の次の定時の実行の確認**（公開は2026-11-19 手動。method_changeには登録しない〈表示だけ〉。公開直後の確認は合格済み: 対象24銘柄・`op_breakeven_*`・`structural_deficit_kind` 18銘柄・印0件。**2026-11-20朝（06:30 JSTの定時の後）の分は合格**: results.json 24銘柄・`gaap_breakeven_*`無し・latest.jsonに`breakeven_estimate`/`breakeven_reason`/`method_change`無し・`structural_deficit_kind` 18銘柄・SOUN 2026 PREDICTED・CRWV NO_TREND。画面の目視は未〈コードは`op_*`を先に読む〉。SOUNの2025Q4+42.6Mは条件付対価の公正価値の変動が原因に見える→FINDINGS 11-20）
+   - 日時: 2026-11-20（金）06:30 JST ごろのStonks→TANUKIの定時の実行の後
+   - 期限: 2026-11-25
+   - 確認の手順: ①`results.json`が24銘柄のまま・`gaap_breakeven_*`が戻らない②`latest.json`に`breakeven_estimate`・`breakeven_reason`が戻らず、`method_change`が付かない③画面（stonks-silo・tanuki_score）の黒字化・構造的赤字の型の表示。SOUN（保有）は2026 PREDICTED〈R² 0.696、TTM 2026-09-30で成立。予行は「不明」だった〉、CRWV（保有）はNO_TREND。SITMの対象からの出入りは12月末以降（持続の規則）。済んだら`[[DEFICIT-QUALITY-ADOPT-1]]`をBACKLOG_DONEへ移設する
+39. **MULTIPLES-ADOPT-1 の2回目の確認**（旧キー読みは2026-11-20に外し済み〈`d0aafa58f4`、rcc NG 0〉。次の定時の実行）
+   - 日時: 2026-11-21（土）06:30 JSTの定時の後
+   - 期限: 2026-11-25
+   - 確認の手順: ①`latest.json`の`components`が新キーだけ・`market_cap_source`が95`sec`＋V`yf_fallback`のまま ②STONKSの`results.json`の時価総額・EVが部品から（Vに「（yfinance値）」の印）③公開の連鎖の目視〈TANUKI SCORE・stock.html・HypeCore detailのPER・PSR〉は**2026-11-20に済**（Playwright、手元。stock.html: SOUN〈GAAP PER「—」＝TTM赤字でforwardに落とさない・PSR 5.9x・時価総額$1.32B〉・NVDA〈PER 89.9x・PSR 11.7x・$3.55T〉・V〈PER 23.2x・PSR 17.3x・時価総額「yfinance値」の印〉、HypeCore detail SOUN〈PER「—」・PS 5.9x〉、TANUKI SCOREのPER 3列は96銘柄に出る〈GAAP空18＝TTM赤字〉。**ただしTANUKI SCOREはそのままでは構文エラーで描画されない**〈DEFICIT-QUALITY-ADOPT-1の337行目、FINDINGS 11-20。MULTIPLES-ADOPT-1とは無関係〉ので、確認は337行目を直した手元のコピーで行った。写真は作業用の場所 `C:\Users\shigi\AppData\Local\Temp\claude\096d85a5248d2f43\1b9d3f4c-902d-4179-aece-06680ae7a890\scratchpad\shots\`） ④日曜のMarket Data Weekly（`multiples.py --all`・`rotce.py`）の後にROTCEのP/TBVのパーセンタイル（ALAB 64→73・CELH 29→35）が反映。済んだら`[[MULTIPLES-ADOPT-1]]`をBACKLOG_DONEへ移設する。F（DCFの調整後PERとの差）の反転10銘柄は`ADSK・AVAV・BSY・CELH・FROG・LOAR・NET・RBRK・S`が真→偽・`PAYS`が偽→真（予行とはGTLB・ZETAが外れBSY・LOARが入った＝新しい四半期とGAAP PERがyfinanceのtrailingPEからSECのTTMに変わったため）
+

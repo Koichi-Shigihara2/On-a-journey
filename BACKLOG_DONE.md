@@ -2,6 +2,175 @@
 
 ---
 
+## 2026-11-23（完了）
+
+### ✅ [TANUKI-CALC-CONTINUITY-1] TANUKIの計算が境目（CV 0.5・逆算のQ4が負・taperのs=0）で方法を切り替え、境目の前後で値が飛ぶ
+**完了（2026-11-23）:** 公開（2026-11-17、`-1-1`）後の確認に合格。11-18朝の定時と11-22の日曜の連鎖（SEC `45056652563`→TANUKI `45058265132`）で、96銘柄とも`method_change`なし・`method_change_applied`に`TANUKI-CALC-CONTINUITY-1-1`。CAKE 41.25・DOCN 56.03は11-18から動かず、`ttm/`の9銘柄は浮動小数の丸め（0.57→0.5700000000000001）と`generated_at`だけ（RCATは新しい四半期の分）。KOは26.17で11-17から不変
+**型・処置（2026-11-11 束ね）:** 型B・根治策
+**優先度:** 高
+**分類:** TANUKI VALUATION / `adjustments.py`（`DEFAULT_FCF_CV_THRESHOLD`）・Layer3の逆算のQ4・`check_growth_sanity`
+**登録日:** 2026-11-11
+**着手条件:** なし（登録のみ）。実装の前に[[GROWTH-SANITY-CONTINUITY-1]]の結果を読む
+**公開済み（2026-11-17）:** コードと派生ファイルをkaihatsuに出した（method_change ID `TANUKI-CALC-CONTINUITY-1-1`、scope 16銘柄。記録は`docs/architecture/TANUKI_CALC_CONTINUITY_STEP0.md` §7、確認は`CLAUDE_CODE_START.md`手順35）。移設は2回目の確認の後
+**発見:** FINDINGS 2026-11-04（fcf_baseのCV）・2026-11-05（逆算のQ4の負）・2026-11-06（check_growth_sanityの残り）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 束ねた行: (1) fcf_baseの方法がCVの境目0.5で5年平均と直近2年平均に切り替わる（HQY: CV 0.48→0.58で基準のFCF +26%・理論株価+24.7%・HOLD→BUY。DOCNも同じ型） (2) 既存の9項目（自社株買い・SBC・R&D・販売費・SG&A・売上・売上原価・粗利・D&A）の逆算したQ4が負の所が19か所、うち4か所（TASKの自社株買い・FRSHのSBC・APPの販売費・KULRの粗利、2025-12-31）は今のTTMの窓に入る (3) `check_growth_sanity`の段1の後の残り: ①画面・report.txt・stock.htmlの表示名「中央値モデル」（中身は重み付き平均） ②CHECK-52の文言「推奨成長率が算出できずfloorに転落」 ③taperが s>0 で常にかかり、BULLシナリオ（growth_rate > 終点）が s=0 と s=0+ で飛ぶ
+- 方針: 境目で方法を切り替えず、なだらかにする（[[GROWTH-SANITY-CONTINUITY-1]]と同じ考え方）。新しい5項目に入れた「非負の項目の逆算のQ4が負なら欠け」の規則を既存の9項目にも当てる。連続性のテストを足す（境目の前後で値が飛ばないこと）
+- 計算方法の変更の手順で行う
+- **STEP 0（2026-11-12、`docs/architecture/TANUKI_CALC_CONTINUITY_STEP0.md`、手元の試算のみ）**: 境目11か所（B1 CV 0.5〜B9 逆算Q4）。(1)案A（CV 0.40〜0.60の傾斜）で理論株価11銘柄（5%超 CAKE −22.6%・DOCN −13.1%・LOAR −10.8%・KO +7.5%）・判定0・保有±0.0%・stage／STONKS／調整後EPS 0、(2)(3)だけでは理論株価0（FRSHのRICE・max_epsは動く）。(2)は粗利を除く・千ドル丸めの許容幅の決定が要る。PARSER-LAYER3段1とはCAKEで掛け合わせにならず（+6.5%）、後に出す方は試算し直し。**実装済み（2026-11-12、ローカルブランチ `tanuki-calc-continuity-1`・commit `1a6f23f12c`・kaihatsuには未反映・未公開）**: 決定は案A・(2)は8項目（粗利を除く）・B5は入れない。試算はSTEP 0の全部入りと一致。丸めの許容幅（案1、粒度1,000・`|Q4|≤粒度`）も同じブランチに実装済み（commit `7b8a432d2b`、同文書§6.1）。公開は段1の公開の後に rebase→試算し直し→(a)の一覧→公開
+
+#### 投資判断への影響
+あり（理論株価・判定）。HQY・DOCNの判定、4銘柄のTTM。(3)はBULL/BEARの表示のみ
+
+#### 規模の見込み
+中〜大（全銘柄の試算が要る）
+
+---
+
+### ✅ [DILUTION-DEFINITION-UNIFY-1] 希薄化の定義が3通り（TANUKIの年次の希薄化後株式数の3年・STONKSのSBC÷売上・定義v2の増資÷時価総額）で、TANUKIの希薄化率が実際の株数の変化とずれる（TSLA +0.51%/年 対 2年で+23%、LITE +2.98%/年 対 +31%、CEG −1.54%/年 対 +13%）
+**完了（2026-11-23）:** 公開（2026-11-18、`-1-1`）後の確認に合格。11-19朝・11-23の日曜の連鎖の後とも96銘柄の印0件・`method_change_applied`に`DILUTION-DEFINITION-UNIFY-1-1`、STONKS `results.json`は`sbc_burden` 24件・`dilution_risk` 0件。画面は11-19に確認済み
+**型・処置:** 型B（同じ規則の二重実装）・根治策
+**優先度:** 中
+**分類:** 共通の定義 / TANUKI VALUATION（`financial_health.dilution_3yr_annual_pct`、report・画面の重大度）・STONKS SILO（`dilution_risk`）・定義v2
+**登録日:** 2026-11-05
+**状態:** 公開済み（2026-11-18、`-1-1`。確認は`CLAUDE_CODE_START.md`手順36、済んだら移設）
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-3のSTEP 0（2026-11-05）
+**実装（2026-11-12、ブランチ`dilution-unify-1`・未公開）:** 株数の変化を`common/dilution.py`の1つの部品に寄せ、STONKSの`dilution_risk`を`sbc_burden`に改名。試算は理論株価・判定・保有とも変化0（funda点の段と傾斜の2通りは`DILUTION_UNIFY_STEP0.md`末尾）。公開はPARSER段1→CONTINUITYの後にrebaseして試算し直す。**公開までこの項目は残す**
+**経緯:** 2026-10-19の初回の束ねで[[LAYER3-CAPITAL-ALLOCATION-FIELDS-1]]を[[STAGE-V2-ROLLOUT-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行と同じ形）。段B-3でLayer3に配当・増資の5項目を足した
+
+#### 今の取り方の場所（2026-11-05、段B-3のSTEP 0）
+| 項目 | 場所 | 定義 | 読み手 |
+|---|---|---|---|
+| 自社株買い | Layer3の`buyback`・parserの`buyback` | `PaymentsForRepurchaseOfCommonStock`だけ | TTMの系列（TANUKIの`buyback_ttm`） |
+| 配当 | market_dataの属性（yfinance） | 今の配当利回り・配当性向 | TANUKIの配当の罠の判定 |
+| 希薄化 | TANUKIの`financial_health.dilution_3yr_annual_pct` | SECの年次の希薄化後株式数の3年の変化（年率） | TANUKIのreport・画面の重大度 |
+| 希薄化 | STONKSの`dilution_risk` | SBC÷売上（15%以上 HIGH・8%以上 MEDIUM） | STONKSの画面 |
+| 希薄化 | 定義v2（段Aの試算） | 増資÷時価総額 | 試算だけ |
+| 配当・増資（2026-11-05から） | Layer3の5項目（段B-3） | 上の段B-3の記録 | まだ無い（段C） |
+
+#### 食い違い（2026-11-05）
+- 希薄化の定義が3通り（株数の変化・SBCの比率・増資÷時価総額）
+- TANUKIの希薄化率（年次の加重平均で遅れ、期間も違う）と実際の株数（deiの発行済株式数、分割を除く2年）: TSLA +0.51%/年 対 +23%、LITE +2.98%/年 対 +31%、CEG −1.54%/年 対 +13%（買収の対価の株）
+- 株数が2年で10%以上増えた20銘柄のうち、増資の収入のタグが無いのは4銘柄（LITE〈転換等の新株〉・TSLA〈報酬の株〉・CEG・FROG〈買収の対価の株〉）。ATMの取りこぼしは見つからず（独自タグも0件）。取りこぼすのは「お金を受け取らない株の発行」（買収・転換・報酬）で、増資の収入のタグでは測れない
+
+#### 決定（チャット側、2026-11-05）
+- 定義v2の希薄化は株数の変化（`shares_outstanding_period_end_sec`、分割換算）を主、増資の収入÷時価総額を裏づけに。3通りの定義の統一は本項目で
+
+#### ここで決めること
+TANUKIの希薄化率（`financial_health.dilution_3yr_annual_pct`、report・画面の重大度）を株数の変化（分割を除く、時点つき）に寄せるか。お金を受け取らない発行（買収・転換・報酬）の扱い。STONKSの`dilution_risk`（SBC÷売上）を希薄化と呼ぶか（名前と中身）。寄せるときは全銘柄の試算と計算方法の変更の手順で
+
+#### 投資判断への影響
+今あり（TANUKIの希薄化の重大度が実際の株数の変化より小さく出る銘柄がある）
+
+#### 規模の見込み
+中
+
+---
+
+### ✅ [DEFICIT-QUALITY-ADOPT-1] 「赤字か」の判定が4つの値（営業利益・純利益・OCF・FCF）に分かれ20銘柄で結論が割れ、黒字化の予測もSTONKS（年次GAAP）とTANUKI（四半期の調整後EPS）で食い違う。読み手をprofitabilityの部品に寄せる
+**完了（2026-11-23）:** 公開（2026-11-19）後の確認に合格。11-23の`results.json`は24銘柄・`op_breakeven_*`・`gaap_breakeven_*`なし、`latest.json`に`breakeven_estimate`・`breakeven_reason`・`method_change`なし・`structural_deficit_kind` 18銘柄。SOUN 2026 PREDICTED・CRWV NO_TREND。画面の目視は11-20に済
+**型・処置:** 型B（同じ規則の二重実装）・根治策
+**優先度:** 中
+**分類:** 共通の部品 / `docs/common/profitability.json`（`common/profitability.py`）とその読み手（TANUKI VALUATION・STONKS SILO・rcc・登録の検証）
+**登録日:** 2026-11-05
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**公開済み（2026-11-19）:** method_changeには登録しない（表示だけ）。確認は次回の確認手順37。記録は`docs/architecture/DEFICIT_QUALITY_STEP0.md`末尾
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-2のSTEP 0（2026-11-05）
+**実装（2026-11-12、ブランチ`deficit-quality-adopt-1`・未公開）:** 黒字化の予測を`common/profitability.py`の1つに（STONKSの純利益率の回帰・TANUKIの調整後EPSの黒字化は廃止、ocf_breakevenはキャッシュの軸として残す）、STONKSの対象を月末ごとのTTM営業利益の符号＋stage_v2の持続の条件に（手書きの`stonks_silo`列を削除）、粗利率の導出、型④の表示。試算は理論株価・判定・保有とも変化0。公開はPARSER段1→CONTINUITY→DILUTIONの後（`DEFICIT_QUALITY_STEP0.md`末尾）。**公開までこの項目は残す**
+**経緯:** 2026-10-19の初回の束ねで[[DEFICIT-QUALITY-COMMON-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行）。段B-2で部品だけを作った（読み手は今のまま）
+
+#### 今ある赤字の判定の場所（2026-11-05、段B-2のSTEP 0）
+| # | 場所 | 定義（値・期間・閾値） | 読み手・対象 |
+|---|---|---|---|
+| 1 | STONKSの`DeficitQuality`（`src/value/stonks_silo/analyzer.py`、点数は段B-2で`common/profitability.py::deficit_quality_verdict`へ） | 直近の年次。純利益>0なら黒字、それ以外は点数（3年の売上の伸び40・研究開発費と販売費の比率30・粗利率20・黒字10）で65以上 良い赤字・35以上 要観察・未満 悪い赤字 | STONKSの画面、TANUKIのreport。STONKSの24銘柄だけ |
+| 2 | STONKSの`ProfitabilityPath` | 直近4年の年次の純利益率・OCF率の回帰で黒字化の年（5年まで）、黒字化パスの点数 | 同上 |
+| 3 | STONKSの対象のルール（`common/sec_data/stonks_flag_rule.py`） | TTMの営業利益<0か売上0 | rccのCHECK-51、登録の検証P7 |
+| 4 | TANUKIの`is_structural_deficit`（`calculator/adjustments.py`） | FCFの5点・2点の平均がともに0以下 → 売上×8%の下限 → Policy A（下限を基準に使ったらWATCH） | TANUKIの理論株価・判定・report・画面の印（96銘柄） |
+| 5 | TANUKIの`compute_eps_breakeven`（`pipeline.py`） | EPS ANALYZERの調整後EPS（非GAAP）の直近4四半期の回帰（20四半期まで） | `latest.json`の`breakeven_estimate`、画面 |
+| 6 | TANUKIのマトリクス③「深い赤字」 | RICEのQ（OCF÷(純利益＋SBC)）の異常値 | report・画面のマトリクス |
+| 7 | 段Aの試算の仮の部品 | 営業利益率の前年からの改善ペースで2年以内に0 | 試算だけ |
+
+#### 食い違い（2026-11-05、98銘柄）
+- 値ごとの赤字: TTMの営業利益<0 23（判定不能3）・純利益≦0 22・OCF≦0 13・構造的赤字（FCF）18。20銘柄で結論が割れる
+- AMZN・CEG・COHRは営業利益・純利益・OCFとも黒字だがFCFだけ構造的赤字（設備投資）で、TANUKIの下限・Policy Aが効く
+- ESTC・SITM・LYFTは営業赤字だが純利益は黒字。LITE・ZETAは純損失だが営業黒字。NET・S・ZS・FROG・GTLB・RBRKは営業赤字・純損失だがOCFは黒字
+- 黒字化の予測の食い違い: 保有のSOUN（STONKS 2026・TANUKI 予測不可）・CRWV（STONKS 純利益で2026・TANUKI 予測不可）、BBAI・RDW・JOBY（STONKS 予測不可・TANUKI 2026〜2027）、NET・S・GTLB・FROG（TANUKIは調整後EPSが黒字で達成済み・STONKSはGAAPで2026〜2028）、SPIR（STONKSは年次の純利益が黒字〈一過性〉・OCFは悪化）
+- STONKSの対象外の赤字銘柄（赤字の質・黒字化の予測が無い）: AMZN・CEG・COHR・LITE・SOFI・ZETA
+
+#### 決定（チャット側、2026-11-05）
+1. 収益の段階はTTMの営業利益（GAAP）
+2. 黒字化の見込みはTTMの営業利益率の直近8四半期の回帰で2年以内に0に届くか
+3. 部品は構造的赤字（FCF、今の`is_structural_deficit`を呼ぶだけ）と収益の段階を別の項目で出し、TANUKIの下限・Policy Aは今のまま
+4. 本項目を登録（寄せるのは段Cの後）
+
+#### 進め方
+寄せるのはTANUKI・STONKSを1つずつ。全銘柄の試算と計算方法の変更の手順で公開する。設備投資の重い黒字の会社（AMZN・CEG・COHR型）を構造的赤字・下限・Policy Aから外すかはここで決める（外せば理論株価・判定が変わる）。黒字化の予測を1つにすると画面の予測の年が変わる（保有のSOUN・CRWVを含む）。
+部品の段B-2の最初の結果の注意: 営業利益率が極端に低い銘柄（JOBY −759%・ONDS −140%）でも、率の上向きが急なら回帰で黒字化目前になる。RBRKは回帰の線が最後の点で0を超えている（実際の値はまだ負）。
+2026-11-05 夜の直し: 起点を最新の実際のTTMの営業利益率に（RBRK型をなくした）、当てはまり（R²）が0.5未満は「赤字（見込み不明）」（`common/profitability.py`の`MIN_R2`）。黒字化目前は7→5（ESTC・GTLB・ONDS・RBRK・SITM）、JOBY（R² 0.248）・保有のSOUN（R² 0.393）は見込み不明。ONDS（最新の率 −140%、R² 0.864）は直線に乗るため残る（率の下限等の別の条件は寄せる段で）
+- **赤字の質の点数の入力が2つ**（2026-11-05追記）: 関数は1つ（`common/profitability.py::deficit_quality_verdict`）だが、入力が部品（Layer3の年次、その時点で申告済みの`first_val`）とSTONKSの画面（STONKSの年次データ`load_annual_data`、売上の外れ値のサニタイズあり）で違う。STONKSの24銘柄のうち5銘柄で点数が違う（2026-11-05: CRWV 30→10・IONQ 83→75・JOBY 43→35・SOUN 83→75・LYFT 38→30〈STONKS→部品〉、判定〈良い赤字等〉は同じ）。寄せる段で入力を1つにする
+
+#### 投資判断への影響
+今あり（設備投資の重い黒字の会社に下限・Policy Aが効く、保有銘柄の黒字化の予測が画面ごとに違う）。寄せると理論株価・判定が変わりうる
+
+#### 規模の見込み
+中〜大
+- 2026-11-11 SITM（TTM 2026-09-30で営業利益が黒字に転じ、手で書くstonks_siloのフラグと食い違う）。`cik_lookup.csv`は変えない。寄せるときに、フラグを手で書く値からprofitabilityの部品の判定に置き換えるかを決める（それまで`test_stonks_flag_rule`のSITMの失敗・rccのWARN-51はCHAT_RULES 事例18のゲートの例外）
+
+---
+
+### ✅ [MULTIPLES-ADOPT-1] 倍率の計算が9か所でほぼ今のスナップショットだけ、「PER」の名前で中身の違う値が3つ（15銘柄で50%以上の差）、TANUKIの画面のPSRが年次の売上、時価総額の作り方が2通り。今の読み手を倍率の部品に寄せ、名前を付け直す
+**完了（2026-11-23）:** 公開（2026-11-20）後の2回目の確認に合格。11-23の`components`は新キーだけ（旧キー0）・`market_cap_source`は95`sec`＋V`yf_fallback`。画面の目視は11-20に済。ROTCEのP/TBVのパーセンタイルはCELH 35・ALAB 54.5（予告の73と違うのは、11-20 12:24と11-21のMarket Data Dailyで倍率の現在値が足され価格に応じて動いたため）
+**型・処置:** 型B（同じ規則の二重実装）・型E（名前と中身のずれ）・根治策
+**優先度:** 中
+**分類:** 共通の導出データ / `docs/common/multiples/{T}.json`（`common/multiples.py`）とその読み手（TANUKI VALUATION・TANUKI SCORE・ROTCE・HypeCore・STONKS・画面）
+**登録日:** 2026-11-05
+**着手条件:** [[HYPECORE-STAGE-TIMESCALE-1]]の段C（本番の部品での再検証）の後
+**公開済み（2026-11-20）:** 確認は`CLAUDE_CODE_START.md`手順38・39
+**発見:** [[HYPECORE-STAGE-TIMESCALE-1]]の段B-4のSTEP 0（2026-11-05）
+**経緯:** 2026-10-19の初回の束ねで[[VALUATION-MULTIPLES-HISTORY-COMMON-1]]を[[OUTPUT-INVENTORY-CHECK-1]]に統合して閉じたが、作られていなかった（FINDINGS 2026-11-05の行と同じ形）。段B-4で部品を作った
+
+#### 今ある倍率の計算の場所（2026-11-05、段B-4のSTEP 0）
+| 場所 | 倍率 | 分子 | 分母 | 履歴 |
+|---|---|---|---|---|
+| market_dataの属性（yfinance） | trailing_pe・forward_pe・price_to_sales・ev_to_ebitda | yfinance | yfinance | なし（2026-11-05から`valuation_history`に週1回の値を積む） |
+| TANUKI `data_fetcher.py` | `per`（TANUKI SCOREの「GAAP PER」） | 上のtrailing_pe、無ければforward_pe | 同 | なし |
+| TANUKI `core_calculator.py` | `per_adjusted` | 今の株価 | 調整後EPS（EPS ANALYZER） | なし |
+| TANUKI `pipeline.py::compute_max_eps` | 最大EPSのPER | 今の株価 | (TTM純利益＋SBC)÷今の希薄化後株数 | なし |
+| TANUKI `stock.html`（JS） | PSR・フェアPER・PEG | 株価×希薄化後株数 | 最新の年次の売上 | なし |
+| HypeCore `hypecore.py`・`detail.html` | forward_pe・trailing_pe・psr・ev_ebitda | yfinanceの属性 | 同 | `_poc.json`の最新月だけ |
+| STONKS `pipeline.py` | PSR・EV/売上 | yfinanceの時価総額・EV | Layer3のTTM売上 | なし |
+| ROTCE `rotce.py` | P/TBV（自社比のパーセンタイル） | 四半期末の終値×その期の希薄化後株数 | TCE | 四半期の履歴あり |
+| `dcf_validity_checker.py`・EPS ANALYZERの画面 | GAAP PERと調整後PERの差 | TANUKIの`per`・`per_adjusted` | 同 | なし |
+
+#### 食い違い（2026-11-05）
+- 「PER」の名前で中身の違う値が3つ（yfinanceのtrailing・調整後EPS・純利益＋SBC）。TANUKIの対象の15銘柄でGAAP PERと最大EPSのPERが50%以上違う（DDOG 470対69・IOT 300対59・CELH 127対48等）
+- PSRは3通り（yfinanceとSTONKSの差は全24銘柄で2%未満、TANUKIの画面は分母が最新の年次の売上）
+- 時価総額の作り方が2通り（yfinanceの値と株価×SECの株数）。HON型の併合と分社で過去の株価×併合後の株数が約半分（FINDINGS 2026-11-05、部品は台帳で判定不能に）
+- 履歴があるのはROTCEのP/TBV（四半期）だけ
+
+#### 決定（チャット側、2026-11-05）
+1. 部品は銘柄ごとのファイル 2. 全種類を根拠つきで持ち、選ぶのは定義v2 3. HON型は検知→台帳→その前は判定不能 4. フォワードPERの週1回の値の保存を始める 5. 本項目を登録
+
+#### ここで決めること
+今の読み手（TANUKIのPERの列・最大EPSのPER・ROTCEのパーセンタイル・画面のPSR）を部品に寄せる順と、「PER」の名前の付け直し（GAAP・調整後・最大EPS）。寄せるときは全銘柄の試算と計算方法の変更の手順で。P/TBVのTCEを時点の値（first_val）にするか
+
+#### 実装済み（2026-11-13、ブランチ`multiples-adopt-1`・未公開）
+決定5項目（`docs/architecture/MULTIPLES_ADOPT_STEP0.md`）を実装。試算は理論株価・判定・funda・timing・stage・scope すべて変化0（表示のみ）。公開の順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → 本件、手順は同文書末尾。公開後に本項目をBACKLOG_DONE.mdへ移設し、表の「画面のPSRが年次」の記述（古い）を直す。次は[[TANUKI-SHARES-SINGLE-SOURCE-1]]。
+
+**残り（公開の次の連鎖の後）:** 画面・検査の**旧キー読みを外す**（`grep -rn "旧キー読み"`: `tanuki_score/index.html`・`tanuki_valuation/stock.html`・`adjusted_eps_analyzer/stock.html`・`hypecore/detail.html`・`dcf_validity_checker.py`・`report_consistency_check.py` CHECK-10。ブランチ`multiples-adopt-1`の`587496219b`で足した）。全96銘柄の`latest.json`に`per_gaap_ttm_sec`が入ったことを確かめてから外し、これを終えて初めて本項目をBACKLOG_DONE.mdへ移設する。
+
+#### 投資判断への影響
+今あり（同じ「PER」の名前で中身の違う値が並ぶ、画面のPSRが年次の売上で古い）
+
+#### 規模の見込み
+中〜大
+
+---
+
+---
+
 ## 2026-11-20（完了）
 
 ### ✅ [EXTRACTED-FILINGS-MISMATCH-1] `data/extracted_filings/` の6ファイル（APP・SOUN・ONDS）が別の会社の10-K・10-Q
