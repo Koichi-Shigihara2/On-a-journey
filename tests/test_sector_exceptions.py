@@ -29,8 +29,8 @@ def test_every_exception_has_a_reason_and_differs_from_the_mapping():
 
 
 def test_decided_exceptions_only():
-    """決定（チャット側 2026-11-06）: 台帳に残すのは APP・META・NET・CIX・KULR・PAYS。ABBV・ASTS・CRWV・HQYは写像に寄せた"""
-    assert set(_ledger()) == {"APP", "META", "NET", "CIX", "KULR", "PAYS"}
+    """決定（チャット側 2026-11-06）: 台帳に残すのは APP・META・NET・CIX・PAYS（KULRは2026-11-23に登録を抹消）。ABBV・ASTS・CRWV・HQYは写像に寄せた"""
+    assert set(_ledger()) == {"APP", "META", "NET", "CIX", "PAYS"}
 
 
 def test_industry_lookup_order_exception_then_master():

@@ -58,14 +58,6 @@ splits:
     - date: "2020-08-31"
       ratio: 5
       notes: "Tesla 5-for-1株式分割。10-Q（2020-10-26提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=5（accn 0001564590-20-047486）。yfinance比率=5。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
-  KULR:
-    - date: "2025-06-23"
-      ratio: 0.125
-      notes: "KULR Technology Group 1-for-8株式併合（リバース分割、2025年6月23日効力発生）。SEC 8-K Item 3.03/5.03（accn 0001104659-25-063716）で確認済み。2017-12-31〜2024-03-31の四半期が分割前株数のまま恒久固着（2024-06-30以降は分割後の10-Qが比較期間として遡及修正済み）。ratio<1の判定はapply_split_adjustments()の方向非依存ロジックで行う（SPLIT-REALTIME-GAP-REVERSE-1、2026-09-25）"
-  SPIR:
-    - date: "2023-08-31"
-      ratio: 0.125
-      notes: "Spire Global 1-for-8株式併合（リバース分割、2023年8月31日効力発生）。SEC 8-K Item 3.03/5.03（accn 0000950170-23-045434）で確認済み。2021-09-30〜2022-06-30の四半期が分割前株数のまま恒久固着（2022-09-30以降は遡及修正済み）。2021-06-30以前はSPAC合併前の実体の株数の疑いがあり補正対象外（SPLIT-REALTIME-GAP-REVERSE-1、2026-09-25）"
   HON:
     - date: "2026-06-29"
       ratio: 0.5
@@ -97,10 +89,6 @@ splits:
     - date: "2021-06-28"
       ratio: 10
       notes: "CoStar 10-for-1株式分割。10-Q（2021-07-28提出）XBRL StockholdersEquityNoteStockSplitConversionRatio1=10（accn 0001057352-21-000082）。yfinance比率=10。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
-  FCX:
-    - date: "2011-02-02"
-      ratio: 2
-      notes: "Freeport-McMoRan 2-for-1株式分割。10-Q（2011-08-05提出）XBRL StockholdersEquityNoteStockSplitConversionRatio=2（accn 0000831259-11-000050）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
   GOOGL:
     - date: "2014-04-03"
       ratio: 2
@@ -134,13 +122,6 @@ splits:
     - date: "2012-08-13"
       ratio: 2
       notes: "Coca-Cola 2-for-1株式分割。10-Q（2012-07-26提出）XBRL StockholdersEquityNoteStockSplitConversionRatio=2（accn 0000021344-12-000037）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
-  SCCO:
-    - date: "2006-10-03"
-      ratio: 2
-      notes: "Southern Copper 2-for-1株式分割（100%株式配当）。8-K Item 8.01（2006-08-30提出）で確認（accn 0001104659-06-058297）。yfinance比率=2。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
-    - date: "2008-07-10"
-      ratio: 3
-      notes: "Southern Copper 3-for-1株式分割（2-for-1株式配当）。8-K Item 8.01（2008-06-19提出）で確認（accn 0001104659-08-040900）。yfinance比率=3。CHECK-54の検知で登録（SPLIT-HISTORY-REGISTRATION-GAP-DETECT-1、指示書⑱、2026-09-26）"
   V:
     - date: "2015-03-19"
       ratio: 4

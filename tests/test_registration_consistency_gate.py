@@ -17,6 +17,7 @@ CHECK-35/41/47等）をprovisioning中の銘柄に対して実行するように
 """
 
 import json
+from datetime import date
 import os
 import shutil
 import subprocess
@@ -160,7 +161,11 @@ def test_hypergrowth_not_ng_after_p2a_removal(tmp_path, monkeypatch):
     tanuki_dir = tmp_path / "tanuki" / "ONDS"
     ttm_dir.mkdir()
     tanuki_dir.mkdir(parents=True)
-    shutil.copy(os.path.join(_SEC_DATA_DIR, "ttm", "ONDS_ttm_series.json"), ttm_dir)
+    # 本番のONDSは2026-11-23に抹消したため、急成長銘柄のTTM（売上174.1M・期末は新しい）を手元の作りで置く
+    (ttm_dir / "ONDS_ttm_series.json").write_text(json.dumps(
+        {"ticker": "ONDS", "series": [{"ttm_end": date.today().isoformat(),
+                                       "flow": {"revenue": {"val": 174_100_000.0, "quarters_used": 4, "missing": 0}}}]}),
+        encoding="utf-8")
     (tanuki_dir / "latest.json").write_text(json.dumps(
         {"components": {"latest_revenue": 50_731_000, "sector": "Technology"}}), encoding="utf-8")
     monkeypatch.setattr(rv, "TTM_DIR", str(ttm_dir))

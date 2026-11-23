@@ -1263,11 +1263,11 @@ if __name__ == "__main__":
     except Exception as _e:
         print(f"[WARN] tickers.py読み込み失敗、フォールバックリストを使用: {_e}")
         ALL_TICKERS = [
-            "AAPL","ALAB","AMAT","AMD","AMZN","APP","ASTS","AVAV","BBAI",
+            "AAPL","ALAB","AMAT","AMD","AMZN","APP","ASTS","AVAV",
             "BSY","CAKE","CART","CEG","CELH","COHR","CRM","CRWV",
             "ELF","GOOGL","GTLB","IONQ","IOT","JOBY","KO","LITE","LLY","LMT",
-            "META","MRVL","MSFT","NOW","NVDA","ONDS","PLTR","QBTS","RBRK","RCAT",
-            "RDW","RKLB","RXRX","S","SITM","SOFI","SOUN","SPIR","TSLA",
+            "META","MRVL","MSFT","NOW","NVDA","PLTR","RBRK","RCAT",
+            "RKLB","S","SITM","SOFI","SOUN","TSLA",
             "VRT","ZETA",
         ]
         REGISTRABLE_TICKERS = ALL_TICKERS

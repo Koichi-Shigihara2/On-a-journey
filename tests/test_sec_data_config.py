@@ -92,7 +92,9 @@ class TestProductionGetAll:
     変わっていないこと）"""
 
     def test_matches_legacy_tickers_dict_keys(self):
-        assert config.get_all() == list(config.TICKERS.keys())
+        # retired（登録抹消済み）は get_all から外れる（TICKERS は cik_lookup.csv の全行）
+        retired = {r["ticker"] for r in tk.get_all_rows() if (r.get("status") or "").strip().lower() == "retired"}
+        assert config.get_all() == [t for t in config.TICKERS if t not in retired]
 
     def test_matches_get_registrable_tickers_no_flag(self):
         assert config.get_all() == tk.get_registrable_tickers()

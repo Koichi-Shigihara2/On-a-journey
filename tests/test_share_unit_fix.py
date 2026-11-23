@@ -133,7 +133,7 @@ def test_override_range_rule_excludes_pre_ipo():
 
 
 def test_registered_overrides_in_fact_overrides_json():
-    for t in ("CIX", "ONDS", "LOAR"):
+    for t in ("CIX", "LOAR"):   # ONDSは2026-11-23に登録を抹消
         rules = load_share_unit_overrides(t)
         assert rules and all(r["multiply"] == 1000 and r.get("reason") and r.get("evidence") for r in rules)
     assert load_share_unit_overrides("AAPL") == []

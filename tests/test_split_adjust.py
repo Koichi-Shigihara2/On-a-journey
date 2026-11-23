@@ -85,8 +85,7 @@ class TestUnadjustedIndices:
 
     def test_production_split_history_has_reverse_entries(self):
         sh = load_split_history()
-        assert sh["KULR"][0]["ratio"] == pytest.approx(0.125)
-        assert sh["SPIR"][0]["ratio"] == pytest.approx(0.125)
+        # KULR・SPIRは2026-11-23に登録を抹消（split_historyから外した）。逆分割の登録は HON（0.5）で確かめる
         assert sh["HON"][0]["ratio"] == pytest.approx(0.5)
 
 

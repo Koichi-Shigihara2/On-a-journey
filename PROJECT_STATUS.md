@@ -13,7 +13,7 @@
 
 **次の作業（2026-11-23 更新〈それまでは2026-11-16 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
 1. 11-24（火）朝: 手順40（TANUKI-SHARES-SINGLE-SOURCE-1の2回目。印0件・TSLA 43.18前後・PLTRの分母2,574M。不合格ならBACKLOGへ戻して報告）
-2. `[[UNIVERSE-REBALANCE-2026Q4-1]]`の削除（14銘柄）を先に行う（以降の直しの対象を減らすため）。修正・登録は後
+2. （済 2026-11-23）`[[UNIVERSE-REBALANCE-2026Q4-1]]`の削除（14銘柄を`status=retired`・専用のデータ・設定を削除、残る82銘柄の理論株価・判定の変化0、STONKSは24→17）。確認は手順41。**修正（HON・ASTS）・登録は後**（件は閉じない）
 3. `[[SEC-RETAG-RECONCILE-1]]`（STEP 0はAPPのD&Aから）→ `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)
 4. 買いの判断に効く件のSTEP 0【Opus】: `[[EARNINGS-REFLECTION-LAG-1]]` → `[[TANUKI-GUIDANCE-REVISION-BLIND-1]]` → `[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`
 5. `[[STONKS-DEFICIT-REALITY-EPIC-1]]`の① → `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`の段2以降 → `[[STAGE-V2-ROLLOUT-1]]`の③④
@@ -78,6 +78,7 @@
 4. 寄せる件4つ（`[[SECTOR-MASTER-ADOPT-1]]`・`[[DEFICIT-QUALITY-ADOPT-1]]`・`[[DILUTION-DEFINITION-UNIFY-1]]`・`[[MULTIPLES-ADOPT-1]]`）
 5. いつでも・起きた回: 手順9（RSS 取得エラー）、手順15（TAILのレビューの後、期限11-30）、`[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]`の5/8〜8/8
 
+**2026-11-23 の作業（追記: 銘柄の削除）**: UNIVERSE-REBALANCE-2026Q4-1の削除14銘柄（KULR・QBTS・SPIR・BBAI・RDW・ONDS・RXRX・FCX・SCCO・XOM・PEP・PM・MO・VZ、保有なし）。`cik_lookup.csv`は`status=retired`（理由つき）、config・出力の一覧・専用のデータ6,861ファイルを削除（市場データはS&P500の6銘柄だけ残す）。rcc WARN 220→173。名指しのテスト10件を直した（VZ・SPIR・KULR・ONDSの実データ依存を外す）。コードに埋まった銘柄別の例外は動かしていない（FINDINGS）。STONKSの対象 24→17（BBAI・KULR・ONDS・QBTS・RDW・RXRX・SPIR）。
 **2026-11-23 の作業（アクティブ23件）**: ①日曜の連鎖（SEC `45056652563`→EPS・HypeCore・Stonks→TANUKI）の後の確認に合格（手順34・35・36・37・39）。TANUKI-CALC-CONTINUITY-1・DILUTION-DEFINITION-UNIFY-1・DEFICIT-QUALITY-ADOPT-1・MULTIPLES-ADOPT-1を移設、PARSER-LAYER3は段1の確認だけ追記（段2以降が残る）。②Market Data Dailyのcancelledは設計どおり（`daily_guard.py`が`gh run cancel`で取り消す）で、異常は11-11 20:25 UTCの`startup_failure`1件だけ（FINDINGS、直し方の案は(a)Workerの時刻を冬時間で切り替え・(b)取り消しをやめsuccessで終える）。③TANUKI-SHARES-SINGLE-SOURCE-1を公開（`7a9564dd2d`、ID `-1-1`、scope 96銘柄。TANUKI `45089486452`・Stonks `45089489293`→TANUKI `45089744492`→HypeCore `45092316774`→TANUKI `45092527669`。1回目96銘柄・以降0件、全96銘柄が試算と一致）。保有の判定変化はPLTR WATCH→HOLDのみ（−6.4%、分母がyfinance implied 2,409Mから希薄化後加重平均2,574Mに）。TSLAの412Mは2025 CEO報酬の未確定の株423,743,904株で決定2のまま（画面に理由）。SOUNは+7.5%（予行+11.3%との差はLayer3の追いつき）。手順33はSEC原本の残りだけに。前後比較は`tools/sim`（前＝kaihatsuのworktree）。これで未公開の置き場所は無い。次は手順40。
 
 **2026-11-16 の作業（終業、アクティブ14件）**:

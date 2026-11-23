@@ -116,7 +116,7 @@ def test_saved_records_crwv():
             st[r["status"]] = st.get(r["status"], 0) + 1
             if r["status"] != "ok":
                 assert r.get("reason")
-    assert set(st) <= {"ok", "no_bs_statement", "not_found"} and st["ok"] > 2000
+    assert set(st) <= {"ok", "no_bs_statement", "not_found"} and st["ok"] > 1500
 
 
 def _rec(accn, form, filed, inst, concepts, lines=()):

@@ -2565,6 +2565,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **優先度:** 高
 **分類:** SEC層 / `common/sec_data/parser.py`（年次`annual_YYYY.json`・四半期`quarterly_*.json`）とその読み手（TANUKI・STONKS・EPS ANALYZER・TAIL・screening・rcc）
 **登録日:** 2026-11-11
+**注（2026-11-23）:** 本件の調べに出るKULR（逆算Q4の粗利）・SPIR・BBAI・ONDS・XOM・FCX・VZ等は[[UNIVERSE-REBALANCE-2026Q4-1]]で登録を抹消した（データ・設定も削除。過去の試算・記録はそのまま）
 **着手条件:** なし（登録のみ。次の作業の順は`PROJECT_STATUS.md`）
 **段1の確認（2026-11-23）:** 公開（2026-11-16、`-1-1`）後の確認に合格（11-17朝・11-23の日曜の連鎖で96銘柄とも印0件・`quarterly_*.json`のbsは新しい四半期の分だけ増え・CAKE 41.25／KOは26.17で不変〈CONTINUITYの後の値〉）。段2以降が残るので本件は閉じない
 **発見:** FINDINGS 2026-11-04の3行（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
@@ -2638,6 +2639,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **優先度:** 中
 **分類:** SEC層 / `common/sec_data/layer3_builder.py`（候補選び）・`common/sec_data/bs_lines.py`（分類）・`config/sec_concept_definitions.json`
 **登録日:** 2026-11-16
+**注（2026-11-23）:** 該当銘柄のうちMO（ttm D&A 0.79倍）は登録を抹消済み（[[UNIVERSE-REBALANCE-2026Q4-1]]の削除。データ・設定も削除）。残りはAPP・ENTG・FROG・LITE
 **着手条件:** 公開の列（[[TANUKI-CALC-CONTINUITY-1]]・[[DILUTION-DEFINITION-UNIFY-1]]・[[DEFICIT-QUALITY-ADOPT-1]]・[[MULTIPLES-ADOPT-1]]・[[TANUKI-SHARES-SINGLE-SOURCE-1]]）の後
 **発見:** System Health Check [P] ExternalChange の新しい6件（2026-11-15の日曜の更新）の調べ（`docs/architecture/EXTERNAL_CHANGE_2026-11-15.md`）。確認済みの台帳には「誤り・欠け。[[SEC-RETAG-RECONCILE-1]]で直す（直ったら外す）」として3件を入れた。**登録だけで、実装は許可されていない**
 
@@ -2726,6 +2728,7 @@ DOCNだけ理論株価に効く（約+2%、判定は境に近い）。COHR・SPI
 **分類:** 全サブシステム（CLAUDE_CODE_START.md Step 8.5）
 **登録日:** 2026-11-22
 **着手条件:** 上の行列の後。削除は[[STONKS-DEFICIT-REALITY-EPIC-1]]の①より前
+**削除済み（2026-11-23）:** 削除の14銘柄（KULR・QBTS・SPIR・BBAI・RDW・ONDS・RXRX・FCX・SCCO・XOM・PEP・PM・MO・VZ）を`cik_lookup.csv`の`status=retired`にし、専用のデータ・設定のキーを消した（試算: 残る82銘柄の理論株価・判定の変化0）。市場データ（`common/market_data/`）はFCX・MO・PEP・PM・VZ・XOMがS&P500の構成銘柄で全S&P500が取得対象のため残す。STONKSの対象は24→17（BBAI・KULR・ONDS・QBTS・RDW・RXRX・SPIR）。**修正（HON・ASTS）・登録は残る**ので本件は閉じない。確認は`CLAUDE_CODE_START.md`手順41
 
 #### 内容
 - 削除（Koichi決定）: KULR・QBTS・SPIR・BBAI・RDW・ONDS（投資対象の水準に達していない）、RXRX・FCX・SCCO・XOM（機能が構造的に働かない）、PEP・PM・MO・VZ（守り株のうち役割が重なる。KO・JNJ・CAKE・WMTは景気後退期の指標として残す）

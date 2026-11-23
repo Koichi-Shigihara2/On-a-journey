@@ -30,7 +30,6 @@ def test_eps_category_follows_financial():
 def test_classify_reads_master_for_the_former_manual_and_sic_cases():
     c = SectorClassifierV2(SECTORS_YAML)
     assert c.classify("RKLB") == "宇宙・航空"                 # 手設定（宇宙・航空）は写像と同じ
-    assert c.classify("SPIR") == "一般消費財 / 製造 / EV"     # 手設定（Technology）は写像に寄せた
     assert c.classify("VRT") == "一般消費財 / 製造 / EV"
     assert c.classify("RCAT") == "宇宙・航空"                 # SIC 7372（ソフトウェア）でなく industry（Aerospace & Defense）
     assert c.classify("V") == "Technology" and c.classify("MSCI") == "Technology"

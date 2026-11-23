@@ -2,40 +2,10 @@
   "_comment": "report_consistency_check.py WARN確認済み台帳（QUALITY-GATES-EPIC-1 Phase 1 2026-07-12新設）。CHECK番号・対象銘柄の組み合わせ単位で確認済み扱いにする。数値が変わっても再確認は不要（意図的な粗さ）。未登録の(check, ticker)組み合わせは実行時に「未確認」として強調表示される。",
   "acknowledged": [
     {
-      "check": "WARN-46",
-      "ticker": "MO",
-      "acknowledged_date": "2026-09-09",
-      "comment": "GP-COGS不整合。[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]でgenuine定義差と確定済み（own-filingのExciseAndSalesTaxesタグが検出diffと一致、たばこ産業特有の物品税込み収益計上）。"
-    },
-    {
-      "check": "WARN-46",
-      "ticker": "PM",
-      "acknowledged_date": "2026-09-09",
-      "comment": "GP-COGS不整合。[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]でgenuine定義差と確定済み（own-filingのExciseAndSalesTaxesタグが検出diffと一致、2018年以降はASC606適用等により乖離ゼロ）。"
-    },
-    {
-      "check": "WARN-46",
-      "ticker": "SCCO",
-      "acknowledged_date": "2026-09-09",
-      "comment": "GP-COGS不整合。[[GROSSPROFIT-COGS-ANNUAL-DEFINITION-GAP-MO-PM-SCCO-1]]でgenuine定義差と確定済み（own-data同一accn内のDepreciationDepletionAndAmortizationタグが検出diffと一致、鉱業界特有のD&A別建て表示）。"
-    },
-    {
       "check": "WARN-10",
       "ticker": "ELF",
       "acknowledged_date": "2026-07-12",
       "comment": "yfinance PSがステール値の可能性。既知の許容WARN、実害なしと確認済み。"
-    },
-    {
-      "check": "WARN-20",
-      "ticker": "MO",
-      "acknowledged_date": "2026-07-12",
-      "comment": "fcf_cagr floor張り付き。GROWTH-SANITY-CLASS-SYNC-1で経緯を追跡中、Classification未連動の既知課題。"
-    },
-    {
-      "check": "WARN-20",
-      "ticker": "XOM",
-      "acknowledged_date": "2026-07-12",
-      "comment": "fcf_cagr floor張り付き。Classification=HOLD/WATCHのため実害限定的、既知の許容WARN。"
     },
     {
       "check": "WARN-21",
@@ -54,12 +24,6 @@
       "ticker": "AVAV",
       "acknowledged_date": "2026-07-12",
       "comment": "Revenue段差型急変。2025年BlueHalo買収による実際の連結売上増（タグ誤りなし）。"
-    },
-    {
-      "check": "WARN-21",
-      "ticker": "BBAI",
-      "acknowledged_date": "2026-07-12",
-      "comment": "Revenue段差型急変。annual_YYYY.jsonで実売上を確認、同一オーダーの範囲内の変動でタグ誤りの兆候なし。"
     },
     {
       "check": "WARN-21",
@@ -87,12 +51,6 @@
     },
     {
       "check": "WARN-21",
-      "ticker": "KULR",
-      "acknowledged_date": "2026-07-12",
-      "comment": "Revenue段差型急変。小型バッテリー技術企業の小規模売上ベースからの実際の成長（タグ誤りなし）。"
-    },
-    {
-      "check": "WARN-21",
       "ticker": "LITE",
       "acknowledged_date": "2026-07-12",
       "comment": "Revenue段差型急変。2021年会計年度末変更に伴う移行期間の正規の10-K提出が原因（SEC-TAG-FICO-CPRT-1完了記録参照、タグ誤りではなく別要因として対応保留中）。"
@@ -105,39 +63,15 @@
     },
     {
       "check": "WARN-21",
-      "ticker": "ONDS",
-      "acknowledged_date": "2026-07-12",
-      "comment": "Revenue段差型急変。小型ドローン/無線企業の契約タイミングによる売上の凹凸（タグ誤りなし）。"
-    },
-    {
-      "check": "WARN-21",
-      "ticker": "QBTS",
-      "acknowledged_date": "2026-07-12",
-      "comment": "Revenue段差型急変。量子コンピューティング企業の小規模売上ベースからの実際の成長（タグ誤りなし）。"
-    },
-    {
-      "check": "WARN-21",
       "ticker": "RCAT",
       "acknowledged_date": "2026-07-12",
       "comment": "Revenue段差型急変。ドローン企業の小規模売上ベースからの実際の成長（タグ誤りなし）。"
     },
     {
       "check": "WARN-21",
-      "ticker": "RDW",
-      "acknowledged_date": "2026-07-12",
-      "comment": "Revenue段差型急変。宇宙企業Redwireの実際の成長（M&A含む、タグ誤りなし）。"
-    },
-    {
-      "check": "WARN-21",
       "ticker": "RKLB",
       "acknowledged_date": "2026-07-12",
       "comment": "Revenue段差型急変。Rocket Labの実際の打ち上げ受注拡大による売上成長（タグ誤りなし）。"
-    },
-    {
-      "check": "WARN-21",
-      "ticker": "RXRX",
-      "acknowledged_date": "2026-07-12",
-      "comment": "Revenue段差型急変。Recursion Pharmaceuticalsの創薬パートナーシップ収益の実際の成長（タグ誤りなし）。"
     },
     {
       "check": "WARN-21",
@@ -189,12 +123,6 @@
     },
     {
       "check": "WARN-23",
-      "ticker": "FCX",
-      "acknowledged_date": "2026-07-18",
-      "comment": "fyタグ裏取り不一致。一次情報検証済み: total_assets(end=2024-12-31)。カバーページ「For the fiscal year ended December 31, 2024」・本文「in 2024」多数使用でcomputed_year=2024が正しい。dei:DocumentFiscalYearFocusが2023のままで同一文書内でカバーページ本文と矛盾するfilerのコピペ更新漏れと確認。本番データは正しい値を採用済み、実害なし。"
-    },
-    {
-      "check": "WARN-23",
       "ticker": "FICO",
       "acknowledged_date": "2026-07-18",
       "comment": "fyタグ裏取り不一致。一次情報検証済み: total_assets(end=2020-09-30)。本文「During fiscal 2020, we continued to...」「in each of fiscal 2020, 2019 and 2018」でcomputed_year=2020が正しい。固定9/30決算のfilerタグ誤り。本番データは正しい値を採用済み、実害なし。"
@@ -243,12 +171,6 @@
     },
     {
       "check": "WARN-26",
-      "ticker": "KULR",
-      "acknowledged_date": "2026-07-19",
-      "comment": "BS項目遷移(有値→None)。対象フィールド: short_term_debt（FY2024→FY2025でNoneに遷移）。FY52WEEK-BS-NULL-SILENT-1一次情報調査で「生涯フェードアウト」（真の無借金継続、タグ申告停止による欠損ではない）と確認済み。"
-    },
-    {
-      "check": "WARN-26",
       "ticker": "MSCI",
       "acknowledged_date": "2026-07-19",
       "comment": "BS項目遷移(有値→None)。対象フィールド: short_term_debt（FY2024→FY2025でNoneに遷移）。FY52WEEK-BS-NULL-SILENT-1一次情報調査で「生涯フェードアウト」（真の無借金継続、タグ申告停止による欠損ではない）と確認済み。MSCIはARCH-DATA-1系調査でFYE一回限りの変更履歴（2009-2010年頃）が確認済みだが、当該変更は今回の遷移境界（FY2024→FY2025）とは無関係な過去の事象。"
@@ -270,18 +192,6 @@
       "ticker": "LLY",
       "acknowledged_date": "2026-09-10",
       "comment": "BS項目遷移(有値→None)。対象フィールド: short_term_investments（FY2024→FY2025でNoneに遷移）。[[BS-FIELD-NEWLY-MISSING-2026-1]]一次情報調査（FY2025 10-K、accn 0000059478-26-000013、Consolidated Balance Sheets R5.htm）で「生涯フェードアウト」と確認済み。FY2025のBS本体はInvestmentsを単一のNoncurrentAssets科目（$2,802M）としてのみ表示し、従来存在した流動（Short-term）区分の科目行自体がBS本体から消滅している。company_facts.json内のAvailableForSaleSecurities系footnote詳細タグ（満期別内訳等）も2025-09-30（Q3 10-Q）を最後に2025-12-31（FY2025 10-K）分の申告が一切存在せず、タグ申告停止による欠損ではなくBS表示方法自体の変更（現金同等物が$3,268M→$7,268Mへ増加する一方で投資残高は減少）と確認した。"
-    },
-    {
-      "check": "WARN-26",
-      "ticker": "SCCO",
-      "acknowledged_date": "2026-09-10",
-      "comment": "BS項目遷移(有値→None)。対象フィールド: short_term_debt（FY2024→FY2025でNoneに遷移）。[[BS-FIELD-NEWLY-MISSING-2026-1]]一次情報調査（FY2025 10-K、accn 0001104659-26-021492、Consolidated Balance Sheets R5.htm）で「生涯フェードアウト」（真の無流動負債継続、タグ申告停止による欠損ではない）と確認済み。BS本体の「Current portion of long-term debt」行がFY2025列で空欄（$0相当の表示）、FY2024列は$499.8Mで比較列として残存。長期負債（LongTermDebtNoncurrent）$6,750.7Mが全額を占め、1年以内償還予定分が存在しない状態。"
-    },
-    {
-      "check": "WARN-26",
-      "ticker": "SPIR",
-      "acknowledged_date": "2026-09-10",
-      "comment": "BS項目遷移(有値→None)。対象フィールド: long_term_debt（FY2024→FY2025でNoneに遷移）。[[BS-FIELD-NEWLY-MISSING-2026-1]]一次情報調査（FY2025 10-K、accn 0001193125-26-116169、Consolidated Balance Sheets R2.htm）で「生涯フェードアウト」（実際の負債完済、タグ申告停止による欠損ではない）と確認済み。BS本体の「Long-term debt, current portion」がFY2025列で$0（FY2024列は$93,936K）、かつ「Long-term debt, net of current portion」（非流動区分）の行自体がFY2025のBS本体から消滅している（FY2024比較列のLongTermDebtNoncurrent $4,618Kも含め、2025年中に負債を完済したと判断できる）。"
     },
     {
       "check": "WARN-47",
@@ -377,12 +287,6 @@
       "acknowledged_date": "2026-09-26",
       "match": "2025-04-21",
       "comment": "daily/行の抜け。fetcher.py --repair-missing-daysで取り直しを試みたが、yfinanceに2025-04-21の行が無い（前後の04-17・04-22はある）。推測で埋めない方針のため欠損のまま（指示書⑳ STEP D-3）。"
-    },
-    {
-      "check": "WARN-50",
-      "ticker": "RXRX",
-      "acknowledged_date": "2026-09-26",
-      "comment": "IV過大の疑い（IV/株$18.75÷株価$3.74＝5.0倍）。FCFが全年赤字（2021〜2025、年約−$3.7億）のためrevenue floorでFCFベースを置いた理論値で、DCF信頼性LOW・分類はPolicy AでWATCHに丸め済み（upside依存の判定をしていない）。IVは09-25から不変で、株価の下落（$3.89→$3.74）で閾値5倍をわずかに超えただけ（09-25は4.82倍）。価格欠損の間（09-26 JSTの誤った実行）は株価0で検知できていなかった。既存の信頼性判定で扱い済みのため新たな異常ではない（指示書⑳ STEP F、2026-09-26）。"
     },
  {"check": "WARN-59", "ticker": "LOAR", "acknowledged_date": "2026-10-10", "comment": "annual_2023・quarterly_2024Q1のshares=204は上場（2024年4月）前の株数（LOAR Holdingsの上場前の発行済株式）で、単位誤りではない。上場後の千株単位の申告はfact_overrides.jsonの\"share_unit\"で×1000補正済み（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]）。"},
  {"check": "WARN-59", "ticker": "SOUN", "acknowledged_date": "2026-10-10", "comment": "quarterly_2022Q1のshares_basic=4,161,000はSPAC合併（2022年4月）前の株数で、単位誤りではない（[[LAYER2-SHARES-UNIT-THOUSANDS-1]]の調査で確認）。"},

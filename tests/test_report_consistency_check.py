@@ -107,8 +107,7 @@ class TestLoadWarnLedger:
         登録されていること（QUALITY-GATES-EPIC-1 Phase 1 Step4の登録確認）"""
         result = load_warn_ledger()
         assert ("WARN-10", "ELF") in result
-        assert ("WARN-20", "MO") in result
-        assert ("WARN-20", "XOM") in result
+        # MO・XOMは2026-11-23に登録を抹消（台帳から外した）
 
 
 class TestCheckCDataJumpIntegration:
@@ -534,7 +533,7 @@ class TestWarn26KnownFadeoutAcknowledged:
     事前登録されており、annotate_warn()経由で確認済み（is_new=False）扱いに
     なることを確認する（初回実行時のアラート疲れ回避の回帰テスト）"""
 
-    KNOWN_FADEOUT_TICKERS = ["APP", "BKNG", "CPRT", "DOCN", "ENTG", "KULR", "MSCI", "SOUN"]
+    KNOWN_FADEOUT_TICKERS = ["APP", "BKNG", "CPRT", "DOCN", "ENTG", "MSCI", "SOUN"]   # KULRは2026-11-23に登録を抹消
 
     def test_known_fadeout_tickers_are_acknowledged_for_warn_26(self):
         ledger = load_warn_ledger()

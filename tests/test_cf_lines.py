@@ -305,7 +305,7 @@ class TestSavedRecords:
         assert a["no_capex_line"] and a["val"] == 0.0
 
     def test_vz_and_loar(self):
-        assert self._annual("VZ", "2025-12-31")["val"] == 17011000000
+        # VZ は2026-11-23の登録銘柄の入れ替え（UNIVERSE-REBALANCE-2026Q4-1）で抹消した
         assert self._annual("LOAR", "2025-12-31")["val"] == pytest.approx(13.0e6, rel=0.01)
 
     def test_statuses_recorded(self):

@@ -65,47 +65,6 @@
       }
     ]
   },
-  "ONDS": {
-    "share_unit": [
-      {
-        "tags": [
-          "WeightedAverageNumberOfDilutedSharesOutstanding",
-          "WeightedAverageNumberOfSharesOutstandingBasic"
-        ],
-        "accn": "0001213900-26-035981",
-        "end": "2025-12-31",
-        "match_vals": [
-          221769
-        ],
-        "multiply": 1000,
-        "reason": "[[LAYER2-SHARES-UNIT-THOUSANDS-1]] FY2025の10-Kが年間の加重平均株式数を千株単位の値（221,769）のまま株数としてタグ付けした。同じ期を申告した別の書類がないため個別に×1000する",
-        "evidence": {
-          "period_end_shares": "CommonStockSharesOutstanding 2025-12-31 380,763,481（同じ10-K）",
-          "neighbors": "2025-09-30 四半期の加重平均259,909,415（10-Q）、2024年度 69,917,062（10-K 0001213900-25-022968）",
-          "raw": "Diluted・Basic 2025-01-01〜12-31 221,769（accn 0001213900-26-035981、filed 2026-03-30）"
-        }
-      },
-      {
-        "tags": [
-          "WeightedAverageNumberOfDilutedSharesOutstanding",
-          "WeightedAverageNumberOfSharesOutstandingBasic"
-        ],
-        "accn": "0001213900-26-057859",
-        "end": "2026-03-31",
-        "match_vals": [
-          461706,
-          445089
-        ],
-        "multiply": 1000,
-        "reason": "[[LAYER2-SHARES-UNIT-THOUSANDS-1]] 2026年第1四半期10-Qが加重平均株式数を千株単位の値（希薄化後461,706・基本445,089）のまま株数としてタグ付けした。同じ期を申告した別の書類がないため個別に×1000する",
-        "evidence": {
-          "cover_shares": "dei:EntityCommonStockSharesOutstanding 495,762,650（2026-05-13、同じ10-Q）",
-          "period_end_shares": "CommonStockSharesOutstanding 2026-03-31 469,062,109（同じ10-Q）",
-          "raw": "Diluted 461,706・Basic 445,089（2026-01-01〜03-31、accn 0001213900-26-057859、filed 2026-05-15）"
-        }
-      }
-    ]
-  },
   "LOAR": {
     "share_unit": [
       {
