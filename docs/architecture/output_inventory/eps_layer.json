@@ -212,7 +212,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3046,
+     "line": 3057,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map",
@@ -1100,7 +1100,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1049,
+     "line": 1056,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual",
@@ -1550,7 +1550,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 953,
+     "line": 960,
      "func": "KoichiValuationCalculator.calculate_pt",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per",
@@ -1558,7 +1558,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1010,
+     "line": 1017,
      "func": "_calc_adjusted_per",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1566,7 +1566,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1014,
+     "line": 1021,
      "func": "_calc_adjusted_per",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1574,7 +1574,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1049,
+     "line": 1056,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per",
@@ -1654,7 +1654,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3852,
+     "line": 3862,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per",
@@ -2317,7 +2317,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3852,
+     "line": 3862,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result",
@@ -3006,7 +3006,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1182,
+     "line": 1192,
      "text": "def _determine_beta("
     }
    ],
@@ -3037,12 +3037,12 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 124,
+     "line": 126,
      "text": "def _select_fcf_source("
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1166,
+     "line": 1176,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -4613,24 +4613,7 @@
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
-    "key": "per",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/value-monitor/adjusted_eps_analyzer/data/summary.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json",
-     "docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json"
-    ],
-    "label": "",
-    "lines": [
-     961
-    ],
-    "decision": "残す（2026-10-21）"
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
-    "key": "per_adjusted",
+    "key": "per_adjusted_ttm",
     "has_writer": true,
     "status": "ほかの書き手あり",
     "sources": [
@@ -4646,31 +4629,7 @@
    },
    {
     "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
-    "key": "per_adjusted_ttm",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
-    "label": "",
-    "lines": [
-     962
-    ],
-    "decision": "残す（2026-10-21）"
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
     "key": "per_gaap_ttm_sec",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
-    "label": "",
-    "lines": [
-     961
-    ],
-    "decision": "残す（2026-10-21）"
-   },
-   {
-    "page": "docs/value-monitor/adjusted_eps_analyzer/stock.html",
-    "key": "per_is_forward",
     "has_writer": true,
     "status": "ほかの書き手あり",
     "sources": [
@@ -6338,35 +6297,14 @@
       ]
      },
      {
-      "key": "per",
-      "status": "この段階の書き手あり",
-      "lines": [
-       961
-      ]
-     },
-     {
-      "key": "per_adjusted",
+      "key": "per_adjusted_ttm",
       "status": "ほかの書き手あり",
       "lines": [
        962
       ]
      },
      {
-      "key": "per_adjusted_ttm",
-      "status": "書き手なし",
-      "lines": [
-       962
-      ]
-     },
-     {
       "key": "per_gaap_ttm_sec",
-      "status": "書き手なし",
-      "lines": [
-       961
-      ]
-     },
-     {
-      "key": "per_is_forward",
       "status": "ほかの書き手あり",
       "lines": [
        961

@@ -43,7 +43,7 @@
 - Python・保存済みファイル: `common/system_health.py` 行 52・163・186・1217・1218・1303（経由 `common/system_health.py::check_d_actions`、`common/system_health.py::check_e_silo`）
 - Python・保存済みファイル: `scripts/method_change_scope.py` 行 39
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 36
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 415・466・832・836・1163・1373・1660・1665・3521・3525・3852（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 415・466・832・836・1163・1373・1660・1665・3531・3535・3862（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/stonks-silo/index.html` 行 392
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 240
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 2743
@@ -231,8 +231,8 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
 | 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:591`<br>`docs/value-monitor/tanuki_score/index.html:1114`<br>`docs/value-monitor/tanuki_score/index.html:1338`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1150`<br>`docs/value-monitor/tanuki_valuation/stock.html:1151`<br>`src/value/tanuki_valuation/pipeline.py:598`<br>`src/value/tanuki_valuation/pipeline.py:600`<br>`src/value/tanuki_valuation/pipeline.py:602`<br>`src/value/tanuki_valuation/pipeline.py:872`<br>`src/value/tanuki_valuation/pipeline.py:885`<br>`src/value/tanuki_valuation/pipeline.py:905`<br>`src/value/tanuki_valuation/pipeline.py:907`<br>`src/value/tanuki_valuation/pipeline.py:979`<br>`src/value/tanuki_valuation/pipeline.py:980`<br>`src/value/tanuki_valuation/pipeline.py:981`<br>`src/value/tanuki_valuation/pipeline.py:982`<br>`src/value/tanuki_valuation/pipeline.py:1405`<br>`src/value/tanuki_valuation/pipeline.py:1432`<br>`src/value/tanuki_valuation/pipeline.py:1437`<br>`src/value/tanuki_valuation/pipeline.py:1483`<br>`src/value/tanuki_valuation/pipeline.py:1789`<br>`src/value/tanuki_valuation/pipeline.py:1967` | いいえ |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1182` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:221`<br>`src/value/tanuki_valuation/calculator/adjustments.py:196`<br>`src/value/tanuki_valuation/data_fetcher.py:124`<br>`src/value/tanuki_valuation/data_fetcher.py:1166` | いいえ |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1192` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:221`<br>`src/value/tanuki_valuation/calculator/adjustments.py:196`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1176` | いいえ |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）
 
@@ -251,7 +251,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | `financial_as_of.py` | 104 | — | — | `src/value/stonks_silo/pipeline.py` | 3件 |
 | `financial_trend_calculator.py` | 393 | — | — | `src/value/stonks_silo/pipeline.py` | 3件 |
 | `pipeline.py` | 267 | `.github/workflows/Stonks_Silo_Update.yml` | — | — | 6件 |
-| `valuation_fetcher.py` | 128 | — | — | `src/value/stonks_silo/pipeline.py` | 2件 |
+| `valuation_fetcher.py` | 128 | — | — | `src/value/stonks_silo/pipeline.py` | 3件 |
 
 ## 止める条件の内訳
 

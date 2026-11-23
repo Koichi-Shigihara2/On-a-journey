@@ -212,4 +212,5 @@ class TestSharesFromMarketData:
         _patch_market_data(monkeypatch, latest_price={"date": "2026-08-10", "close": 100.0}, attrs=_FULL_ATTRS)
         result = fetcher.get_financials("XYZ")
         assert result["diluted_shares"] == 1_010_000_000
-        assert result["_shares_source"] == "yf_implied"
+        # 倍率の部品に株数が無い銘柄（V型）は yfinance implied を印つきで使う（[[TANUKI-SHARES-SINGLE-SOURCE-1]]）
+        assert result["_shares_source"] == "yf_implied_fallback"
