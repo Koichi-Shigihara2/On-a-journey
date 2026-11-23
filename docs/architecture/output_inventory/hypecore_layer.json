@@ -345,7 +345,7 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 365,
+     "line": 364,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_load_json",
@@ -353,10 +353,18 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 368,
+     "line": 367,
      "func": "check_ticker",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::check_b_source_label",
+     "type": "Python"
+    },
+    {
+     "file": "common/screening/dcf_validity_checker.py",
+     "line": 368,
+     "func": "check_ticker",
+     "how": "保存済みファイル",
+     "via": "common/screening/dcf_validity_checker.py::_load_json",
      "type": "Python"
     },
     {
@@ -372,20 +380,12 @@
      "line": 370,
      "func": "check_ticker",
      "how": "保存済みファイル",
-     "via": "common/screening/dcf_validity_checker.py::_load_json",
-     "type": "Python"
-    },
-    {
-     "file": "common/screening/dcf_validity_checker.py",
-     "line": 371,
-     "func": "check_ticker",
-     "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::check_e_transition_sample",
      "type": "Python"
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 409,
+     "line": 408,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_load_json",
@@ -393,7 +393,7 @@
     },
     {
      "file": "common/screening/dcf_validity_checker.py",
-     "line": 449,
+     "line": 448,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/screening/dcf_validity_checker.py::_load_json",
@@ -777,7 +777,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3508,
+     "line": 3518,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "grep",
@@ -785,7 +785,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3512,
+     "line": 3522,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "AST",
@@ -793,7 +793,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3683,
+     "line": 3693,
      "func": "TanukiValuationPipeline._load_hype_phase",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_hype_info",
@@ -801,7 +801,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3688,
+     "line": 3698,
      "func": "TanukiValuationPipeline._load_hype_info",
      "how": "保存済みファイル",
      "via": "grep",
@@ -809,7 +809,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3693,
+     "line": 3703,
      "func": "TanukiValuationPipeline._load_hype_info",
      "how": "保存済みファイル",
      "via": "AST",
@@ -817,7 +817,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3740,
+     "line": 3750,
      "func": "TanukiValuationPipeline._save_hypecore_history",
      "how": "保存済みファイル",
      "via": "grep",
@@ -825,7 +825,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3745,
+     "line": 3755,
      "func": "TanukiValuationPipeline._save_hypecore_history",
      "how": "保存済みファイル",
      "via": "AST",
@@ -833,7 +833,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3852,
+     "line": 3862,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
@@ -2271,7 +2271,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1182,
+     "line": 1192,
      "text": "def _determine_beta("
     }
    ],
@@ -2302,12 +2302,12 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 124,
+     "line": 126,
      "text": "def _select_fcf_source("
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1166,
+     "line": 1176,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -2363,7 +2363,8 @@
     "tests/test_method_change.py",
     "tests/test_multiples_adopt.py",
     "tests/test_output_inventory_check.py",
-    "tests/test_pipeline_logic.py"
+    "tests/test_pipeline_logic.py",
+    "tests/test_shares_base.py"
    ]
   }
  ],
@@ -2709,34 +2710,7 @@
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
-    "key": "per",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/value-monitor/hypecore/data/tickers.json",
-     "docs/value-monitor/hypecore/data/{T}_poc.json"
-    ],
-    "label": "",
-    "lines": [
-     566
-    ],
-    "decision": "残す（2026-10-21）"
-   },
-   {
-    "page": "docs/value-monitor/hypecore/detail.html",
     "key": "per_gaap_ttm_sec",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
-    "label": "",
-    "lines": [
-     566
-    ],
-    "decision": "残す（2026-10-21）"
-   },
-   {
-    "page": "docs/value-monitor/hypecore/detail.html",
-    "key": "per_is_forward",
     "has_writer": true,
     "status": "ほかの書き手あり",
     "sources": [
@@ -2786,25 +2760,14 @@
    },
    {
     "page": "docs/value-monitor/hypecore/detail.html",
-    "key": "ps",
-    "has_writer": true,
-    "status": "この段階の書き手あり",
-    "sources": [
-     "docs/value-monitor/hypecore/data/tickers.json",
-     "docs/value-monitor/hypecore/data/{T}_poc.json"
-    ],
-    "label": "",
-    "lines": [
-     570
-    ],
-    "decision": "残す（2026-10-21）"
-   },
-   {
-    "page": "docs/value-monitor/hypecore/detail.html",
     "key": "ps_ttm_sec",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
+    "has_writer": true,
+    "status": "ほかの書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/AAPL/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ABBV/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/ADBE/latest.json"
+    ],
     "label": "",
     "lines": [
      570
@@ -3860,36 +3823,15 @@
       ]
      },
      {
-      "key": "per",
-      "status": "この段階の書き手あり",
-      "lines": [
-       566
-      ]
-     },
-     {
       "key": "per_gaap_ttm_sec",
-      "status": "書き手なし",
-      "lines": [
-       566
-      ]
-     },
-     {
-      "key": "per_is_forward",
       "status": "ほかの書き手あり",
       "lines": [
        566
       ]
      },
      {
-      "key": "ps",
-      "status": "この段階の書き手あり",
-      "lines": [
-       570
-      ]
-     },
-     {
       "key": "ps_ttm_sec",
-      "status": "書き手なし",
+      "status": "ほかの書き手あり",
       "lines": [
        570
       ]

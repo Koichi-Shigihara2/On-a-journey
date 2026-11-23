@@ -9,7 +9,7 @@
 
 **件数**: 出力 3（ファイル 3・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 1／2件以上 2／規則の二重 9（検出式 11種のうち。HypeCoreのファイルを含むもの 1）
 
-**画面の項目**: 画面が読むキー 63（この段階の書き手あり 59・ほかの書き手あり 2・画面の中で作る値 0・**書き手なし 2**）／書き手があるのに誰も読まないキー **1**（今の書き手のコードに無いキー 0 は数えない）
+**画面の項目**: 画面が読むキー 60（この段階の書き手あり 57・ほかの書き手あり 3・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **1**（今の書き手のコードに無いキー 0 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 1件／解決できた読み込み 12件＋ファイル名で当たった行 32件（2.2%）→ 当たらない
 
@@ -62,7 +62,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated`(2)・`generated_at`(9)・`method_change_applied`(1)・`monthly`(19)・`ticker`(22)
 - Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 52・67・68・175・206（経由 `browser_checks/check_signal_consistency_section.py::_piv_points`、`browser_checks/check_signal_consistency_section.py::pick_sparse_ticker`）
 - Python・保存済みファイル: `common/registration/register_ticker.py` 行 299・459・501・512（経由 `common/registration/register_ticker.py::step5_hypecore`）
-- Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・163・166・203・226・251・254・365・368・369・370 ほか3（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_b_source_label`、`common/screening/dcf_validity_checker.py::check_e_transition_sample`）
+- Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・80・163・166・203・226・251・254・364・367・368・369 ほか3（経由 `common/screening/dcf_validity_checker.py::_load_json`、`common/screening/dcf_validity_checker.py::check_b_source_label`、`common/screening/dcf_validity_checker.py::check_e_transition_sample`）
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 173・473・653・667・669（経由 `common/sec_data/registration_validator.py::check_p1_registration_completeness`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2848・2877・2888（経由 `common/screening/dcf_validity_checker.py::_load_json`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 80・308・337・344・355・361（経由 `common/stage_v2.py::_load`、`common/stage_v2.py::finalize`）
@@ -106,8 +106,6 @@
 
 ### 書き手なし（画面が読むのに、今の書き手のコードにもどのJSONにも無いキー）
 
-- `per_gaap_ttm_sec`（`docs/value-monitor/hypecore/detail.html` 行 566）
-- `ps_ttm_sec`（`docs/value-monitor/hypecore/detail.html` 行 570）
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
@@ -119,7 +117,7 @@
 
 なし
 
-### `docs/value-monitor/hypecore/detail.html`（39項目）
+### `docs/value-monitor/hypecore/detail.html`（36項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
@@ -138,13 +136,10 @@
 | — | `ocf_yield_q` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 319 | 残す（2026-10-21） |
 | — | `peg` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 569 | 残す（2026-10-21） |
 | — | `peg_ratio` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 318・569 | 残す（2026-10-21） |
-| — | `per` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 566 | 残す（2026-10-21） |
-| — | `per_gaap_ttm_sec` | 書き手なし | 566 | 残す（2026-10-21） |
-| — | `per_is_forward` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 566 | 残す（2026-10-21） |
+| — | `per_gaap_ttm_sec` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 566 | 残す（2026-10-21） |
 | — | `price` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 435・482・489・538 | 残す（2026-10-21） |
 | — | `price_iv_ratio` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 321・354 | 残す（2026-10-21） |
-| — | `ps` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 570 | 残す（2026-10-21） |
-| — | `ps_ttm_sec` | 書き手なし | 570 | 残す（2026-10-21） |
+| — | `ps_ttm_sec` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 570 | 残す（2026-10-21） |
 | — | `psr` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 318・570 | 残す（2026-10-21） |
 | 売上成長: ${c.raw!=null?(c.raw>0? | `raw` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 509・509・509 | 残す（2026-10-21） |
 | — | `real_strong` | この段階の書き手あり<br>`docs/value-monitor/hypecore/data/tickers.json`<br>`docs/value-monitor/hypecore/data/{T}_poc.json` | 375 | 残す（2026-10-21） |
@@ -204,7 +199,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 期待の正体（折りたたみ） | `label`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 左：期待指標＋遷移確率 | `analyst_upgrade_rate`（この段階の書き手あり）<br>`eps_surprise`（この段階の書き手あり）<br>`forward_pe`（この段階の書き手あり）<br>`from_peak`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`ocf_yield_q`（この段階の書き手あり）<br>`peg_ratio`（この段階の書き手あり）<br>`price_iv_ratio`（この段階の書き手あり）<br>`psr`（この段階の書き手あり）<br>`raw`（この段階の書き手あり）<br>`rev_yoy`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`rule40_yoy_netmargin`（この段階の書き手あり）<br>`stage`（この段階の書き手あり）<br>`values`（この段階の書き手あり）<br>`vol_surge_6m`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | 右：実体指標＋現状解釈＋内部フェーズ | `eps_surprise`（この段階の書き手あり）<br>`from_peak`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`month`（この段階の書き手あり）<br>`price_iv_ratio`（この段階の書き手あり）<br>`rev_yoy`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`substage_label`（この段階の書き手あり）<br>`substage_next`（この段階の書き手あり）<br>`substage_watch`（この段階の書き手あり）<br>`t`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
-| 追加H: バリュエーション倍率パネル | `ev_ebitda`（この段階の書き手あり）<br>`peg`（ほかの書き手あり）<br>`peg_ratio`（この段階の書き手あり）<br>`per`（この段階の書き手あり）<br>`per_gaap_ttm_sec`（書き手なし）<br>`per_is_forward`（ほかの書き手あり）<br>`ps`（この段階の書き手あり）<br>`ps_ttm_sec`（書き手なし）<br>`psr`（この段階の書き手あり）<br>`trailing_pe`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
+| 追加H: バリュエーション倍率パネル | `ev_ebitda`（この段階の書き手あり）<br>`peg`（ほかの書き手あり）<br>`peg_ratio`（この段階の書き手あり）<br>`per_gaap_ttm_sec`（ほかの書き手あり）<br>`ps_ttm_sec`（ほかの書き手あり）<br>`psr`（この段階の書き手あり）<br>`trailing_pe`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | チャート | `from_peak`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`ma200_mom`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`real_strong`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`stage`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | テーブル | `components`（この段階の書き手あり）<br>`from_peak`（この段階の書き手あり）<br>`ma200_dev_local`（この段階の書き手あり）<br>`ma200_mom`（この段階の書き手あり）<br>`month`（この段階の書き手あり）<br>`price`（この段階の書き手あり）<br>`real_strong`（この段階の書き手あり）<br>`rsi`（この段階の書き手あり）<br>`stage`（この段階の書き手あり）<br>`substage_label`（この段階の書き手あり）<br>`substage_phase`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
 | （区画を決められない） | `error`（この段階の書き手あり） | 残す（2026-10-21、Koichiさんの判断） |
@@ -245,8 +240,8 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
 | 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:591`<br>`docs/value-monitor/tanuki_score/index.html:1114`<br>`docs/value-monitor/tanuki_score/index.html:1338`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1150`<br>`docs/value-monitor/tanuki_valuation/stock.html:1151`<br>`src/value/tanuki_valuation/pipeline.py:598`<br>`src/value/tanuki_valuation/pipeline.py:600`<br>`src/value/tanuki_valuation/pipeline.py:602`<br>`src/value/tanuki_valuation/pipeline.py:872`<br>`src/value/tanuki_valuation/pipeline.py:885`<br>`src/value/tanuki_valuation/pipeline.py:905`<br>`src/value/tanuki_valuation/pipeline.py:907`<br>`src/value/tanuki_valuation/pipeline.py:979`<br>`src/value/tanuki_valuation/pipeline.py:980`<br>`src/value/tanuki_valuation/pipeline.py:981`<br>`src/value/tanuki_valuation/pipeline.py:982`<br>`src/value/tanuki_valuation/pipeline.py:1405`<br>`src/value/tanuki_valuation/pipeline.py:1432`<br>`src/value/tanuki_valuation/pipeline.py:1437`<br>`src/value/tanuki_valuation/pipeline.py:1483`<br>`src/value/tanuki_valuation/pipeline.py:1789`<br>`src/value/tanuki_valuation/pipeline.py:1967` | いいえ |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1182` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:221`<br>`src/value/tanuki_valuation/calculator/adjustments.py:196`<br>`src/value/tanuki_valuation/data_fetcher.py:124`<br>`src/value/tanuki_valuation/data_fetcher.py:1166` | いいえ |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1192` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:221`<br>`src/value/tanuki_valuation/calculator/adjustments.py:196`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1176` | いいえ |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）
 
@@ -260,7 +255,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
-| `hypecore.py` | 1,317 | `.github/workflows/HypeCore_Update.yml` | `common/registration/register_ticker.py`<br>`tools/sim/sim.py` | — | 9件 |
+| `hypecore.py` | 1,317 | `.github/workflows/HypeCore_Update.yml` | `common/registration/register_ticker.py`<br>`tools/sim/sim.py` | — | 10件 |
 
 ## 止める条件の内訳
 
