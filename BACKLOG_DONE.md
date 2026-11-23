@@ -4,6 +4,24 @@
 
 ## 2026-11-23（完了）
 
+### ✅ [TANUKI-SHARES-SINGLE-SOURCE-1] TANUKIの`diluted_shares`（理論株価の分母）がyfinance由来で、SECの株数と3%超違う銘柄が23。分母を倍率の部品の株数に寄せる
+**完了（2026-11-23）:** 公開（2026-11-23、ID `-1-1`、scope 96銘柄）。kaihatsuに`--no-ff`で統合（`7a9564dd2d`）し、TANUKI `45089486452`・Stonks `45089489293`→TANUKI `45089744492`→HypeCore `45092316774`→TANUKI `45092527669`。1回目の印は96銘柄・2回目以降0件、全96銘柄の理論株価・判定が試算と一致（差0）、`_shares_source`は`sec_weighted` 44・`sec_weighted_plus_issuance` 51・Vだけ`yf_implied_fallback`。保有の判定はPLTR WATCH→HOLDのみ（理論株価 −6.4%、乖離率+0.70→−5.80。分母が実際の株数＋希薄化証券に）。TSLAは+11.5%・表紙との差は業績連動の未確定の株（2025 CEO報酬）で分母に入れず画面に理由を出す。画面（stock.html TSLA）と`report.txt`の`Shares_OutstandingGap`を確認。SEC原本（ASTS・PLTR・SOUN・IONQ）は手順33に残す
+**型・処置:** 型B（同じ概念の二重実装）・根治策
+**優先度:** 高
+**分類:** TANUKI VALUATION / `data_fetcher.py::_determine_diluted_shares`・`core_calculator.py`（1株理論株価の分母）・倍率の部品（`common/multiples.py`）・`common/dilution.py`
+**登録日:** 2026-11-13
+**着手条件:** [[MULTIPLES-ADOPT-1]] の公開の後（同じ画面にSECの時価総額とyfinance由来の株数が並ぶため）
+**実装済み（2026-11-13、ブランチ・未公開）:** `tanuki-shares-single-source-1`（`8cdf37598c`、`multiples-adopt-1`の上）。分母は新A2（`common/shares_base.py`）。試算: 理論株価86銘柄・5%超9・判定2（CPRT・RMBS）・funda/stage 0・保有9の判定0。**残り:** 公開（順は PARSER段1 → CONTINUITY → DILUTION → DEFICIT → MULTIPLES → 本件、手順は`TANUKI_SHARES_STEP0.md`末尾）、SECの原本の確認（`CLAUDE_CODE_START.md`手順33）
+**発見:** [[MULTIPLES-ADOPT-1]] STEP 0（2026-11-13、FINDINGS 2026-11-13 → 登録済み）
+**内容:** `components.diluted_shares`は96/96銘柄が`_shares_source=yf_implied`（yfinanceの`implied_shares_outstanding`）で、理論株価（IV∝1÷株数）の分母になっている。倍率の部品（SECの加重平均の希薄化後株数・分割換算）と3%を超えて違うのが**23銘柄**: ASTS +30%・IONQ +16%・ONDS +16%・RXRX +15%・TSLA +12%・RCAT +12%・SOUN +11%・LITE −11%・PAYS −8%・FICO −7%・PLTR −6%・ALAB −5%・BSY −5%・CART −4%・SOFI −4%・FLYW −4%・JOBY +4%・FROG −4%・DDOG −4%・INTU −4%・CPRT −3%・CAKE −3%・SITM −3%（値は yfinance÷SEC−1）。
+**保有銘柄:** **含まれる（4銘柄）**: SOUN（+11.3%）・TSLA（+11.6%）・PLTR（−6.4%）・SOFI（−4.4%）。SECの株数に寄せると理論株価はSOUN・TSLAで約+11%、PLTR・SOFIで約−6%・−4%動く概算（IV∝1÷株数、試算していない）。ADBE・APP・CELH・CRWV・NVDAは3%以内。
+**STEP 0（2026-11-13、`docs/architecture/TANUKI_SHARES_STEP0.md`）:** 書き手・読み手を全部出し、23銘柄の原因を原本で分類。案A（部品の株数＝加重平均の希薄化後）の試算は理論株価92銘柄・5%超12銘柄・判定2銘柄（CPRT・RMBS）・funda点0・stage0・scope 95。**公開の順は MULTIPLES の後（最後）。** 決めてほしいことは同文書の§6。
+**方針:** 分母を倍率の部品の株数（[[DILUTION-DEFINITION-UNIFY-1]]の`share_count_change`と同じ基準＝加重平均の希薄化後・分割の調整）に寄せる。株数が欠ける銘柄（V）の扱い・TSLAの制限付株（発行済株数との差、`outstanding_gap_pct`）・ASTSの複数クラスの株の扱いを先に決める。全銘柄の試算（`tools/sim`、TANUKI→HypeCore→TANUKI）と「計算方法の変更の手順」（scope・印・派生ファイル）で行う。
+**投資判断への影響:** あり（理論株価・判定が動く。保有4銘柄を含む）
+**規模の見込み:** 中
+
+---
+
 ### ✅ [TANUKI-CALC-CONTINUITY-1] TANUKIの計算が境目（CV 0.5・逆算のQ4が負・taperのs=0）で方法を切り替え、境目の前後で値が飛ぶ
 **完了（2026-11-23）:** 公開（2026-11-17、`-1-1`）後の確認に合格。11-18朝の定時と11-22の日曜の連鎖（SEC `45056652563`→TANUKI `45058265132`）で、96銘柄とも`method_change`なし・`method_change_applied`に`TANUKI-CALC-CONTINUITY-1-1`。CAKE 41.25・DOCN 56.03は11-18から動かず、`ttm/`の9銘柄は浮動小数の丸め（0.57→0.5700000000000001）と`generated_at`だけ（RCATは新しい四半期の分）。KOは26.17で11-17から不変
 **型・処置（2026-11-11 束ね）:** 型B・根治策
