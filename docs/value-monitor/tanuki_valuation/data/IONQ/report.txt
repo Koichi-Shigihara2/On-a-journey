@@ -1,5 +1,5 @@
 IONQ INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:14:51+09:00
+Generated: 2026-11-23T09:37:42+09:00
 Price: $20.72
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -8,10 +8,10 @@ Classification: WATCH
 Classification_Pre_Rounding: WATCH
 Funda_Score: 93/100
 Timing_Score (components):
-  Deviation_Rate: +1.4%
+  Deviation_Rate: +5.6%
   MA200_Deviation: -49.4%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $50 median ($40-$70) | 14 analysts | vs IV: +138.0%
+  Analyst_Consensus: Strong Buy | Target: $50 median ($40-$70) | 14 analysts | vs IV: +128.5%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -34,7 +34,7 @@ Matrix: ①投資効率系
 Quadrant: 右下
 Label: 割安×N/A (OCF赤字)
 Key_Metric_Y: RICE = -2.101
-Deviation_Rate: +1.4%
+Deviation_Rate: +5.6%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,23 +59,23 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $20.72
-Intrinsic_Value_BASE: $21.00
-Deviation_BASE: +1.4%
+Intrinsic_Value_BASE: $21.88
+Deviation_BASE: +5.6%
 Growth_Rate_Original: 15.0% (TTM実績)
 Growth_Rate_Adjusted: 54.8% (推奨値・逓減モデル)
 Scenarios:
-BEAR: Growth=38.3%, IV=$17.06 （推奨値ベース）
-BASE: Growth=54.8%, IV=$21.00 （推奨値ベース）
-BULL: Growth=65.7%, IV=$23.96 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $32.50 (+56.9%) / 3年後: $77.87 (+275.8%) / 5年後: $124.75 (+502.1%)
-  5yr_Annualized_Return: +43.2%/yr
+BEAR: Growth=38.3%, IV=$17.77 （推奨値ベース）
+BASE: Growth=54.8%, IV=$21.88 （推奨値ベース）
+BULL: Growth=65.7%, IV=$24.96 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $33.87 (+63.5%) / 3年後: $81.14 (+291.6%) / 5年後: $129.98 (+527.3%)
+  5yr_Annualized_Return: +44.4%/yr
 TTM_YoY_Growth: 201.9%
 (DCF Base vs TTM actual: -147.1pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $9.81 (Deviation: -52.7%)
-  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $92.46 (Deviation: +346.2%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.91%（^TNX 2026-11-20）に変化すると、Rf基準の必要成長率は-19.9%→-10.2%（+9.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $10.22 (Deviation: -50.7%)
+  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $96.31 (Deviation: +364.8%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.91%（^TNX 2026-11-20）に変化すると、Rf基準の必要成長率は-20.5%→-10.9%（+9.6pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 2.5
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
@@ -103,13 +103,13 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $9.76B (= v0 + RPO_PV + GO_PV + Net_Cash $0.90B)
-Shares_Used: 464.7M (source: yf_implied)
-→ Intrinsic_Value: $21.00 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 446.1M (source: sec_weighted_plus_issuance)
+→ Intrinsic_Value: $21.88 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $16.33  $24.60  $36.80
-  10.0%       $14.11  $21.00  $31.02
-  11.0%       $12.49  $18.37  $26.80
+  9.0%       $17.01  $25.63  $38.33
+  10.0%       $14.70  $21.88  $32.31
+  11.0%       $13.01  $19.13  $27.92
 Financial_Health:
   Net_Debt: $-0.90B (negative=net cash)
   Total_Debt: $0.09B  Cash: $0.21B  ST_Invest: $0.79B
@@ -118,7 +118,7 @@ Financial_Health:
   SBC_TTM: $312M
   Dilution_3yr_Annual: +25.37%/yr  高い希薄化 ⚠️ SBC・増資を確認
   Dilution_Comment: 継続なら1株価値を年率25.4%毀損。SBC・増資の内訳を確認。
-  ⚠️ 期中に大規模な株式発行の可能性（+15.9%乖離: yf=465M vs SEC=401M）
+  ⚠️ 期中に大規模な株式発行の可能性（+11.3%乖離: yf=446M vs SEC=401M）
   Next_Earnings_Date: 2026-11-06
   DuPont_ROE: 純利益率67.1% × 資産回転率0.05x × 財務レバレッジ1.57x = ROE5.1%
     ⚠️ DuPont_Reliability: LOW (単四半期NI集中（一過性要因の可能性）)
@@ -271,7 +271,7 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 32.5x
+  Market_PER_GAAP: 36.2x
   Adjusted_EPS_PER: N/A
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-06
@@ -298,11 +298,12 @@ Phase_History (recent 6 months):
 2026-10: Phase4 (期待剥落期)
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
-  PER: 32.5x
-  PER_Forward_yf: -20.3x
+  PER: 36.2x
+  PER_Forward_yf: -14.6x
   PEG: N/A
-  PS:  21.8x
+  PS:  24.3x
   EV_EBITDA: N/A
+  Shares_Basis: sec_weighted_plus_issuance  加重平均希薄化後 400,865,291・期末後の発行（買い戻しは負） +43,877,569
   PS_Signal: 高水準（売上対比で高い期待が織り込み済み）
 Definition:
 
@@ -347,7 +348,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: yes
 Short_Interest: 11.8%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $50 median ($40-$70) | 14 analysts | vs IV: +138.0%
+Analyst_Consensus: Strong Buy | Target: $50 median ($40-$70) | 14 analysts | vs IV: +128.5%
 Insider_Activity: Sell優勢 | 買い0件 / 売り1件 | 直近90日
 Runway_Months: 40.0
 Revenue_Growth_YoY: 201.9%

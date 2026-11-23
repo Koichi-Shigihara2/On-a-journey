@@ -1,5 +1,5 @@
 {
-  "intrinsic_value_per_share": 6.006174919222842,
+  "intrinsic_value_per_share": 6.006174943226485,
   "intrinsic_value_beta": 3.61,
   "upside_percent_beta": -36.2,
   "intrinsic_value_rf": 17.68,
@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 6.3,
-  "calculation_date": "2026-11-23T04:16:54+09:00",
+  "calculation_date": "2026-11-23T09:39:38+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -226,7 +226,7 @@
     "long_term_debt": 44307000.0,
     "short_term_debt": 4500000.0,
     "net_cash": 439314000.0,
-    "net_cash_per_share": 1.7557157737574505,
+    "net_cash_per_share": 1.7557157807741581,
     "fiscal_year": 2025,
     "applied": true,
     "sector_guard": "none",
@@ -284,7 +284,7 @@
       -23645000.0,
       -32909000.0
     ],
-    "diluted_shares": 250219316,
+    "diluted_shares": 250219315,
     "roe_10yr_avg": -0.5292154908587318,
     "roe_years_used": 3,
     "roe_outlier_adj": true,
@@ -298,7 +298,7 @@
     "eps_data": {
       "ticker": "RDW"
     },
-    "_shares_source": "yf_implied",
+    "_shares_source": "sec_weighted_plus_issuance",
     "_beta_source": "beta_config(Aerospace_Defense)",
     "high_growth_rate_used": 0.255138437306385,
     "high_growth_years": 3,
@@ -320,13 +320,19 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
     "per_gaap_ttm_sec": null,
-    "per_forward_yf": -25.553719,
-    "market_cap_sec": 1412785998.596685,
+    "per_forward_yf": -18.677685,
+    "market_cap_sec": 1413739159.2627733,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": 0.36906462119615346,
+    "market_cap_yf_gap": -1.6454784534936095e-08,
+    "shares_wd": 250050615.0,
+    "shares_issued": 168701.0,
+    "shares_note": null,
+    "shares_cover": 250219316.0,
+    "shares_cover_date": "2026-11-02",
+    "outstanding_gap_pct": 0.0,
     "per_adjusted_ttm": null,
     "peg": null,
-    "ps_ttm_sec": 3.271284511946014,
+    "ps_ttm_sec": 3.273491540984714,
     "ev_ebitda": null,
     "ma200": 10.773500013351441,
     "forward_eps": -0.3025,
@@ -378,11 +384,11 @@
     "ai_comment": null
   },
   "phase1_growth": 0.255138437306385,
-  "required_growth_rf_base": -0.15427955314226927,
+  "required_growth_rf_base": -0.15427955381825265,
   "risk_free_rate_live": 0.049119997024536136,
   "risk_free_rate_live_date": "2026-11-20",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.08644284323716311,
+  "required_growth_rf_live": -0.08644284396736823,
   "tanuki_score": "WATCH",
   "funda_score": 65,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
@@ -399,6 +405,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "TANUKI-SHARES-SINGLE-SOURCE-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -415,7 +422,8 @@
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
     "TANUKI-CALC-CONTINUITY-1-1",
-    "DILUTION-DEFINITION-UNIFY-1-1"
+    "DILUTION-DEFINITION-UNIFY-1-1",
+    "TANUKI-SHARES-SINGLE-SOURCE-1-1"
   ],
   "fcf_history": [
     {
@@ -481,8 +489,7 @@
     "dilution_window": [
       "2023-09-30",
       "2026-09-30"
-    ],
-    "outstanding_gap_pct": 0.1
+    ]
   },
   "computed_runway_months": 30.697825061579582,
   "net_current_assets_ratio": 0.3888,

@@ -1,5 +1,5 @@
 V INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:19:18+09:00
+Generated: 2026-11-23T09:41:52+09:00
 Price: $402.42
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -10,7 +10,7 @@ Timing_Score (components):
   Deviation_Rate: -19.0%
   MA200_Deviation: +15.3%
   HypeCore_Phase: Phase3 (陶酔期)
-  Analyst_Consensus: Strong Buy | Target: $455 median ($330-$500) | 37 analysts | vs IV: +39.6%
+  Analyst_Consensus: Strong Buy | Target: $457 median ($330-$500) | 37 analysts | vs IV: +40.3%
 Comment: フェアバリュー近辺、FCF黒字、売上安定成長
 Definition:
 
@@ -92,7 +92,7 @@ Alpha_Premium: 0.5000 (HypeCore expectation premium; Rm basis) [CAPPED: セク�
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $607.94B (= v0 + RPO_PV + GO_PV + Net_Cash $-10.07B)
-Shares_Used: 1865.8M (source: yf_implied)
+Shares_Used: 1865.8M (source: yf_implied_fallback)
 → Intrinsic_Value: $325.83 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  5yr  10yr  15yr
@@ -258,9 +258,9 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 33.8x
+  Market_PER_GAAP: 31.9x
   Adjusted_EPS_PER: 28.6x (TTM調整後EPS: $14.0518)
-  Delta: -5.2x (cheaper on adjusted basis)
+  Delta: -3.3x (cheaper on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2027-01-27
   Next_Quarter_EPS: $3.63 (yfinance analyst estimate)
@@ -286,11 +286,12 @@ Phase_History (recent 6 months):
 2026-10: Phase3 (陶酔期)
 2026-11: Phase3 (陶酔期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
-  PER: 33.8x
-  PER_Forward_yf: 24.8x
-  PEG: 1.93
-  PS:  17.3x
-  EV_EBITDA: 24.8x
+  PER: 31.9x
+  PER_Forward_yf: 23.4x
+  PEG: 1.82
+  PS:  16.3x
+  EV_EBITDA: 23.4x
+  Shares_Basis: yf_implied_fallback
   PEG_Signal: 適正水準（成長率対比でPEG 1.0〜2.0）
   PS_Signal: 適正水準
 Definition:
@@ -336,7 +337,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 1.2%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $455 median ($330-$500) | 37 analysts | vs IV: +39.6%
+Analyst_Consensus: Strong Buy | Target: $457 median ($330-$500) | 37 analysts | vs IV: +40.3%
 Insider_Activity: Sell優勢 | 買い0件 / 売り12件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 14.8%

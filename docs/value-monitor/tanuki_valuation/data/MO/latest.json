@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -32.1,
-  "calculation_date": "2026-11-23T04:21:24+09:00",
+  "calculation_date": "2026-11-23T09:44:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -331,7 +331,7 @@
     "eps_data": {
       "ticker": "MO"
     },
-    "_shares_source": "yf_implied",
+    "_shares_source": "sec_weighted_plus_issuance",
     "_beta_source": "beta_config()",
     "high_growth_rate_used": 0.0027902684404880617,
     "high_growth_years": 9,
@@ -352,17 +352,23 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 2.12338110772599,
-    "per_gaap_ttm_sec": 15.396505000498449,
-    "per_forward_yf": 13.279275,
-    "market_cap_sec": 124958034584.04541,
+    "per_gaap_ttm_sec": 15.345185608035479,
+    "per_forward_yf": 12.63938,
+    "market_cap_sec": 124541526394.81595,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": 0.046852910862781094,
+    "market_cap_yf_gap": -3.0416837937252694e-09,
+    "shares_wd": 1669000000.0,
+    "shares_issued": -5563085.0,
+    "shares_note": null,
+    "shares_cover": 1663436915.0,
+    "shares_cover_date": "2026-10-21",
+    "outstanding_gap_pct": 0.0,
     "per_adjusted_ttm": 14.89,
-    "peg": 3.013,
-    "ps_ttm_sec": 5.31351935127973,
-    "ev_ebitda": 11.835,
+    "peg": 2.8686,
+    "ps_ttm_sec": 5.29580841071633,
+    "ev_ebitda": 11.347,
     "ma200": 69.9641499710083,
-    "forward_eps": 5.92201,
+    "forward_eps": 5.92355,
     "next_quarter_eps": 1.38,
     "analyst_target_median": 73.0,
     "analyst_target_mean": 73.45455,
@@ -370,7 +376,7 @@
     "analyst_target_high": 85.0,
     "analyst_count": 11,
     "analyst_rec_key": "hold",
-    "dividend_yield": 0.055056468,
+    "dividend_yield": 0.057445098,
     "payout_ratio": 0.88449997,
     "insider_buy_count": 1,
     "insider_sell_count": 0,
@@ -441,6 +447,7 @@
     "qx": false,
     "qy": true
   },
+  "method_change": "TANUKI-SHARES-SINGLE-SOURCE-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -457,7 +464,8 @@
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
     "TANUKI-CALC-CONTINUITY-1-1",
-    "DILUTION-DEFINITION-UNIFY-1-1"
+    "DILUTION-DEFINITION-UNIFY-1-1",
+    "TANUKI-SHARES-SINGLE-SOURCE-1-1"
   ],
   "fcf_history": [
     {
@@ -521,7 +529,6 @@
       "2023-09-30",
       "2026-09-30"
     ],
-    "outstanding_gap_pct": 0.3,
     "buyback_ttm": 1023000000.0
   },
   "net_current_assets_ratio": -0.028,

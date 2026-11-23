@@ -1,5 +1,5 @@
 ASTS INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:12:38+09:00
+Generated: 2026-11-23T09:35:38+09:00
 Price: $23.27
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -8,10 +8,10 @@ Classification: WATCH
 Classification_Pre_Rounding: TRIM
 Funda_Score: 90/100
 Timing_Score (components):
-  Deviation_Rate: -89.1%
+  Deviation_Rate: -85.8%
   MA200_Deviation: -67.5%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Hold | Target: $52 median ($39-$108) | 12 analysts | vs IV: +1943.0%
+  Analyst_Consensus: Buy | Target: $52 median ($39-$108) | 12 analysts | vs IV: +1471.8%
 Comment: DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH
 Definition:
 
@@ -34,7 +34,7 @@ Matrix: ④キャッシュ創出力系
 Quadrant: 左下
 Label: 割高×低FCF
 Key_Metric_Y: FCF_Margin = -1602.2%
-Deviation_Rate: -89.1%
+Deviation_Rate: -85.8%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -59,22 +59,22 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $23.27
-Intrinsic_Value_BASE: $2.54
-Deviation_BASE: -89.1%
+Intrinsic_Value_BASE: $3.30
+Deviation_BASE: -85.8%
 Growth_Rate_Original: 15.0% (TTM実績)
 Growth_Rate_Adjusted: 45.3% (推奨値・逓減モデル)
 Scenarios:
-BEAR: Growth=31.7%, IV=$2.64 （推奨値ベース）
-BASE: Growth=45.3%, IV=$2.54 （推奨値ベース）
-BULL: Growth=54.4%, IV=$2.46 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $3.69 (-84.1%) / 3年後: $7.80 (-66.5%) / 5年後: $11.62 (-50.1%)
-  5yr_Annualized_Return: -13.0%/yr
+BEAR: Growth=31.7%, IV=$3.43 （推奨値ベース）
+BASE: Growth=45.3%, IV=$3.30 （推奨値ベース）
+BULL: Growth=54.4%, IV=$3.20 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $4.80 (-79.4%) / 3年後: $10.13 (-56.5%) / 5年後: $15.09 (-35.2%)
+  5yr_Annualized_Return: -8.3%/yr
 TTM_YoY_Growth: 1511.8%
 (DCF Base vs TTM actual: -1466.5pt discount)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.55%
-  参考①β込みWACC_IV: $2.85 (Deviation: -87.8%)
-  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $1.31 (Deviation: -94.4%)
+  参考①β込みWACC_IV: $3.70 (Deviation: -84.1%)
+  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $1.70 (Deviation: -92.7%)
 Terminal_Growth_Rate: 2.5%
 Beta: 2.5
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
@@ -97,13 +97,13 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $0.99B (= v0 + RPO_PV + GO_PV + Net_Cash $1.21B)
-Shares_Used: 390.1M (source: yf_implied)
-→ Intrinsic_Value: $2.54 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 300.1M (source: sec_weighted)
+→ Intrinsic_Value: $3.30 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $2.67  $2.45  $2.14
-  10.0%       $2.72  $2.54  $2.28
-  11.0%       $2.77  $2.61  $2.39
+  9.0%       $3.47  $3.18  $2.78
+  10.0%       $3.54  $3.30  $2.96
+  11.0%       $3.60  $3.39  $3.10
 Financial_Health:
   Net_Debt: $-1.21B (negative=net cash)
   Total_Debt: $4.09B  Cash: $2.80B  ST_Invest: $2.50B
@@ -265,7 +265,7 @@ PER_Comparison:
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-10
   Next_Quarter_EPS: $-0.45 (yfinance analyst estimate)
-  Next_FY_EPS: $-1.56 (yfinance forward EPS)
+  Next_FY_EPS: $-1.36 (yfinance forward EPS)
 Definition:
 
 Market_PER_GAAP: Price / GAAP EPS TTM (market-provided, trailing 12M)
@@ -288,10 +288,11 @@ Phase_History (recent 6 months):
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
   PER: N/A
-  PER_Forward_yf: -20.9x
+  PER_Forward_yf: -17.1x
   PEG: N/A
   PS:  48.9x
   EV_EBITDA: N/A
+  Shares_Basis: sec_weighted  加重平均希薄化後 300,131,014・期末後の発行（買い戻しは負） +0  印: no_cover
   PS_Signal: 高水準（売上対比で高い期待が織り込み済み）
 Definition:
 
@@ -310,9 +311,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: -6.71%  (ForwardEPS $-1.56 / Price $23.27)
+  Forward_Earnings_Yield: -5.86%  (ForwardEPS $-1.36 / Price $23.27)
   Risk_Free_Rate (10Y):  4.91%  (^TNX 2026-11-20)
-  ERP: -11.62%
+  ERP: -10.77%
   ERP_Signal: 期待過熱圏（市場が将来成長を過度に先取りしている）  [Rf 4.91%, ^TNX 2026-11-20]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.
@@ -336,7 +337,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: yes
 Short_Interest: 22.5%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Hold | Target: $52 median ($39-$108) | 12 analysts | vs IV: +1943.0%
+Analyst_Consensus: Buy | Target: $52 median ($39-$108) | 12 analysts | vs IV: +1471.8%
 Insider_Activity: Buy優勢 | 買い3件 / 売り2件 | 直近90日
 Runway_Months: 56.0
 Revenue_Growth_YoY: 1511.8%

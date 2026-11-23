@@ -1,5 +1,5 @@
 RDW INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:16:54+09:00
+Generated: 2026-11-23T09:39:38+09:00
 Price: $5.65
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -98,7 +98,7 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $1.50B (= v0 + RPO_PV + GO_PV + Net_Cash $0.44B)
-Shares_Used: 250.2M (source: yf_implied)
+Shares_Used: 250.2M (source: sec_weighted_plus_issuance)
 → Intrinsic_Value: $6.01 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  3yr  4yr
@@ -291,10 +291,11 @@ Phase_History (recent 6 months):
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
   PER: N/A
-  PER_Forward_yf: -25.6x
+  PER_Forward_yf: -18.7x
   PEG: N/A
   PS:  3.3x
   EV_EBITDA: N/A
+  Shares_Basis: sec_weighted_plus_issuance  加重平均希薄化後 250,050,615・期末後の発行（買い戻しは負） +168,701
   PS_Signal: 低水準（売上対比で低い期待）
 Definition:
 

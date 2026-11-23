@@ -1,5 +1,5 @@
 SPIR INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:17:32+09:00
+Generated: 2026-11-23T09:40:12+09:00
 Price: $7.36
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,10 +7,10 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: PASS
 Funda_Score: 6/100
 Timing_Score (components):
-  Deviation_Rate: -1.5%
+  Deviation_Rate: -1.2%
   MA200_Deviation: -45.8%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Strong Buy | Target: $19 median ($15-$22) | 4 analysts | vs IV: +162.2%
+  Analyst_Consensus: Strong Buy | Target: $19 median ($15-$22) | 4 analysts | vs IV: +161.5%
 Comment: フェアバリュー近辺、FCFマイナス（投資フェーズ）、売上成長停滞
 Definition:
 
@@ -33,7 +33,7 @@ Matrix: ④キャッシュ創出力系
 Quadrant: 左下
 Label: 割高×低FCF
 Key_Metric_Y: FCF_Margin = -129.4%
-Deviation_Rate: -1.5%
+Deviation_Rate: -1.2%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,23 +58,23 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $7.36
-Intrinsic_Value_BASE: $7.25
-Deviation_BASE: -1.4%
+Intrinsic_Value_BASE: $7.26
+Deviation_BASE: -1.3%
 Growth_Rate_Original: -12.5% (TTM実績)
 Growth_Rate_Adjusted: 6.7% (推奨値・重み付き平均)
 Scenarios:
-BEAR: Growth=4.7%, IV=$6.91 （推奨値ベース）
-BASE: Growth=6.7%, IV=$7.25 （推奨値ベース）
-BULL: Growth=8.1%, IV=$7.37 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $7.74 (+5.2%) / 3年後: $8.82 (+19.9%) / 5年後: $9.70 (+31.9%)
+BEAR: Growth=4.7%, IV=$6.93 （推奨値ベース）
+BASE: Growth=6.7%, IV=$7.26 （推奨値ベース）
+BULL: Growth=8.1%, IV=$7.39 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $7.75 (+5.4%) / 3年後: $8.83 (+20.1%) / 5年後: $9.71 (+32.0%)
   5yr_Annualized_Return: +5.7%/yr
 TTM_YoY_Growth: -35.2%
 (DCF Base vs TTM actual: +41.9pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 18.50%
-  参考①β込みWACC_IV: $4.47 (Deviation: -39.2%)
-  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $20.74 (Deviation: +182.0%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.91%（^TNX 2026-11-20）に変化すると、Rf基準の必要成長率は-20.8%→-14.5%（+6.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $4.48 (Deviation: -39.0%)
+  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $20.79 (Deviation: +182.7%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.91%（^TNX 2026-11-20）に変化すると、Rf基準の必要成長率は-20.9%→-14.5%（+6.3pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.0%
 Beta: 2.491
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
@@ -102,13 +102,13 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $0.28B (= v0 + RPO_PV + GO_PV + Net_Cash $0.09B)
-Shares_Used: 39.3M (source: yf_implied)
-→ Intrinsic_Value: $7.25 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 39.2M (source: sec_weighted)
+→ Intrinsic_Value: $7.26 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  2yr  4yr  6yr
-  9.0%       $7.74  $8.09  $8.43
-  10.0%       $6.95  $7.25  $7.53
-  11.0%       $6.36  $6.61  $6.85
+  9.0%       $7.76  $8.11  $8.45
+  10.0%       $6.97  $7.26  $7.54
+  11.0%       $6.38  $6.63  $6.87
 Financial_Health:
   Net_Debt: $-0.09B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.03B  ST_Invest: $0.06B
@@ -294,10 +294,11 @@ Phase_History (recent 6 months):
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
   PER: N/A
-  PER_Forward_yf: -20.7x
+  PER_Forward_yf: -16.5x
   PEG: N/A
   PS:  4.3x
   EV_EBITDA: N/A
+  Shares_Basis: sec_weighted  加重平均希薄化後 39,167,991・期末後の発行（買い戻しは負） +0  印: no_cover
   PS_Signal: 低水準（売上対比で低い期待）
 Definition:
 
@@ -342,7 +343,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: yes
 Short_Interest: 10.2%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Strong Buy | Target: $19 median ($15-$22) | 4 analysts | vs IV: +162.2%
+Analyst_Consensus: Strong Buy | Target: $19 median ($15-$22) | 4 analysts | vs IV: +161.5%
 Insider_Activity: Sell優勢 | 買い0件 / 売り3件 | 直近90日
 Runway_Months: 11.4
 Revenue_Growth_YoY: -35.2%

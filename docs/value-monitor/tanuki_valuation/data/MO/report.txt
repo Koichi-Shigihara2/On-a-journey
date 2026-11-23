@@ -1,5 +1,5 @@
 MO INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:21:24+09:00
+Generated: 2026-11-23T09:44:13+09:00
 Price: $74.87
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -92,7 +92,7 @@ Alpha_Premium: 0.6000 (HypeCore expectation premium; Rm basis) [CAPPED: セク�
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $84.57B (= v0 + RPO_PV + GO_PV + Net_Cash $-21.36B)
-Shares_Used: 1663.4M (source: yf_implied)
+Shares_Used: 1663.4M (source: sec_weighted_plus_issuance)
 → Intrinsic_Value: $50.84 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  5yr  9yr  13yr
@@ -254,7 +254,7 @@ Surprise Rate = (Actual - Estimate) / |Estimate| x 100
 Positive surprise historically correlates with
 short-term price appreciation (PEAD effect)
 PER_Comparison:
-  Market_PER_GAAP: 15.4x
+  Market_PER_GAAP: 15.3x
   Adjusted_EPS_PER: 14.9x (TTM調整後EPS: $5.0274)
   Delta: -0.5x (cheaper on adjusted basis)
 Forward_Estimates:
@@ -282,11 +282,12 @@ Phase_History (recent 6 months):
 2026-10: Phase3 (陶酔期)
 2026-11: Phase2 (期待拡大期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
-  PER: 15.4x
-  PER_Forward_yf: 13.3x
-  PEG: 3.01
+  PER: 15.3x
+  PER_Forward_yf: 12.6x
+  PEG: 2.87
   PS:  5.3x
-  EV_EBITDA: 11.8x
+  EV_EBITDA: 11.3x
+  Shares_Basis: sec_weighted_plus_issuance  加重平均希薄化後 1,669,000,000・期末後の発行（買い戻しは負） -5,563,085
   PEG_Signal: 割高水準（成長率対比でPEG>2.0）
   PS_Signal: 適正水準
 Definition:

@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 329.3,
-  "calculation_date": "2026-11-23T04:21:23+09:00",
+  "calculation_date": "2026-11-23T09:44:12+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -279,19 +279,19 @@
     "bear": {
       "growth_rate": 0.121,
       "rice": 1.087,
-      "rice_per_ratio": 0.4898,
+      "rice_per_ratio": 0.4906,
       "rice_adj": 13.809
     },
     "base": {
       "growth_rate": 0.173,
       "rice": 1.555,
-      "rice_per_ratio": 0.7002,
+      "rice_per_ratio": 0.7014,
       "rice_adj": 19.744
     },
     "bull": {
       "growth_rate": 0.207,
       "rice": 1.86,
-      "rice_per_ratio": 0.8378,
+      "rice_per_ratio": 0.8393,
       "rice_adj": 23.624
     }
   },
@@ -328,7 +328,7 @@
     "eps_data": {
       "ticker": "LYFT"
     },
-    "_shares_source": "yf_implied",
+    "_shares_source": "sec_weighted_plus_issuance",
     "_beta_source": "beta_config()",
     "high_growth_rate_used": 0.17250176889758334,
     "high_growth_years": 5,
@@ -349,20 +349,26 @@
     "rpo_pv": 0.0,
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
-    "per_gaap_ttm_sec": 2.220155347877137,
-    "per_forward_yf": 8.117333,
-    "market_cap_sec": 6238339026.71814,
+    "per_gaap_ttm_sec": 2.2163798462605744,
+    "per_forward_yf": 8.023369,
+    "market_cap_sec": 6227730373.092815,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": 0.028587637273006727,
+    "market_cap_yf_gap": -7.275408342444223e-08,
+    "shares_wd": 378540000.0,
+    "shares_issued": -643729.0,
+    "shares_note": null,
+    "shares_cover": 377896271.0,
+    "shares_cover_date": "2026-10-30",
+    "outstanding_gap_pct": 0.0,
     "per_adjusted_ttm": 86.97,
     "peg": 0.15,
-    "ps_ttm_sec": 0.9029860938895481,
-    "ev_ebitda": 565.323,
+    "ps_ttm_sec": 0.9014505142011838,
+    "ev_ebitda": 546.906,
     "ma200": 15.077449960708618,
-    "forward_eps": 2.09182,
+    "forward_eps": 2.054,
     "next_quarter_eps": 0.21,
     "analyst_target_median": 18.0,
-    "analyst_target_mean": 19.42444,
+    "analyst_target_mean": 19.39667,
     "analyst_target_low": 14.0,
     "analyst_target_high": 30.0,
     "analyst_count": 36,
@@ -428,6 +434,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "TANUKI-SHARES-SINGLE-SOURCE-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -444,7 +451,8 @@
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
     "TANUKI-CALC-CONTINUITY-1-1",
-    "DILUTION-DEFINITION-UNIFY-1-1"
+    "DILUTION-DEFINITION-UNIFY-1-1",
+    "TANUKI-SHARES-SINGLE-SOURCE-1-1"
   ],
   "fcf_history": [
     {
@@ -561,7 +569,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": 0.0778,
+  "erp": 0.0755,
   "dilution_severity": "positive",
   "dilution_comment": "自社株買いによる株主還元 ✅"
 }

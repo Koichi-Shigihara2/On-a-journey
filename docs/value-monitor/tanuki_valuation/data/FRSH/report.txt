@@ -1,5 +1,5 @@
 FRSH INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:20:08+09:00
+Generated: 2026-11-23T09:42:54+09:00
 Price: $12.06
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -7,11 +7,11 @@ Validation_Status: PASS (品質ゲート: 全チェック通過)
 Classification: BUY
 Funda_Score: 80/100
 Timing_Score (components):
-  Deviation_Rate: +192.2%
+  Deviation_Rate: +187.7%
   MA200_Deviation: +14.1%
   HypeCore_Phase: Phase4 (期待剥落期)
-  Analyst_Consensus: Buy | Target: $16 median ($13-$25) | 13 analysts | vs IV: -54.6%
-Comment: 割安圏(192%)で買い余地大、FCF黒字、売上安定成長
+  Analyst_Consensus: Buy | Target: $16 median ($13-$25) | 13 analysts | vs IV: -53.9%
+Comment: 割安圏(188%)で買い余地大、FCF黒字、売上安定成長
 Definition:
 
 Funda_Score: Composite score of financial health,
@@ -33,7 +33,7 @@ Matrix: ①投資効率系
 Quadrant: 右下
 Label: 割安×低効率
 Key_Metric_Y: RICE = 0.175
-Deviation_Rate: +192.2%
+Deviation_Rate: +187.7%
 Thresholds:
   RICE_Threshold: 3.0/1.0/0 (>=3.0=high, 1.0-3.0=medium, 0-1.0=low, <0=undefined OCF-negative)
   ROE_Threshold: 15% (above=high profitability)
@@ -58,23 +58,23 @@ Positive deviation = undervalued (intrinsic > current)
 
 [3. TANUKI VALUATION]
 Current_Price: $12.06
-Intrinsic_Value_BASE: $35.24
-Deviation_BASE: +192.2%
+Intrinsic_Value_BASE: $34.70
+Deviation_BASE: +187.7%
 Growth_Rate_Original: 50.0% (TTM実績)
 Growth_Rate_Adjusted: 20.8% (推奨値・重み付き平均)
 Scenarios:
-BEAR: Growth=14.6%, IV=$27.07 （推奨値ベース）
-BASE: Growth=20.8%, IV=$35.24 （推奨値ベース）
-BULL: Growth=25.0%, IV=$38.58 （推奨値ベース）
-Return_Outlook(BASE): 1年後: $42.58 (+253.1%) / 3年後: $62.15 (+415.3%) / 5年後: $90.72 (+652.2%)
-  5yr_Annualized_Return: +49.7%/yr
+BEAR: Growth=14.6%, IV=$26.65 （推奨値ベース）
+BASE: Growth=20.8%, IV=$34.70 （推奨値ベース）
+BULL: Growth=25.0%, IV=$37.99 （推奨値ベース）
+Return_Outlook(BASE): 1年後: $41.92 (+247.6%) / 3年後: $61.20 (+407.5%) / 5年後: $89.33 (+640.7%)
+  5yr_Annualized_Return: +49.3%/yr
 TTM_YoY_Growth: 15.2%
 (DCF Base vs TTM actual: +5.6pt premium)
 Discount_Rate_Primary: 10.00% (DCF discount rate used)
 WACC_CAPM_Reference: 9.40%
-  参考①β込みWACC_IV: $38.89 (Deviation: +222.5%)
-  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $164.78 (Deviation: +1266.3%)
-  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.91%（^TNX 2026-11-20）に変化すると、Rf基準の必要成長率は-36.4%→-28.7%（+7.7pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
+  参考①β込みWACC_IV: $38.29 (Deviation: +217.5%)
+  参考②Rf理論上限_IV（Rf 4.91%、^TNX 2026-11-20）: $162.26 (Deviation: +1245.4%)
+  金利感応度チェック: 10年国債利回りが基準4.30%→現在4.91%（^TNX 2026-11-20）に変化すると、Rf基準の必要成長率は-36.2%→-28.5%（+7.7pt、金利環境のみに起因し企業側の材料変化ではない。参考②と同じRf基準の割引率体系だが、Rm=10%基準の主計算とは別のため単純比較不可）
 Terminal_Growth_Rate: 3.5%
 Beta: 0.894
 FCF_TTM_End: 2026-09-30 (FCF/RICE算出に用いたTTM期末日)
@@ -91,16 +91,16 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $1,323,263 (Remaining Performance Obligation premium)
 Growth_Option_PV: $0
 Equity_Value: $9.24B (= v0 + RPO_PV + GO_PV + Net_Cash $0.70B)
-Shares_Used: 262.3M (source: yf_implied)
-→ Intrinsic_Value: $35.24 (= Equity_Value ÷ Shares_Used)
+Shares_Used: 266.4M (source: sec_weighted)
+→ Intrinsic_Value: $34.70 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  6yr  9yr
-  9.0%       $28.91  $41.72  $59.16
-  10.0%       $24.79  $35.24  $49.08
-  11.0%       $21.78  $30.50  $41.75
+  9.0%       $28.47  $41.08  $58.26
+  10.0%       $24.42  $34.70  $48.33
+  11.0%       $21.44  $30.04  $41.12
 一過性費用の定性評価（AI・参考情報、action判定には未使用）:
   Assessment: 一時的な問題と判断（参考）
-  Reasoning: 理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的なリストラ費用と判断される。
+  Reasoning: 理由欄に「一過性の事業再編費用」と明記されており、事業運営上の一時的な費用と判断される。
 Financial_Health:
   Net_Debt: $-0.70B (negative=net cash)
   Total_Debt: $0.00B  Cash: $0.47B  ST_Invest: $0.23B
@@ -290,10 +290,11 @@ Phase_History (recent 6 months):
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
   PER: 15.4x
-  PER_Forward_yf: 14.6x
-  PEG: 0.52
+  PER_Forward_yf: 13.9x
+  PEG: 0.49
   PS:  3.4x
-  EV_EBITDA: 27.8x
+  EV_EBITDA: 26.1x
+  Shares_Basis: sec_weighted  加重平均希薄化後 266,396,000・期末後の発行（買い戻しは負） +0  印: no_cover
   PEG_Signal: 割安水準（成長率対比でPEG<1.0）
   PS_Signal: 低水準（売上対比で低い期待）
 Definition:
@@ -339,7 +340,7 @@ Note: Uses ForwardEPS from yfinance (analyst consensus).
 Short_Report_Target: no
 Short_Interest: 9.2%
 Institutional_Ownership: N/A (not in data source)
-Analyst_Consensus: Buy | Target: $16 median ($13-$25) | 13 analysts | vs IV: -54.6%
+Analyst_Consensus: Buy | Target: $16 median ($13-$25) | 13 analysts | vs IV: -53.9%
 Insider_Activity: Sell優勢 | 買い0件 / 売り3件 | 直近90日
 Runway_Months: N/A (profitable or not in STONKS)
 Revenue_Growth_YoY: 15.2%

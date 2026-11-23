@@ -1,5 +1,5 @@
 LYFT INTEGRATED INVESTMENT REPORT
-Generated: 2026-11-23T04:21:23+09:00
+Generated: 2026-11-23T09:44:12+09:00
 Price: $16.48
 Validation_Status: PASS (品質ゲート: 全チェック通過)
 
@@ -91,7 +91,7 @@ Alpha_Premium: 0.0000 (HypeCore expectation premium; Rm basis)
 RPO_PV: $0
 Growth_Option_PV: $0
 Equity_Value: $26.74B (= v0 + RPO_PV + GO_PV + Net_Cash $0.80B)
-Shares_Used: 377.9M (source: yf_implied)
+Shares_Used: 377.9M (source: sec_weighted_plus_issuance)
 → Intrinsic_Value: $70.75 (= Equity_Value ÷ Shares_Used)
 Sensitivity_Matrix (WACC×成長期間 → IV/share):
   WACC\Years  3yr  5yr  7yr
@@ -259,11 +259,11 @@ short-term price appreciation (PEAD effect)
 PER_Comparison:
   Market_PER_GAAP: 2.2x
   Adjusted_EPS_PER: 87.0x (TTM調整後EPS: $0.1895)
-  Delta: +84.7x (more expensive on adjusted basis)
+  Delta: +84.8x (more expensive on adjusted basis)
 Forward_Estimates:
   Next_Earnings_Date: 2026-11-06
   Next_Quarter_EPS: $0.21 (yfinance analyst estimate)
-  Next_FY_EPS: $2.09 (yfinance forward EPS)
+  Next_FY_EPS: $2.05 (yfinance forward EPS)
 Definition:
 
 Market_PER_GAAP: Price / GAAP EPS TTM (market-provided, trailing 12M)
@@ -286,10 +286,11 @@ Phase_History (recent 6 months):
 2026-11: Phase4 (期待剥落期)
 Valuation_Multiples (PER・PS: 倍率の部品〈SEC〉、PEG・EV_EBITDA・Forward PER: yfinance):
   PER: 2.2x
-  PER_Forward_yf: 8.1x
+  PER_Forward_yf: 8.0x
   PEG: 0.15
   PS:  0.9x
-  EV_EBITDA: 565.3x
+  EV_EBITDA: 546.9x
+  Shares_Basis: sec_weighted_plus_issuance  加重平均希薄化後 378,540,000・期末後の発行（買い戻しは負） -643,729
   PEG_Signal: 割安水準（成長率対比でPEG<1.0）
   PS_Signal: 低水準（売上対比で低い期待）
 Definition:
@@ -309,9 +310,9 @@ Higher alpha in Phase1-2, lower in Phase3-4
 HYPE_Signal: Combined judgment of Matrix quadrant
 and HypeCore phase
 ERP (Equity Risk Premium, 参考表示):
-  Forward_Earnings_Yield: 12.69%  (ForwardEPS $2.09 / Price $16.48)
+  Forward_Earnings_Yield: 12.46%  (ForwardEPS $2.05 / Price $16.48)
   Risk_Free_Rate (10Y):  4.91%  (^TNX 2026-11-20)
-  ERP: 7.78%
+  ERP: 7.55%
   ERP_Signal: 期待冷却圏（成長期待が市場に織り込まれていない）  [Rf 4.91%, ^TNX 2026-11-20]
 Valuation_Multiples: Market-provided values (yfinance),
 NOT self-calculated. Distinct from TANUKI IV.

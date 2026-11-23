@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 34.2,
-  "calculation_date": "2026-11-23T04:12:49+09:00",
+  "calculation_date": "2026-11-23T09:35:48+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -209,7 +209,7 @@
       "total_transient_amount": 603000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」や「マクロ変動による一時的影響」と明記されており、構造的悪化を示す内容はない。"
+        "reasoning": "すべての項目が一過性の事業再編費用またはマクロ変動による一時的影響と明記されており、構造的な悪化を示す内容ではない。"
       }
     },
     "action": "flagged",
@@ -329,7 +329,7 @@
     "eps_data": {
       "ticker": "BBAI"
     },
-    "_shares_source": "yf_implied",
+    "_shares_source": "sec_weighted_plus_issuance",
     "_beta_source": "beta_config(Computer_Services)",
     "high_growth_rate_used": 0.29,
     "high_growth_years": 4,
@@ -351,23 +351,29 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
     "per_gaap_ttm_sec": null,
-    "per_forward_yf": -9.549999,
-    "market_cap_sec": 758912225.0132775,
+    "per_forward_yf": -9.875001,
+    "market_cap_sec": 760597732.7190588,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": 0.21154551698506863,
+    "market_cap_yf_gap": -4.827658195427631e-08,
+    "shares_wd": 480324180.0,
+    "shares_issued": 1066777.0,
+    "shares_note": null,
+    "shares_cover": 481390957.0,
+    "shares_cover_date": "2026-10-23",
+    "outstanding_gap_pct": -0.0,
     "per_adjusted_ttm": null,
     "peg": null,
-    "ps_ttm_sec": 5.342007003929733,
+    "ps_ttm_sec": 5.353871345645013,
     "ev_ebitda": null,
     "ma200": 3.3526999896764753,
-    "forward_eps": -0.2,
+    "forward_eps": -0.16,
     "next_quarter_eps": -0.04,
-    "analyst_target_median": 3.25,
-    "analyst_target_mean": 3.25,
+    "analyst_target_median": 3.5,
+    "analyst_target_mean": 3.5,
     "analyst_target_low": 3.0,
-    "analyst_target_high": 3.5,
-    "analyst_count": 2,
-    "analyst_rec_key": "none",
+    "analyst_target_high": 4.0,
+    "analyst_count": 3,
+    "analyst_rec_key": "buy",
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
     "insider_buy_count": 0,
@@ -377,7 +383,7 @@
     "revenue_ttm": 142065000,
     "revenue_ttm_end": "2026-09-30",
     "structural_deficit_kind": "cash_loss",
-    "analyst_vs_iv": 53.2,
+    "analyst_vs_iv": 65.0,
     "max_eps": null,
     "per_max_eps_ttm": null,
     "max_eps_reliability": "HIGH",
@@ -429,6 +435,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "TANUKI-SHARES-SINGLE-SOURCE-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -445,7 +452,8 @@
     "PARSER-LAYER3-SINGLE-SOURCE-1-0",
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
     "TANUKI-CALC-CONTINUITY-1-1",
-    "DILUTION-DEFINITION-UNIFY-1-1"
+    "DILUTION-DEFINITION-UNIFY-1-1",
+    "TANUKI-SHARES-SINGLE-SOURCE-1-1"
   ],
   "fcf_history": [
     {
@@ -508,8 +516,7 @@
     "dilution_window": [
       "2023-09-30",
       "2026-09-30"
-    ],
-    "outstanding_gap_pct": 0.0
+    ]
   },
   "computed_runway_months": 74.04365567718116,
   "net_current_assets_ratio": 0.3672,
@@ -574,7 +581,7 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.1757,
+  "erp": -0.1504,
   "dilution_severity": "severe",
   "dilution_comment": "深刻な希薄化 ⚠️ 株主価値毀損リスク大"
 }
