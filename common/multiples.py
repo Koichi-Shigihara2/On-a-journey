@@ -238,7 +238,14 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
             rows.append(r)
             continue
         px = close_on_or_before(prices, d)
-        avail = [e for e in shares if (sh_filed.get(e) or (_d(e) + timedelta(days=SHARES_LAG_IF_NO_FILED)).isoformat()) <= d]
+        # 過去の月末の株数は、その月末までに申告された値（as-of）。使える日（first_filed）と値の時点をそろえる
+        # （[[POINT-IN-TIME-HISTORY-INTEGRITY-1]] (4)）。今日の行（current）は最新の値のまま
+        if is_cur or not ends:
+            shares_d = shares
+        else:
+            with contextlib.redirect_stdout(io.StringIO()):
+                shares_d = shares_by_end(store, ends, splits, as_of=d)
+        avail = [e for e in shares_d if (sh_filed.get(e) or (_d(e) + timedelta(days=SHARES_LAG_IF_NO_FILED)).isoformat()) <= d]
         partial = is_cur and px is not None and not avail    # 現在の行: 株数が無くても分母は出す（読み手の代わりの時価総額用）
         if (px is None or not avail) and not partial:
             r.update({k: None for k in MULTIPLE_KEYS}, undetermined="no_price" if px is None else "no_shares",
@@ -250,8 +257,8 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
         if is_cur and se:
             # 今日の行の株数は common/shares_base.py の1か所（加重平均の希薄化後＋期末後の実際の発行・買い戻し）
             from common import shares_base
-            base = shares_base.base_shares(shares[se]["shares"], se, shares[se].get("source"), company_facts, splits)
-        use_shares = base["shares"] if base else (shares[se]["shares"] if se else None)
+            base = shares_base.base_shares(shares_d[se]["shares"], se, shares_d[se].get("source"), company_facts, splits)
+        use_shares = base["shares"] if base else (shares_d[se]["shares"] if se else None)
         mcap = px["close"] * use_shares if se else None
         debt = sum((_stock_at(ent(f), d) or (None, 0.0))[1] for f in ("short_term_debt", "long_term_debt"))
         cash = sum((_stock_at(ent(f), d) or (None, 0.0))[1] for f in ("cash_and_equivalents", "short_term_investments"))
@@ -266,7 +273,7 @@ def compute(ticker: str, store: Dict[str, Any], prices: List[dict], months: List
         pos = lambda num, den: (num / den) if (den is not None and den > 0 and num is not None and num > 0) else None
         r.update({
             "price": px["close"], "price_date": px["date"], "shares": use_shares if se else None, "shares_end": se,
-            "shares_source": shares[se].get("source") if se else None, "market_cap": mcap, "enterprise_value": ev,
+            "shares_source": shares_d[se].get("source") if se else None, "market_cap": mcap, "enterprise_value": ev,
             "ttm_end": ni[0] if ni else None, "ttm_net_income": ni[1] if ni else None,
             "ttm_revenue": rev[1] if rev else None, "ttm_gross_profit": gp[1] if gp else None,
             "net_income_5y_avg": ni5, "net_income_5y_years": len(a_ni), "tce": tce, "tce_end": t.get("end"),

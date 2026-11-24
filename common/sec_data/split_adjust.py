@@ -104,8 +104,30 @@ SHARES_OUTLIER_RATIO = 20.0
 WEIGHTED_DILUTED_TAG = "WeightedAverageNumberOfDilutedSharesOutstanding"
 
 
-def shares_by_end(store: dict, ends: List[str], splits: List[dict]) -> Dict[str, Dict[str, Any]]:
+def _value_as_of(e: dict, as_of: Optional[str]) -> Optional[float]:
+    """エントリ e の、日付 as_of（含む）までに申告されていた値。as_of が None なら最新の val（今までの動き）。
+    申告の日（filed＝最新の申告）が as_of 以前なら最新の val、そうでなく最初の申告の日（first_filed）が as_of 以前なら
+    最初の申告の値（first_val）、どちらも後なら None（その日にはまだ無い）。申告の日が分からないエントリは最新の val
+    （使える日は呼び手が決める。multiples は期末＋SHARES_LAG_IF_NO_FILED）。
+    注: Layer3 は申告の履歴（_asof）を読み手に渡さないので、途中の申告（最初と最新の間）の値は使えない（最初か最新のどちらか）"""
+    if as_of is None:
+        return e.get("val")
+    filed, first = e.get("filed"), e.get("first_filed")
+    if not filed and not first:
+        return e.get("val")
+    if filed and filed <= as_of:
+        return e.get("val")
+    if first and first <= as_of and e.get("first_val") is not None:
+        return e.get("first_val")
+    return None
+
+
+def shares_by_end(store: dict, ends: List[str], splits: List[dict], as_of: Optional[str] = None) -> Dict[str, Dict[str, Any]]:
     """各期末日の希薄化後株式数（分割の未調整分を換算済み）と出所
+
+    as_of（YYYY-MM-DD）を渡すと、その日までに申告された値だけで作る（[[POINT-IN-TIME-HISTORY-INTEGRITY-1]] (4)、2026-11-24）。
+    同じ期末の値が後の申告で置き換わった（丸めた前年比較等）ものは、as_of の時点で申告済みの最新の値を使う。
+    その日にまだ申告されていない期末は含めない。as_of=None（既定）は今までどおり最新の val（現在の行・ROTCE は変えない）。
 
     優先: ①その四半期の加重平均（10-Q）②年次の加重平均（年度末の四半期、10-K）
           ③その期末日の発行済株式数（CommonStockSharesOutstanding、Layer3のフォールバック）
@@ -113,8 +135,17 @@ def shares_by_end(store: dict, ends: List[str], splits: List[dict]) -> Dict[str,
     同じ期末日の次の候補を試す（ONDS 2025-12-31: 年次の加重平均221,769→発行済380,763,481）。
     """
     from common.sec_data.layer3_builder import get_field_entries
-    entries = [e for e in get_field_entries(store, "shares_diluted") if e.get("val")]
+    entries = []
+    for e in get_field_entries(store, "shares_diluted"):
+        v = _value_as_of(e, as_of)
+        if v:
+            ne = {**e, "val": v} if v != e.get("val") else dict(e)
+            if as_of is not None:
+                # この値が申告された日（as-of の分割の換算に使う）。最新の val なら filed、最初の値なら first_filed、日が無ければ期末
+                ne["_vf"] = (e.get("filed") if (e.get("filed") and e["filed"] <= as_of) else e.get("first_filed")) or e["end"]
+            entries.append(ne)
     cands_by_end: Dict[str, List[tuple]] = {}
+    vf_by_end: Dict[str, str] = {}      # as-of のとき: 主の値が申告された日
     for q in ends:
         at = [e for e in entries if e["end"] == q]
         groups = [
@@ -125,12 +156,31 @@ def shares_by_end(store: dict, ends: List[str], splits: List[dict]) -> Dict[str,
         cands = [(src, float(max(es, key=lambda e: e.get("filed") or "")["val"])) for src, es in groups if es]
         if cands:
             cands_by_end[q] = cands
+            if as_of is not None:
+                vf_by_end[q] = max(next(es for src, es in groups if es), key=lambda e: e.get("filed") or "").get("_vf") or q
     if not cands_by_end:
         return {}
     qs = list(cands_by_end)
     primary = [cands_by_end[q][0][1] for q in qs]
-    adjusted = adjust_share_points(list(zip(qs, primary)), splits) if splits else list(primary)
+    if as_of is not None:
+        # as-of の値は申告された日の基準のまま。分割の前に申告された（期末も分割の前の）値だけ、登録の比で今の基準へ換算する
+        # （最新の値の経路は、後の申告で換算済みかどうかをデータの形で見分ける adjust_share_points）
+        adjusted = []
+        for q, v in zip(qs, primary):
+            for sp in sorted(splits or [], key=lambda x: str(x.get("date", ""))):
+                if q < str(sp["date"]) and vf_by_end[q] < str(sp["date"]):
+                    v = v * float(sp["ratio"])
+            adjusted.append(v)
+    else:
+        adjusted = adjust_share_points(list(zip(qs, primary)), splits) if splits else list(primary)
     med = sorted(adjusted)[len(adjusted) // 2]
+    if as_of is not None:
+        # 外れ値の基準（中央値）は、その日に申告済みの少ない点でなく、全期末の最新の値で決める（early の月で中央値が小さな点に引かれて
+        # 千株単位の申告ミスが「外れ値でない」になるのを避ける）。as_of=None と同じ値
+        ref = shares_by_end(store, ends, splits)
+        ref_vals = sorted(v["shares"] for v in ref.values())
+        if ref_vals:
+            med = ref_vals[len(ref_vals) // 2]
 
     def _ok(v: float) -> bool:
         return med > 0 and 1 / SHARES_OUTLIER_RATIO < v / med < SHARES_OUTLIER_RATIO
