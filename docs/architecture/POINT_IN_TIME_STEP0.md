@@ -87,3 +87,35 @@
 - (a) (1)の処理を週1回のMarket Data Weeklyに入れるか、分割の検知（CHECK-54）の後に呼ぶか
 - (b) (2)でHONの株価の調整の比を`split_history`に持たせるか、台帳だけに持つか
 - (c) (3)は案A（コード変更なし）でよいか
+
+## (4) 倍率の履歴の株数をas-ofにする（2026-11-24、実装はブランチ`pit-4`・未公開）
+
+**実装（ブランチ`pit-4`、origin に控え。kaihatsu には入れていない）**
+- `split_adjust.shares_by_end(store, ends, splits, as_of=None)`: `as_of`を渡すと、その日までに申告された値だけで作る。同じ期末の値が後の申告で置き換わっていたら、`filed ≤ as_of`なら最新の`val`、そうでなく`first_filed ≤ as_of`なら`first_val`、どちらも後ならその期末は含めない。`as_of=None`（既定）は今までと同じ（現在の行・ROTCEは変わらない）
+- 分割の換算（as-ofのときだけ）: 値が申告された日と期末が分割の日より前なら、登録の比（`split_history`）で今の基準へ換算する。後の申告の値は換算済みとみなす（最新の値の経路は、データの形で見分ける`adjust_share_points`のまま）。外れ値の中央値は全期末の最新の値で決める（早い月で少ない点に引かれないため）
+- `multiples.compute`: 過去の月末の行は月ごとに`as_of=その月末`、`current`の行は`as_of=None`。使える日（`first_filed`）と値の時点がそろう
+- 制約: Layer3は申告の履歴（`_asof`）を読み手に渡さないので、途中の申告（最初と最新の間）の値は使えず、最初の値か最新の値のどちらか
+
+**呼び手（全部）**
+| 呼び手 | 影響 |
+|---|---|
+| `common/multiples.py::compute`（倍率の履歴） | 変える（過去の月だけ。`current`は同じ） |
+| `common/sec_data/rotce.py:441`（ROTCE） | 変えない（`as_of`無しの呼び出し） |
+| `common/shares_base.py`（TANUKI-SHARESの`base_shares`） | 変えない（`multiples`の`current`の行の株数を受け取るだけ。`shares_by_end`は呼ばない） |
+| DILUTIONの`share_count_change`（`pipeline.py`） | 変えない（別の経路の四半期の株数の系列。`shares_by_end`は呼ばない） |
+→ 変える必要がある呼び手は無し。今の値（`current`の行）は変えない（全84銘柄で前後一致、`current`が変わった銘柄 0）
+
+**試算（全84銘柄・同じ日の同じデータで前後。`multiples.py --all`・`stage_v2.py --all`・`tools/sim chain`）**
+- テスト: `tests/test_shares_as_of.py`（作りのデータ）。後の10-Qの丸めた前年比較で、過去の月の株数が変わらない（CRWV・ONDS型）／その月末にまだ申告されていない期末は使わない／分割の前の申告だけ換算する／`current`は最新のまま
+- 倍率の履歴: 月の行が変わる銘柄 35（直近の2025-11〜2026-02に当たるのは下の6銘柄だけ。ほかは2021〜2025年前半）
+- **直近12か月（2025-11以降）の月が動く銘柄と理由**: BKNG 8.14億→8.1395億（−0.006%）・CRWV 4.98億→4.97886億（−0.023%）・KLAC・MSCI（−0.03%）・NOW・RCAT（0.0002%）。どれも、後の10-Q（2026-11）が2025-09-30の前年比較を丸めた値に置き換えたのを、当時の申告（丸める前）に戻したもの。最大でも0.03%で、倍率・時価総額への影響は同じ桁
+- 古い月が大きく動く銘柄（FROG・JOBY・RKLB・FLYW・IONQ・SOUN・NVDAほか）の理由は2つ。(a) **先読みの除去**: 年次の加重平均（IPO・SPACの年は年間の平均で期末の株数の半分程度）は、その年の10-Kが出る前の月には使えないのに、今までは`first_filed`が別の候補（期末の発行済株数）で決まるため先に使っていた。as-ofでは当時申告済みの期末の発行済株数（FROG 2021-02: 4,649万→9,211万）。(b) **分割の換算の改善**: NVDA 2021-01〜（登録の分割 2021-07の4倍・2024-06の10倍）で、今までは2,520M×4＝10.08B（4:1の換算済みの値にさらに4倍、10:1が漏れ）、as-ofは630M×40＝25.2B（今の基準）
+- 判定不能の月: `no_shares`が189→197（先読みで使えていた月が、当時はまだ株数が無い。SOUN 2022-04ほか）
+- 定義v2（`stage_v2`の並行計算）: stageのラベルが変わる月は37件（すべて2025-11より前）、**直近12か月は0件・最新の月は全銘柄で同じ**
+- 理論株価・判定・stage（`tools/sim chain`、TANUKI→HypeCore→TANUKI）: 理論株価の変化 0・判定の変化 0・保有9銘柄 0・HypeCore stage 0（TANUKI・HypeCoreは倍率の履歴を読まない）
+
+**公開の手順（着手は公開の列〈MULTIPLES・SHARES〉の後。許可が出てから）**
+1. `pit-4`を kaihatsu に取り込む（`merge --no-ff`）。`config/method_change.json`は不要（理論株価・判定・stageは動かないため、🛠の通知に出す変化が無い）
+2. 倍率の履歴と定義v2の並行計算を作り直す: `python common/multiples.py --all` → `python common/stage_v2.py --all`（Market Data Weeklyの段と同じ呼び出し。日足・株価は今日のものになるので、前後の比較は同じ日の同じデータでする）。作り直しのcommitは同じ公開に入れる
+3. ゲート（pytest・rcc NG 0・audit）→ push。確認: `docs/common/multiples/{T}.json`の`current`の行が前と同じ・直近12か月の株数の変化が上の6銘柄の0.03%以内・stageのラベルが直近12か月で変わらない
+4. 次回の確認手順（Market Data Weeklyの2回目で倍率の履歴が同じであること）を足す
