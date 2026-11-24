@@ -89,28 +89,34 @@ def _real_store(t):
         return lb.build_ticker_store(t)
 
 
-class TestFcxRealData:
-    def test_layer3_q2_2026(self):
-        q = _capex(_real_store("FCX"))
-        e = q.get(("2026-04-01", "2026-06-30"))
-        assert e is not None and abs(e["val"]) == 1_104_000_000 and e["fallback_reason"] == "segment_total"
-        assert abs(q[("2026-01-01", "2026-03-31")]["val"]) + abs(e["val"]) == 2_077_000_000
+class TestSegmentTotalCapexSynthetic:
+    """FCXの実データ（2026-11-23に抹消）の代わりに、作りのデータ（_cf、FCXの2026Q2と同じ数字）で確かめる"""
 
-    def test_parser_q2_2026(self):
+    def test_layer3_q2_2026(self, monkeypatch):
+        q = _capex(_build(monkeypatch, _cf()))
+        e = q.get(("2026-04-01", "2026-06-30"))
+        assert e is not None and abs(e["val"]) == 1104 and e["fallback_reason"] == "segment_total"
+        assert abs(q[("2026-01-01", "2026-03-31")]["val"]) + abs(e["val"]) == 2077
+
+    def test_parser_q2_2026(self, tmp_path):
+        import json
         from common.sec_data.parser import SECParser
-        if not lb.load_company_facts("FCX"):
-            pytest.skip("FCXのcompany_facts.jsonが無い")
-        p = SECParser(data_dir=os.path.join(_REPO, "common", "sec_data", "data"))
+        facts = dict(_cf(), cik=1, entityName="TEST CO")
+        (tmp_path / "TEST").mkdir()
+        (tmp_path / "TEST" / "company_facts.json").write_text(json.dumps(facts), encoding="utf-8")
+        p = SECParser(data_dir=str(tmp_path))
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            r = p.parse_company_facts("FCX")
-        # parserの四半期はCapExを書かない（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04）。FCXの軸つきの合計の値は Layer3 の側
-        for q in ("2026Q1", "2026Q2"):
+            r = p.parse_company_facts("TEST")
+        # parserの四半期はCapExを書かない（[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5d、2026-11-04）。軸つきの合計の値は Layer3 の側
+        assert r is not None and "2026Q2" in r["quarterly"]
+        for q in ("2025Q2", "2026Q2"):
             assert "capital_expenditure" not in r["quarterly"][q]["cf"]
             assert "capital_expenditure" not in (r["quarterly"][q].get("cf_provenance") or {})
 
     # HONは事業の分離後に過去の設備投資を修正再表示しており、Layer3が持つ最後の申告の値とは
-    # 一致する（13期間一致・不一致0）ため採用される。最初の申告の値とは一致しない
-    @pytest.mark.parametrize("ticker", ["AMZN", "CAT", "XOM", "TER"])
+    # 一致する（13期間一致・不一致0）ため採用される。最初の申告の値とは一致しない。
+    # XOMは抹消（2026-11-23）。値が食い違うときに採らない経路は test_not_adopted_when_values_differ（作りのデータ）が見る
+    @pytest.mark.parametrize("ticker", ["AMZN", "CAT", "TER"])
     def test_not_adopted_for_mismatching_tickers(self, ticker):
         cf = lb.load_company_facts(ticker)
         if not cf:
@@ -153,7 +159,8 @@ class TestStaleLatestSynthetic:
 
 
 # 全数調査（2026-10-14）で見つかった、申告が止まった項目
-_STOPPED = [("CEG", "stock_based_compensation", "SBC"), ("PM", "stock_based_compensation", "SBC"),
+# PMは抹消（2026-11-23）。同じ型（SBCの申告が止まる）はCEGが実データで、TestStaleLatestSyntheticが作りのデータで見る
+_STOPPED = [("CEG", "stock_based_compensation", "SBC"),
             ("ASTS", "operating_income", "OperatingIncome"), ("INTU", "gross_profit", "GrossProfit"),
             ("CAKE", "gross_profit", "GrossProfit"), ("BROS", "selling_and_marketing", None)]
 

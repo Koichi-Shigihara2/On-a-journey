@@ -28,7 +28,8 @@ from calculator.sensitivity import create_sensitivity_calc_func  # type: ignore[
 from core_calculator import KoichiValuationCalculator  # type: ignore[import]
 
 _DATA_DIR = os.path.join(_REPO, "docs", "value-monitor", "tanuki_valuation", "data")
-TAPERING_TICKERS = ["ALAB", "KULR", "SITM", "IONQ", "S", "RDW", "ASTS"]
+# 2026-11-24: KULR・RDWは抹消（UNIVERSE-REBALANCE-2026Q4-1）、SITMは逓減型でなくなった → 今の逓減型のRCATに入れ替え（skipを戻す）
+TAPERING_TICKERS = ["ALAB", "RCAT", "IONQ", "S", "ASTS"]
 
 
 def _financials() -> dict:
@@ -89,7 +90,7 @@ def _inputs_from_latest(d: dict) -> dict:
 
 @pytest.mark.parametrize("ticker", TAPERING_TICKERS)
 def test_tapering_ticker_center_matches_main_iv(ticker):
-    """逓減型7銘柄の実データで、Rm 10%・基準年数の計算値がメインIVに一致すること。"""
+    """逓減型5銘柄の実データで、Rm 10%・基準年数の計算値がメインIVに一致すること。"""
     path = os.path.join(_DATA_DIR, ticker, "latest.json")
     if not os.path.exists(path):
         pytest.skip(f"{ticker} latest.json なし")

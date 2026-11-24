@@ -33,13 +33,8 @@
    - 期限: なし（公開の後でよい）
    - 確認の手順: ASTS・PLTR・SOUNの表紙の発行済（クラスごと）、IONQ（yfinanceの implied 464.7 が表紙432.5より+7.5%の理由）。読み取りだけ・10件/秒以下。結果は`TANUKI_SHARES_STEP0.md`末尾に書く
 
-40. **TANUKI-SHARES-SINGLE-SOURCE-1（`-1-1`）の2回目の確認**（公開は2026-11-23 手動。1回目の印は96銘柄・2回目以降0件・全96銘柄が試算と一致を確認済み。BACKLOG_DONEへ移設済み）
-   - 日時: 2026-11-24（火）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後
-   - 期限: 2026-11-25
-   - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`TANUKI-SHARES-SINGLE-SOURCE-1-1`）②TSLAの理論株価が43.18前後・`components.outstanding_gap_pct`が+11.5・PLTRの`diluted_shares`が2,574M（`_shares_source`＝`sec_weighted`）③判定はPLTR HOLDのまま。**不合格なら`[[TANUKI-SHARES-SINGLE-SOURCE-1]]`をBACKLOGに戻して報告する**
-
 41. **UNIVERSE-REBALANCE-2026Q4-1 の削除（14銘柄）の後、定時の実行で14銘柄が戻ってこないこと**（抹消は2026-11-23。`cik_lookup.csv`の`status=retired`・専用のデータ・設定を削除。市場データはS&P500の6銘柄〈FCX・MO・PEP・PM・VZ・XOM〉だけ残す）
-   - 日時: 2026-11-24（火）06:30 JST ごろのTANUKI・Stonksの定時の実行の後（手順40と同じ回）。日曜の連鎖（11-29）の後も1回
+   - 日時: 2026-11-24（火）06:30 JST ごろのTANUKI・Stonksの定時の実行の後（**11-24分は合格・確認済み**: 14銘柄は4つの一覧・専用のデータ・画面のデータに戻らず、市場データはS&P500の6銘柄だけ、HypeCoreのstageは削除の前後で84銘柄差0）。**残り: 日曜の連鎖（11-29）の後に1回**
    - 期限: 2026-11-25
    - 確認の手順: ①`tanuki_valuation/data/tickers.json`・`hypecore/data/tickers.json`・`stonks-silo/data/results.json`〈17銘柄〉・`adjusted_eps_analyzer/data/summary.json`に14銘柄が無い ②`docs/value-monitor/tanuki_valuation/data/{T}/`・`common/sec_data/data/{T}/`・`docs/common/multiples/{T}.json`が再び作られていない ③`common/market_data/`のFCX・MO・PEP・PM・VZ・XOM以外（KULR・QBTS・SPIR・BBAI・RDW・ONDS・RXRX・SCCO）が再び作られていない（`monitor_tickers.yaml`から外した） ④画面（tanuki_score・stonks-silo・hypecore・screening）に14銘柄が出ない。戻ってきたら止めて報告する
 
