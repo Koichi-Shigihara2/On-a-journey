@@ -38,6 +38,11 @@
    - 期限: 2026-11-25
    - 確認の手順: ①`tanuki_valuation/data/tickers.json`・`hypecore/data/tickers.json`・`stonks-silo/data/results.json`〈17銘柄〉・`adjusted_eps_analyzer/data/summary.json`に14銘柄が無い ②`docs/value-monitor/tanuki_valuation/data/{T}/`・`common/sec_data/data/{T}/`・`docs/common/multiples/{T}.json`が再び作られていない ③`common/market_data/`のFCX・MO・PEP・PM・VZ・XOM以外（KULR・QBTS・SPIR・BBAI・RDW・ONDS・RXRX・SCCO）が再び作られていない（`monitor_tickers.yaml`から外した） ④画面（tanuki_score・stonks-silo・hypecore・screening）に14銘柄が出ない。戻ってきたら止めて報告する
 
+42. **SEC-RETAG-RECONCILE-1（`-1-1`）の公開の確認**（公開は2026-11-24 手動: TANUKI → HypeCore → TANUKI。scopeは5銘柄＝DOCN・COHR・ENTG・MSCI・FLYW。試算は`docs/architecture/SEC_RETAG_REASONS.md`）
+   - 日時: 2026-11-25（水）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（2回目）。日曜の連鎖（11-29）の後も1回
+   - 期限: 2026-11-26
+   - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`SEC-RETAG-RECONCILE-1-1`）②DOCNの理論株価が58.99前後・判定HOLD、COHRの`fcf_estimation.da`が546M前後・ENTG 340M・MSCI 198M・FLYW 29.7M ③日曜の`SEC_Data_Update`の後も、`ttm/`のCOHR・ENTG・MSCI・FLYWのD&Aが同じ値で、`bs_lines/`のDOCNの最新の申告に`MarketableSecurities`の行がある（日曜の更新が新しい申告で`MarketableSecurities`の行を取る）④rccのCHECK-INVが新しいキー（`retag_alias`・`total_tag_was_partial`・`partial_concept_only`）で出ない。**不合格なら`[[SEC-RETAG-RECONCILE-1]]`をBACKLOGに戻して報告する**
+
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |

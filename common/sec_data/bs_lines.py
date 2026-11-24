@@ -52,7 +52,9 @@ RULES: Tuple[Tuple[str, re.Pattern], ...] = (
     ("preferred_stock", re.compile(r"^(PreferredStockValue|PreferredStockValueOutstanding|ConvertiblePreferredStock\w*Value|"
                                    r"PreferredStockIncludingAdditionalPaidInCapital\w*)$")),
     ("minority_interest", re.compile(r"^(MinorityInterest|RedeemableNoncontrollingInterestEquity(Common)?CarryingAmount)$")),
-    ("short_term_investments", re.compile(r"^(ShortTermInvestments|MarketableSecuritiesCurrent|OtherShortTermInvestments|"
+    # MarketableSecurities（Current無し）は貸借対照表の行に限る（このファイルは行の表だけを見る）。DOCN・KOの流動資産の行
+    # （[[SEC-RETAG-RECONCILE-1]]、2026-11-24）。注記の合計（AvailableForSaleSecuritiesDebtSecurities等）は現金同等物を含むので足さない
+    ("short_term_investments", re.compile(r"^(ShortTermInvestments|MarketableSecurities|MarketableSecuritiesCurrent|OtherShortTermInvestments|"
                                           r"AvailableForSaleSecuritiesDebtSecuritiesCurrent|AvailableForSaleSecuritiesCurrent|"
                                           r"DebtSecuritiesAvailableForSale\w*Current|HeldToMaturitySecuritiesCurrent|"
                                           r"DebtSecuritiesHeldToMaturity\w*Current|\w*ShortTermInvestments)$")),
@@ -169,6 +171,51 @@ def extract(pre: Optional[bytes], inst: Optional[bytes]) -> Dict[str, Any]:
     vals = instant_values(inst, keep)
     return {"status": "ok", "role": tr[0], "lines": [{"concept": c, "values": vals[c]} for c in keep if vals[c]],
             "concepts": tr[1]}   # 表の全部の行の名前（「行が無ければ0」の安全の条件に使う）
+
+
+# ━━━ 分類を足したときの埋め戻し（SECを呼ばない） ━━━
+
+# 埋め戻す行の名前。分類の表に足した行だけ（ほかの行は、表示の構造から取った値が無い理由〈軸つきだけ等〉があるので触らない）
+BACKFILL_CONCEPTS = re.compile(r"^us-gaap:MarketableSecurities$")
+
+
+def backfill_lines_from_company_facts(rec: Dict[str, Any], company_facts: Optional[Dict[str, Any]]) -> int:
+    """保存済みの申告の記録で、表の行（concepts）に今の分類に当たる行があるのに lines に無いものを、companyfactsの同じ申告
+    （accn）・同じ時点の値で足す。分類の表を広げたとき（SEC-RETAG-RECONCILE-1: MarketableSecurities）に、過去の申告を取り直さずに
+    直す。値が1つも見つからない行は足さない。足した行の数を返す"""
+    if rec.get("status") != "ok" or not company_facts:
+        return 0
+    have = {x["concept"] for x in rec.get("lines") or []}
+    ns_facts = (company_facts.get("facts") or {})
+    added = 0
+    for c in rec.get("concepts") or []:
+        if c in have or not classify(c) or not BACKFILL_CONCEPTS.match(c):
+            continue
+        ns, _, tag = c.partition(":")
+        rows = (((ns_facts.get("us-gaap" if ns == "us-gaap" else ns) or {}).get(tag) or {}).get("units") or {}).get("USD") or []
+        vals = {r["end"]: float(r["val"]) for r in rows if r.get("accn") == rec.get("accn") and not r.get("start")
+                and r.get("val") is not None}
+        if not vals:
+            continue
+        rec.setdefault("lines", []).append({"concept": c, "values": vals})
+        added += 1
+    return added
+
+
+def backfill_ticker(ticker: str, data_dir: str = DATA_DIR) -> int:
+    """1銘柄の保存済みの記録に backfill_lines_from_company_facts を当てて保存する（SECは呼ばない）。足した行の数"""
+    path = os.path.join(data_dir, ticker.upper(), "company_facts.json")
+    if not os.path.exists(path):
+        return 0
+    with open(path, encoding="utf-8") as f:
+        facts = json.load(f)
+    n = 0
+    for accn, rec in load_records(ticker, data_dir).items():
+        k = backfill_lines_from_company_facts(rec, facts)
+        if k:
+            save_record(ticker, accn, rec, data_dir)
+            n += k
+    return n
 
 
 # ━━━ 保存 ━━━
@@ -412,3 +459,14 @@ def latest_balance(ticker: str, cash: Optional[float], data_dir: str = DATA_DIR)
             out.setdefault(f, 0)
             out["no_bs_line"].append(f)
     return out
+
+
+if __name__ == "__main__":      # python common/sec_data/bs_lines.py --backfill [TICKER ...]（SECは呼ばない）
+    import sys
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if "--backfill" in sys.argv:
+        names = args or sorted(n for n in os.listdir(DATA_DIR) if os.path.isdir(bs_lines_dir(n)))
+        for t in names:
+            k = backfill_ticker(t)
+            if k:
+                print(f"{t}: 行を{k}つ足した")

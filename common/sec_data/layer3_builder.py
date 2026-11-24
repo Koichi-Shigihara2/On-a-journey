@@ -59,6 +59,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 
@@ -391,6 +392,75 @@ def _get_concept_units(company_facts: dict, concept: str, unit: str) -> list:
         return []
 
 
+# ━━━ 再タグの突き合わせ（[[SEC-RETAG-RECONCILE-1]]、2026-11-24） ━━━
+# 最新の申告で候補のタグが別のタグに付け替わると（COHRの無形資産の償却: AmortizationOfIntangibleAssets →
+# OtherAmortizationOfDeferredCharges）、候補のタグだけを見るLayer3は最新の期の値を取りこぼす。付け替えを、同じ申告の
+# 前年同期の比較値で確かめる: 候補のタグ t が前の申告で報告した期の値と、新しい申告の別のタグ u の同じ期の値が0.5%以内で一致し
+# （一致が1つ以上・食い違いが0）、uの名前がその項目の名前の目印に当たるとき、uのその申告の値のうち t に値が無い期を t の値として採る
+# （採ったエントリには retag_alias=u を付け、source_tag に @retag:u を足す）。合わないものは採らず、最新期が欠けた守りに任せる。
+# 項目ごとの名前の目印（銘柄名は書かない）。営業CFは継続事業の申告で組み替えがあり自動の別名にしない
+RETAG_NAME_HINT = {
+    "depreciation_and_amortization": re.compile(r"Amortization|Depreciation|Depletion"),
+    "stock_based_compensation": re.compile(r"ShareBased|StockBased|StockCompensation|EquityBased"),
+    "capital_expenditure": re.compile(r"PaymentsToAcquire|PaymentsForCapital|CapitalExpenditure|PropertyPlantAndEquipmentAdditions"),
+}
+RETAG_TOLERANCE = 0.005
+RETAG_RECENT_FILINGS = 3
+RETAG_SOURCE_MARK = "@retag:"
+
+
+def retag_alias_rows(company_facts: dict, concept: str, raw_entries: list, unit: str, candidates: list, field_name: str) -> list:
+    """候補のタグ concept の生エントリに、再タグの突き合わせで採れた別のタグの行（新しい申告の、concept に値が無い期）を足して返す。
+    足す行は {**行, "retag_alias": u}。足すものが無ければ raw_entries をそのまま返す"""
+    hint = RETAG_NAME_HINT.get(field_name)
+    if not hint or not raw_entries:
+        return raw_entries
+    gaap = ((company_facts or {}).get("facts") or {}).get("us-gaap") or {}
+    t_last = max((r.get("filed") or "") for r in raw_entries)
+    filed_by_accn: dict = {}
+    for rows in (v.get("units", {}).get(unit) or [] for v in gaap.values()):
+        for r in rows:
+            if str(r.get("form", "")).startswith(("10-Q", "10-K")) and r.get("accn"):
+                filed_by_accn[r["accn"]] = max(filed_by_accn.get(r["accn"], ""), r.get("filed") or "")
+    # 付け替えを見るのは、会社の最新の申告3本（10-Q・10-K）のうち、候補のタグの最後の申告より後のものだけ。
+    # 古い申告まで遡ると、昔の期の別のタグ（AAPLの売上原価の中の減価償却等）を採ってしまう
+    recent = sorted(filed_by_accn, key=lambda a: filed_by_accn[a], reverse=True)[:RETAG_RECENT_FILINGS]
+    newer = {a for a in recent if filed_by_accn[a] > t_last}
+    if not newer:
+        return raw_entries
+    prior: dict = {}
+    for r in sorted(raw_entries, key=lambda r: r.get("filed") or ""):
+        if r.get("start"):
+            prior[(r["start"], r["end"])] = r
+    cand_set = set(candidates)
+    extra: list = []
+    for accn in sorted(newer):
+        found: list = []
+        for u, v in gaap.items():
+            if u in cand_set or u == concept or not hint.search(u):
+                continue
+            rows = [r for r in v.get("units", {}).get(unit) or [] if r.get("accn") == accn and r.get("start")]
+            if not rows:
+                continue
+            ties = bad = 0
+            for r in rows:
+                p = prior.get((r["start"], r["end"]))
+                if p and p.get("val"):
+                    if abs(r["val"] - p["val"]) <= RETAG_TOLERANCE * abs(p["val"]):
+                        ties += 1
+                    else:
+                        bad += 1
+            if ties >= 1 and bad == 0:
+                found.append((ties, u, rows))
+        if len(found) != 1:          # 0件は付け替えなし、2件以上は決められない（採らない）
+            continue
+        _ties, u, rows = found[0]
+        for r in rows:
+            if (r["start"], r["end"]) not in prior:
+                extra.append({**r, "retag_alias": u})
+    return list(raw_entries) + extra if extra else raw_entries
+
+
 def extract_field_raw_entries(
     company_facts: dict, field_def: dict, field_name: str = "", ticker: str = "",
 ) -> tuple[list, str | None]:
@@ -520,6 +590,13 @@ def _merge_candidate_entries(
         raw_entries = _get_concept_units(company_facts, concept, unit)
         if not raw_entries:
             continue
+        # 再タグの突き合わせ（SEC-RETAG-RECONCILE-1）: 新しい申告で別のタグに付け替わった期を足す（足す行は sign_abs の前）
+        _with_alias = retag_alias_rows(company_facts, concept, raw_entries, unit, candidates, field_name)
+        _alias_by_end: dict = {}
+        if _with_alias is not raw_entries:
+            for _r in _with_alias[len(raw_entries):]:
+                _alias_by_end[(_r["end"], _r.get("accn"))] = _r["retag_alias"]
+            raw_entries = _with_alias
         if sign_abs:
             raw_entries = [abs_entry(e) for e in raw_entries]
         processed = _process_entries(raw_entries, first_filed_floor=floor)
@@ -531,6 +608,10 @@ def _merge_candidate_entries(
             continue
         for e in normalized:
             e["source_tag"] = concept
+            _al = _alias_by_end.get((e["end"], e.get("accn"))) if _alias_by_end else None
+            if _al:
+                e["retag_alias"] = _al
+                e["source_tag"] = concept + RETAG_SOURCE_MARK + _al
         # val の守り(i)（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1）: 単位の誤り（10の累乗）の val は first_val に戻す。Q4の逆算より前
         guard_unit_errors(normalized)
         if apply_missing_quarter:
@@ -570,6 +651,12 @@ def _merge_candidate_entries(
             per_tag_normalized, used_concepts, PARTIAL_SUM_FIELDS[field_name])
 
     merged = _merge_normalized_by_priority(per_tag_normalized)
+    if field_name in PARTIAL_SUM_FIELDS:
+        # 合計のタグが無く部分の1つだけを採った期は、値は変えず印を付ける（過小の可能性。SEC-RETAG-RECONCILE-1）
+        _pair = PARTIAL_SUM_FIELDS[field_name]
+        for e in merged:
+            if e.get("source_tag") in _pair and not e.get("partial_sum"):
+                e["partial_concept_only"] = True
     source_tag = "+".join(used_concepts) if len(used_concepts) > 1 else used_concepts[0]
     return merged, source_tag
 
@@ -580,6 +667,7 @@ def _merge_candidate_entries(
 # 片方だけを採ると、D&Aが過小になる（ABBV: 減価償却だけ4.7億に対し償却12.9億）。両方ある期は足し、
 # 優先順位は「合計のタグ ＞ 2つの合計 ＞ 片方だけ」。片方しか無い期は今までどおり（値は変えない）
 PARTIAL_SUM_FIELDS = {"depreciation_and_amortization": ("Depreciation", "AmortizationOfIntangibleAssets")}
+PARTIAL_TOTAL_TOLERANCE = 0.005     # 合計のタグの値が部分の値と一致するとみなす幅（SEC-RETAG-RECONCILE-1）
 
 
 def _add_partial_sum_series(per_tag_normalized: list, used_concepts: list, pair: tuple) -> tuple:
@@ -605,12 +693,34 @@ def _add_partial_sum_series(per_tag_normalized: list, used_concepts: list, pair:
             e.get("first_filed") or o.get("first_filed")) else None
         n["source_tag"] = a_tag + "+" + b_tag
         n["partial_sum"] = True
+        if o.get("retag_alias") or e.get("retag_alias"):
+            n["retag_alias"] = o.get("retag_alias") or e.get("retag_alias")
         out.append(n)
     if not out:
         return per_tag_normalized, used_concepts
     pos = min(used_concepts.index(a_tag), used_concepts.index(b_tag))
     per_tag_normalized = list(per_tag_normalized)
     used_concepts = list(used_concepts)
+    # 合計のタグの値が部分の1つに一致する期（ENTG: DepreciationDepletionAndAmortization が減価償却だけで、無形資産の償却は別の行）は、
+    # 合計のタグでなく和を採る。合計のタグの値と部分の値が一致しない期（合計が本物）は今までどおり合計のタグ（SEC-RETAG-RECONCILE-1）
+    comp = {}
+    for e in sa:
+        k = (e["end"], bool(e.get("is_annual")))
+        if not e.get("is_ytd") and e.get("val") is not None and k in bk:
+            comp[k] = (e["val"], bk[k]["val"])
+    sum_by = {(n["end"], bool(n.get("is_annual"))): n for n in out}
+    for i, c in enumerate(used_concepts):
+        if c in (a_tag, b_tag) or "+" in c:
+            continue
+        kept = []
+        for e in per_tag_normalized[i]:
+            k = (e["end"], bool(e.get("is_annual")))
+            if (not e.get("is_ytd") and k in sum_by and k in comp and e.get("val") and all(x > 0 for x in comp[k])
+                    and any(abs(e["val"] - x) <= PARTIAL_TOTAL_TOLERANCE * abs(e["val"]) for x in comp[k])):
+                sum_by[k]["total_tag_was_partial"] = c
+                continue
+            kept.append(e)
+        per_tag_normalized[i] = kept
     per_tag_normalized.insert(pos, out)
     used_concepts.insert(pos, a_tag + "+" + b_tag)
     return per_tag_normalized, used_concepts

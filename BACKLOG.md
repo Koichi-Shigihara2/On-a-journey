@@ -2641,6 +2641,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **登録日:** 2026-11-16
 **注（2026-11-23）:** 該当銘柄のうちMO（ttm D&A 0.79倍）は登録を抹消済み（[[UNIVERSE-REBALANCE-2026Q4-1]]の削除。データ・設定も削除）。残りはAPP・ENTG・FROG・LITE
 **STEP 0の結果（2026-11-24）:** `docs/architecture/SEC_RETAG_STEP0.md`。APPは事業売却の組み替えで値は正しく対象外・理論株価に効くのはDOCNの短期投資だけ（約+2.7%・判定は動かない見込み）・COHRは再タグ・ENTGは合計のタグが部分・FRSHはQ4逆算が負・LITEは原因未特定。決めてほしいこと5点は同書の末尾
+**公開済み（2026-11-24、ID `SEC-RETAG-RECONCILE-1-1`、scope 5銘柄）:** 実装と試算は `docs/architecture/SEC_RETAG_REASONS.md`。確認は手順42
 **着手条件:** 公開の列（[[TANUKI-CALC-CONTINUITY-1]]・[[DILUTION-DEFINITION-UNIFY-1]]・[[DEFICIT-QUALITY-ADOPT-1]]・[[MULTIPLES-ADOPT-1]]・[[TANUKI-SHARES-SINGLE-SOURCE-1]]）の後
 **発見:** System Health Check [P] ExternalChange の新しい6件（2026-11-15の日曜の更新）の調べ（`docs/architecture/EXTERNAL_CHANGE_2026-11-15.md`）。確認済みの台帳には「誤り・欠け。[[SEC-RETAG-RECONCILE-1]]で直す（直ったら外す）」として3件を入れた。**登録だけで、実装は許可されていない**
 

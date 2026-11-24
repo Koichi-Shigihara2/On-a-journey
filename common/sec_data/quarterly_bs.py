@@ -3,7 +3,7 @@
 parser（SECParser）が company_facts から別の規則で取っていた四半期のBSの値のうち、同じ期・同じ項目の Layer3
 （build_ticker_store）の val と違うものを、Layer3 の val（守り〈val_guard〉の後）で置き換える。parser にだけある値・
 Layer3 にだけある値（0の補いなど）は触らない（0で埋めない）。符号だけが違う値も触らない。
-年次・CF・PL・株数は段1では置き換えない。
+年次・PL・株数は置き換えない。CF は D&A だけ（REPLACED_FIELDS）。
 
 parser の四半期のファイルには期末日が無いので、その期の値と一致する Layer3 のエントリの期末日の多数決で決める
 （tools/sim/parser_l3/parser_vs_l3.py の段0の比較と同じ規則。parser のラベル f"{fy}{fp}" は10-Qの前年同期の比較値と
@@ -49,6 +49,9 @@ PARSER_TO_LAYER3: Dict[Tuple[str, str], str] = {
     ("pl", "selling_general_and_administrative"): "selling_general_and_administrative",
     ("shares", "shares_basic"): "shares_basic_weighted_avg", ("shares", "shares_diluted"): "shares_diluted",
 }
+# 置き換える項目: bs の全部と、cf の D&A（parser の四半期の D&A が部分のタグ〈減価償却だけ・償却だけ〉の値になる期がある。
+# Layer3 は部分の足し算・再タグの突き合わせで直した値を持つ。SEC-RETAG-RECONCILE-1、2026-11-24）
+REPLACED_FIELDS = {k for k in PARSER_TO_LAYER3 if k[0] == "bs"} | {("cf", "depreciation_and_amortization")}
 MIN_VOTES = 4
 MIN_VOTE_SHARE = 0.35
 
@@ -108,15 +111,18 @@ def replace_record(record: Dict[str, Any], store: Dict[str, Any]) -> List[Tuple[
         return []
     changed = []
     for (sec, f), lf in PARSER_TO_LAYER3.items():
-        if sec != "bs" or bs.get(f) is None:
+        if (sec, f) not in REPLACED_FIELDS:
+            continue
+        target = record.get(sec) or {}
+        if target.get(f) is None:
             continue
         cand = [e for e in _entries(store, lf) if e["end"] == end]
         if not cand:
             continue
         v3 = cand[-1]["val"]
-        if v3 != bs[f] and not _near(v3, bs[f]):
-            changed.append((f, bs[f], v3))
-            bs[f] = v3
+        if v3 != target[f] and not _near(v3, target[f]):
+            changed.append((f, target[f], v3))
+            target[f] = v3
     return changed
 
 

@@ -98,13 +98,6 @@
       "match": "2026-11-09",
       "acknowledged_date": "2026-11-16",
       "comment": "Yahooが2026-11-09の行で月の記号の無い限月「NIY.CME」を返した（前後の日はNIYZ26.CME）。終値60,935は翌日の前日終値と一致し値は正しい。NIY=Fは表示だけ（[[MARKETDATA-FUTURES-ROLL-1]]、docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
-    },
-    {
-      "kind": "tag_switch",
-      "ticker": "COHR",
-      "match": "depreciation_and_amortization Depreciation+AmortizationOfIntangibleAssets→Depreciation",
-      "acknowledged_date": "2026-11-16",
-      "comment": "誤り・欠け。[[SEC-RETAG-RECONCILE-1]] で直す（直ったら外す）。無形資産の償却が OtherAmortizationOfDeferredCharges 69,451,000 に付け替わり、Layer3はDepreciation 77.7Mだけを採った（実際は147.1M）。理論株価・判定は0（docs/architecture/EXTERNAL_CHANGE_2026-11-15.md）"
     }
   ]
 }

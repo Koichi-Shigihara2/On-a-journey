@@ -12,9 +12,9 @@
 自体とは無関係な話題であることに留意）**
 
 **次の作業（2026-11-23 更新〈それまでは2026-11-16 終業〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`、手順・決まりは`CLAUDE_CODE_PROCEDURES.md`）**:
-1. 11-24（火）朝: 手順40（TANUKI-SHARES-SINGLE-SOURCE-1の2回目。印0件・TSLA 43.18前後・PLTRの分母2,574M。不合格ならBACKLOGへ戻して報告）
+1. 11-25（水）朝: 手順42（SEC-RETAG-RECONCILE-1-1の2回目。印0件・DOCN 58.99前後。不合格ならBACKLOGへ戻して報告）。手順41は11-29の回だけ残る（11-24朝の手順40・41は合格）
 2. （済 2026-11-23）`[[UNIVERSE-REBALANCE-2026Q4-1]]`の削除（14銘柄を`status=retired`・専用のデータ・設定を削除、残る82銘柄の理論株価・判定の変化0、STONKSは24→17）。確認は手順41。**修正（HON・ASTS）・登録は後**（件は閉じない）
-3. `[[SEC-RETAG-RECONCILE-1]]`（STEP 0はAPPのD&Aから）→ `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)
+3. （済 2026-11-24 公開）`[[SEC-RETAG-RECONCILE-1]]`（ID `-1-1`、scope 5銘柄、DOCN +2.7%・判定0・保有0・stage 0、確認は手順42）→ `[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`の(4)
 4. 買いの判断に効く件のSTEP 0【Opus】: `[[EARNINGS-REFLECTION-LAG-1]]` → `[[TANUKI-GUIDANCE-REVISION-BLIND-1]]` → `[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`
 5. `[[STONKS-DEFICIT-REALITY-EPIC-1]]`の① → `[[PARSER-LAYER3-SINGLE-SOURCE-1]]`の段2以降 → `[[STAGE-V2-ROLLOUT-1]]`の③④
 6. 画面・市況: `[[MARKETPULSE-REVIEW-EPIC-1]]`・`[[HYPECORE-MARKET-WIDE-DRAWDOWN-1]]`・`[[MACROPULSE-DATA-LAG-AND-REGIME-DRIFT-1]]`。11-22メモの未登録3件（金利見通しの表示・政策金利の専用ページ・景気後退スコアの段）は、ここで登録する
