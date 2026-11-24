@@ -5,7 +5,7 @@
 
 ## 今の状態（2026-11-12 終業）
 
-- BACKLOG.md のアクティブは **23件**（`^### [` の機械カウント）。rcc NG 0・WARN 223、pytest 2960件通過・失敗2（kaihatsu。ruffの無い環境の1件と、SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
+- BACKLOG.md のアクティブは **22件**（`^### [` の機械カウント）。rcc NG 0・WARN 223、pytest 2960件通過・失敗2（kaihatsu。ruffの無い環境の1件と、SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
 - **未公開のコードの置き場所は無い**（Layer3の定義の列〈PARSER段1・CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARES〉は2026-11-23に全部公開済み。記録は`BACKLOG_DONE.md`・各STEP 0・`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`）。PARSER-LAYER3は段2以降が残る
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
@@ -38,10 +38,10 @@
    - 期限: 2026-11-25
    - 確認の手順: ①`tanuki_valuation/data/tickers.json`・`hypecore/data/tickers.json`・`stonks-silo/data/results.json`〈17銘柄〉・`adjusted_eps_analyzer/data/summary.json`に14銘柄が無い ②`docs/value-monitor/tanuki_valuation/data/{T}/`・`common/sec_data/data/{T}/`・`docs/common/multiples/{T}.json`が再び作られていない ③`common/market_data/`のFCX・MO・PEP・PM・VZ・XOM以外（KULR・QBTS・SPIR・BBAI・RDW・ONDS・RXRX・SCCO）が再び作られていない（`monitor_tickers.yaml`から外した） ④画面（tanuki_score・stonks-silo・hypecore・screening）に14銘柄が出ない。戻ってきたら止めて報告する
 
-42. **SEC-RETAG-RECONCILE-1（`-1-1`）の公開の確認**（公開は2026-11-24 手動: TANUKI → HypeCore → TANUKI。scopeは5銘柄＝DOCN・COHR・ENTG・MSCI・FLYW。試算は`docs/architecture/SEC_RETAG_REASONS.md`）
-   - 日時: 2026-11-25（水）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（2回目）。日曜の連鎖（11-29）の後も1回
-   - 期限: 2026-11-26
-   - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`SEC-RETAG-RECONCILE-1-1`）②DOCNの理論株価が58.99前後・判定HOLD、COHRの`fcf_estimation.da`が546M前後・ENTG 340M・MSCI 198M・FLYW 29.7M ③日曜の`SEC_Data_Update`の後も、`ttm/`のCOHR・ENTG・MSCI・FLYWのD&Aが同じ値で、`bs_lines/`のDOCNの最新の申告に`MarketableSecurities`の行がある（日曜の更新が新しい申告で`MarketableSecurities`の行を取る）④rccのCHECK-INVが新しいキー（`retag_alias`・`total_tag_was_partial`・`partial_concept_only`）で出ない。**不合格なら`[[SEC-RETAG-RECONCILE-1]]`をBACKLOGに戻して報告する**
+43. **POINT-IN-TIME-HISTORY-INTEGRITY-1 (4)（倍率の履歴の株数をas-ofに）の公開の後の確認**（公開は2026-11-25 kaihatsuへ`pit-4`を統合 `182a82a42d`・データ `5cde1fe3f3`。method_changeは登録しない〈理論株価・判定・stageは動かない〉）
+   - 日時: 次のMarket Data Weekly（土曜）の定時の実行の後（2026-11-28 または 11-29）
+   - 期限: 2026-12-01
+   - 確認の手順: ①`docs/common/multiples/{T}.json`の直近12か月（2025-11以降）の`shares`が、公開の直後の値から動かない（動くのは新しい申告・日足の分だけ）②`current`の行・`docs/common/stage_v2/`の直近12か月のラベルが変わらない③NVDAの2021-01〜の株数が25.2B前後・CRWVの2025-11〜2026-02が497.886M（丸めた498Mに戻らない）。合格したら`[[POINT-IN-TIME-HISTORY-INTEGRITY-1]]`をBACKLOG_DONE.mdへ移設する（(1)〜(4)が全部済む）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

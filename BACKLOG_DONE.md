@@ -4,6 +4,40 @@
 
 ## 2026-11-23（完了）
 
+### ✅ [SEC-RETAG-RECONCILE-1] 申告のタグの付け替え・漏れで、Layer3とbs_linesが値を取りこぼす（COHR D&A・SPIR・DOCNの短期投資・KULRの営業CF）
+**完了（2026-11-25）:** 公開（2026-11-24）後の2回目の確認に合格。82銘柄とも`method_change`の印0件（`method_change_applied`に`SEC-RETAG-RECONCILE-1-1`）、DOCNの理論株価 58.99、COHR D&A 546M・ENTG 340M・MSCI 198M・FLYW 29.7M、DOCNの`bs_lines`に`MarketableSecurities`の行。確認は手順42（済。日曜の`SEC_Data_Update`〈11-29〉の後の`ttm/`・`bs_lines/`は、日曜の連鎖の確認〈手順41〉と一緒に見る）
+**型・処置:** 型A・根治策
+**優先度:** 中
+**分類:** SEC層 / `common/sec_data/layer3_builder.py`（候補選び）・`common/sec_data/bs_lines.py`（分類）・`config/sec_concept_definitions.json`
+**登録日:** 2026-11-16
+**注（2026-11-23）:** 該当銘柄のうちMO（ttm D&A 0.79倍）は登録を抹消済み（[[UNIVERSE-REBALANCE-2026Q4-1]]の削除。データ・設定も削除）。残りはAPP・ENTG・FROG・LITE
+**STEP 0の結果（2026-11-24）:** `docs/architecture/SEC_RETAG_STEP0.md`。APPは事業売却の組み替えで値は正しく対象外・理論株価に効くのはDOCNの短期投資だけ（約+2.7%・判定は動かない見込み）・COHRは再タグ・ENTGは合計のタグが部分・FRSHはQ4逆算が負・LITEは原因未特定。決めてほしいこと5点は同書の末尾
+**公開済み（2026-11-24、ID `SEC-RETAG-RECONCILE-1-1`、scope 5銘柄）:** 実装と試算は `docs/architecture/SEC_RETAG_REASONS.md`。確認は手順42
+**着手条件:** 公開の列（[[TANUKI-CALC-CONTINUITY-1]]・[[DILUTION-DEFINITION-UNIFY-1]]・[[DEFICIT-QUALITY-ADOPT-1]]・[[MULTIPLES-ADOPT-1]]・[[TANUKI-SHARES-SINGLE-SOURCE-1]]）の後
+**発見:** System Health Check [P] ExternalChange の新しい6件（2026-11-15の日曜の更新）の調べ（`docs/architecture/EXTERNAL_CHANGE_2026-11-15.md`）。確認済みの台帳には「誤り・欠け。[[SEC-RETAG-RECONCILE-1]]で直す（直ったら外す）」として3件を入れた。**登録だけで、実装は許可されていない**
+
+#### 内容
+- 該当（原本の申告で確認済み）:
+  - COHRのD&A: 最新の10-Qで無形資産の償却が`AmortizationOfIntangibleAssets`→`OtherAmortizationOfDeferredCharges`に付け替わり、Layer3は`Depreciation`だけ（147.1M→77.7M）。ttm D&Aが69.5M少ない。理論株価・判定は0
+  - SPIRの短期投資: バランスシートの同じ行が`MarketableSecuritiesCurrent`→`AvailableForSaleSecuritiesDebtSecurities`（2025-12-31は同額56,969,000）。`bs_adjustment`が古い値（FY2025の56.97M、実際は47.05M）。理論株価・判定は0
+  - DOCNの短期投資: `MarketableSecurities` 178.6M（2026-09-30）が候補にも`bs_lines`の分類にも無く、短期投資が0（`sti_estimated_zero`）。正味現金が約1.5ドル/株少ない＝理論株価の約2%（概算。**値に効く唯一の件**）
+  - KULRの営業CF: 最新の10-Qが継続事業のタグ（`NetCashProvidedByUsedInOperatingActivitiesContinuingOperations`）だけで、前年の比較も廃止事業を除く組み替え（9か月 −31.04M→−22.58M）。最新のTTMでOCF・FCFが欠ける（最新期の欠けの守りが効く。IV・判定・収益の段階は0）
+- 同じ型の未調査（FINDINGS 2026-11-16の行）: LITEの株式報酬（最新のTTMに無い）、APP 0.46倍・ENTG 0.78倍・FROG 0.80倍・MO 0.79倍のttm D&Aの落ち
+- 方針:
+  - Layer3の候補選びの1か所に「再タグの突き合わせ」を入れる: 最新の申告で候補のタグが欠けた項目について、同じ申告の前年同期（または前の期末）の比較値が、前の申告の候補のタグの同じ期の値と一致する（0.5%以内）別のタグを、その申告の別名として採る（印`retag_tie_out`）。合わないものは採らず、今の「最新期が欠けた」守りに任せる
+  - `bs_lines`の分類の漏れも同じ件で直す: `short_term_investments`に`MarketableSecurities`（Current無し）と`AvailableForSaleSecuritiesDebtSecurities`を足す。ただし後者は注記の合計（現金同等物を含む）で出す会社もある（CAT・NVDA・KLAC・SOFI等）ので、バランスシートの行（`bs_lines`の`role`）に限る
+  - 継続事業だけの申告（KULR）は、継続事業の値を正にし、基準が変わった期に`basis_mix`の印を付ける（自動の別名にはしない）。Q3単独の差し引きは上半期が旧基準なので混ざる点を扱う
+  - 銘柄名を手で書かない。全銘柄の試算と、計算方法の変更の手順（`CLAUDE_CODE_PROCEDURES.md`）で行う。直ったら確認済みの台帳（`config/external_change_acknowledged.json`）の3件を外す
+- **STEP 0の最初**: APP（保有）のttm D&A 0.46倍（289.9M→133.2M）が何に効くか（事業の売却・廃止の組み替えか、タグの欠けか）を出す。D&Aの読み手は`fcf_estimation`の表示・STONKS・`common/sec_data/q4_implied.py`
+
+#### 投資判断への影響
+DOCNだけ理論株価に効く（約+2%、判定は境に近い）。COHR・SPIR・KULRは表示と履歴（今の公開の値は変わらない）。APPのD&Aの落ちは未調査
+
+#### 規模の見込み
+中
+
+---
+
 ### ✅ [TANUKI-SHARES-SINGLE-SOURCE-1] TANUKIの`diluted_shares`（理論株価の分母）がyfinance由来で、SECの株数と3%超違う銘柄が23。分母を倍率の部品の株数に寄せる
 **完了（2026-11-23）:** 公開（2026-11-23、ID `-1-1`、scope 96銘柄）。kaihatsuに`--no-ff`で統合（`7a9564dd2d`）し、TANUKI `45089486452`・Stonks `45089489293`→TANUKI `45089744492`→HypeCore `45092316774`→TANUKI `45092527669`。1回目の印は96銘柄・2回目以降0件、全96銘柄の理論株価・判定が試算と一致（差0）、`_shares_source`は`sec_weighted` 44・`sec_weighted_plus_issuance` 51・Vだけ`yf_implied_fallback`。保有の判定はPLTR WATCH→HOLDのみ（理論株価 −6.4%、乖離率+0.70→−5.80。分母が実際の株数＋希薄化証券に）。TSLAは+11.5%・表紙との差は業績連動の未確定の株（2025 CEO報酬）で分母に入れず画面に理由を出す。画面（stock.html TSLA）と`report.txt`の`Shares_OutstandingGap`を確認。SEC原本（ASTS・PLTR・SOUN・IONQ）は手順33に残す
 **型・処置:** 型B（同じ概念の二重実装）・根治策

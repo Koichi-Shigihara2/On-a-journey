@@ -88,7 +88,7 @@
 - (b) (2)でHONの株価の調整の比を`split_history`に持たせるか、台帳だけに持つか
 - (c) (3)は案A（コード変更なし）でよいか
 
-## (4) 倍率の履歴の株数をas-ofにする（2026-11-24、実装はブランチ`pit-4`・未公開）
+## (4) 倍率の履歴の株数をas-ofにする（2026-11-24、実装はブランチ`pit-4`。**2026-11-25 公開済み**）
 
 **実装（ブランチ`pit-4`、origin に控え。kaihatsu には入れていない）**
 - `split_adjust.shares_by_end(store, ends, splits, as_of=None)`: `as_of`を渡すと、その日までに申告された値だけで作る。同じ期末の値が後の申告で置き換わっていたら、`filed ≤ as_of`なら最新の`val`、そうでなく`first_filed ≤ as_of`なら`first_val`、どちらも後ならその期末は含めない。`as_of=None`（既定）は今までと同じ（現在の行・ROTCEは変わらない）
@@ -119,3 +119,5 @@
 2. 倍率の履歴と定義v2の並行計算を作り直す: `python common/multiples.py --all` → `python common/stage_v2.py --all`（Market Data Weeklyの段と同じ呼び出し。日足・株価は今日のものになるので、前後の比較は同じ日の同じデータでする）。作り直しのcommitは同じ公開に入れる
 3. ゲート（pytest・rcc NG 0・audit）→ push。確認: `docs/common/multiples/{T}.json`の`current`の行が前と同じ・直近12か月の株数の変化が上の6銘柄の0.03%以内・stageのラベルが直近12か月で変わらない
 4. 次回の確認手順（Market Data Weeklyの2回目で倍率の履歴が同じであること）を足す
+
+**公開の結果（2026-11-25）**: `pit-4`を最新のkaihatsu（`900e7d9859`）に rebase して試算を回し直し、昨日と同じ（`current`の差0・直近12か月で動くのは6銘柄・最大0.03%・stageのラベル変化37件はすべて2025-11より前・直近12か月0）。ゲート: pytest 3034通過（`test_common_path_guard`のruffの1件を除く）・rcc NG 0・audit 0。kaihatsuへ`182a82a42d`で統合・データ（`multiples.py --all`・`stage_v2.py --all`）`5cde1fe3f3`。method_changeは登録しない。確認は`CLAUDE_CODE_START.md`手順43
