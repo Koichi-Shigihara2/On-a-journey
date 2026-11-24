@@ -1088,6 +1088,11 @@ function render(d) {
         </div>
       </div>
 
+      ${d.earnings_pending && d.earnings_pending.status === 'pending' ? `
+      <div id="earnings-pending-banner" style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
+        ⏳ <strong>${d.earnings_pending.label}</strong><br>
+        <span style="font-size:12px">下の数字・理論株価・判定は前の四半期（期末 ${d.earnings_pending.layer3_period_end}）までのSECデータで計算しています。</span>
+      </div>` : ''}
       ${d.latest_period_missing && (d.latest_period_missing.fields || []).length ? `
       <div style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
         ⚠️ <strong>${d.latest_period_missing.note}</strong><br>

@@ -559,6 +559,10 @@ function buildReview() {
     (rv.data_as_of ? ' / データの時点 ' + esc(rv.data_as_of) : '') +
     (rv.backfilled ? ' ' + backfilledBadge(rv) : '') + '</div>';
 
+  var ep = S.val && S.val.earnings_pending;
+  if (ep && ep.status === 'pending')
+    out += '<div class="bias-box" id="earnings-pending-banner"><span class="bias-lbl">⏳ 決算の反映前</span>' + esc(ep.label) + '（このレビューは前の四半期の数字）</div>';
+
   out += '<div class="gauge-row">' +
     '<span class="gauge-num" style="color:' + gc + '">' + score + '</span>' +
     '<div class="gauge-bar"><div class="gauge-fill" style="width:' + score + '%;background:' + gc + '"></div></div>' +

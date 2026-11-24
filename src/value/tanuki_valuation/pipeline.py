@@ -2089,6 +2089,14 @@ class TanukiValuationPipeline:
         _lpm_note = valuation.get("latest_period_missing") or {}
         if _lpm_note.get("fields") and _lpm_note.get("substituted_by_annual"):
             L.append(f"Latest_Period_Note: {_lpm_note['note']}")
+        # 決算の反映前の印（[[EARNINGS-REFLECTION-LAG-1]]。予定日が取れず付けられないときもここに書く）
+        try:
+            from common.earnings_pending import report_line as _ep_report_line
+            _ep_line = _ep_report_line(extra.get("earnings_pending"))
+        except Exception:
+            _ep_line = None
+        if _ep_line:
+            L.append(_ep_line)
 
         # FCF-CONVRATE②派生（KO-SPIR-CF-CAUSE-UNCONFIRMED-1）: 生FCFが銘柄固有の
         # 一過性項目（税務訴訟・M&A偶発対価の精算・事業売却益等）で押し下げられている
@@ -3303,6 +3311,13 @@ class TanukiValuationPipeline:
                     result["next_earnings_date"] = str(dates[0])  # 全て過去なら最後の値
         except Exception:
             pass
+
+        # --- 決算の反映前の印（[[EARNINGS-REFLECTION-LAG-1]] 案B。表示だけ。判定は common/earnings_pending.py の1か所）---
+        try:
+            from common.earnings_pending import build as _build_earnings_pending
+            result["earnings_pending"] = _build_earnings_pending(ticker)
+        except Exception as _e_ep:
+            print(f"   [{ticker}] 決算の反映前の印の判定エラー: {_e_ep}")
 
         # --- XBRLセグメント決定論的算出（[[SEGMENT-KPI-NARRATIVE-
         # EXTRACTION-FUTURE-IDEA-1]]案①、2026-09-18）---

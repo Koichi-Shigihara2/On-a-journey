@@ -65,10 +65,6 @@
      "reader_files": 0
     },
     {
-     "key": "BBAI",
-     "reader_files": 0
-    },
-    {
      "key": "BKNG",
      "reader_files": 0
     },
@@ -153,10 +149,6 @@
      "reader_files": 0
     },
     {
-     "key": "FCX",
-     "reader_files": 0
-    },
-    {
      "key": "FICO",
      "reader_files": 0
     },
@@ -229,10 +221,6 @@
      "reader_files": 0
     },
     {
-     "key": "KULR",
-     "reader_files": 0
-    },
-    {
      "key": "LITE",
      "reader_files": 0
     },
@@ -261,10 +249,6 @@
      "reader_files": 0
     },
     {
-     "key": "MO",
-     "reader_files": 0
-    },
-    {
      "key": "MRVL",
      "reader_files": 0
     },
@@ -289,27 +273,11 @@
      "reader_files": 0
     },
     {
-     "key": "ONDS",
-     "reader_files": 0
-    },
-    {
      "key": "PAYS",
      "reader_files": 0
     },
     {
-     "key": "PEP",
-     "reader_files": 0
-    },
-    {
      "key": "PLTR",
-     "reader_files": 0
-    },
-    {
-     "key": "PM",
-     "reader_files": 0
-    },
-    {
-     "key": "QBTS",
      "reader_files": 0
     },
     {
@@ -321,10 +289,6 @@
      "reader_files": 0
     },
     {
-     "key": "RDW",
-     "reader_files": 0
-    },
-    {
      "key": "RKLB",
      "reader_files": 0
     },
@@ -333,15 +297,7 @@
      "reader_files": 0
     },
     {
-     "key": "RXRX",
-     "reader_files": 0
-    },
-    {
      "key": "S",
-     "reader_files": 0
-    },
-    {
-     "key": "SCCO",
      "reader_files": 0
     },
     {
@@ -358,10 +314,6 @@
     },
     {
      "key": "SOUN",
-     "reader_files": 0
-    },
-    {
-     "key": "SPIR",
      "reader_files": 0
     },
     {
@@ -393,15 +345,7 @@
      "reader_files": 0
     },
     {
-     "key": "VZ",
-     "reader_files": 0
-    },
-    {
      "key": "WMT",
-     "reader_files": 0
-    },
-    {
-     "key": "XOM",
      "reader_files": 0
     },
     {
@@ -468,15 +412,15 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_hypecore_history",
-     "line": 3809
+     "line": 3826
     }
    ],
    "writers_outside_layer": [],
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 99,
-   "top_keys_sampled_files": 99,
+   "files_tracked": 85,
+   "top_keys_sampled_files": 85,
    "top_keys": [],
    "readers": [
     {
@@ -908,7 +852,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3862,
+     "line": 3879,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1316,7 +1260,7 @@
     },
     {
      "file": "tests/test_sensitivity_tapering.py",
-     "line": 60,
+     "line": 61,
      "func": "TestCalculatePtSensitivityCenter.test_tapering_center_matches_main_iv",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1324,7 +1268,7 @@
     },
     {
      "file": "tests/test_sensitivity_tapering.py",
-     "line": 65,
+     "line": 66,
      "func": "TestCalculatePtSensitivityCenter.test_two_stage_center_unchanged",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -1427,7 +1371,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_tickers_index",
-     "line": 3856
+     "line": 3873
     }
    ],
    "writers_outside_layer": [],
@@ -1549,7 +1493,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 2732,
+     "line": 2741,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1742,8 +1686,8 @@
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 96,
-   "top_keys_sampled_files": 96,
+   "files_tracked": 82,
+   "top_keys_sampled_files": 82,
    "top_keys": [],
    "readers": [
     {
@@ -1788,7 +1732,7 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 308,
+     "line": 315,
      "func": "load_part",
      "how": "保存済みファイル",
      "via": "common/multiples.py::_load",
@@ -1796,7 +1740,7 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 351,
+     "line": 358,
      "func": "current_multiples",
      "how": "保存済みファイル",
      "via": "common/multiples.py::_load",
@@ -1804,42 +1748,10 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 411,
-     "func": "build",
-     "how": "保存済みファイル",
-     "via": "common/multiples.py::_load",
-     "type": "Python"
-    },
-    {
-     "file": "common/multiples.py",
-     "line": 412,
-     "func": "build",
-     "how": "保存済みファイル",
-     "via": "common/multiples.py::_load",
-     "type": "Python"
-    },
-    {
-     "file": "common/multiples.py",
-     "line": 415,
-     "func": "build",
-     "how": "保存済みファイル",
-     "via": "common/multiples.py::_load",
-     "type": "Python"
-    },
-    {
-     "file": "common/multiples.py",
-     "line": 416,
-     "func": "build",
-     "how": "保存済みファイル",
-     "via": "common/multiples.py::recorded_prices",
-     "type": "Python"
-    },
-    {
-     "file": "common/multiples.py",
      "line": 418,
      "func": "build",
      "how": "保存済みファイル",
-     "via": "common/multiples.py::recorded_prices",
+     "via": "common/multiples.py::_load",
      "type": "Python"
     },
     {
@@ -1852,7 +1764,7 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 420,
+     "line": 422,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/multiples.py::_load",
@@ -1860,10 +1772,18 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 421,
+     "line": 423,
      "func": "build",
      "how": "保存済みファイル",
-     "via": "common/multiples.py::_load",
+     "via": "common/multiples.py::recorded_prices",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 425,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::recorded_prices",
      "type": "Python"
     },
     {
@@ -1884,7 +1804,7 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 430,
+     "line": 428,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/multiples.py::_load",
@@ -1892,7 +1812,31 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 440,
+     "line": 433,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 434,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 437,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 447,
      "func": "_write_if_changed",
      "how": "保存済みファイル",
      "via": "common/multiples.py::_load",
@@ -1900,15 +1844,7 @@
     },
     {
      "file": "common/multiples.py",
-     "line": 455,
-     "func": "main",
-     "how": "保存済みファイル",
-     "via": "common/multiples.py::_load",
-     "type": "Python"
-    },
-    {
-     "file": "common/multiples.py",
-     "line": 456,
+     "line": 462,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/multiples.py::_load",
@@ -1917,6 +1853,14 @@
     {
      "file": "common/multiples.py",
      "line": 463,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/multiples.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/multiples.py",
+     "line": 470,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/multiples.py::_load",
@@ -2041,8 +1985,8 @@
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 36089,
-   "top_keys_sampled_files": 36089,
+   "files_tracked": 32008,
+   "top_keys_sampled_files": 32008,
    "top_keys": [
     {
      "key": "alpha",
@@ -2399,8 +2343,8 @@
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 96,
-   "top_keys_sampled_files": 96,
+   "files_tracked": 82,
+   "top_keys_sampled_files": 82,
    "top_keys": [
     {
      "key": "alpha",
@@ -3394,7 +3338,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 2738,
+     "line": 2747,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3666,7 +3610,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3847,
+     "line": 3864,
      "func": "TanukiValuationPipeline._save_tickers_index",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3674,7 +3618,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3862,
+     "line": 3879,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index",
@@ -4066,7 +4010,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 64,
+     "line": 65,
      "func": "test_include_provisioning_targets_provisioning_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_latest_period_missing",
@@ -4074,7 +4018,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 71,
+     "line": 72,
      "func": "test_ticker_excluded_to_zero_exits_2",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_latest_period_missing",
@@ -4082,7 +4026,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 77,
+     "line": 78,
      "func": "test_ticker_meaning_unchanged_for_active",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_latest_period_missing",
@@ -4090,7 +4034,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 82,
+     "line": 83,
      "func": "test_no_ticker_filter_keeps_active_only",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::_check_latest_period_missing",
@@ -4106,7 +4050,7 @@
     },
     {
      "file": "tests/test_sensitivity_tapering.py",
-     "line": 93,
+     "line": 94,
      "func": "test_tapering_ticker_center_matches_main_iv",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4114,7 +4058,7 @@
     },
     {
      "file": "tests/test_sensitivity_tapering.py",
-     "line": 96,
+     "line": 97,
      "func": "test_tapering_ticker_center_matches_main_iv",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4281,15 +4225,15 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_report",
-     "line": 3815
+     "line": 3832
     }
    ],
    "writers_outside_layer": [],
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 96,
-   "top_keys_sampled_files": 96,
+   "files_tracked": 82,
+   "top_keys_sampled_files": 82,
    "top_keys": [],
    "readers": [
     {
@@ -4390,7 +4334,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 2856,
+     "line": 2865,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4406,7 +4350,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 64,
+     "line": 65,
      "func": "test_include_provisioning_targets_provisioning_ticker",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::run_checks",
@@ -4414,7 +4358,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 71,
+     "line": 72,
      "func": "test_ticker_excluded_to_zero_exits_2",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::run_checks",
@@ -4422,7 +4366,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 77,
+     "line": 78,
      "func": "test_ticker_meaning_unchanged_for_active",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::run_checks",
@@ -4430,7 +4374,7 @@
     },
     {
      "file": "tests/test_registration_consistency_gate.py",
-     "line": 82,
+     "line": 83,
      "func": "test_no_ticker_filter_keeps_active_only",
      "how": "保存済みファイル",
      "via": "common/sec_data/report_consistency_check.py::run_checks",
@@ -4538,8 +4482,8 @@
     ".github/workflows/Score_Verifier.yml",
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 98,
-   "top_keys_sampled_files": 98,
+   "files_tracked": 84,
+   "top_keys_sampled_files": 84,
    "top_keys": [],
    "readers": [
     {
@@ -4576,7 +4520,7 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 730,
+     "line": 734,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4787,17 +4731,17 @@
    "sites": [
     {
      "file": "common/sec_data/bs_lines.py",
-     "line": 245,
+     "line": 292,
      "text": "last = max(tenk, key=lambda r: r[\"filed\"]) if tenk else None"
     },
     {
      "file": "common/sec_data/bs_lines.py",
-     "line": 264,
+     "line": 311,
      "text": "if cur is None or rec[\"filed\"] >= cur[\"filed\"]:"
     },
     {
      "file": "common/sec_data/bs_lines.py",
-     "line": 396,
+     "line": 443,
      "text": "rec = max(recs, key=lambda r: r[\"filed\"])"
     },
     {
@@ -4827,12 +4771,12 @@
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 920,
+     "line": 1030,
      "text": "all_quarterly.append(max(pool, key=lambda x: x.get(\"filed\", \"\")))"
     },
     {
      "file": "common/sec_data/layer3_builder.py",
-     "line": 1143,
+     "line": 1253,
      "text": "result[end_date] = max(pool, key=lambda x: x.get(\"filed\", \"\"))"
     },
     {
@@ -4852,7 +4796,7 @@
     },
     {
      "file": "common/sec_data/split_adjust.py",
-     "line": 125,
+     "line": 156,
      "text": "cands = [(src, float(max(es, key=lambda e: e.get(\"filed\") or \"\")[\"val\"])) for src, es in groups if es]"
     },
     {
@@ -5088,17 +5032,17 @@
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 591,
+     "line": 595,
      "text": "if (key === 'WATCH' && s.upside != null && s.upside > 0) {"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1114,
+     "line": 1118,
      "text": "const nt_high_prem  = s.upside != null && s.upside < -20;"
     },
     {
      "file": "docs/value-monitor/tanuki_score/index.html",
-     "line": 1338,
+     "line": 1342,
      "text": "xClamped: s.upside > X_MAX_CLIP,"
     },
     {
@@ -5108,12 +5052,12 @@
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 1150,
+     "line": 1159,
      "text": "<div class=\"upside-badge ${upside >= 0 ? 'positive' : 'negative'}\" id=\"displayUpside\">"
     },
     {
      "file": "docs/value-monitor/tanuki_valuation/stock.html",
-     "line": 1151,
+     "line": 1160,
      "text": "${upside >= 0 ? '▲' : '▼'} ${Math.abs(upside).toFixed(1)}%"
     },
     {
@@ -5262,7 +5206,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1192,
+     "line": 1194,
      "text": "def _determine_beta("
     }
    ],
@@ -5298,7 +5242,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/data_fetcher.py",
-     "line": 1176,
+     "line": 1178,
      "text": "def _calc_fcf_2yr_avg(self, fcf_list: list) -> float:"
     }
    ],
@@ -5425,7 +5369,7 @@
    "dir": "src/value/tanuki_valuation/calculator",
    "file": "src/value/tanuki_valuation/calculator/adjustments.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1620,
+   "lines": 1632,
    "workflows": [],
    "code": [
     "common/profitability.py",
@@ -5435,6 +5379,7 @@
     "src/value/tanuki_valuation/calculator/__init__.py"
    ],
    "tests": [
+    "tests/test_capex_no_cf_line_note.py",
     "tests/test_compose_fcf_bottom_up.py",
     "tests/test_profitability.py"
    ]
@@ -5601,7 +5546,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/data_fetcher.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1298,
+   "lines": 1300,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -5682,7 +5627,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/pipeline.py",
    "decision": "残す（2026-10-20）",
-   "lines": 3877,
+   "lines": 3894,
    "workflows": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
@@ -5946,7 +5891,7 @@
     "label": "",
     "lines": [
      425,
-     727
+     731
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -5965,8 +5910,8 @@
     ],
     "label": "",
     "lines": [
-     919,
-     1184
+     923,
+     1188
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6042,7 +5987,7 @@
     ],
     "label": "",
     "lines": [
-     526
+     527
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6074,8 +6019,8 @@
      500,
      502,
      516,
-     523,
-     524
+     524,
+     525
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6109,7 +6054,7 @@
     "label": "",
     "lines": [
      518,
-     1127
+     1131
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6130,10 +6075,10 @@
     "lines": [
      402,
      403,
-     802,
-     803,
-     803,
-     808
+     806,
+     807,
+     807,
+     812
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6147,8 +6092,8 @@
     ],
     "label": "銘柄",
     "lines": [
-     620,
-     642
+     624,
+     646
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6205,7 +6150,7 @@
     ],
     "label": "",
     "lines": [
-     523
+     524
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6225,14 +6170,34 @@
     "label": "DuPont信頼性LOW(${s.dupont?.reliability_rea",
     "lines": [
      512,
-     862,
      866,
-     866,
-     895,
-     1146,
-     1152,
-     1184,
-     1185
+     870,
+     870,
+     899,
+     1150,
+     1156,
+     1188,
+     1189
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
+    "key": "earnings_pending",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "label": "",
+    "lines": [
+     523,
+     523
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6251,8 +6216,8 @@
     ],
     "label": "",
     "lines": [
-     1030,
-     1037
+     1034,
+     1041
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6271,7 +6236,7 @@
     ],
     "label": "",
     "lines": [
-     866
+     870
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6292,12 +6257,12 @@
     "lines": [
      339,
      340,
-     1067,
-     1072,
-     1072,
-     1073,
-     1131,
-     1132
+     1071,
+     1076,
+     1076,
+     1077,
+     1135,
+     1136
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6426,7 +6391,7 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1017
+     1021
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6445,9 +6410,9 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1012,
-     1017,
-     1036
+     1016,
+     1021,
+     1040
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6468,8 +6433,8 @@
     "lines": [
      514,
      514,
-     526,
-     527
+     527,
+     528
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6488,7 +6453,7 @@
     ],
     "label": "",
     "lines": [
-     920
+     924
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6504,13 +6469,13 @@
     "lines": [
      345,
      345,
-     545,
-     545,
-     548,
-     548,
-     610,
-     632,
-     1199
+     546,
+     546,
+     549,
+     549,
+     614,
+     636,
+     1203
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6549,7 +6514,7 @@
     ],
     "label": "更新: （common/sec_data/rotce.py）",
     "lines": [
-     1059
+     1063
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6602,7 +6567,7 @@
     "label": "景気敏感()",
     "lines": [
      516,
-     1139
+     1143
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6616,7 +6581,7 @@
     ],
     "label": "",
     "lines": [
-     753
+     757
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6634,14 +6599,15 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
-    "label": "\\n目安: ${sig ? sig.label : r.signal_reaso",
+    "label": "FCFは年次の値で評価（判定は通常どおり）",
     "lines": [
      344,
-     565,
-     617,
-     639,
-     1014,
-     1038
+     566,
+     589,
+     621,
+     643,
+     1018,
+     1042
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6667,6 +6633,18 @@
    },
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
+    "key": "layer3_period_end",
+    "has_writer": false,
+    "status": "書き手なし",
+    "sources": [],
+    "label": "FCFは年次の値で評価（判定は通常どおり）",
+    "lines": [
+     589
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "length",
     "has_writer": true,
     "status": "ほかの書き手あり",
@@ -6678,56 +6656,56 @@
      396,
      465,
      522,
-     579,
-     606,
-     618,
-     628,
-     640,
-     664,
-     743,
-     766,
-     766,
-     839,
-     874,
-     928,
-     1029,
-     1030,
-     1030,
-     1031,
+     580,
+     610,
+     622,
+     632,
+     644,
+     668,
+     747,
+     770,
+     770,
+     843,
+     878,
+     932,
      1033,
      1034,
+     1034,
      1035,
-     1036,
-     1044,
-     1057,
-     1057,
-     1067,
-     1067,
+     1037,
+     1038,
+     1039,
+     1040,
+     1048,
+     1061,
+     1061,
      1071,
-     1072,
-     1072,
-     1073,
+     1071,
      1075,
-     1089,
-     1115,
-     1130,
-     1131,
-     1132,
+     1076,
+     1076,
+     1077,
+     1079,
+     1093,
+     1119,
+     1134,
      1135,
-     1148,
-     1221,
-     1246,
-     1263,
-     1263,
-     1280,
-     1297,
-     1348,
-     1364,
-     1447,
-     1454,
-     1501,
-     1504,
-     1510
+     1136,
+     1139,
+     1152,
+     1225,
+     1250,
+     1267,
+     1267,
+     1284,
+     1301,
+     1352,
+     1368,
+     1451,
+     1458,
+     1505,
+     1508,
+     1514
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6739,7 +6717,7 @@
     "sources": [],
     "label": "が",
     "lines": [
-     829
+     833
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6759,7 +6737,7 @@
     "label": "",
     "lines": [
      487,
-     559
+     560
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6852,7 +6830,7 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1015
+     1019
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6871,7 +6849,7 @@
     ],
     "label": "",
     "lines": [
-     525
+     526
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6890,7 +6868,7 @@
     ],
     "label": "",
     "lines": [
-     527
+     528
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6909,8 +6887,8 @@
     ],
     "label": "",
     "lines": [
-     918,
-     1185
+     922,
+     1189
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6922,7 +6900,7 @@
     "sources": [],
     "label": "",
     "lines": [
-     1029
+     1033
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6941,7 +6919,7 @@
     ],
     "label": "FCFは年次の値で評価（判定は通常どおり）",
     "lines": [
-     585
+     586
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6960,7 +6938,7 @@
     ],
     "label": "",
     "lines": [
-     524
+     525
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -6980,10 +6958,10 @@
     "label": "",
     "lines": [
      495,
-     571,
      572,
-     572,
-     573
+     573,
+     573,
+     574
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7004,17 +6982,17 @@
     "lines": [
      352,
      352,
-     570,
-     570,
-     1070,
-     1070,
-     1070,
-     1079,
-     1128,
-     1128,
-     1128,
-     1140,
-     1199
+     571,
+     571,
+     1074,
+     1074,
+     1074,
+     1083,
+     1132,
+     1132,
+     1132,
+     1144,
+     1203
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7090,8 +7068,8 @@
     ],
     "label": "",
     "lines": [
-     810,
-     810
+     814,
+     814
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7105,9 +7083,9 @@
     ],
     "label": "",
     "lines": [
-     575,
      576,
-     577
+     577,
+     578
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7145,12 +7123,12 @@
     ],
     "label": "",
     "lines": [
-     982,
-     982,
-     983,
-     983,
-     1010,
-     1013
+     986,
+     986,
+     987,
+     987,
+     1014,
+     1017
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7169,8 +7147,8 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1016,
-     1016
+     1020,
+     1020
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7189,7 +7167,7 @@
     ],
     "label": "\\n直近の四半期:",
     "lines": [
-     1018
+     1022
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7208,9 +7186,9 @@
     ],
     "label": "",
     "lines": [
-     561,
      562,
-     563
+     563,
+     564
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7229,9 +7207,9 @@
     ],
     "label": "",
     "lines": [
-     561,
      562,
-     563
+     563,
+     564
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7269,7 +7247,7 @@
     ],
     "label": "",
     "lines": [
-     1028
+     1032
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7288,8 +7266,8 @@
     ],
     "label": "",
     "lines": [
-     902,
-     1146
+     906,
+     1150
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7308,8 +7286,8 @@
     ],
     "label": "一過性要因の可能性あり",
     "lines": [
-     904,
-     1152
+     908,
+     1156
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7323,10 +7301,10 @@
     ],
     "label": "",
     "lines": [
-     757,
-     757,
-     757,
-     811
+     761,
+     761,
+     761,
+     815
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7340,10 +7318,10 @@
     ],
     "label": "",
     "lines": [
-     758,
-     758,
-     758,
-     812
+     762,
+     762,
+     762,
+     816
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7357,10 +7335,10 @@
     ],
     "label": "",
     "lines": [
-     759,
-     760,
-     760,
-     813
+     763,
+     764,
+     764,
+     817
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7434,12 +7412,12 @@
     ],
     "label": "DuPont ROEと実績ROEの乖離が",
     "lines": [
-     861,
-     911,
-     911,
-     913,
-     913,
-     921
+     865,
+     915,
+     915,
+     917,
+     917,
+     925
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7477,14 +7455,14 @@
     ],
     "label": "DuPont ROEと実績ROEの乖離が",
     "lines": [
-     896,
-     897,
+     900,
      901,
-     911,
-     911,
-     913,
-     913,
-     917
+     905,
+     915,
+     915,
+     917,
+     917,
+     921
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7523,12 +7501,12 @@
     ],
     "label": "",
     "lines": [
-     982,
-     983,
-     1010,
-     1011,
-     1011,
-     1013
+     986,
+     987,
+     1014,
+     1015,
+     1015,
+     1017
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7547,7 +7525,7 @@
     ],
     "label": "判定なし（比較できる四半期が",
     "lines": [
-     1016
+     1020
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7644,10 +7622,10 @@
     ],
     "label": "P/TBV（対数）",
     "lines": [
-     1008,
-     1033,
-     1034,
-     1035
+     1012,
+     1037,
+     1038,
+     1039
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7666,8 +7644,8 @@
     ],
     "label": "\\n目安: ${sig ? sig.label : r.signal_reaso",
     "lines": [
-     1014,
-     1035
+     1018,
+     1039
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7707,10 +7685,10 @@
     "lines": [
      356,
      468,
-     1112,
-     1112,
-     1119,
-     1119
+     1116,
+     1116,
+     1123,
+     1123
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7730,6 +7708,25 @@
     "label": "",
     "lines": [
      478
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_score/index.html",
+    "key": "status",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "label": "",
+    "lines": [
+     523
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7805,7 +7802,7 @@
     ],
     "label": "FCFは年次の値で評価（判定は通常どおり）",
     "lines": [
-     585
+     586
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7826,10 +7823,10 @@
     "label": "",
     "lines": [
      485,
-     752,
-     802,
-     809,
-     809
+     756,
+     806,
+     813,
+     813
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7851,31 +7848,31 @@
      343,
      343,
      445,
-     608,
-     609,
-     630,
-     631,
-     761,
-     807,
-     807,
-     860,
-     916,
-     1253,
-     1253,
-     1284,
-     1284,
-     1335,
-     1438,
-     1441,
+     612,
+     613,
+     634,
+     635,
+     765,
+     811,
+     811,
+     864,
+     920,
+     1257,
+     1257,
+     1288,
+     1288,
+     1339,
      1442,
-     1457,
-     1459,
-     1460,
-     1470,
-     1472,
-     1473,
-     1502,
-     1505
+     1445,
+     1446,
+     1461,
+     1463,
+     1464,
+     1474,
+     1476,
+     1477,
+     1506,
+     1509
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7898,9 +7895,9 @@
      445,
      450,
      455,
-     979,
-     981,
-     984
+     983,
+     985,
+     988
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7921,8 +7918,8 @@
     "lines": [
      346,
      346,
-     610,
-     632
+     614,
+     636
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7960,8 +7957,8 @@
     ],
     "label": "",
     "lines": [
-     756,
-     790
+     760,
+     794
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -7976,18 +7973,18 @@
     "label": "割安+%",
     "lines": [
      351,
-     591,
-     591,
-     593,
      595,
-     596,
-     1114,
-     1114,
-     1121,
-     1333,
-     1336,
+     595,
+     597,
+     599,
+     600,
+     1118,
+     1118,
+     1125,
      1337,
-     1338
+     1340,
+     1341,
+     1342
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -8047,8 +8044,8 @@
     ],
     "label": "",
     "lines": [
-     1066,
-     1066
+     1070,
+     1070
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -8912,7 +8909,7 @@
     ],
     "label": "希薄化後株式数",
     "lines": [
-     2081
+     2090
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -8982,7 +8979,7 @@
     "label": "",
     "lines": [
      802,
-     2396
+     2405
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9039,7 +9036,7 @@
     ],
     "label": "",
     "lines": [
-     1786
+     1795
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9213,7 +9210,7 @@
     ],
     "label": "資産回転率（Asset Turnover）",
     "lines": [
-     1664
+     1673
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9233,7 +9230,7 @@
     "label": "",
     "lines": [
      870,
-     2759
+     2768
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9254,10 +9251,10 @@
     "lines": [
      574,
      871,
-     1292,
-     1292,
-     1507,
-     2755
+     1301,
+     1301,
+     1516,
+     2764
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9296,7 +9293,7 @@
     ],
     "label": "（Ke ・高成長年 ＝ 表の中央）",
     "lines": [
-     1167
+     1176
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9315,7 +9312,7 @@
     ],
     "label": "（Ke ・高成長年 ＝ 表の中央）",
     "lines": [
-     1167
+     1176
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9334,9 +9331,9 @@
     ],
     "label": "FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT",
     "lines": [
-     1098,
-     1098,
-     1101
+     1103,
+     1103,
+     1106
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9356,8 +9353,8 @@
     "label": "",
     "lines": [
      872,
-     1293,
-     1293
+     1302,
+     1302
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9376,7 +9373,7 @@
     ],
     "label": "Bear乗数",
     "lines": [
-     1700
+     1709
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9415,7 +9412,7 @@
     "label": "",
     "lines": [
      858,
-     2398
+     2407
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9435,8 +9432,8 @@
     "label": "",
     "lines": [
      873,
-     1291,
-     1291
+     1300,
+     1300
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9455,7 +9452,7 @@
     ],
     "label": "Bull乗数",
     "lines": [
-     1701
+     1710
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9475,6 +9472,26 @@
     "label": "",
     "lines": [
      797
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "capex_note",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "label": "。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして",
+    "lines": [
+     1108,
+     1110
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9512,7 +9529,7 @@
     ],
     "label": "",
     "lines": [
-     1603
+     1612
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9531,7 +9548,7 @@
     ],
     "label": "",
     "lines": [
-     1785
+     1794
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9550,8 +9567,8 @@
     ],
     "label": "参考: 実績CAGR等",
     "lines": [
-     1400,
-     1712
+     1409,
+     1721
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9609,24 +9626,24 @@
      1033,
      1034,
      1035,
-     1372,
-     1617,
-     1617,
-     1617,
-     1617,
-     1698,
-     1699,
-     1700,
-     1701,
-     1960,
-     1960,
-     2081,
-     2203,
-     2394,
-     2397,
-     2763,
-     2785,
-     2786
+     1381,
+     1626,
+     1626,
+     1626,
+     1626,
+     1707,
+     1708,
+     1709,
+     1710,
+     1969,
+     1969,
+     2090,
+     2212,
+     2403,
+     2406,
+     2772,
+     2794,
+     2795
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9678,7 +9695,7 @@
     "label": "",
     "lines": [
      795,
-     2526
+     2535
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9716,8 +9733,8 @@
     ],
     "label": "",
     "lines": [
-     2249,
-     2249
+     2258,
+     2258
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9736,8 +9753,8 @@
     ],
     "label": "",
     "lines": [
-     2250,
-     2250
+     2259,
+     2259
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9757,7 +9774,7 @@
     "label": "",
     "lines": [
      547,
-     2524
+     2533
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9778,7 +9795,7 @@
     "lines": [
      801,
      808,
-     2393
+     2402
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9816,7 +9833,7 @@
     ],
     "label": "",
     "lines": [
-     2771
+     2780
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9835,7 +9852,7 @@
     ],
     "label": "",
     "lines": [
-     2005
+     2014
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9875,7 +9892,7 @@
     "lines": [
      892,
      1002,
-     2397
+     2406
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9894,7 +9911,7 @@
     ],
     "label": "",
     "lines": [
-     1583
+     1592
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9913,7 +9930,7 @@
     ],
     "label": "",
     "lines": [
-     1586
+     1595
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9932,7 +9949,7 @@
     ],
     "label": "",
     "lines": [
-     1585
+     1594
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9951,9 +9968,9 @@
     ],
     "label": "→（加重平均・12四半期前→直近）",
     "lines": [
-     1615,
-     1615,
-     1615
+     1624,
+     1624,
+     1624
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -9997,7 +10014,29 @@
     ],
     "label": "",
     "lines": [
-     1630
+     1639
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "earnings_pending",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
+    "label": "下の数字・理論株価・判定は前の四半期（期末 ）までのSECデータで計算しています",
+    "lines": [
+     1091,
+     1091,
+     1093,
+     1094
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10020,7 +10059,7 @@
      346,
      358,
      361,
-     1106
+     1115
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10058,8 +10097,8 @@
     ],
     "label": "",
     "lines": [
-     2745,
-     2836
+     2754,
+     2845
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10098,7 +10137,7 @@
     ],
     "label": "",
     "lines": [
-     1378
+     1387
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10117,7 +10156,7 @@
     ],
     "label": "",
     "lines": [
-     1635
+     1644
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10153,7 +10192,7 @@
     ],
     "label": "",
     "lines": [
-     1332
+     1341
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10172,12 +10211,12 @@
     ],
     "label": "",
     "lines": [
-     2148,
-     2158,
-     2172,
-     2172,
-     2178,
-     2178
+     2157,
+     2167,
+     2181,
+     2181,
+     2187,
+     2187
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10276,7 +10315,7 @@
     "label": "",
     "lines": [
      817,
-     2785
+     2794
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10293,11 +10332,14 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
-    "label": "",
+    "label": "。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして",
     "lines": [
      508,
      832,
-     2783
+     1108,
+     1108,
+     1110,
+     2792
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10316,7 +10358,7 @@
     ],
     "label": "FCF CAGR 上限",
     "lines": [
-     1699
+     1708
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10335,7 +10377,7 @@
     ],
     "label": "FCF CAGR 下限",
     "lines": [
-     1698
+     1707
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10354,7 +10396,7 @@
     ],
     "label": "",
     "lines": [
-     2146
+     2155
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10373,8 +10415,8 @@
     ],
     "label": "",
     "lines": [
-     2005,
-     2783
+     2014,
+     2792
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10412,7 +10454,7 @@
     ],
     "label": "財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー",
     "lines": [
-     2203
+     2212
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10450,7 +10492,7 @@
     ],
     "label": "SECの申告の値に注意が要る期があります（直近3年）",
     "lines": [
-     1106
+     1115
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10468,10 +10510,10 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
-    "label": "",
+    "label": "下の数字・理論株価・判定は前の四半期（期末 ）までのSECデータで計算しています",
     "lines": [
      340,
-     1091
+     1096
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10510,8 +10552,8 @@
     ],
     "label": "",
     "lines": [
-     1511,
-     1579
+     1520,
+     1588
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10530,7 +10572,7 @@
     ],
     "label": "財務レバレッジ（Financial Leverage）",
     "lines": [
-     1665
+     1674
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10569,7 +10611,7 @@
     ],
     "label": "",
     "lines": [
-     2154
+     2163
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10647,8 +10689,8 @@
     ],
     "label": "5年後",
     "lines": [
-     1335,
-     1348
+     1344,
+     1357
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10686,12 +10728,12 @@
     ],
     "label": "年 @",
     "lines": [
-     1380,
-     1398,
-     1524,
-     1524,
-     1896,
-     1902
+     1389,
+     1407,
+     1533,
+     1533,
+     1905,
+     1911
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10710,8 +10752,8 @@
     ],
     "label": "上限",
     "lines": [
-     1715,
-     1715
+     1724,
+     1724
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10730,7 +10772,7 @@
     ],
     "label": "上限",
     "lines": [
-     1715
+     1724
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10750,7 +10792,7 @@
     "label": "",
     "lines": [
      824,
-     2395
+     2404
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10769,12 +10811,12 @@
     ],
     "label": "",
     "lines": [
-     1291,
-     1292,
-     1293,
-     1428,
-     1435,
-     1442
+     1300,
+     1301,
+     1302,
+     1437,
+     1444,
+     1451
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -10927,7 +10969,7 @@
     "label": "財務基準  ｜ 生成  ｜ 次回決算  ｜ インサイダー",
     "lines": [
      1035,
-     2203
+     2212
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11004,11 +11046,11 @@
     "label": "",
     "lines": [
      788,
-     1291,
-     1292,
-     1293,
-     1507,
-     2525
+     1300,
+     1301,
+     1302,
+     1516,
+     2534
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11046,8 +11088,8 @@
     ],
     "label": "",
     "lines": [
-     2274,
-     2276
+     2283,
+     2285
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11061,7 +11103,7 @@
     ],
     "label": "",
     "lines": [
-     2521
+     2530
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11099,7 +11141,7 @@
     ],
     "label": "",
     "lines": [
-     1785
+     1794
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11137,7 +11179,7 @@
     ],
     "label": "",
     "lines": [
-     2869
+     2878
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11156,7 +11198,7 @@
     ],
     "label": "SECの申告の値に注意が要る期があります（直近3年）",
     "lines": [
-     1106
+     1115
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11179,7 +11221,8 @@
      385,
      686,
      1083,
-     1320
+     1093,
+     1329
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11196,12 +11239,12 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
-    "label": "",
+    "label": "下の数字・理論株価・判定は前の四半期（期末 ）までのSECデータで計算しています",
     "lines": [
-     1091,
-     1091,
-     1093,
-     1094
+     1096,
+     1096,
+     1098,
+     1099
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11221,8 +11264,20 @@
     "label": "",
     "lines": [
      1000,
-     1372,
-     2786
+     1381,
+     2795
+    ],
+    "decision": "残す（2026-10-20）"
+   },
+   {
+    "page": "docs/value-monitor/tanuki_valuation/stock.html",
+    "key": "layer3_period_end",
+    "has_writer": false,
+    "status": "書き手なし",
+    "sources": [],
+    "label": "下の数字・理論株価・判定は前の四半期（期末 ）までのSECデータで計算しています",
+    "lines": [
+     1094
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11252,23 +11307,23 @@
      702,
      714,
      764,
-     1091,
-     1103,
-     1302,
-     1371,
-     2081,
-     2147,
-     2153,
-     2174,
-     2175,
-     2175,
-     2522,
-     2659,
-     2690,
-     2700,
-     2706,
+     1096,
+     1112,
+     1311,
+     1380,
+     2090,
+     2156,
+     2162,
+     2183,
+     2184,
+     2184,
+     2531,
+     2668,
+     2699,
+     2709,
      2715,
-     2828
+     2724,
+     2837
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11325,7 +11380,7 @@
     ],
     "label": "",
     "lines": [
-     2527
+     2536
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11426,10 +11481,10 @@
     "label": "Rm基準（βなし %）",
     "lines": [
      976,
-     1141,
-     1513,
-     1971,
-     2271
+     1150,
+     1522,
+     1980,
+     2280
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11508,7 +11563,7 @@
     "label": "",
     "lines": [
      816,
-     1804
+     1813
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11527,7 +11582,7 @@
     ],
     "label": "FCFは古い期のTTMで評価しているため、DCF信頼性をLOWにして判定をWAT",
     "lines": [
-     1098
+     1103
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11546,7 +11601,7 @@
     ],
     "label": "Phase1: 年（Moat Score由来${d.components?.mo",
     "lines": [
-     1960
+     1969
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11565,7 +11620,7 @@
     ],
     "label": "Phase1: 年（Moat Score由来${d.components?.mo",
     "lines": [
-     1960
+     1969
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11642,8 +11697,8 @@
     ],
     "label": "",
     "lines": [
-     1384,
-     2001
+     1393,
+     2010
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11682,7 +11737,7 @@
     "label": "",
     "lines": [
      860,
-     2398
+     2407
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11701,8 +11756,8 @@
     ],
     "label": "",
     "lines": [
-     1511,
-     1581
+     1520,
+     1590
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11721,7 +11776,7 @@
     ],
     "label": "純利益率（Net Margin）",
     "lines": [
-     1663
+     1672
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11742,8 +11797,8 @@
     "lines": [
      1073,
      1073,
-     1584,
-     2203
+     1593,
+     2212
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11762,7 +11817,7 @@
     ],
     "label": "減収（構造的変化・継続）:",
     "lines": [
-     1128
+     1137
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11784,12 +11839,12 @@
      840,
      849,
      874,
-     1093,
-     1101,
-     2007,
-     2007,
-     2754,
-     2831
+     1098,
+     1106,
+     2016,
+     2016,
+     2763,
+     2840
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11808,7 +11863,7 @@
     ],
     "label": "営業利益率",
     "lines": [
-     1945
+     1954
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11827,7 +11882,7 @@
     ],
     "label": "未実現の成長機会を「仮説セグメント」として定量化。TAM × 侵入率で期待売上、",
     "lines": [
-     1998
+     2007
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11846,11 +11901,11 @@
     ],
     "label": "0?'+':''}%（制限付株式・未確定の株・転換前後など。分母には入れない）",
     "lines": [
-     1617,
-     1617,
-     1617,
-     1617,
-     2081
+     1626,
+     1626,
+     1626,
+     1626,
+     2090
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11902,7 +11957,7 @@
     ],
     "label": "",
     "lines": [
-     2005
+     2014
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11959,7 +12014,7 @@
     ],
     "label": "",
     "lines": [
-     1766
+     1775
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -11994,8 +12049,8 @@
     "label": "年 @",
     "lines": [
      889,
-     1896,
-     1896
+     1905,
+     1905
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12014,7 +12069,7 @@
     ],
     "label": "",
     "lines": [
-     2248
+     2257
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12033,7 +12088,7 @@
     ],
     "label": "",
     "lines": [
-     2222
+     2231
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12048,8 +12103,8 @@
     ],
     "label": "年 @",
     "lines": [
-     1902,
-     1902
+     1911,
+     1911
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12145,7 +12200,7 @@
     ],
     "label": "",
     "lines": [
-     2005
+     2014
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12183,7 +12238,7 @@
     ],
     "label": "",
     "lines": [
-     2002
+     2011
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12202,7 +12257,7 @@
     ],
     "label": "",
     "lines": [
-     2438
+     2447
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12259,7 +12314,7 @@
     ],
     "label": "",
     "lines": [
-     2429
+     2438
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12297,7 +12352,7 @@
     ],
     "label": "",
     "lines": [
-     2429
+     2438
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12335,8 +12390,8 @@
     ],
     "label": "",
     "lines": [
-     2429,
-     2438
+     2438,
+     2447
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12356,10 +12411,10 @@
     "label": "",
     "lines": [
      985,
-     1316,
-     1321,
-     1524,
-     1524
+     1325,
+     1330,
+     1533,
+     1533
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12429,10 +12484,10 @@
     ],
     "label": "売上(推定=最新Revenue×weight) | 構成比 | 成長率シナリオ（",
     "lines": [
-     1396,
-     1397,
-     1714,
-     1715
+     1405,
+     1406,
+     1723,
+     1724
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12451,8 +12506,8 @@
     ],
     "label": "算出不能（reason: ${dp.reason ||",
     "lines": [
-     1644,
-     1644
+     1653,
+     1653
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12490,10 +12545,10 @@
     ],
     "label": "ターミナル成長率",
     "lines": [
-     1399,
-     1709,
-     1710,
-     2223
+     1408,
+     1718,
+     1719,
+     2232
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12512,7 +12567,7 @@
     ],
     "label": "",
     "lines": [
-     2224
+     2233
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12531,7 +12586,7 @@
     ],
     "label": "",
     "lines": [
-     2307
+     2316
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12550,7 +12605,7 @@
     ],
     "label": "",
     "lines": [
-     2308
+     2317
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12607,7 +12662,7 @@
     ],
     "label": "減収（構造的変化・継続）:",
     "lines": [
-     1128
+     1137
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12621,7 +12676,7 @@
     ],
     "label": "",
     "lines": [
-     2771
+     2780
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12681,18 +12736,18 @@
      574,
      574,
      869,
-     1429,
-     1429,
-     1429,
-     1436,
-     1436,
-     1436,
-     1443,
-     1443,
-     1443,
+     1438,
+     1438,
+     1438,
+     1445,
+     1445,
+     1445,
      1452,
-     2753,
-     2755
+     1452,
+     1452,
+     1461,
+     2762,
+     2764
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12711,15 +12766,15 @@
     ],
     "label": "",
     "lines": [
-     1430,
-     1430,
-     1430,
-     1437,
-     1437,
-     1437,
-     1444,
-     1444,
-     1444
+     1439,
+     1439,
+     1439,
+     1446,
+     1446,
+     1446,
+     1453,
+     1453,
+     1453
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12738,12 +12793,12 @@
     ],
     "label": "",
     "lines": [
-     1429,
-     1429,
-     1436,
-     1436,
-     1443,
-     1443
+     1438,
+     1438,
+     1445,
+     1445,
+     1452,
+     1452
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12762,12 +12817,12 @@
     ],
     "label": "",
     "lines": [
-     1431,
-     1431,
-     1438,
-     1438,
-     1445,
-     1445
+     1440,
+     1440,
+     1447,
+     1447,
+     1454,
+     1454
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12787,8 +12842,8 @@
     "label": "",
     "lines": [
      975,
-     2274,
-     2311
+     2283,
+     2320
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12808,7 +12863,7 @@
     "label": "固定値",
     "lines": [
      691,
-     2309
+     2318
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12829,10 +12884,10 @@
     "lines": [
      689,
      690,
-     2277,
-     2278,
-     2313,
-     2313
+     2286,
+     2287,
+     2322,
+     2322
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12853,7 +12908,7 @@
     "lines": [
      688,
      689,
-     2277
+     2286
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12872,7 +12927,7 @@
     ],
     "label": "セクター除外",
     "lines": [
-     2763
+     2772
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12891,10 +12946,10 @@
     ],
     "label": "ROE（分解値）",
     "lines": [
-     1653,
-     1653,
-     1653,
-     1666
+     1662,
+     1662,
+     1662,
+     1675
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12951,8 +13006,8 @@
     ],
     "label": "非連続RPO",
     "lines": [
-     1944,
-     1945
+     1953,
+     1954
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12971,7 +13026,7 @@
     ],
     "label": "非連続RPO",
     "lines": [
-     1944
+     1953
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -12991,7 +13046,7 @@
     "label": "",
     "lines": [
      970,
-     2394
+     2403
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13011,8 +13066,8 @@
     "label": "SECの申告の値に注意が要る期があります（直近3年）",
     "lines": [
      848,
-     1106,
-     1106
+     1115,
+     1115
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13045,7 +13100,7 @@
     ],
     "label": "Q異常値",
     "lines": [
-     2768
+     2777
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13059,7 +13114,7 @@
     ],
     "label": "Q異常値",
     "lines": [
-     2768
+     2777
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13078,7 +13133,7 @@
     ],
     "label": "",
     "lines": [
-     1582
+     1591
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13097,7 +13152,7 @@
     ],
     "label": "",
     "lines": [
-     2528
+     2537
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13116,7 +13171,7 @@
     ],
     "label": "",
     "lines": [
-     2529
+     2538
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13136,7 +13191,7 @@
     "label": "",
     "lines": [
      990,
-     1507
+     1516
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13213,8 +13268,8 @@
     ],
     "label": "DCF採用値（クリップ後）: %",
     "lines": [
-     1404,
-     1404
+     1413,
+     1413
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13233,7 +13288,7 @@
     ],
     "label": "売上(推定=最新Revenue×weight) | 構成比 | 成長率シナリオ（",
     "lines": [
-     1395
+     1404
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13252,7 +13307,7 @@
     ],
     "label": "",
     "lines": [
-     1370
+     1379
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13290,8 +13345,8 @@
     ],
     "label": "希薄化後株式数",
     "lines": [
-     2081,
-     2081
+     2090,
+     2090
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13310,7 +13365,7 @@
     ],
     "label": "→（加重平均・12四半期前→直近）",
     "lines": [
-     1615
+     1624
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13329,7 +13384,7 @@
     ],
     "label": "→（加重平均・12四半期前→直近）",
     "lines": [
-     1615
+     1624
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13386,7 +13441,7 @@
     ],
     "label": "",
     "lines": [
-     2217
+     2226
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13424,8 +13479,8 @@
     ],
     "label": "⚠ 未登録の分割の疑い（）。減点に使いません",
     "lines": [
-     1616,
-     1616
+     1625,
+     1625
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13488,7 +13543,8 @@
     ],
     "label": "",
     "lines": [
-     2750
+     1091,
+     2759
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13507,7 +13563,7 @@
     ],
     "label": "",
     "lines": [
-     1094
+     1099
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13526,7 +13582,7 @@
     ],
     "label": "",
     "lines": [
-     2005
+     2014
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13586,19 +13642,19 @@
     ],
     "label": "",
     "lines": [
-     2635,
-     2649,
-     2659,
-     2677,
-     2684,
-     2690,
-     2694,
-     2707,
-     2710,
-     2711,
-     2715,
-     2718,
-     2723
+     2644,
+     2658,
+     2668,
+     2686,
+     2693,
+     2699,
+     2703,
+     2716,
+     2719,
+     2720,
+     2724,
+     2727,
+     2732
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13617,8 +13673,8 @@
     ],
     "label": "",
     "lines": [
-     2735,
-     2744
+     2744,
+     2753
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13637,7 +13693,7 @@
     ],
     "label": "",
     "lines": [
-     1603
+     1612
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13657,7 +13713,7 @@
     "label": "",
     "lines": [
      825,
-     2395
+     2404
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13717,8 +13773,8 @@
     ],
     "label": "",
     "lines": [
-     2649,
-     2683
+     2658,
+     2692
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13740,7 +13796,7 @@
     "lines": [
      575,
      796,
-     2752
+     2761
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13798,11 +13854,11 @@
     "label": "Koichi式 v6.2",
     "lines": [
      801,
-     1878,
-     1917,
-     2208,
-     2208,
-     2393
+     1887,
+     1926,
+     2217,
+     2217,
+     2402
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13822,7 +13878,7 @@
     "label": "Koichi式 v6.2",
     "lines": [
      801,
-     2393
+     2402
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13858,11 +13914,11 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
-    "label": "。直近の4四半期が組み替えの前後のベースで混ざるため、DCF信頼性をLOWにして",
+    "label": "SECの申告の値に注意が要る期があります（直近3年）",
     "lines": [
-     1103,
-     1103,
-     1106
+     1112,
+     1112,
+     1115
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13901,8 +13957,8 @@
     "label": "、固定値",
     "lines": [
      973,
-     2279,
-     2750
+     2288,
+     2759
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13921,8 +13977,8 @@
     ],
     "label": "",
     "lines": [
-     2216,
-     2246
+     2225,
+     2255
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13942,13 +13998,13 @@
     "label": "Rm基準（βなし %）",
     "lines": [
      972,
-     1141,
-     1513,
-     1971,
-     2271,
-     2274,
-     2279,
-     2311
+     1150,
+     1522,
+     1980,
+     2280,
+     2283,
+     2288,
+     2320
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -13987,7 +14043,7 @@
     "label": "",
     "lines": [
      875,
-     2219
+     2228
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -14006,8 +14062,8 @@
     ],
     "label": "セグメント別売上構成（推定）",
     "lines": [
-     1377,
-     1398
+     1386,
+     1407
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -14026,9 +14082,9 @@
     ],
     "label": "",
     "lines": [
-     2166,
-     2176,
-     2176
+     2175,
+     2185,
+     2185
     ],
     "decision": "残す（2026-10-20）"
    },
@@ -14044,8 +14100,8 @@
     "label": "年 @",
     "lines": [
      889,
-     1896,
-     1902
+     1905,
+     1911
     ],
     "decision": "残す（2026-10-20）"
    }
@@ -14201,7 +14257,7 @@
     "note": "残す: テストが参照する"
    }
   ],
-  "written_key_count": 450,
+  "written_key_count": 456,
   "stale_keys": [
    {
     "key": "adj_net_income",
@@ -14625,8 +14681,8 @@
       "key": "asset_turnover",
       "status": "この段階の書き手あり",
       "lines": [
-       919,
-       1184
+       923,
+       1188
       ]
      },
      {
@@ -14654,7 +14710,7 @@
       "key": "buyback_ttm",
       "status": "この段階の書き手あり",
       "lines": [
-       526
+       527
       ]
      },
      {
@@ -14674,8 +14730,8 @@
        500,
        502,
        516,
-       523,
-       524
+       524,
+       525
       ]
      },
      {
@@ -14690,7 +14746,7 @@
       "status": "この段階の書き手あり",
       "lines": [
        518,
-       1127
+       1131
       ]
      },
      {
@@ -14705,7 +14761,7 @@
       "key": "desc",
       "status": "ほかの書き手あり",
       "lines": [
-       620
+       624
       ]
      },
      {
@@ -14726,7 +14782,7 @@
       "key": "dividend_yield",
       "status": "この段階の書き手あり",
       "lines": [
-       523
+       524
       ]
      },
      {
@@ -14734,28 +14790,36 @@
       "status": "この段階の書き手あり",
       "lines": [
        512,
-       862,
        866,
-       866,
-       895,
-       1146,
-       1152,
-       1184,
-       1185
+       870,
+       870,
+       899,
+       1150,
+       1156,
+       1188,
+       1189
+      ]
+     },
+     {
+      "key": "earnings_pending",
+      "status": "この段階の書き手あり",
+      "lines": [
+       523,
+       523
       ]
      },
      {
       "key": "entries",
       "status": "この段階の書き手あり",
       "lines": [
-       1030
+       1034
       ]
      },
      {
       "key": "excluded",
       "status": "この段階の書き手あり",
       "lines": [
-       866
+       870
       ]
      },
      {
@@ -14764,10 +14828,10 @@
       "lines": [
        339,
        340,
-       1067,
-       1072,
-       1072,
-       1073
+       1071,
+       1076,
+       1076,
+       1077
       ]
      },
      {
@@ -14816,15 +14880,15 @@
       "key": "filled_components",
       "status": "この段階の書き手あり",
       "lines": [
-       1017
+       1021
       ]
      },
      {
       "key": "filled_from_annual",
       "status": "この段階の書き手あり",
       "lines": [
-       1012,
-       1017
+       1016,
+       1021
       ]
      },
      {
@@ -14833,15 +14897,15 @@
       "lines": [
        514,
        514,
-       526,
-       527
+       527,
+       528
       ]
      },
      {
       "key": "financial_leverage",
       "status": "この段階の書き手あり",
       "lines": [
-       920
+       924
       ]
      },
      {
@@ -14850,11 +14914,11 @@
       "lines": [
        345,
        345,
-       545,
-       545,
-       548,
-       548,
-       610
+       546,
+       546,
+       549,
+       549,
+       614
       ]
      },
      {
@@ -14868,7 +14932,7 @@
       "key": "generated_at",
       "status": "この段階の書き手あり",
       "lines": [
-       1059
+       1063
       ]
      },
      {
@@ -14890,7 +14954,7 @@
       "status": "この段階の書き手あり",
       "lines": [
        516,
-       1139
+       1143
       ]
      },
      {
@@ -14898,9 +14962,10 @@
       "status": "この段階の書き手あり",
       "lines": [
        344,
-       565,
-       617,
-       1014
+       566,
+       589,
+       621,
+       1018
       ]
      },
      {
@@ -14912,49 +14977,56 @@
       ]
      },
      {
+      "key": "layer3_period_end",
+      "status": "書き手なし",
+      "lines": [
+       589
+      ]
+     },
+     {
       "key": "length",
       "status": "ほかの書き手あり",
       "lines": [
        396,
        465,
        522,
-       579,
-       606,
-       618,
-       664,
-       874,
-       928,
-       1029,
-       1030,
-       1030,
-       1031,
-       1044,
-       1057,
-       1057,
-       1067,
-       1067,
+       580,
+       610,
+       622,
+       668,
+       878,
+       932,
+       1033,
+       1034,
+       1034,
+       1035,
+       1048,
+       1061,
+       1061,
        1071,
-       1072,
-       1072,
-       1073,
+       1071,
        1075,
-       1089,
-       1115,
-       1135,
-       1148,
-       1221,
-       1246,
-       1263,
-       1263,
-       1280,
-       1297,
-       1348,
-       1364,
-       1447,
-       1454,
-       1501,
-       1504,
-       1510
+       1076,
+       1076,
+       1077,
+       1079,
+       1093,
+       1119,
+       1139,
+       1152,
+       1225,
+       1250,
+       1267,
+       1267,
+       1284,
+       1301,
+       1352,
+       1368,
+       1451,
+       1458,
+       1505,
+       1508,
+       1514
       ]
      },
      {
@@ -14962,7 +15034,7 @@
       "status": "この段階の書き手あり",
       "lines": [
        487,
-       559
+       560
       ]
      },
      {
@@ -14998,50 +15070,50 @@
       "key": "n_quarters",
       "status": "この段階の書き手あり",
       "lines": [
-       1015
+       1019
       ]
      },
      {
       "key": "net_current_assets_ratio",
       "status": "この段階の書き手あり",
       "lines": [
-       525
+       526
       ]
      },
      {
       "key": "net_debt",
       "status": "この段階の書き手あり",
       "lines": [
-       527
+       528
       ]
      },
      {
       "key": "net_margin",
       "status": "この段階の書き手あり",
       "lines": [
-       918,
-       1185
+       922,
+       1189
       ]
      },
      {
       "key": "no_data",
       "status": "画面の中で作る値",
       "lines": [
-       1029
+       1033
       ]
      },
      {
       "key": "note",
       "status": "この段階の書き手あり",
       "lines": [
-       585
+       586
       ]
      },
      {
       "key": "payout_ratio",
       "status": "この段階の書き手あり",
       "lines": [
-       524
+       525
       ]
      },
      {
@@ -15049,10 +15121,10 @@
       "status": "この段階の書き手あり",
       "lines": [
        495,
-       571,
        572,
-       572,
-       573
+       573,
+       573,
+       574
       ]
      },
      {
@@ -15061,16 +15133,16 @@
       "lines": [
        352,
        352,
-       570,
-       570,
-       1070,
-       1070,
-       1070,
-       1079,
-       1128,
-       1128,
-       1128,
-       1140
+       571,
+       571,
+       1074,
+       1074,
+       1074,
+       1083,
+       1132,
+       1132,
+       1132,
+       1144
       ]
      },
      {
@@ -15098,9 +15170,9 @@
       "key": "ps",
       "status": "この段階の書き手あり",
       "lines": [
-       575,
        576,
-       577
+       577,
+       578
       ]
      },
      {
@@ -15114,45 +15186,45 @@
       "key": "ptbv",
       "status": "この段階の書き手あり",
       "lines": [
-       982,
-       982,
-       983,
-       983,
-       1010,
-       1013
+       986,
+       986,
+       987,
+       987,
+       1014,
+       1017
       ]
      },
      {
       "key": "ptbv_pctl",
       "status": "この段階の書き手あり",
       "lines": [
-       1016,
-       1016
+       1020,
+       1020
       ]
      },
      {
       "key": "quarter_end",
       "status": "この段階の書き手あり",
       "lines": [
-       1018
+       1022
       ]
      },
      {
       "key": "qx",
       "status": "この段階の書き手あり",
       "lines": [
-       561,
        562,
-       563
+       563,
+       564
       ]
      },
      {
       "key": "qy",
       "status": "この段階の書き手あり",
       "lines": [
-       561,
        562,
-       563
+       563,
+       564
       ]
      },
      {
@@ -15166,23 +15238,23 @@
       "key": "reason",
       "status": "この段階の書き手あり",
       "lines": [
-       1028
+       1032
       ]
      },
      {
       "key": "reliability",
       "status": "この段階の書き手あり",
       "lines": [
-       902,
-       1146
+       906,
+       1150
       ]
      },
      {
       "key": "reliability_reason",
       "status": "この段階の書き手あり",
       "lines": [
-       904,
-       1152
+       908,
+       1156
       ]
      },
      {
@@ -15213,12 +15285,12 @@
       "key": "roe",
       "status": "この段階の書き手あり",
       "lines": [
-       861,
-       911,
-       911,
-       913,
-       913,
-       921
+       865,
+       915,
+       915,
+       917,
+       917,
+       925
       ]
      },
      {
@@ -15232,14 +15304,14 @@
       "key": "roe_decomposed",
       "status": "この段階の書き手あり",
       "lines": [
-       896,
-       897,
+       900,
        901,
-       911,
-       911,
-       913,
-       913,
-       917
+       905,
+       915,
+       915,
+       917,
+       917,
+       921
       ]
      },
      {
@@ -15253,19 +15325,19 @@
       "key": "rotce",
       "status": "この段階の書き手あり",
       "lines": [
-       982,
-       983,
-       1010,
-       1011,
-       1011,
-       1013
+       986,
+       987,
+       1014,
+       1015,
+       1015,
+       1017
       ]
      },
      {
       "key": "rotce_pctl",
       "status": "この段階の書き手あり",
       "lines": [
-       1016
+       1020
       ]
      },
      {
@@ -15304,14 +15376,14 @@
       "key": "signal",
       "status": "この段階の書き手あり",
       "lines": [
-       1008
+       1012
       ]
      },
      {
       "key": "signal_reason",
       "status": "この段階の書き手あり",
       "lines": [
-       1014
+       1018
       ]
      },
      {
@@ -15327,10 +15399,10 @@
       "lines": [
        356,
        468,
-       1112,
-       1112,
-       1119,
-       1119
+       1116,
+       1116,
+       1123,
+       1123
       ]
      },
      {
@@ -15338,6 +15410,13 @@
       "status": "この段階の書き手あり",
       "lines": [
        478
+      ]
+     },
+     {
+      "key": "status",
+      "status": "この段階の書き手あり",
+      "lines": [
+       523
       ]
      },
      {
@@ -15365,7 +15444,7 @@
       "key": "substituted_by_annual",
       "status": "この段階の書き手あり",
       "lines": [
-       585
+       586
       ]
      },
      {
@@ -15382,26 +15461,26 @@
        343,
        343,
        445,
-       608,
-       609,
-       860,
-       916,
-       1253,
-       1253,
-       1284,
-       1284,
-       1335,
-       1438,
-       1441,
+       612,
+       613,
+       864,
+       920,
+       1257,
+       1257,
+       1288,
+       1288,
+       1339,
        1442,
-       1457,
-       1459,
-       1460,
-       1470,
-       1472,
-       1473,
-       1502,
-       1505
+       1445,
+       1446,
+       1461,
+       1463,
+       1464,
+       1474,
+       1476,
+       1477,
+       1506,
+       1509
       ]
      },
      {
@@ -15412,9 +15491,9 @@
        445,
        450,
        455,
-       979,
-       981,
-       984
+       983,
+       985,
+       988
       ]
      },
      {
@@ -15423,7 +15502,7 @@
       "lines": [
        346,
        346,
-       610
+       614
       ]
      },
      {
@@ -15438,13 +15517,13 @@
       "status": "この段階の書き手あり",
       "lines": [
        351,
-       1114,
-       1114,
-       1121,
-       1333,
-       1336,
+       1118,
+       1118,
+       1125,
        1337,
-       1338
+       1340,
+       1341,
+       1342
       ]
      },
      {
@@ -15467,8 +15546,8 @@
       "key": "year",
       "status": "この段階の書き手あり",
       "lines": [
-       1066,
-       1066
+       1070,
+       1070
       ]
      },
      {
@@ -15488,99 +15567,99 @@
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       802,
-       803,
-       803,
-       808
+       806,
+       807,
+       807,
+       812
       ]
      },
      {
       "key": "invalid",
       "status": "この段階の書き手あり",
       "lines": [
-       753
+       757
       ]
      },
      {
       "key": "length",
       "status": "ほかの書き手あり",
       "lines": [
-       743,
-       766,
-       766,
-       839
+       747,
+       770,
+       770,
+       843
       ]
      },
      {
       "key": "market_data",
       "status": "書き手なし",
       "lines": [
-       829
+       833
       ]
      },
      {
       "key": "price_at_judgment",
       "status": "この段階の書き手あり",
       "lines": [
-       810,
-       810
+       814,
+       814
       ]
      },
      {
       "key": "return_30d",
       "status": "この段階の書き手あり",
       "lines": [
-       757,
-       757,
-       757,
-       811
+       761,
+       761,
+       761,
+       815
       ]
      },
      {
       "key": "return_60d",
       "status": "この段階の書き手あり",
       "lines": [
-       758,
-       758,
-       758,
-       812
+       762,
+       762,
+       762,
+       816
       ]
      },
      {
       "key": "return_90d",
       "status": "この段階の書き手あり",
       "lines": [
-       759,
-       760,
-       760,
-       813
+       763,
+       764,
+       764,
+       817
       ]
      },
      {
       "key": "tanuki_score",
       "status": "この段階の書き手あり",
       "lines": [
-       752,
-       802,
-       809,
-       809
+       756,
+       806,
+       813,
+       813
       ]
      },
      {
       "key": "ticker",
       "status": "この段階の書き手あり",
       "lines": [
-       761,
-       807,
-       807
+       765,
+       811,
+       811
       ]
      },
      {
       "key": "total",
       "status": "この段階の書き手あり",
       "lines": [
-       756,
-       790
+       760,
+       794
       ]
      }
     ]
@@ -15593,7 +15672,7 @@
       "key": "all",
       "status": "ほかの書き手あり",
       "lines": [
-       727
+       731
       ]
      }
     ]
@@ -15606,109 +15685,109 @@
       "key": "desc",
       "status": "ほかの書き手あり",
       "lines": [
-       642
+       646
       ]
      },
      {
       "key": "entries",
       "status": "この段階の書き手あり",
       "lines": [
-       1037
+       1041
       ]
      },
      {
       "key": "fcf",
       "status": "この段階の書き手あり",
       "lines": [
-       1131,
-       1132
+       1135,
+       1136
       ]
      },
      {
       "key": "filled_from_annual",
       "status": "この段階の書き手あり",
       "lines": [
-       1036
+       1040
       ]
      },
      {
       "key": "funda",
       "status": "この段階の書き手あり",
       "lines": [
-       632,
-       1199
+       636,
+       1203
       ]
      },
      {
       "key": "label",
       "status": "この段階の書き手あり",
       "lines": [
-       639,
-       1038
+       643,
+       1042
       ]
      },
      {
       "key": "length",
       "status": "ほかの書き手あり",
       "lines": [
-       628,
-       640,
-       1033,
-       1034,
-       1035,
-       1036,
-       1130,
-       1131,
-       1132
+       632,
+       644,
+       1037,
+       1038,
+       1039,
+       1040,
+       1134,
+       1135,
+       1136
       ]
      },
      {
       "key": "per",
       "status": "この段階の書き手あり",
       "lines": [
-       1199
+       1203
       ]
      },
      {
       "key": "signal",
       "status": "この段階の書き手あり",
       "lines": [
-       1033,
-       1034,
-       1035
+       1037,
+       1038,
+       1039
       ]
      },
      {
       "key": "signal_reason",
       "status": "この段階の書き手あり",
       "lines": [
-       1035
+       1039
       ]
      },
      {
       "key": "ticker",
       "status": "この段階の書き手あり",
       "lines": [
-       630,
-       631
+       634,
+       635
       ]
      },
      {
       "key": "timing",
       "status": "この段階の書き手あり",
       "lines": [
-       632
+       636
       ]
      },
      {
       "key": "upside",
       "status": "この段階の書き手あり",
       "lines": [
-       591,
-       591,
-       593,
        595,
-       596
+       595,
+       597,
+       599,
+       600
       ]
      }
     ]
@@ -16151,9 +16230,9 @@
       "status": "この段階の書き手あり",
       "lines": [
        871,
-       1292,
-       1292,
-       1507
+       1301,
+       1301,
+       1516
       ]
      },
      {
@@ -16167,23 +16246,23 @@
       "key": "base_wacc",
       "status": "この段階の書き手あり",
       "lines": [
-       1167
+       1176
       ]
      },
      {
       "key": "base_years",
       "status": "この段階の書き手あり",
       "lines": [
-       1167
+       1176
       ]
      },
      {
       "key": "basis_mix",
       "status": "この段階の書き手あり",
       "lines": [
-       1098,
-       1098,
-       1101
+       1103,
+       1103,
+       1106
       ]
      },
      {
@@ -16191,8 +16270,8 @@
       "status": "この段階の書き手あり",
       "lines": [
        872,
-       1293,
-       1293
+       1302,
+       1302
       ]
      },
      {
@@ -16214,8 +16293,8 @@
       "status": "この段階の書き手あり",
       "lines": [
        873,
-       1291,
-       1291
+       1300,
+       1300
       ]
      },
      {
@@ -16223,6 +16302,14 @@
       "status": "この段階の書き手あり",
       "lines": [
        797
+      ]
+     },
+     {
+      "key": "capex_note",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1108,
+       1110
       ]
      },
      {
@@ -16236,14 +16323,14 @@
       "key": "cash_and_equivalents",
       "status": "この段階の書き手あり",
       "lines": [
-       1603
+       1612
       ]
      },
      {
       "key": "clipped",
       "status": "この段階の書き手あり",
       "lines": [
-       1400
+       1409
       ]
      },
      {
@@ -16289,11 +16376,11 @@
        1033,
        1034,
        1035,
-       1372,
-       1617,
-       1617,
-       1617,
-       1617
+       1381,
+       1626,
+       1626,
+       1626,
+       1626
       ]
      },
      {
@@ -16359,30 +16446,30 @@
       "key": "dilution_3yr_annual_pct",
       "status": "この段階の書き手あり",
       "lines": [
-       1583
+       1592
       ]
      },
      {
       "key": "dilution_comment",
       "status": "この段階の書き手あり",
       "lines": [
-       1586
+       1595
       ]
      },
      {
       "key": "dilution_severity",
       "status": "この段階の書き手あり",
       "lines": [
-       1585
+       1594
       ]
      },
      {
       "key": "dilution_window",
       "status": "この段階の書き手あり",
       "lines": [
-       1615,
-       1615,
-       1615
+       1624,
+       1624,
+       1624
       ]
      },
      {
@@ -16404,7 +16491,17 @@
       "key": "dupont",
       "status": "この段階の書き手あり",
       "lines": [
-       1630
+       1639
+      ]
+     },
+     {
+      "key": "earnings_pending",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1091,
+       1091,
+       1093,
+       1094
       ]
      },
      {
@@ -16415,7 +16512,7 @@
        346,
        358,
        361,
-       1106
+       1115
       ]
      },
      {
@@ -16429,21 +16526,21 @@
       "key": "estimated_revenue",
       "status": "この段階の書き手あり",
       "lines": [
-       1378
+       1387
       ]
      },
      {
       "key": "excluded",
       "status": "この段階の書き手あり",
       "lines": [
-       1635
+       1644
       ]
      },
      {
       "key": "expected_return_pct",
       "status": "この段階の書き手あり",
       "lines": [
-       1332
+       1341
       ]
      },
      {
@@ -16487,7 +16584,10 @@
       "key": "fcf_estimation",
       "status": "この段階の書き手あり",
       "lines": [
-       832
+       832,
+       1108,
+       1108,
+       1110
       ]
      },
      {
@@ -16508,7 +16608,7 @@
       "key": "field",
       "status": "この段階の書き手あり",
       "lines": [
-       1106
+       1115
       ]
      },
      {
@@ -16516,7 +16616,7 @@
       "status": "この段階の書き手あり",
       "lines": [
        340,
-       1091
+       1096
       ]
      },
      {
@@ -16531,8 +16631,8 @@
       "key": "financial_health",
       "status": "この段階の書き手あり",
       "lines": [
-       1511,
-       1579
+       1520,
+       1588
       ]
      },
      {
@@ -16563,8 +16663,8 @@
       "key": "future_value",
       "status": "この段階の書き手あり",
       "lines": [
-       1335,
-       1348
+       1344,
+       1357
       ]
      },
      {
@@ -16578,10 +16678,10 @@
       "key": "growth",
       "status": "この段階の書き手あり",
       "lines": [
-       1380,
-       1398,
-       1524,
-       1524
+       1389,
+       1407,
+       1533,
+       1533
       ]
      },
      {
@@ -16595,12 +16695,12 @@
       "key": "growth_rate",
       "status": "この段階の書き手あり",
       "lines": [
-       1291,
-       1292,
-       1293,
-       1428,
-       1435,
-       1442
+       1300,
+       1301,
+       1302,
+       1437,
+       1444,
+       1451
       ]
      },
      {
@@ -16685,10 +16785,10 @@
       "status": "この段階の書き手あり",
       "lines": [
        788,
-       1291,
-       1292,
-       1293,
-       1507
+       1300,
+       1301,
+       1302,
+       1516
       ]
      },
      {
@@ -16716,7 +16816,7 @@
       "key": "kind",
       "status": "この段階の書き手あり",
       "lines": [
-       1106
+       1115
       ]
      },
      {
@@ -16724,17 +16824,18 @@
       "status": "この段階の書き手あり",
       "lines": [
        1083,
-       1320
+       1093,
+       1329
       ]
      },
      {
       "key": "latest_period_missing",
       "status": "この段階の書き手あり",
       "lines": [
-       1091,
-       1091,
-       1093,
-       1094
+       1096,
+       1096,
+       1098,
+       1099
       ]
      },
      {
@@ -16742,7 +16843,14 @@
       "status": "この段階の書き手あり",
       "lines": [
        1000,
-       1372
+       1381
+      ]
+     },
+     {
+      "key": "layer3_period_end",
+      "status": "書き手なし",
+      "lines": [
+       1094
       ]
      },
      {
@@ -16751,10 +16859,10 @@
       "lines": [
        356,
        764,
-       1091,
-       1103,
-       1302,
-       1371
+       1096,
+       1112,
+       1311,
+       1380
       ]
      },
      {
@@ -16797,8 +16905,8 @@
       "status": "この段階の書き手あり",
       "lines": [
        976,
-       1141,
-       1513
+       1150,
+       1522
       ]
      },
      {
@@ -16835,7 +16943,7 @@
       "key": "mixed",
       "status": "この段階の書き手あり",
       "lines": [
-       1098
+       1103
       ]
      },
      {
@@ -16849,7 +16957,7 @@
       "key": "name",
       "status": "この段階の書き手あり",
       "lines": [
-       1384
+       1393
       ]
      },
      {
@@ -16870,8 +16978,8 @@
       "key": "net_debt",
       "status": "この段階の書き手あり",
       "lines": [
-       1511,
-       1581
+       1520,
+       1590
       ]
      },
      {
@@ -16880,14 +16988,14 @@
       "lines": [
        1073,
        1073,
-       1584
+       1593
       ]
      },
      {
       "key": "ni_ocf_divergence",
       "status": "この段階の書き手あり",
       "lines": [
-       1128
+       1137
       ]
      },
      {
@@ -16897,18 +17005,18 @@
        840,
        849,
        874,
-       1093,
-       1101
+       1098,
+       1106
       ]
      },
      {
       "key": "outstanding_gap_pct",
       "status": "この段階の書き手あり",
       "lines": [
-       1617,
-       1617,
-       1617,
-       1617
+       1626,
+       1626,
+       1626,
+       1626
       ]
      },
      {
@@ -16987,10 +17095,10 @@
       "status": "この段階の書き手あり",
       "lines": [
        985,
-       1316,
-       1321,
-       1524,
-       1524
+       1325,
+       1330,
+       1533,
+       1533
       ]
      },
      {
@@ -17019,23 +17127,23 @@
       "key": "raw_weighted_growth",
       "status": "この段階の書き手あり",
       "lines": [
-       1396,
-       1397
+       1405,
+       1406
       ]
      },
      {
       "key": "reason",
       "status": "この段階の書き手あり",
       "lines": [
-       1644,
-       1644
+       1653,
+       1653
       ]
      },
      {
       "key": "recommended_g",
       "status": "この段階の書き手あり",
       "lines": [
-       1399
+       1408
       ]
      },
      {
@@ -17049,7 +17157,7 @@
       "key": "revenue_decline",
       "status": "この段階の書き手あり",
       "lines": [
-       1128
+       1137
       ]
      },
      {
@@ -17071,55 +17179,55 @@
       "status": "この段階の書き手あり",
       "lines": [
        869,
-       1429,
-       1429,
-       1429,
-       1436,
-       1436,
-       1436,
-       1443,
-       1443,
-       1443,
-       1452
+       1438,
+       1438,
+       1438,
+       1445,
+       1445,
+       1445,
+       1452,
+       1452,
+       1452,
+       1461
       ]
      },
      {
       "key": "rice_adj",
       "status": "この段階の書き手あり",
       "lines": [
-       1430,
-       1430,
-       1430,
-       1437,
-       1437,
-       1437,
-       1444,
-       1444,
-       1444
+       1439,
+       1439,
+       1439,
+       1446,
+       1446,
+       1446,
+       1453,
+       1453,
+       1453
       ]
      },
      {
       "key": "rice_na_reason",
       "status": "この段階の書き手あり",
       "lines": [
-       1429,
-       1429,
-       1436,
-       1436,
-       1443,
-       1443
+       1438,
+       1438,
+       1445,
+       1445,
+       1452,
+       1452
       ]
      },
      {
       "key": "rice_per_ratio",
       "status": "この段階の書き手あり",
       "lines": [
-       1431,
-       1431,
-       1438,
-       1438,
-       1445,
-       1445
+       1440,
+       1440,
+       1447,
+       1447,
+       1454,
+       1454
       ]
      },
      {
@@ -17155,15 +17263,15 @@
       "status": "この段階の書き手あり",
       "lines": [
        848,
-       1106,
-       1106
+       1115,
+       1115
       ]
      },
      {
       "key": "sbc_ttm",
       "status": "この段階の書き手あり",
       "lines": [
-       1582
+       1591
       ]
      },
      {
@@ -17171,7 +17279,7 @@
       "status": "この段階の書き手あり",
       "lines": [
        990,
-       1507
+       1516
       ]
      },
      {
@@ -17200,22 +17308,22 @@
       "key": "segment_growth_quarter",
       "status": "この段階の書き手あり",
       "lines": [
-       1404,
-       1404
+       1413,
+       1413
       ]
      },
      {
       "key": "segment_growth_source",
       "status": "この段階の書き手あり",
       "lines": [
-       1395
+       1404
       ]
      },
      {
       "key": "segments",
       "status": "この段階の書き手あり",
       "lines": [
-       1370
+       1379
       ]
      },
      {
@@ -17229,14 +17337,14 @@
       "key": "shares_yr_3ago",
       "status": "この段階の書き手あり",
       "lines": [
-       1615
+       1624
       ]
      },
      {
       "key": "shares_yr_now",
       "status": "この段階の書き手あり",
       "lines": [
-       1615
+       1624
       ]
      },
      {
@@ -17264,15 +17372,22 @@
       "key": "split_suspect",
       "status": "この段階の書き手あり",
       "lines": [
-       1616,
-       1616
+       1625,
+       1625
+      ]
+     },
+     {
+      "key": "status",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1091
       ]
      },
      {
       "key": "substituted_by_annual",
       "status": "この段階の書き手あり",
       "lines": [
-       1094
+       1099
       ]
      },
      {
@@ -17295,7 +17410,7 @@
       "key": "total_debt",
       "status": "この段階の書き手あり",
       "lines": [
-       1603
+       1612
       ]
      },
      {
@@ -17367,9 +17482,9 @@
       "key": "val_guard_marks",
       "status": "この段階の書き手あり",
       "lines": [
-       1103,
-       1103,
-       1106
+       1112,
+       1112,
+       1115
       ]
      },
      {
@@ -17391,8 +17506,8 @@
       "status": "この段階の書き手あり",
       "lines": [
        972,
-       1141,
-       1513
+       1150,
+       1522
       ]
      },
      {
@@ -17413,8 +17528,8 @@
       "key": "weight",
       "status": "この段階の書き手あり",
       "lines": [
-       1377,
-       1398
+       1386,
+       1407
       ]
      },
      {
@@ -17434,7 +17549,7 @@
       "key": "key",
       "status": "この段階の書き手あり",
       "lines": [
-       2869
+       2878
       ]
      }
     ]
@@ -17447,178 +17562,178 @@
       "key": "available",
       "status": "この段階の書き手あり",
       "lines": [
-       2759
+       2768
       ]
      },
      {
       "key": "base",
       "status": "この段階の書き手あり",
       "lines": [
-       2755
+       2764
       ]
      },
      {
       "key": "components",
       "status": "この段階の書き手あり",
       "lines": [
-       2763,
-       2785,
-       2786
+       2772,
+       2794,
+       2795
       ]
      },
      {
       "key": "deficit_quality",
       "status": "この段階の書き手あり",
       "lines": [
-       2771
+       2780
       ]
      },
      {
       "key": "error",
       "status": "この段階の書き手あり",
       "lines": [
-       2745,
-       2836
+       2754,
+       2845
       ]
      },
      {
       "key": "fcf_base_used",
       "status": "この段階の書き手あり",
       "lines": [
-       2785
+       2794
       ]
      },
      {
       "key": "fcf_estimation",
       "status": "この段階の書き手あり",
       "lines": [
-       2783
+       2792
       ]
      },
      {
       "key": "fcf_margin",
       "status": "この段階の書き手あり",
       "lines": [
-       2783
+       2792
       ]
      },
      {
       "key": "latest_revenue",
       "status": "この段階の書き手あり",
       "lines": [
-       2786
+       2795
       ]
      },
      {
       "key": "length",
       "status": "ほかの書き手あり",
       "lines": [
-       2659,
-       2690,
-       2700,
-       2706,
+       2668,
+       2699,
+       2709,
        2715,
-       2828
+       2724,
+       2837
       ]
      },
      {
       "key": "note",
       "status": "この段階の書き手あり",
       "lines": [
-       2754,
-       2831
+       2763,
+       2840
       ]
      },
      {
       "key": "revenue_growth_pct",
       "status": "ほかの書き手あり",
       "lines": [
-       2771
+       2780
       ]
      },
      {
       "key": "rice",
       "status": "この段階の書き手あり",
       "lines": [
-       2753,
-       2755
+       2762,
+       2764
       ]
      },
      {
       "key": "roe_10yr_avg",
       "status": "この段階の書き手あり",
       "lines": [
-       2763
+       2772
       ]
      },
      {
       "key": "runway",
       "status": "ほかの書き手あり",
       "lines": [
-       2768
+       2777
       ]
      },
      {
       "key": "runway_months",
       "status": "ほかの書き手あり",
       "lines": [
-       2768
+       2777
       ]
      },
      {
       "key": "status",
       "status": "この段階の書き手あり",
       "lines": [
-       2750
+       2759
       ]
      },
      {
       "key": "ticker",
       "status": "この段階の書き手あり",
       "lines": [
-       2635,
-       2649,
-       2659,
-       2677,
-       2684,
-       2690,
-       2694,
-       2707,
-       2710,
-       2711,
-       2715,
-       2718,
-       2723
+       2644,
+       2658,
+       2668,
+       2686,
+       2693,
+       2699,
+       2703,
+       2716,
+       2719,
+       2720,
+       2724,
+       2727,
+       2732
       ]
      },
      {
       "key": "tickers",
       "status": "この段階の書き手あり",
       "lines": [
-       2735,
-       2744
+       2744,
+       2753
       ]
      },
      {
       "key": "type",
       "status": "この段階の書き手あり",
       "lines": [
-       2649,
-       2683
+       2658,
+       2692
       ]
      },
      {
       "key": "upside_percent",
       "status": "この段階の書き手あり",
       "lines": [
-       2752
+       2761
       ]
      },
      {
       "key": "value",
       "status": "この段階の書き手あり",
       "lines": [
-       2750
+       2759
       ]
      }
     ]
@@ -17757,452 +17872,452 @@
       "key": "_shares_source",
       "status": "この段階の書き手あり",
       "lines": [
-       2081
+       2090
       ]
      },
      {
       "key": "amount",
       "status": "この段階の書き手あり",
       "lines": [
-       1786
+       1795
       ]
      },
      {
       "key": "asset_turnover",
       "status": "この段階の書き手あり",
       "lines": [
-       1664
+       1673
       ]
      },
      {
       "key": "bear_multiplier",
       "status": "この段階の書き手あり",
       "lines": [
-       1700
+       1709
       ]
      },
      {
       "key": "bull_multiplier",
       "status": "この段階の書き手あり",
       "lines": [
-       1701
+       1710
       ]
      },
      {
       "key": "category",
       "status": "この段階の書き手あり",
       "lines": [
-       1785
+       1794
       ]
      },
      {
       "key": "clipped",
       "status": "この段階の書き手あり",
       "lines": [
-       1712
+       1721
       ]
      },
      {
       "key": "components",
       "status": "この段階の書き手あり",
       "lines": [
-       1698,
-       1699,
-       1700,
-       1701,
-       1960,
-       1960,
-       2081,
-       2203
+       1707,
+       1708,
+       1709,
+       1710,
+       1969,
+       1969,
+       2090,
+       2212
       ]
      },
      {
       "key": "damodaran_industry",
       "status": "この段階の書き手あり",
       "lines": [
-       2249,
-       2249
+       2258,
+       2258
       ]
      },
      {
       "key": "damodaran_year",
       "status": "この段階の書き手あり",
       "lines": [
-       2250,
-       2250
+       2259,
+       2259
       ]
      },
      {
       "key": "delay_years",
       "status": "この段階の書き手あり",
       "lines": [
-       2005
+       2014
       ]
      },
      {
       "key": "fcf",
       "status": "この段階の書き手あり",
       "lines": [
-       2148,
-       2158,
-       2172,
-       2172,
-       2178,
-       2178
+       2157,
+       2167,
+       2181,
+       2181,
+       2187,
+       2187
       ]
      },
      {
       "key": "fcf_growth_cap",
       "status": "この段階の書き手あり",
       "lines": [
-       1699
+       1708
       ]
      },
      {
       "key": "fcf_growth_floor",
       "status": "この段階の書き手あり",
       "lines": [
-       1698
+       1707
       ]
      },
      {
       "key": "fcf_history",
       "status": "この段階の書き手あり",
       "lines": [
-       2146
+       2155
       ]
      },
      {
       "key": "fcf_margin",
       "status": "この段階の書き手あり",
       "lines": [
-       2005
+       2014
       ]
      },
      {
       "key": "fcf_ttm_end",
       "status": "この段階の書き手あり",
       "lines": [
-       2203
+       2212
       ]
      },
      {
       "key": "financial_leverage",
       "status": "この段階の書き手あり",
       "lines": [
-       1665
+       1674
       ]
      },
      {
       "key": "floor",
       "status": "この段階の書き手あり",
       "lines": [
-       2154
+       2163
       ]
      },
      {
       "key": "growth",
       "status": "この段階の書き手あり",
       "lines": [
-       1896,
-       1902
+       1905,
+       1911
       ]
      },
      {
       "key": "growth_cap",
       "status": "この段階の書き手あり",
       "lines": [
-       1715,
-       1715
+       1724,
+       1724
       ]
      },
      {
       "key": "growth_floor",
       "status": "この段階の書き手あり",
       "lines": [
-       1715
+       1724
       ]
      },
      {
       "key": "insider_latest_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2203
+       2212
       ]
      },
      {
       "key": "item_name",
       "status": "この段階の書き手あり",
       "lines": [
-       1785
+       1794
       ]
      },
      {
       "key": "length",
       "status": "ほかの書き手あり",
       "lines": [
-       2081,
-       2147,
-       2153,
-       2174,
-       2175,
-       2175
+       2090,
+       2156,
+       2162,
+       2183,
+       2184,
+       2184
       ]
      },
      {
       "key": "market_return",
       "status": "この段階の書き手あり",
       "lines": [
-       1971
+       1980
       ]
      },
      {
       "key": "method",
       "status": "この段階の書き手あり",
       "lines": [
-       1804
+       1813
       ]
      },
      {
       "key": "moat_phase1_years",
       "status": "この段階の書き手あり",
       "lines": [
-       1960
+       1969
       ]
      },
      {
       "key": "moat_score_source",
       "status": "この段階の書き手あり",
       "lines": [
-       1960
+       1969
       ]
      },
      {
       "key": "name",
       "status": "この段階の書き手あり",
       "lines": [
-       2001
+       2010
       ]
      },
      {
       "key": "net_margin",
       "status": "この段階の書き手あり",
       "lines": [
-       1663
+       1672
       ]
      },
      {
       "key": "next_earnings_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2203
+       2212
       ]
      },
      {
       "key": "note",
       "status": "この段階の書き手あり",
       "lines": [
-       2007,
-       2007
+       2016,
+       2016
       ]
      },
      {
       "key": "op_margin",
       "status": "この段階の書き手あり",
       "lines": [
-       1945
+       1954
       ]
      },
      {
       "key": "options",
       "status": "この段階の書き手あり",
       "lines": [
-       1998
+       2007
       ]
      },
      {
       "key": "outstanding_gap_pct",
       "status": "この段階の書き手あり",
       "lines": [
-       2081
+       2090
       ]
      },
      {
       "key": "penetration",
       "status": "この段階の書き手あり",
       "lines": [
-       2005
+       2014
       ]
      },
      {
       "key": "period_label",
       "status": "この段階の書き手あり",
       "lines": [
-       1766
+       1775
       ]
      },
      {
       "key": "phase1",
       "status": "この段階の書き手あり",
       "lines": [
-       1896,
-       1896
+       1905,
+       1905
       ]
      },
      {
       "key": "phase1_growth",
       "status": "この段階の書き手あり",
       "lines": [
-       2248
+       2257
       ]
      },
      {
       "key": "phase1_growth_auto_adjusted",
       "status": "この段階の書き手あり",
       "lines": [
-       2222
+       2231
       ]
      },
      {
       "key": "phase2",
       "status": "この段階の書き手あり",
       "lines": [
-       1902,
-       1902
+       1911,
+       1911
       ]
      },
      {
       "key": "probability",
       "status": "この段階の書き手あり",
       "lines": [
-       2005
+       2014
       ]
      },
      {
       "key": "pv",
       "status": "この段階の書き手あり",
       "lines": [
-       2002
+       2011
       ]
      },
      {
       "key": "raw_weighted_growth",
       "status": "この段階の書き手あり",
       "lines": [
-       1714,
-       1715
+       1723,
+       1724
       ]
      },
      {
       "key": "recommended_g",
       "status": "この段階の書き手あり",
       "lines": [
-       1709,
-       1710,
-       2223
+       1718,
+       1719,
+       2232
       ]
      },
      {
       "key": "recommended_g_median",
       "status": "この段階の書き手あり",
       "lines": [
-       2224
+       2233
       ]
      },
      {
       "key": "roe_decomposed",
       "status": "この段階の書き手あり",
       "lines": [
-       1653,
-       1653,
-       1653,
-       1666
+       1662,
+       1662,
+       1662,
+       1675
       ]
      },
      {
       "key": "rpo_adjustment",
       "status": "この段階の書き手あり",
       "lines": [
-       1944,
-       1945
+       1953,
+       1954
       ]
      },
      {
       "key": "rpo_incremental",
       "status": "この段階の書き手あり",
       "lines": [
-       1944
+       1953
       ]
      },
      {
       "key": "shares_note",
       "status": "この段階の書き手あり",
       "lines": [
-       2081,
-       2081
+       2090,
+       2090
       ]
      },
      {
       "key": "signals",
       "status": "この段階の書き手あり",
       "lines": [
-       2217
+       2226
       ]
      },
      {
       "key": "tam",
       "status": "この段階の書き手あり",
       "lines": [
-       2005
+       2014
       ]
      },
      {
       "key": "v0",
       "status": "この段階の書き手あり",
       "lines": [
-       1878,
-       1917,
-       2208,
-       2208
+       1887,
+       1926,
+       2217,
+       2217
       ]
      },
      {
       "key": "verdict",
       "status": "この段階の書き手あり",
       "lines": [
-       2216,
-       2246
+       2225,
+       2255
       ]
      },
      {
       "key": "wacc",
       "status": "この段階の書き手あり",
       "lines": [
-       1971
+       1980
       ]
      },
      {
       "key": "warnings",
       "status": "この段階の書き手あり",
       "lines": [
-       2219
+       2228
       ]
      },
      {
       "key": "year",
       "status": "この段階の書き手あり",
       "lines": [
-       2166,
-       2176,
-       2176
+       2175,
+       2185,
+       2185
       ]
      },
      {
       "key": "years",
       "status": "この段階の書き手あり",
       "lines": [
-       1896,
-       1902
+       1905,
+       1911
       ]
      }
     ]
@@ -18215,56 +18330,56 @@
       "key": "current_price",
       "status": "この段階の書き手あり",
       "lines": [
-       2526
+       2535
       ]
      },
      {
       "key": "date",
       "status": "この段階の書き手あり",
       "lines": [
-       2524
+       2533
       ]
      },
      {
       "key": "intrinsic_value_per_share",
       "status": "この段階の書き手あり",
       "lines": [
-       2525
+       2534
       ]
      },
      {
       "key": "invalid",
       "status": "この段階の書き手あり",
       "lines": [
-       2521
+       2530
       ]
      },
      {
       "key": "length",
       "status": "ほかの書き手あり",
       "lines": [
-       2522
+       2531
       ]
      },
      {
       "key": "ma200",
       "status": "この段階の書き手あり",
       "lines": [
-       2527
+       2536
       ]
      },
      {
       "key": "scenario_bear",
       "status": "この段階の書き手あり",
       "lines": [
-       2528
+       2537
       ]
      },
      {
       "key": "scenario_bull",
       "status": "この段階の書き手あり",
       "lines": [
-       2529
+       2538
       ]
      }
     ]
@@ -18448,78 +18563,78 @@
       "key": "alpha",
       "status": "この段階の書き手あり",
       "lines": [
-       2396
+       2405
       ]
      },
      {
       "key": "bs_adjustment",
       "status": "この段階の書き手あり",
       "lines": [
-       2398
+       2407
       ]
      },
      {
       "key": "components",
       "status": "この段階の書き手あり",
       "lines": [
-       2394,
-       2397
+       2403,
+       2406
       ]
      },
      {
       "key": "dcf_components",
       "status": "この段階の書き手あり",
       "lines": [
-       2393
+       2402
       ]
      },
      {
       "key": "diluted_shares",
       "status": "この段階の書き手あり",
       "lines": [
-       2397
+       2406
       ]
      },
      {
       "key": "growth_options",
       "status": "この段階の書き手あり",
       "lines": [
-       2395
+       2404
       ]
      },
      {
       "key": "net_cash_per_share",
       "status": "この段階の書き手あり",
       "lines": [
-       2398
+       2407
       ]
      },
      {
       "key": "rpo_pv",
       "status": "この段階の書き手あり",
       "lines": [
-       2394
+       2403
       ]
      },
      {
       "key": "total_pv",
       "status": "この段階の書き手あり",
       "lines": [
-       2395
+       2404
       ]
      },
      {
       "key": "v0",
       "status": "この段階の書き手あり",
       "lines": [
-       2393
+       2402
       ]
      },
      {
       "key": "v0_rm",
       "status": "この段階の書き手あり",
       "lines": [
-       2393
+       2402
       ]
      }
     ]
@@ -18532,43 +18647,43 @@
       "key": "required_growth_rf_base",
       "status": "この段階の書き手あり",
       "lines": [
-       2307
+       2316
       ]
      },
      {
       "key": "required_growth_rf_live",
       "status": "この段階の書き手あり",
       "lines": [
-       2308
+       2317
       ]
      },
      {
       "key": "risk_free_rate",
       "status": "この段階の書き手あり",
       "lines": [
-       2311
+       2320
       ]
      },
      {
       "key": "risk_free_rate_live",
       "status": "この段階の書き手あり",
       "lines": [
-       2309
+       2318
       ]
      },
      {
       "key": "risk_free_rate_live_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2313,
-       2313
+       2322,
+       2322
       ]
      },
      {
       "key": "wacc",
       "status": "この段階の書き手あり",
       "lines": [
-       2311
+       2320
       ]
      }
     ]
@@ -18581,53 +18696,53 @@
       "key": "intrinsic_value_rf_rate",
       "status": "この段階の書き手あり",
       "lines": [
-       2274,
-       2276
+       2283,
+       2285
       ]
      },
      {
       "key": "market_return",
       "status": "この段階の書き手あり",
       "lines": [
-       2271
+       2280
       ]
      },
      {
       "key": "risk_free_rate",
       "status": "この段階の書き手あり",
       "lines": [
-       2274
+       2283
       ]
      },
      {
       "key": "risk_free_rate_live_date",
       "status": "この段階の書き手あり",
       "lines": [
-       2277,
-       2278
+       2286,
+       2287
       ]
      },
      {
       "key": "risk_free_rate_live_source",
       "status": "この段階の書き手あり",
       "lines": [
-       2277
+       2286
       ]
      },
      {
       "key": "value",
       "status": "この段階の書き手あり",
       "lines": [
-       2279
+       2288
       ]
      },
      {
       "key": "wacc",
       "status": "この段階の書き手あり",
       "lines": [
-       2271,
-       2274,
-       2279
+       2280,
+       2283,
+       2288
       ]
      }
     ]
@@ -18758,29 +18873,29 @@
       "key": "pv_fcf_rm",
       "status": "この段階の書き手あり",
       "lines": [
-       2438
+       2447
       ]
      },
      {
       "key": "pv_phase1_rm",
       "status": "この段階の書き手あり",
       "lines": [
-       2429
+       2438
       ]
      },
      {
       "key": "pv_phase2_rm",
       "status": "この段階の書き手あり",
       "lines": [
-       2429
+       2438
       ]
      },
      {
       "key": "pv_tv_rm",
       "status": "この段階の書き手あり",
       "lines": [
-       2429,
-       2438
+       2438,
+       2447
       ]
      }
     ]

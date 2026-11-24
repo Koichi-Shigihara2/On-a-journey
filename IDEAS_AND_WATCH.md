@@ -501,3 +501,28 @@ MACRO PULSEは、もともと「3か月後に景気後退が始まらないか�
 #### 着手時に決めること
 - 記録の置き場所と形（画面から入力するか、チャットで伝えて記録するか）
 - 見立てが重なる銘柄・期間の数え方（score_verifierの重複の扱いに合わせる）
+
+---
+
+### [SEC-FILING-WATCH-WEEKDAY-1] 平日に新しい10-Q・10-Kの提出を検知し、その銘柄だけSECを取って連鎖を回す（EARNINGS-REFLECTION-LAG-1の案A）
+**優先度:** 低（入れないと決定。見直す条件を満たしたら BACKLOG に戻す）
+**分類:** 新機能の案 / SEC層（新しい検知のワークフロー）・SEC_Data_Update・連鎖
+**登録日:** 2026-11-25
+**発見:** [[EARNINGS-REFLECTION-LAG-1]] の STEP 0（`docs/architecture/EARNINGS_REFLECTION_LAG_STEP0.md`、2026-11-25）。チャット側の決定: 案Aは入れない（案Bの印を入れる）
+
+#### 目的
+決算の提出から出力に反映されるまでの遅れ（2026Q3の82銘柄で、提出→Layer3 が中央値4.5日〈3〜7日〉。Layer3→TANUKI は同じ夜で0日）を約1日に縮める。
+
+#### 中身（案）
+- 平日1〜2回、submissions だけを全銘柄で取り（82リクエスト、約20秒。`freshness.py::pending_filings` と同じ判定）、新しい10-K/10-Qがある銘柄を `SEC_Data_Update` に `tickers` 付きの `workflow_dispatch` で渡す（`GITHUB_TOKEN` の `gh workflow run` は連鎖を起こせる）。連鎖は既存の workflow_run のまま
+- 日曜の全銘柄の実行は安全網として残す
+
+#### 入れない理由（費用）
+- 決算の時期（2月・5月・8月・11月の各3週間ほど）に、HypeCore→TANUKI の連鎖が平日に何回も回る。連鎖は全銘柄を再計算する（TANUKI 約13分＋HypeCore 2分＋EPS 3分＋Stonks 4分）。botのcommitも増える
+- 平日の部分実行が `_freshness.json` の鮮度（System Health [M]・CHECK-60）を誤読しないかの確認と、監視の増加が要る
+- 遅れの間は案Bの印（「最新の決算は反映前」）で足りる
+
+#### 見直す条件
+遅れで判断を誤った例が出たとき（印があっても、反映前の数字で買い・売りを決めて損失が出た等）。そのときは、検知の時刻（1日1回か2回）・連鎖を全銘柄にするか・部分実行の鮮度の扱いを実装の STEP 0 で決める
+
+---
