@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -69.5,
-  "calculation_date": "2026-11-24T06:47:03+09:00",
+  "calculation_date": "2026-11-24T18:17:10+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 23500000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -231,7 +231,7 @@
     "capex": 182000000.0,
     "sbc": 73700000.0,
     "ocf": 798000000.0,
-    "da": 156100000,
+    "da": 340400000.0,
     "note": "OCF$0.80B - CapEx$0.18B（TTM 2026-09-26。5yr/2yr平均・外れ値除外後の採用値は$0.47B）"
   },
   "software_system_provisional": {
@@ -442,6 +442,7 @@
     "qx": false,
     "qy": false
   },
+  "method_change": "SEC-RETAG-RECONCILE-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -459,7 +460,8 @@
     "PARSER-LAYER3-SINGLE-SOURCE-1-1",
     "TANUKI-CALC-CONTINUITY-1-1",
     "DILUTION-DEFINITION-UNIFY-1-1",
-    "TANUKI-SHARES-SINGLE-SOURCE-1-1"
+    "TANUKI-SHARES-SINGLE-SOURCE-1-1",
+    "SEC-RETAG-RECONCILE-1-1"
   ],
   "fcf_history": [
     {
