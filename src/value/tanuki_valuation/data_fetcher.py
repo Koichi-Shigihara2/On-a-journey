@@ -695,6 +695,8 @@ class TanukiDataFetcher:
                     "ocf": _v("operating_cash_flow"), "capex": _v("capital_expenditure"),
                     "sbc": _v("stock_based_compensation", need4=True), "da": _v("depreciation_and_amortization", need4=True),
                 }
+                if (_flow0.get("capital_expenditure") or {}).get("no_cf_line_quarters"):
+                    fcf_latest_components["capex_no_cf_line"] = True
         elif fcf_series:
             logging.warning(
                 "[%s] TTM series has fewer complete points (%d) than annual FCF (%d); "

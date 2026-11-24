@@ -18,7 +18,7 @@ from .contracts import validate_field_classification
 from .retention import TTM_POINTS
 from .layer3_builder import load_concept_definitions, get_field_entries
 from .q4_implied import build_q4_implied_entries
-from .fcf import CAPEX_TTM_NEGATIVE_MARK, free_cash_flow, ttm_capex
+from .fcf import CAPEX_NO_CF_LINE_MARK, CAPEX_TTM_NEGATIVE_MARK, free_cash_flow, ttm_capex
 
 logger = logging.getLogger(__name__)
 
@@ -358,6 +358,11 @@ def calc_ttm_series(
                 "quarters_used": len(last4),
                 "missing": max(0, 4 - len(last4)),
             }
+            if field_name == "capital_expenditure":
+                # CF計算書にCapExの行が無い四半期（cf_linesの印）の数。0と「行が無い」を区別して表示する（APP型）
+                _n_noline = sum(1 for e in last4 if e.get("mark") == CAPEX_NO_CF_LINE_MARK)
+                if _n_noline:
+                    flow[field_name]["no_cf_line_quarters"] = _n_noline
             if field_name == "capital_expenditure" and ttm_capex(total) is None:
                 # 4四半期の合計が負（符号つきの四半期、fcf.ttm_capex）: 欠けにして印。FCFも作らない
                 flow[field_name].update({"val": None, CAPEX_TTM_NEGATIVE_MARK: True})

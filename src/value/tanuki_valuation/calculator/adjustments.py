@@ -1489,6 +1489,10 @@ def capitalize_rd(
 #   対応エントリも削除する。
 
 
+# CF計算書にCapExの行が無い期（common/sec_data/fcf.py CAPEX_NO_CF_LINE_MARK）の表示の文言。値は0のまま（FCF・理論株価は変わらない）
+CAPEX_NO_LINE_NOTE = "CapExは別に申告なし（その他の投資に含む）"
+
+
 @dataclass
 class FCFCompositionResult:
     """ボトムアップFCF（OCF-CapEx）の内訳分解結果"""
@@ -1512,8 +1516,15 @@ class FCFCompositionResult:
     da: Optional[float]      # 直近年D&A（開示専用）
     note: str
     period_label: Optional[str] = None  # capex・sbc・ocf・da の期（"TTM 2026-09-30"・"FY2025"、段3）
+    capex_note: Optional[str] = None    # CF計算書にCapExの行が無い期の注記（表示のみ。0と「行が無い」を区別する）
 
     def to_dict(self):
+        d = self._to_dict()
+        if self.capex_note:
+            d["capex_note"] = self.capex_note
+        return d
+
+    def _to_dict(self):
         return {
             "period_label": self.period_label,
             "applied": self.applied,
@@ -1617,4 +1628,5 @@ def compose_fcf_bottom_up(
         raw_fcf=raw_fcf,
         capex=latest_capex, sbc=latest_sbc, ocf=latest_ocf, da=latest_da,
         note=note, period_label=label,
+        capex_note=CAPEX_NO_LINE_NOTE if (latest_components or {}).get("capex_no_cf_line") else None,
     )
