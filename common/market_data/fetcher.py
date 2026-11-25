@@ -1196,6 +1196,14 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
                     est = future.iloc[0].get("EPS Estimate")
                     if est is not None and not pd.isna(est):
                         next_quarter_eps_estimate = float(est)
+            # 過去の発表日（今以前で最新の行）。Yahooは発表の後に calendar の予定日を次の四半期へ進めるため、
+            # 「決算は反映前」の印（common/earnings_pending.py、[[EARNINGS-REFLECTION-LAG-1]]）はこの過去の日付でも決める。
+            # 同じ earnings_dates の応答を使うので、取得の回数は増えない
+            if edates is not None and not edates.empty:
+                _now_e = pd.Timestamp.now(tz=edates.index.tz) if edates.index.tz is not None else pd.Timestamp.now()
+                _past = edates[edates.index <= _now_e].sort_index()
+                if not _past.empty:
+                    calendar_dict["last_earnings_date"] = _past.index[-1].date().isoformat()
         except Exception as e:
             print(f"   [{symbol}] earnings_dates取得失敗（次期EPS推定なしで継続）: {e}")
 

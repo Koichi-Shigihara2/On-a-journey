@@ -33,8 +33,17 @@ def test_no_date_no_mark_and_report_says_so():
 
 
 def test_stale_date_not_marked():
-    r = ep.evaluate(["2026-06-01"], "2026-03-31", TODAY)
-    assert r["status"] == ep.NO_DATE
+    # 古い発表日だけ（次の予定日あり）→ 印なし。予定日は取れているので「付けられません」とは書かない
+    r = ep.evaluate(["2026-06-01", "2026-12-18"], "2026-07-31", TODAY)
+    assert r["status"] == ep.NONE and ep.report_line(r) is None
+
+
+def test_yahoo_rolled_calendar_but_past_date_marks():
+    # 予定日が次の四半期（2027-02）へ進んでも、過去の発表日（last_earnings_date）で印が付く（AMAT・WMT型）
+    r = ep.build("ZZZZ", TODAY, calendar_dict={"earnings_date": ["2027-02-12"], "last_earnings_date": "2026-11-12"}, prev={})
+    assert r["earnings_date"] == "2026-11-12" and r["status"] == ep.NO_LAYER3     # ZZZZはLayer3が無いだけ。日付は使われる
+    # Layer3の期末が分かる形（evaluateに直接渡す）では印になる
+    assert ep.evaluate(["2027-02-12", "2026-11-12"], "2026-07-26", TODAY)["status"] == ep.PENDING
 
 
 def test_latest_past_date_is_used_among_list():

@@ -553,6 +553,20 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         assert saved["next_quarter_eps_estimate"] == 6.33
         assert "next_quarter_eps_date" not in saved
 
+    def test_last_earnings_date_is_latest_past_row(self, tmp_path, monkeypatch):
+        """[[EARNINGS-REFLECTION-LAG-1]]: 決算の反映前の印のため、今以前で一番新しい発表日をcalendarに保存する
+        （Yahooが予定日を次の四半期へ進めても使える。earnings_datesの同じ応答なので取得の回数は増えない）"""
+        base = str(tmp_path)
+        df = self._make_earnings_dates([
+            (_rel(36), 6.33, None),
+            (_rel(-54), 6.09, 6.13),
+            (_rel(-145), 5.81, 5.96),
+        ])
+        self._patch(monkeypatch, earnings_dates=df)
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base)
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["calendar"]["last_earnings_date"] == str(pd.Timestamp(_rel(-54)).date())
+
     def test_future_row_with_nan_estimate_yields_none(self, tmp_path, monkeypatch):
         """CIX/FROG実データ相当: 未発表行は存在するがEPS Estimate自体が
         アナリスト網羅性不足でNaNの場合、Noneのまま（例外にならない）"""

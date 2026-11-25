@@ -93,9 +93,8 @@ def evaluate(earnings_dates: Optional[Iterable[Any]], layer3_end: Optional[str],
     out["earnings_date"] = e.isoformat()
     out["earnings_source"] = src
     if (today - e).days > MAX_AGE_DAYS:
-        out["status"] = NO_DATE                      # 古すぎる予定日は使わない
-        out["note"] = f"予定日が{MAX_AGE_DAYS}日より古い"
-        return out
+        out["note"] = f"今以前の一番新しい発表日が{MAX_AGE_DAYS}日より古い（取り込みの遅れとは見ない）"
+        return out                                   # 印なし（予定日は取れているので「付けられません」とは書かない）
     le = _d(layer3_end)
     if le is None:
         out["status"] = NO_LAYER3
@@ -119,6 +118,8 @@ def build(ticker: str, today: Optional[date] = None, calendar_dict: Optional[dic
         except Exception:
             calendar_dict = {}
     dates = list(calendar_dict.get("earnings_date") or [])
+    if calendar_dict.get("last_earnings_date"):      # 過去の発表日（yfinanceのearnings_datesの過去の行）。予定日が次の四半期へ進んでも使える
+        dates.append(calendar_dict["last_earnings_date"])
     # Yahooは発表の後に予定日を次の四半期へ進めることがある。前回の出力で印が付いていた発表日は、取り込まれるまで引き継ぐ
     if prev is None:
         prev = _load_prev(ticker)
