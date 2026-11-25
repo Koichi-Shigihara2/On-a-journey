@@ -2109,6 +2109,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 **優先度:** 中
 **分類:** STONKS SILO / `src/value/stonks_silo/analyzer.py`・`common/profitability.py`・`src/tail/sec_items_fetcher.py`・TANUKIの`computed_runway_months`
 **登録日:** 2026-11-22
+**①②のSTEP 0の結果（2026-11-25）:** `docs/architecture/STONKS_DEFICIT_REALITY_STEP0.md`。①は流出が年次（現金は四半期）で期末がずれている。規則案＝Layer3の直近4四半期の営業CF−設備投資を1か所の関数にして STONKS・TANUKI の両方が呼ぶ。SOUNは24.2→19.3か月（原本の約18〜19か月と一致）・SAFE→WATCH、IONQも SAFE→WATCH（総合は10x_CANDIDATE→PROMISING）、TANUKIはSOFIだけ新しく12か月未満（funda 100→70、金融の扱いを決める）。理論株価・stageは変わらない。②は条件付き対価・減損のXBRLタグの許可リストで足し戻す案で、予測が変わるのはSOUN（0.72四半期・R² 0.696 → 15.0四半期・R² 0.964）・RKLB・S。STONKSの総合・TANUKIの判定は変わらない。method_changeは①②とも要。順は①→②。決めてほしいこと(a)〜(f)あり。**登録だけで、実装は許可されていない**
 **着手条件:** 公開と確認の行列（手順34〜37・39 → Dailyの取り消しの原因 → 手順33 → [[TANUKI-SHARES-SINGLE-SOURCE-1]]の公開とその次の定時の確認）の後、かつ [[UNIVERSE-REBALANCE-2026Q4-1]] の削除の後。①②は値（results.json・latest.json）を変えるので、それまで読み取りの調査も始めない
 **発見:** 2026-11-22 チャット（STONKSの登録銘柄から早く黒字化しそうな銘柄を選ぶ→SOUNのFCF悪化の理由→2026/Q3の10-Qを読む→倒産リスク、の流れで判明）
 **経緯:** STONKS SILOとprofitability.jsonはSOUNを「資金の持ち24か月」「約0.72四半期後に黒字化（R² 0.696）」としていた。10-Q（0001840856-26-000028、2026-11-09提出）と8-K（2026-11-05）で確認した実態は、営業CFのTTMが−109.5M→−117.9Mで4四半期続けて悪化（−21.9→−26.3→−33.7→−36.0）、現金207.6Mで資金の持ちは約18〜19か月、営業利益は条件付き対価（買収のアーンアウト）の評価損益で大きく振れる（2025/Q1 +128.1M、9か月2026で評価益67.1M）。会社の目標は調整後EBITDAの黒字化を2027年後半、人員の27%削減（現金の費用16〜19M）、株式売出し枠の残り300M、内部統制のmaterial weaknessあり
