@@ -48,6 +48,11 @@
    - 期限: 2026-12-01
    - 確認の手順: ①日曜の取り込みで10-Qが入った銘柄（`_freshness.json`のREFRESHED）の`latest.json`の`earnings_pending.status`が`none`に戻り、`report.txt`の`Earnings_Pending`行・stock.htmlの見出し・TANUKI SCOREの行から消えている ②まだ提出の無い銘柄（NVDAが提出前なら）は印が残る ③新しい印が決算前の銘柄に付いていない（`earnings_date`が米国東部の今日以前。予定日が取れない銘柄は`no_date`で、report.txtに「付けられません」） ④理論株価・判定が前日と同じ（印のせいで動かない）⑤**取りこぼしが0**: 日曜（11-29）の Market Data Weekly の後、`attributes/{T}.json` の `calendar.last_earnings_date` が全82銘柄に入り（取れない銘柄は一覧にして報告）、`calendar.earnings_date`（予定日）が次の四半期へ進んだ銘柄（2026-11-25 の時点で AMAT・WMT）で、10-Qが未取り込みなら印が付いている（`earnings_pending.status=pending`）。2026-11-25 の修正（`771872fa0f`）で AMAT〈11-12 発表〉・WMT〈11-19 発表〉・DELL〈11-24 発表〉に印が付く見込み。合格したら`[[EARNINGS-REFLECTION-LAG-1]]`をBACKLOG_DONE.mdへ移設する
 
+45. **TANUKI-GUIDANCE-REVISION-BLIND-1 案1（成長率と予想の差）の、次の Weekly の定時の後の確認**（公開は2026-11-25 手動: Market Data Weekly `45523880067`・TANUKI `45525203351`。表示だけ・method_changeなし。理論株価・判定の変化0〔82銘柄〕。81/82で値が入り、CIXだけ空欄）
+   - 日時: 2026-11-30（月）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（11-29 日曜の Market Data Weekly の後）
+   - 期限: 2026-12-01
+   - 確認の手順: ①`attributes/{T}.json` の `estimates.fetched_at` が日曜の定時の時刻に更新されている（監視銘柄84のうち取れない銘柄は一覧にして報告。CIXが取れない理由を確認）②`latest.json` の `guidance_gap.status` が82銘柄で `ok` か `no_estimate`（理由つき）、`report.txt` に `Guidance_Gap` 行がある ③TANUKI SCOREの「成長率−予想(pt)」列で並べ替えられ、stock.htmlに行が出る ④理論株価・判定が前日と同じ。合格したら`[[TANUKI-GUIDANCE-REVISION-BLIND-1]]`をBACKLOG_DONE.mdへ移設する
+
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |

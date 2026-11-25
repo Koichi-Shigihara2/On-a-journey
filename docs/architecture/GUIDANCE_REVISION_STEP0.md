@@ -97,3 +97,32 @@ TANUKI の `latest.json` の履歴（`git log`）と、yfinance の予想（2026
 - 会社の見通し（INTU 8〜9%、CRM 11〜12%、NOW cRPO 18.5%・営業利益率）はウェブ検索の要約。INTU の「Credit Karma 3〜7%」は BACKLOG の記載で、検索では 8月の 11〜13% まで確認した。1次資料（8-K・決算資料）は読んでいない。実装の前に出典を確かめる。
 - yfinance の予想は 2026-11-25 の1回の読み取り。取得の揺れ（アナリストの入れ替わり・集計）がある。
 - 「今の成長率を見通し・予想に置き換えた場合の目安」は `scenario_valuations`（bear/base/bull の3点）からの内挿で、DCF を回し直した値ではない。判定の変化は計算していない（案3 を選ぶ場合に STEP 0b で全銘柄を試算する）。
+
+## 7. 案1の実装と、全銘柄の成長率の差の分布（2026-11-25 公開。[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]] の材料）
+
+決定: (a)案1 (b)閾値の印は付けず差の値を出す (c)82銘柄・週1回 (d)stock.html・TANUKI SCORE の列・report.txt (e)案2は入れない。実装: `common/market_data/fetcher.py::_fetch_estimates`（Market Data Weekly の `attributes` に監視銘柄だけ `estimates` を保存。`revenue_estimate`・`eps_revisions` の追加の取得は銘柄あたり2回）、`common/guidance_gap.py`（差の計算は1か所）、`latest.json` の `guidance_gap`、report.txt の `Guidance_Gap`、stock.html の行、TANUKI SCORE の「成長率−予想(pt)」列（並べ替え可）。理論株価・判定の変化は0（82銘柄、`tools/sim`）。
+
+`growth_gap_pt` ＝（TANUKIの成長率 − アナリストの売上予想の伸び〈次の会計年度＝yfinanceの+1y〉）×100。予想が取れる銘柄は **81/82**（CIX だけ空欄＝アナリストの売上予想が取れていない。report.txt に理由を書いている）。2026-11-25 の Weekly 手動実行後の値。
+
+| 統計（n=81） | 値 |
+|---|---|
+| 平均 | −5.9pt（外れ値 ASTS −207pt を含む） |
+| 中央値 | **+1.0pt** |
+| ASTS を除く（n=80）／−50pt未満の4銘柄（ASTS・AMD・RCAT・CRWV）を除く（n=77） | 平均 −1.2pt、中央値 +1.6pt（n=77） |
+| +3pt 以上 | 32銘柄 |
+| +5pt 以上 | 25銘柄 |
+| 負（TANUKIの成長率が予想より低い） | 37銘柄 |
+| 最小・最大 | −207.4（ASTS）・+25.3（ELF） |
+
+**上位10銘柄（TANUKIの成長率が予想より高い）**: 〔銘柄・差・判定・上昇余地・TANUKI成長率／予想の売上の伸び・EPS予想の改定 30日 ↑上げ↓下げ〕
+ELF +25.3pt BUY +52%（34.4%／9.1%・↑14↓1）／S +20.3pt HOLD −18%（38.2%／17.9%・↑0↓2）／PAYS +17.5pt BUY +524%（30.2%／12.7%・↑1↓0）／SOFI +16.7pt WATCH +153%（43.8%／27.1%・↑7↓0）／APP +15.4pt BUY +263%（41.1%／25.7%・↑11↓6）／FLYW +14.6pt BUY +34%（29.6%／14.9%・↑2↓3）／GTLB +14.3pt BUY +61%（30.0%／15.7%・↑17↓8）／IOT +12.9pt HOLD −30%（33.0%／20.0%・↑20↓1）／ZETA +12.3pt BUY +24%（30.2%／17.9%・↑0↓1）／FICO +12.1pt BUY +81%（18.6%／6.5%・↑1↓13）
+
+**下位（予想のほうが高い。成長が速い銘柄で、TANUKIの成長率に上限・業種への逓減がかかる）**: ASTS −207.4／AMD −58.8／RCAT −58.0／CRWV −56.9／MRVL −46.1／SITM −41.5。
+
+**INTU・CRM・NOW・NVDA**: INTU +4.7pt（12.8%／8.0%・↑2↓3）、CRM +4.7pt（14.3%／9.6%・↑2↓1）、NOW +2.6pt（21.3%／18.7%・↑6↓33）、NVDA −21.4pt（50.0%／71.4%・↑7↓0）。
+
+**読み取り（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]] へ）**:
+- 成長率が予想より **3pt 以上高い銘柄が32、5pt 以上が25**。中央値は +1.0pt なので、全体では大きくずれていない（半数は±数pt以内）が、**上位に BUY・上昇余地の大きい銘柄が並ぶ**（ELF・PAYS・APP・GTLB・FICO・ZETA・FLYW）。「上昇余地が大きく出る」問題の材料は、この上位と、成長率が上限（50%）に当たる銘柄（NVDA・CRWV・RCAT・ASTS は予想のほうが高い）の両側。
+- 成長率の前提が予想より高く、かつ予想の改定が下向きの銘柄（引き下げ > 引き上げ）: FICO（↑1↓13）・GTLB（↑17↓8）・APP（↑11↓6）・NOW（↑6↓33）・FLYW（↑2↓3）など。
+- 予想の売上の伸び（次の会計年度）は、会計年度のずれ・買収の織り込みで銘柄によって意味が違う（INTU は11-25の取得で 8.0%、前の取得は 8.2%）。差の値は目安で、閾値の印にはしていない。
+
