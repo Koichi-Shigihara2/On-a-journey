@@ -412,7 +412,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_hypecore_history",
-     "line": 3865
+     "line": 3892
     }
    ],
    "writers_outside_layer": [],
@@ -756,7 +756,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/core_calculator.py",
-     "line": 1077,
+     "line": 1078,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -820,7 +820,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1134,
+     "line": 1137,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
@@ -828,7 +828,15 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1395,
+     "line": 1161,
+     "func": "TanukiValuationPipeline._save_result",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1422,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -836,7 +844,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1928,
+     "line": 1955,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "grep",
@@ -844,7 +852,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1929,
+     "line": 1956,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "AST",
@@ -852,7 +860,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3918,
+     "line": 3945,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report",
@@ -1251,6 +1259,22 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_reverse_growth.py",
+     "line": 43,
+     "func": "test_reverse_growth_in_calculate_pt_matches_full_recompute",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_reverse_growth.py",
+     "line": 50,
+     "func": "test_reverse_growth_in_calculate_pt_matches_full_recompute",
+     "how": "保存済みファイル",
+     "via": "src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_sec_freshness.py",
      "line": 505,
      "func": "test_main_exits_two_when_m_is_critical",
@@ -1358,7 +1382,7 @@
    ],
    "decision_effect": [],
    "reader_count": 9,
-   "reader_count_test": 10,
+   "reader_count_test": 11,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとのβ（市場との連動の強さ）の上書きの設定。WACCの計算に使う",
@@ -1371,7 +1395,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_tickers_index",
-     "line": 3912
+     "line": 3939
     }
    ],
    "writers_outside_layer": [],
@@ -1679,7 +1703,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1287
+     "line": 1314
     }
    ],
    "writers_outside_layer": [],
@@ -1978,15 +2002,15 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1255
+     "line": 1282
     }
    ],
    "writers_outside_layer": [],
    "launched_by": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
-   "files_tracked": 32336,
-   "top_keys_sampled_files": 32336,
+   "files_tracked": 32418,
+   "top_keys_sampled_files": 32418,
    "top_keys": [
     {
      "key": "alpha",
@@ -2150,6 +2174,10 @@
     },
     {
      "key": "return_metrics",
+     "reader_files": 0
+    },
+    {
+     "key": "reverse_growth",
      "reader_files": 0
     },
     {
@@ -2331,12 +2359,12 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1249
+     "line": 1276
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1392
+     "line": 1419
     }
    ],
    "writers_outside_layer": [],
@@ -2479,6 +2507,10 @@
      "reader_files": 3
     },
     {
+     "key": "handset_growth_age",
+     "reader_files": 3
+    },
+    {
      "key": "intrinsic_value_beta",
      "reader_files": 3
     },
@@ -2559,6 +2591,10 @@
      "reader_files": 2
     },
     {
+     "key": "reverse_growth",
+     "reader_files": 1
+    },
+    {
      "key": "rice",
      "reader_files": 8
     },
@@ -2637,6 +2673,10 @@
     {
      "key": "timing_score",
      "reader_files": 4
+    },
+    {
+     "key": "upside_context",
+     "reader_files": 3
     },
     {
      "key": "upside_percent",
@@ -3642,7 +3682,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3357,
+     "line": 3384,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/earnings_pending.py::_load_prev",
@@ -3650,7 +3690,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3903,
+     "line": 3930,
      "func": "TanukiValuationPipeline._save_tickers_index",
      "how": "保存済みファイル",
      "via": "grep",
@@ -3658,7 +3698,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3918,
+     "line": 3945,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index",
@@ -4481,7 +4521,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_report",
-     "line": 3871
+     "line": 3898
     }
    ],
    "writers_outside_layer": [],
@@ -4725,7 +4765,7 @@
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
      "func": "TanukiValuationPipeline._save_result",
-     "line": 1311
+     "line": 1338
     },
     {
      "file": "src/value/tanuki_valuation/score_verifier.py",
@@ -5383,32 +5423,32 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1427,
-     "text": "qx = upside is not None and upside >= 0"
-    },
-    {
-     "file": "src/value/tanuki_valuation/pipeline.py",
      "line": 1454,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1459,
+     "line": 1481,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1505,
+     "line": 1486,
      "text": "qx = upside is not None and upside >= 0"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1811,
+     "line": 1532,
+     "text": "qx = upside is not None and upside >= 0"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1838,
      "text": "L.append(\"BUY: Funda>=50 AND upside>10% AND Timing>=50\")"
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1989,
+     "line": 2016,
      "text": "if upside is not None and upside <= -50 and current_price > 0 and base_iv > 0:"
     }
    ],
@@ -5498,7 +5538,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/calculator/adjustments.py",
-     "line": 196,
+     "line": 199,
      "text": "def determine_fcf_base("
     },
     {
@@ -5635,7 +5675,7 @@
    "dir": "src/value/tanuki_valuation/calculator",
    "file": "src/value/tanuki_valuation/calculator/adjustments.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1632,
+   "lines": 1644,
    "workflows": [],
    "code": [
     "common/profitability.py",
@@ -5793,7 +5833,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/core_calculator.py",
    "decision": "残す（2026-10-20）",
-   "lines": 1086,
+   "lines": 1087,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -5804,6 +5844,7 @@
     "tests/test_core_calculator_rf_reference.py",
     "tests/test_core_calculator_v0_note.py",
     "tests/test_policy_a_floor_end_to_end.py",
+    "tests/test_reverse_growth.py",
     "tests/test_sensitivity_tapering.py",
     "tests/test_shares_base.py"
    ]
@@ -5893,7 +5934,7 @@
    "dir": "src/value/tanuki_valuation",
    "file": "src/value/tanuki_valuation/pipeline.py",
    "decision": "残す（2026-10-20）",
-   "lines": 3933,
+   "lines": 3960,
    "workflows": [
     ".github/workflows/TANUKI_VALUATION_Update.yml"
    ],
@@ -6788,9 +6829,16 @@
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "gap_analyst_pt",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
     "label": "",
     "lines": [
      534
@@ -6800,9 +6848,16 @@
    {
     "page": "docs/value-monitor/tanuki_score/index.html",
     "key": "gap_tanuki_pt",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
     "label": "",
     "lines": [
      533
@@ -11248,9 +11303,16 @@
    {
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "gap_analyst_pt",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
     "label": "／アナリストの売上予想",
     "lines": [
      1114,
@@ -11262,9 +11324,16 @@
    {
     "page": "docs/value-monitor/tanuki_valuation/stock.html",
     "key": "gap_tanuki_pt",
-    "has_writer": false,
-    "status": "書き手なし",
-    "sources": [],
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json",
+     "docs/value-monitor/tanuki_valuation/data/tickers.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json",
+     "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
+    ],
     "label": "／アナリストの売上予想",
     "lines": [
      1114,
@@ -14868,6 +14937,16 @@
   ],
   "unread_keys": [
    {
+    "key": "age_days",
+    "sources": [
+     "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
+    ],
+    "parents": [
+     "handset_growth_age"
+    ],
+    "note": ""
+   },
+   {
     "key": "announced_period_end_est",
     "sources": [
      "docs/value-monitor/tanuki_valuation/data/{T}/latest.json"
@@ -15047,7 +15126,7 @@
     "note": "残す: テストが参照する"
    }
   ],
-  "written_key_count": 469,
+  "written_key_count": 477,
   "stale_keys": [
    {
     "key": "adj_net_income",
@@ -15728,14 +15807,14 @@
      },
      {
       "key": "gap_analyst_pt",
-      "status": "書き手なし",
+      "status": "この段階の書き手あり",
       "lines": [
        534
       ]
      },
      {
       "key": "gap_tanuki_pt",
-      "status": "書き手なし",
+      "status": "この段階の書き手あり",
       "lines": [
        533
       ]
@@ -17583,7 +17662,7 @@
      },
      {
       "key": "gap_analyst_pt",
-      "status": "書き手なし",
+      "status": "この段階の書き手あり",
       "lines": [
        1114,
        1114,
@@ -17592,7 +17671,7 @@
      },
      {
       "key": "gap_tanuki_pt",
-      "status": "書き手なし",
+      "status": "この段階の書き手あり",
       "lines": [
        1114,
        1114

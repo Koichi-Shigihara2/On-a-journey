@@ -112,6 +112,9 @@ class MoatScoreResult:
     # （有効指標1件以下のためmoat_score=0.5をプレースホルダとして採用）。
     source: str = "measured"
     n_present: int = 0
+    # 上限（PHASE1_YEARS_MAX）をかける前の年数。上限に当たった銘柄だけ phase1_years より大きい
+    # （[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]] 2026-11-26）
+    phase1_years_uncapped: Optional[int] = None
 
 
 @dataclass
@@ -633,6 +636,13 @@ def calculate_alpha(
 
 _MOAT_WEIGHTS = {"gm": 0.40, "roic": 0.40, "fcf": 0.20}
 
+# Phase1（高成長期）の年数の上限（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]、2026-11-26、method_change ID
+# TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1）。理由: Moat Score（粗利率・ROIC・FCFマージン）から決まる年数（3〜10年）は
+# 成長率と無関係で、高成長でも粗利率・ROICが高ければ10年成長が続く前提になる。実際に、phase1の末のFCFが今の5倍を
+# 超える銘柄が14あった（NVDA 38倍〈9年・成長率50%〉・APP 31倍〈10年・41%〉・FICO 5.5倍〈10年・19%〉ほか。
+# docs/architecture/UPSIDE_MAGNITUDE_STEP0.md §7-2）。7年を上限にすると下がる側だけ動き（17銘柄）、判定の変化は2
+PHASE1_YEARS_MAX = 7
+
 
 def calculate_moat_score(
     gross_margin_3yr_avg: Optional[float],
@@ -703,7 +713,8 @@ def calculate_moat_score(
         w_sum = sum(_MOAT_WEIGHTS[k] for k in present)
         moat_score = sum(v * _MOAT_WEIGHTS[k] for k, v in present.items()) / w_sum
 
-    phase1_years = 3 + round(moat_score * 7)
+    phase1_years_uncapped = 3 + round(moat_score * 7)
+    phase1_years = min(phase1_years_uncapped, PHASE1_YEARS_MAX)
     source = "measured" if len(present) >= 2 else "neutral_fallback"
 
     return MoatScoreResult(
@@ -714,6 +725,7 @@ def calculate_moat_score(
         fcf_margin_norm=round(fcf_norm, 4) if fcf_norm is not None else None,
         source=source,
         n_present=len(present),
+        phase1_years_uncapped=phase1_years_uncapped,
     )
 
 

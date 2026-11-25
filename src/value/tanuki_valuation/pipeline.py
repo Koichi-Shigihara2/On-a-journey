@@ -1124,6 +1124,33 @@ class TanukiValuationPipeline:
             finally:
                 _seg_cfg.clear_growth_override(ticker)
 
+        # ── 設定済み（手書き・XBRLセグメント）の2段階にも逓減をかける（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]、
+        #    2026-11-26、method_change ID TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1）──
+        # DCF-1（2026-05-31）の「手動設定済みのため再計算ブロック非実行。将来DCF-1bで検討」のやり残し。成長率が逓減の終点より
+        # 高いときだけ、成長率はそのまま（再計算で override しない）で tapering_g_end を渡して再計算する。3段階（Phase1→Phase2 で
+        # 下げる）は対象外。未設定（recommended_g の再計算）は上のブロックで逓減済み
+        if (not _is_seg_unconfigured and _tapering_g_end is not None and financials is not None
+                and valuation.get("dcf_type") == "two_stage"
+                and (valuation.get("growth") or {}).get("rate") is not None
+                and valuation["growth"]["rate"] > _tapering_g_end):
+            try:
+                _valuation_tap = self.calculator.calculate_pt(
+                    financials, tapering_g_end=_tapering_g_end, rf_reference=self._live_rf()["rate"],
+                )
+                if "error" not in _valuation_tap:
+                    try:
+                        _tap_validation = validate_calculation(ticker, _valuation_tap, use_ai=self.use_ai_validation)
+                    except Exception as _ve:
+                        import logging as _logging
+                        _logging.getLogger(__name__).warning(f"[{ticker}] re-validation after tapering re-run failed: {_ve}")
+                        _tap_validation = valuation.get("validation")
+                    valuation = _valuation_tap
+                    valuation["validation"] = _tap_validation
+                    extra = self._load_extra_data(ticker, valuation)
+            except Exception as _e:
+                import logging as _logging
+                _logging.getLogger(__name__).warning(f"[{ticker}] DCF re-run with tapering (configured) failed: {_e}")
+
         # ── TANUKI-DCF-1③ FCFマージン悪化 → BEAR乗数補正 ──
         _fcf_margin_bear_mult = (_growth_sanity.get("fcf_margin_bear_multiplier", 1.0)
                                   if _growth_sanity else 1.0)

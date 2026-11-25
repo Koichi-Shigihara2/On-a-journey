@@ -952,6 +952,7 @@ class KoichiValuationCalculator:
                 "moat_score_source": moat_result.source,  # [[MOAT-SCORE-PARTIAL-NULL-1]]: measured/neutral_fallback
                 "moat_score_n_present": moat_result.n_present,
                 "moat_phase1_years": moat_result.phase1_years,
+                "moat_phase1_years_uncapped": moat_result.phase1_years_uncapped,   # 上限（7年）をかける前（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]）
                 "pv_high": pv_high,
                 "pv_terminal": pv_terminal,
                 "roe_used": roe_avg,
