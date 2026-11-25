@@ -206,6 +206,12 @@ STEP 0 の試算と同じ結果になった。
 | 次回の確認 | 11-27 朝の定時の後（印0・runway が公開直後の値と同じ・SOFI が対象外のまま・RCAT・CPRT が `annual_fallback`） | 11-30 朝（日曜の Market Data Weekly の後。`profitability.json` が同じ値・SOUN が TOO_FAR のまま） |
 | BACKLOG | `[[STONKS-DEFICIT-REALITY-EPIC-1]]` の①を済、②は残す | ②を済、③④は残す |
 
+### 5-4b. 公開の後の追加の決まり（チャット側の補足、2026-11-26）
+
+- 公開の後、**画面（Playwright）でも確かめる**: ①の公開の後に、SOFI が STONKS・TANUKI の runway の対象外になったこと（TANUKI の report.txt の `Runway_Basis`・stock.html・STONKS の画面に SOFI の runway が出ない）と、IONQ の STONKS の総合判定が PROMISING になったこと（STONKS の画面）。
+- **worktree `wt_nc`（`profitability-noncash`）は②の公開まで残し、②の後に片付ける**（`git worktree remove` と、公開済みのブランチの扱い）。
+- **次回の確認手順は、手順46（UPSIDE の2回目）と同じ11-26朝の回にまとめる**（`CLAUDE_CODE_START.md` の手順46に、①の確認〔印が scope の銘柄と一致・runway の値・SOFI 対象外・RCAT と CPRT が `annual_fallback`〕を足す。②の確認は11-27の公開の後の別の回）。
+
 ### 5-5. 残り（この STEP 0 の範囲外）
 
 - FINDINGS に1行: **runway の減点 −30 は段の形**（12か月未満で一律 −30）。DILUTION と同じく傾斜にするかは次の束ねで。
