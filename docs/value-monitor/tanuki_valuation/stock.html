@@ -1101,6 +1101,19 @@ function render(d) {
       <div id="guidance-gap-row" style="margin-bottom:16px;padding:8px 16px;border:1px dashed rgba(148,163,184,0.35);border-radius:8px;font-size:12px;color:var(--text-dim,#94a3b8)">
         📐 成長率と予想の差は空欄（${d.guidance_gap.reason || '予想が取れていない'}）
       </div>`) : ''}
+      ${d.handset_growth_age && (d.handset_growth_age.status === 'stale' || d.handset_growth_age.status === 'unknown') ? `
+      <div id="handset-age-banner" style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
+        🕰 <strong>${d.handset_growth_age.label}</strong><br>
+        <span style="font-size:12px">成長率は設定（config/segment_config.json）の手書きの値で、会社の見通しの変化・新しい決算は反映されていません（180日を超えると表示。値は変えていません）。</span>
+      </div>` : ''}
+      ${d.upside_context ? `
+      <div id="upside-context-row" style="margin-bottom:16px;padding:10px 16px;background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.35);border-radius:8px;font-size:13px;line-height:1.6">
+        🔎 <strong>上昇余地の補足</strong>:
+        β込みWACCの上昇余地 <span style="font-family:var(--mono)">${d.upside_context.upside_percent_beta != null ? (d.upside_context.upside_percent_beta > 0 ? '+' : '') + d.upside_context.upside_percent_beta.toFixed(0) + '%' : '空欄'}</span>
+        ／ 市場が織り込んだ成長率（逆算） ${d.upside_context.reverse_g != null ? `<span style="font-family:var(--mono)">${(d.upside_context.reverse_g * 100).toFixed(1)}%</span>
+        <span style="font-size:12px;color:var(--text-dim,#94a3b8)">（TANUKIの成長率 ${(d.upside_context.tanuki_growth * 100).toFixed(1)}% との差 ${d.upside_context.gap_tanuki_pt > 0 ? '+' : ''}${d.upside_context.gap_tanuki_pt.toFixed(1)}pt${d.upside_context.gap_analyst_pt != null ? '／アナリストの売上予想 ' + (d.upside_context.analyst_revenue_growth * 100).toFixed(1) + '% との差 ' + (d.upside_context.gap_analyst_pt > 0 ? '+' : '') + d.upside_context.gap_analyst_pt.toFixed(1) + 'pt' : ''}）</span>` : `空欄（${d.upside_context.reason || '解けていない'}）`}
+        <div style="font-size:11px;color:var(--text-dim,#94a3b8)">参考表示（理論株価・判定には入れていません）。メインの理論株価は割引率10%固定（βなし）、逆算は他の前提を今のままにした値です。</div>
+      </div>` : ''}
       ${d.latest_period_missing && (d.latest_period_missing.fields || []).length ? `
       <div style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
         ⚠️ <strong>${d.latest_period_missing.note}</strong><br>

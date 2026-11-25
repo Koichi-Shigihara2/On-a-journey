@@ -685,6 +685,26 @@ class KoichiValuationCalculator:
         # 感度分析のbase_yearsはMoat Score連動Phase1年数（ALPHA-REDESIGN-1）
         _sensitivity_base_years = _moat_phase1_years
 
+        # 市場が織り込んだ成長率の逆算（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]] 6-2。参考の値で、理論株価・判定には入れない）。
+        # 式は感度分析の中央セル（＝メインの理論株価）と同じ。成長率だけ二分法で動かす（common/reverse_growth.py）
+        try:
+            from common.reverse_growth import solve as _solve_reverse_growth, UNSOLVED as _RG_UNSOLVED
+            if dcf_type == "three_stage" and maturity_profile and maturity_profile.get("phase1", {}).get("growth") is not None:
+                reverse_growth = {"status": _RG_UNSOLVED, "reverse_g": None,
+                                  "reason": "成長率が理論株価に効かない設定（phase1の成長率が固定）"}
+            else:
+                def _iv_at_growth(_g: float) -> float:
+                    return create_sensitivity_calc_func(
+                        base_fcf=base_fcf, high_growth_rate=_g, diluted_shares=diluted_shares,
+                        rpo_pv=rpo_pv + growth_option_pv, alpha=0.0, terminal_growth=terminal_growth,
+                        net_cash_per_share=bs_adjustment.net_cash_per_share,
+                        phase2_growth=_phase2_growth, phase2_years=_phase2_years,
+                        tapering_g_end=tapering_g_end if dcf_type in ("tapering", "two_stage") else None,
+                    )(_rm, _sensitivity_base_years)
+                reverse_growth = _solve_reverse_growth(_iv_at_growth, current_price)
+        except Exception as _rg_e:
+            reverse_growth = {"status": "unsolved", "reverse_g": None, "reason": f"逆算の計算に失敗（{str(_rg_e)[:40]}）"}
+
         sensitivity_result: SensitivityResult = calculate_sensitivity_matrix(
             calc_func=sensitivity_calc_func,
             base_wacc=_rm,  # v7.3: Rmβなし基点（中央セルがメイン理論株価と一致）
@@ -814,6 +834,7 @@ class KoichiValuationCalculator:
             # 参考②: Rf（リスクゼロ理論上限）
             "intrinsic_value_rf": round(float(_ivps_rf), 2),
             "upside_percent_rf": _round_or_none(_upside_rf, 1),
+            "reverse_growth": reverse_growth,   # 市場が織り込んだ成長率（今の株価に理論株価が一致するphase1の成長率。参考）
             "intrinsic_value_rf_rate": _rf_ref,  # 参考②で実際に使ったRf
             "v0": float(v0),
             # [[V0-V0RM-CONFUSION-RISK-1]]対応（2026-08-30）: v0はβ込み

@@ -1163,6 +1163,19 @@ class TanukiValuationPipeline:
             extra["guidance_gap"] = _build_guidance_gap(ticker, _gg_rate)
         except Exception as _e_gg:
             print(f"   [{ticker}] 成長率と予想の差の計算エラー: {_e_gg}")
+        # 上昇余地の横に出す値（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]] 6-2・6-1。表示だけ。計算は common/reverse_growth.py・common/handset_growth.py の1か所）
+        try:
+            from common.reverse_growth import context as _rg_context
+            from common.handset_growth import build as _build_handset_age
+            _ctx_rate = (valuation.get("growth") or {}).get("rate")
+            if _ctx_rate is None:
+                _ctx_rate = ((valuation.get("growth_scenarios") or {}).get("primary") or {}).get("rate")
+            _ag = (extra.get("guidance_gap") or {}).get("analyst_revenue_growth")
+            extra["upside_context"] = _rg_context(valuation.get("upside_percent_beta"), _ctx_rate, _ag, valuation.get("reverse_growth"))
+            extra["handset_growth_age"] = _build_handset_age(
+                ticker, (valuation.get("growth") or {}).get("source"), extra.get("segment_configured"))
+        except Exception as _e_uc:
+            print(f"   [{ticker}] 上昇余地の補足・手書きの古さの計算エラー: {_e_uc}")
 
         # TANUKIスコアを先に計算してlatest.jsonとhistory.json両方に保存
         # growth_sanity は後で latest_data に追加されるが、
@@ -2114,6 +2127,15 @@ class TanukiValuationPipeline:
             _gg_line = None
         if _gg_line:
             L.append(_gg_line)
+        # 上昇余地の補足（β込みWACCの上昇余地・逆算した成長率）と手書きの成長率の古さ（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]。表示だけ）
+        try:
+            from common.reverse_growth import report_line as _uc_report_line
+            from common.handset_growth import report_line as _ha_report_line
+            for _l in (_uc_report_line(extra.get("upside_context")), _ha_report_line(extra.get("handset_growth_age"))):
+                if _l:
+                    L.append(_l)
+        except Exception:
+            pass
 
         # FCF-CONVRATE②派生（KO-SPIR-CF-CAUSE-UNCONFIRMED-1）: 生FCFが銘柄固有の
         # 一過性項目（税務訴訟・M&A偶発対価の精算・事業売却益等）で押し下げられている
