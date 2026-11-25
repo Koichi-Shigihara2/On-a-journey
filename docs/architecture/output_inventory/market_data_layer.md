@@ -9,7 +9,7 @@
 
 **件数**: 出力 9（ファイル 9・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 2／2件以上 7／規則の二重 0（検出式 3種のうち。市場データ層のファイルを含むもの 0）
 
-**誰も読まないキー**: **13**（この段階のJSONのキーで今の書き手のコードにある 90 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 1 は数えない）
+**誰も読まないキー**: **13**（この段階のJSONのキーで今の書き手のコードにある 91 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 1 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 4件／解決できた読み込み 19件＋ファイル名で当たった行 34件（8.6%）→ 当たらない
 
@@ -104,7 +104,7 @@
 - Python・保存済みファイル: `src/value/stonks_silo/valuation_fetcher.py` 行 94（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 104・176・288（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 802（経由 `common/market_data/reader.py::get_attributes`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 403・1003・1088・3295・3318・3879（経由 `common/market_data/reader.py::get_attributes`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 403・1003・1088・3312・3335・3896（経由 `common/market_data/reader.py::get_attributes`）
 - ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 106
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 42・66・71・78・87・95・99・104・111（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_beta_fetcher.py` 行 59・67・71（経由 `common/market_data/reader.py::get_attributes`）
@@ -168,7 +168,7 @@
 - テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `common/market_data/reader.py::_load_daily_payload`）
 - テスト・保存済みファイル: `tests/test_futures_roll.py` 行 55・60（経由 `common/market_data/futures_roll.py::_load`）
 - テスト・保存済みファイル: `tests/test_market_data_daily_write.py` 行 132・136・144・161・176・183（経由 `common/market_data/fetcher.py::backfill_daily_prices`、`common/market_data/fetcher.py::find_missing_trading_days`、`common/market_data/fetcher.py::mark_and_repair_provisional_rows`）
-- テスト・保存済みファイル: `tests/test_market_data_fetcher.py` 行 694・725・742・753・770（経由 `common/market_data/fetcher.py::backfill_daily_prices`）
+- テスト・保存済みファイル: `tests/test_market_data_fetcher.py` 行 725・756・773・784・801（経由 `common/market_data/fetcher.py::backfill_daily_prices`）
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 43・48・57・64・69・74・75・80・96・108・122・127 ほか30（経由 `common/market_data/reader.py::_load_daily_payload`）
 - テスト・保存済みファイル: `tests/test_market_data_stale_provisional.py` 行 67・79・89・107・121・129・136・137・138・164・175・185 ほか7（経由 `common/market_data/fetcher.py::fetch_daily_prices`、`common/market_data/fetcher.py::find_missing_trading_days`、`common/market_data/reader.py::_load_daily_payload`）
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 428
@@ -264,13 +264,13 @@
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（7ファイル・2,752行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（7ファイル・2,817行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
 | `calendar_universe.py` | 390 | — | `common/sec_data/report_consistency_check.py`<br>`common/system_health.py`<br>`src/market/macro_pulse/05_main.py`<br>`src/market/market_pulse/breadth_calculator.py`<br>ほか6 | `common/market_data/daily_guard.py`<br>`common/market_data/fetcher.py`<br>`common/market_data/reader.py` | 5件 |
 | `daily_guard.py` | 84 | `.github/workflows/Market_Data_Daily_Update.yml` | — | `common/market_data/calendar_universe.py` | 3件 |
-| `fetcher.py` | 1,508 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/registration/register_ticker.py`<br>`common/sec_data/report_consistency_check.py` | `common/market_data/__init__.py`<br>`common/market_data/calendar_universe.py`<br>`common/market_data/futures_roll.py`<br>`common/market_data/reader.py`<br>ほか1 | 10件 |
+| `fetcher.py` | 1,573 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/registration/register_ticker.py`<br>`common/sec_data/report_consistency_check.py` | `common/market_data/__init__.py`<br>`common/market_data/calendar_universe.py`<br>`common/market_data/futures_roll.py`<br>`common/market_data/reader.py`<br>ほか1 | 10件 |
 | `futures_roll.py` | 127 | `.github/workflows/Market_Data_Daily_Update.yml` | `common/external_watch.py` | — | 1件 |
 | `reader.py` | 379 | — | `browser_checks/check_dependency_map.py`<br>`browser_checks/market_pulse_elements.py`<br>`common/earnings_pending.py`<br>`common/sec_data/audit.py`<br>ほか10 | `common/market_data/__init__.py` | 7件 |
 | `split_reconcile.py` | 194 | `.github/workflows/Market_Data_Weekly_Update.yml` | — | — | 1件 |
@@ -281,4 +281,4 @@
 - `outputs_with_writer_outside_layer`: 0件
 - `unresolved_write_sites`: 0件
 - `python_read_sites_unresolved_in_files_mentioning_sec_data`: 1件
-  - `common/market_data/fetcher.py:1472` <module> → `<?>`
+  - `common/market_data/fetcher.py:1537` <module> → `<?>`

@@ -353,6 +353,7 @@ function renderDetailTable() {
       <td class="num" style="font-family:var(--mono)">${s.perFwd != null ? s.perFwd.toFixed(1) + 'x' : '<span class="neu">—</span>'}</td>
       <td class="num" style="font-family:var(--mono);${s.maxEpsRel === 'LOW' ? 'opacity:.45' : ''}">${s.maxEpsPer != null ? (s.maxEpsSharesInfo ? `<span data-info-text="${escAttr(s.maxEpsSharesInfo)}">${s.maxEpsPer.toFixed(1)}x</span>` : s.maxEpsPer.toFixed(1) + 'x') : '<span class="neu">—</span>'}</td>
       <td class="num" style="font-family:var(--mono);${s.perGap != null && s.perGap > 0 ? 'color:#f97316' : ''}">${s.perGap != null ? (s.perGap > 0 ? '+' : '') + s.perGap.toFixed(1) : '<span class="neu">—</span>'}</td>
+      <td class="num" style="font-family:var(--mono)" title="${s.gapRev ? (s.growthGap != null ? 'アナリストの売上予想の伸び（次の会計年度）' + (s.gapRev.growth * 100).toFixed(1) + '%／EPS予想の改定（30日）引き上げ' + (s.gapRev.up ?? '—') + '・引き下げ' + (s.gapRev.down ?? '—') : '空欄: ' + (s.gapRev.reason || '予想が取れていない')) : ''}">${s.growthGap != null ? (s.growthGap > 0 ? '+' : '') + s.growthGap.toFixed(1) : '<span class="neu">—</span>'}${s.gapRev && s.growthGap != null && (s.gapRev.up != null || s.gapRev.down != null) ? ` <span style="font-size:10px;opacity:.7">↑${s.gapRev.up ?? '—'}↓${s.gapRev.down ?? '—'}</span>` : ''}</td>
       <td>${stageLabel(s.stage, s.stageL)}</td>
     </tr>`;
   }).join('');
@@ -375,6 +376,7 @@ function renderDetailTable() {
           ${thArr('perFwd','PER（先行・予想）')}
           ${thArr('maxEpsPer','PER（最大EPS）')}
           ${thArr('perGap','乖離')}
+          ${thArr('growthGap','成長率−予想(pt)')}
           ${thArr('stage','フェーズ')}
         </tr></thead>
         <tbody>${tbody}</tbody>
@@ -382,7 +384,8 @@ function renderDetailTable() {
     </div>
     <div class="tbl-note">
       ファンダ/タイミング: 0–100pt · 🟢75+ 🟡50+ ⚪25+ · 売上成長/EPS成長/TANUKI乖離は最新期<br>
-      Fwd = 実績PERがなく予想PERを表示（乖離は算出しない）
+      Fwd = 実績PERがなく予想PERを表示（乖離は算出しない）<br>
+      成長率−予想(pt) = TANUKIの成長率 − アナリストの売上予想の伸び（次の会計年度）。↑↓はEPS予想の改定（次の会計年度・30日）の引き上げ・引き下げの件数。参考表示で、理論株価・判定には入れていません
     </div>`;
 }
 
@@ -521,6 +524,8 @@ function renderDetailTable() {
     // 最新期欠けのガード（[[LAYER3-LATEST-FILING-TAG-DROP-1]]）: TANUKI VALUATIONの個別ページと同じ注記
     const latestMissing = (tk?.latest_period_missing?.fields || []).length ? tk.latest_period_missing : null;
     const earningsPending = tk?.earnings_pending?.status === 'pending' ? tk.earnings_pending : null;
+    const growthGap = tk?.guidance_gap?.growth_gap_pt ?? null;   // 成長率 − アナリストの売上予想の伸び（pt。参考表示）
+    const gapRev = tk?.guidance_gap ? { up: tk.guidance_gap.revisions_up_30d, down: tk.guidance_gap.revisions_down_30d, growth: tk.guidance_gap.analyst_revenue_growth, reason: tk.guidance_gap.reason } : null;
     const dividendYield       = tk?.components?.dividend_yield ?? 0.0;
     const payoutRatio         = tk?.components?.payout_ratio   ?? 0.0;
     const netCurrentAssetsRatio = tk?.net_current_assets_ratio ?? null;
@@ -530,7 +535,7 @@ function renderDetailTable() {
     return { ticker, cat, funda, timing, revYoy, rule40, epsYoy, fcf: fcfBase, fcfDeficit, fcfDeficitKind, fcfFloor,
              upside: rawUp, stage, stageL: stageLabel, substage, stageLabel, sellReason,
              matrixInfo, riceVal, riceAvailable, roe, per, perFwd, peg, ps, maxEpsPer, maxEpsRel, maxEpsFallback, maxEpsSharesInfo, perGap, dupont,
-             growthRate, dilutionPct, roicWacc, industry, cyclical, fcfHistory, fcfOutlier, latestMissing, earningsPending,
+             growthRate, dilutionPct, roicWacc, industry, cyclical, fcfHistory, fcfOutlier, latestMissing, earningsPending, growthGap, gapRev,
              dividendYield, payoutRatio, netCurrentAssetsRatio, buybackTtm, netDebt };
   });
 

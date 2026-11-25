@@ -567,6 +567,37 @@ class TestFetchWeeklyAttributesNextQuarterEps:
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["calendar"]["last_earnings_date"] == str(pd.Timestamp(_rel(-54)).date())
 
+    def test_estimates_saved_only_for_monitored_symbols(self, tmp_path, monkeypatch):
+        """[[TANUKI-GUIDANCE-REVISION-BLIND-1]] 案1: 売上予想の伸び（0y・+1y）とEPS予想の改定の件数を、対象の銘柄だけ保存する"""
+        base = str(tmp_path)
+        rev = pd.DataFrame({"growth": [0.08, 0.082], "numberOfAnalysts": [26, 28]}, index=["0y", "+1y"])
+        revs = pd.DataFrame({"upLast30days": [3, 2], "downLast30days": [2, 3], "upLast7days": [0, 1], "downLast7Days": [1, 1]},
+                            index=["0y", "+1y"])
+        class _T:
+            revenue_estimate = rev
+            eps_revisions = revs
+        out = fetcher._fetch_estimates(_T())
+        assert out["revenue_growth"] == {"0y": 0.08, "+1y": 0.082}
+        assert out["revenue_analysts"]["+1y"] == 28
+        assert out["eps_revisions"]["+1y"] == {"up_30d": 2, "down_30d": 3, "up_7d": 1, "down_7d": 1}
+
+        class _Empty:
+            revenue_estimate = None
+            @property
+            def eps_revisions(self):
+                raise RuntimeError("simulated")
+        assert fetcher._fetch_estimates(_Empty()) == {}
+
+        # 保存: 対象の銘柄にだけ estimates が付く
+        self._patch(monkeypatch, earnings_dates=None)
+        monkeypatch.setattr(fetcher, "_fetch_estimates", lambda t: {"revenue_growth": {"+1y": 0.082}})
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base, estimates_symbols=["XYZ"])
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert saved["estimates"]["revenue_growth"] == {"+1y": 0.082} and saved["estimates"]["fetched_at"]
+        fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base, estimates_symbols=[])
+        saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
+        assert "estimates" not in saved
+
     def test_future_row_with_nan_estimate_yields_none(self, tmp_path, monkeypatch):
         """CIX/FROG実データ相当: 未発表行は存在するがEPS Estimate自体が
         アナリスト網羅性不足でNaNの場合、Noneのまま（例外にならない）"""

@@ -1154,6 +1154,15 @@ class TanukiValuationPipeline:
         extra["recommended_g"] = _recommended_g
         extra["fcf_margin_bear_mult_applied"] = _bear_mult_applied
         extra["fcf_margin_note"] = _fcf_margin_note
+        # TANUKIの成長率とアナリストの予想の差（[[TANUKI-GUIDANCE-REVISION-BLIND-1]] 案1。表示だけ。計算は common/guidance_gap.py の1か所）
+        try:
+            from common.guidance_gap import build as _build_guidance_gap
+            _gg_rate = (valuation.get("growth") or {}).get("rate")
+            if _gg_rate is None:
+                _gg_rate = ((valuation.get("growth_scenarios") or {}).get("primary") or {}).get("rate")
+            extra["guidance_gap"] = _build_guidance_gap(ticker, _gg_rate)
+        except Exception as _e_gg:
+            print(f"   [{ticker}] 成長率と予想の差の計算エラー: {_e_gg}")
 
         # TANUKIスコアを先に計算してlatest.jsonとhistory.json両方に保存
         # growth_sanity は後で latest_data に追加されるが、
@@ -2097,6 +2106,14 @@ class TanukiValuationPipeline:
             _ep_line = None
         if _ep_line:
             L.append(_ep_line)
+        # 成長率とアナリストの予想の差（[[TANUKI-GUIDANCE-REVISION-BLIND-1]] 案1。表示だけ。予想が取れない銘柄は空欄の理由を書く）
+        try:
+            from common.guidance_gap import report_line as _gg_report_line
+            _gg_line = _gg_report_line(extra.get("guidance_gap"))
+        except Exception:
+            _gg_line = None
+        if _gg_line:
+            L.append(_gg_line)
 
         # FCF-CONVRATE②派生（KO-SPIR-CF-CAUSE-UNCONFIRMED-1）: 生FCFが銘柄固有の
         # 一過性項目（税務訴訟・M&A偶発対価の精算・事業売却益等）で押し下げられている

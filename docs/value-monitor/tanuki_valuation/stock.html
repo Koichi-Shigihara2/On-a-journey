@@ -1093,6 +1093,14 @@ function render(d) {
         ⏳ <strong>${d.earnings_pending.label}</strong><br>
         <span style="font-size:12px">下の数字・理論株価・判定は前の四半期（期末 ${d.earnings_pending.layer3_period_end}）までのSECデータで計算しています。</span>
       </div>` : ''}
+      ${d.guidance_gap ? (d.guidance_gap.growth_gap_pt != null ? `
+      <div id="guidance-gap-row" style="margin-bottom:16px;padding:10px 16px;background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.35);border-radius:8px;font-size:13px;line-height:1.6">
+        📐 <strong>成長率の前提とアナリストの予想の差: <span style="font-family:var(--mono)">${d.guidance_gap.growth_gap_pt > 0 ? '+' : ''}${d.guidance_gap.growth_gap_pt.toFixed(1)}pt</span></strong>
+        <span style="font-size:12px;color:var(--text-dim,#94a3b8)">（TANUKIの成長率 ${(d.guidance_gap.tanuki_growth * 100).toFixed(1)}% − 売上予想の伸び〈次の会計年度${d.guidance_gap.analyst_count ? '・' + d.guidance_gap.analyst_count + '人' : ''}〉${(d.guidance_gap.analyst_revenue_growth * 100).toFixed(1)}%${d.guidance_gap.revisions_up_30d != null || d.guidance_gap.revisions_down_30d != null ? '／EPS予想の改定（次の会計年度・30日）引き上げ ' + (d.guidance_gap.revisions_up_30d ?? '—') + '・引き下げ ' + (d.guidance_gap.revisions_down_30d ?? '—') : ''}。参考表示で、理論株価・判定には入れていません）</span>
+      </div>` : `
+      <div id="guidance-gap-row" style="margin-bottom:16px;padding:8px 16px;border:1px dashed rgba(148,163,184,0.35);border-radius:8px;font-size:12px;color:var(--text-dim,#94a3b8)">
+        📐 成長率と予想の差は空欄（${d.guidance_gap.reason || '予想が取れていない'}）
+      </div>`) : ''}
       ${d.latest_period_missing && (d.latest_period_missing.fields || []).length ? `
       <div style="margin-bottom:16px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.4);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.6">
         ⚠️ <strong>${d.latest_period_missing.note}</strong><br>

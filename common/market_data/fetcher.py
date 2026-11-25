@@ -39,7 +39,7 @@ import sys
 import tempfile
 import time
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 import pandas as pd
 import yaml
@@ -1039,7 +1039,63 @@ def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = No
 
 # ── 週次準静的属性層 ──────────────────────────────────────
 
-def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) -> None:
+def _fetch_estimates(t: Any) -> Dict[str, Any]:
+    """アナリストの予想（売上の伸び・EPSの改定の件数）。[[TANUKI-GUIDANCE-REVISION-BLIND-1]] 案1（2026-11-25）。
+
+    yfinanceの revenue_estimate（今年度 0y・来年度 +1y の売上予想の成長率・アナリスト数）と
+    eps_revisions（同じ期のEPS予想の、直近7日・30日の引き上げ・引き下げの件数）を、表示専用で保存する
+    （理論株価・判定には入れない）。取れない項目は入れない（空のまま）。呼び出しは追加の2回（週1回・対象は監視銘柄だけ）。
+    """
+    out: Dict[str, Any] = {}
+
+    def _num(v: Any) -> Optional[float]:
+        # numpy の int64・float64 も数として扱う（_numeric_or_none は Python の int/float だけを通す）
+        if isinstance(v, bool) or v is None:
+            return None
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        return None if math.isnan(f) else f
+
+    try:
+        rev = t.revenue_estimate
+        if rev is not None and not rev.empty:
+            g: Dict[str, Any] = {}
+            n: Dict[str, Any] = {}
+            for per in ("0y", "+1y"):
+                if per in rev.index:
+                    gv = _num(rev.loc[per].get("growth"))
+                    nv = _num(rev.loc[per].get("numberOfAnalysts"))
+                    if gv is not None:
+                        g[per] = gv
+                        n[per] = int(nv) if nv is not None else None
+            if g:
+                out["revenue_growth"] = g
+                out["revenue_analysts"] = n
+    except Exception as e:
+        print(f"   revenue_estimate取得失敗（空のまま）: {e}")
+    try:
+        rv = t.eps_revisions
+        if rv is not None and not rv.empty:
+            r: Dict[str, Any] = {}
+            for per in ("0y", "+1y"):
+                if per in rv.index:
+                    row = rv.loc[per]
+                    vals = {k: _num(row.get(c)) for k, c in
+                            (("up_30d", "upLast30days"), ("down_30d", "downLast30days"),
+                             ("up_7d", "upLast7days"), ("down_7d", "downLast7Days"))}
+                    if any(v is not None for v in vals.values()):
+                        r[per] = {k: (int(v) if v is not None else None) for k, v in vals.items()}
+            if r:
+                out["eps_revisions"] = r
+    except Exception as e:
+        print(f"   eps_revisions取得失敗（空のまま）: {e}")
+    return out
+
+
+def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None,
+                            estimates_symbols: Optional[Iterable[str]] = None) -> None:
     """週次準静的属性層を取得・保存する。
 
     銘柄ごとに.infoを1回呼び出し、PER（trailing/forward）/PEG/PSR/EV_EBITDA/
@@ -1127,6 +1183,7 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
     base = _resolve_base_dir(base_dir)
     target_symbols = _dedupe_symbols(symbols)
 
+    _est_set = set(estimates_symbols) if estimates_symbols is not None else set(get_monitor_tickers())
     for symbol in target_symbols:
         if _USE_SAFE_YF:
             t = _safe_yf_ticker(symbol)
@@ -1207,6 +1264,13 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
         except Exception as e:
             print(f"   [{symbol}] earnings_dates取得失敗（次期EPS推定なしで継続）: {e}")
 
+        # アナリストの予想（監視銘柄だけ。週1回。[[TANUKI-GUIDANCE-REVISION-BLIND-1]] 案1、表示専用）
+        estimates: Dict[str, Any] = {}
+        if symbol in _est_set:
+            estimates = _fetch_estimates(t)
+            if estimates:
+                estimates["fetched_at"] = _now_iso()
+
         fetched_at = _now_iso()
         record: Dict[str, Any] = {
             "symbol": symbol,
@@ -1243,6 +1307,7 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None) 
             "short_ratio": _numeric_or_none(info.get("shortRatio")),
             "average_volume": _numeric_or_none(info.get("averageVolume") or info.get("averageVolume10days")),
             "calendar": calendar_dict,
+            **({"estimates": estimates} if estimates else {}),
             "next_quarter_eps_estimate": next_quarter_eps_estimate,
         }
 
