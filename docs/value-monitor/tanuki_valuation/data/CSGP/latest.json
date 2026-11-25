@@ -49,7 +49,7 @@
     }
   },
   "upside_percent": -79.4,
-  "calculation_date": "2026-11-25T11:14:41+09:00",
+  "calculation_date": "2026-11-25T11:57:20+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -220,7 +220,7 @@
       "total_transient_amount": 31100000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業の構造的悪化ではなく一過性の財務調整と判断される。"
+        "reasoning": "マクロ変動による一時的影響と明記された貸倒引当金の異常変動分であり、事業運営上の一過性問題と判断される。"
       }
     },
     "action": "flagged",
@@ -352,6 +352,7 @@
     "moat_score_source": "measured",
     "moat_score_n_present": 3,
     "moat_phase1_years": 5,
+    "moat_phase1_years_uncapped": 5,
     "pv_high": 832188517.9102795,
     "pv_terminal": 3026595370.620055,
     "roe_used": 0.04865704376359165,
@@ -466,7 +467,8 @@
     "TANUKI-CALC-CONTINUITY-1-1",
     "DILUTION-DEFINITION-UNIFY-1-1",
     "TANUKI-SHARES-SINGLE-SOURCE-1-1",
-    "SEC-RETAG-RECONCILE-1-1"
+    "SEC-RETAG-RECONCILE-1-1",
+    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1"
   ],
   "fcf_history": [
     {
