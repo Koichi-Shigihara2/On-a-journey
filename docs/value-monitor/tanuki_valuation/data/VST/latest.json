@@ -4,6 +4,11 @@
   "upside_percent_beta": -81.8,
   "intrinsic_value_rf": 217.0,
   "upside_percent_rf": 79.8,
+  "reverse_growth": {
+    "status": "ok",
+    "reverse_g": 0.26515919824091716,
+    "reason": null
+  },
   "intrinsic_value_rf_rate": 0.049040002822875975,
   "v0": 25890009346.059734,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
@@ -44,7 +49,7 @@
     }
   },
   "upside_percent": -64.3,
-  "calculation_date": "2026-11-25T10:30:34+09:00",
+  "calculation_date": "2026-11-25T11:19:02+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -553,6 +558,22 @@
     "revisions_down_30d": 0,
     "reason": null,
     "estimates_fetched_at": "2026-11-25T01:18:00.794952+00:00"
+  },
+  "upside_context": {
+    "upside_percent_beta": -81.8,
+    "reverse_g": 0.26515919824091716,
+    "tanuki_growth": 0.0785,
+    "analyst_revenue_growth": 0.073,
+    "gap_tanuki_pt": -18.7,
+    "gap_analyst_pt": -19.2,
+    "status": "ok",
+    "reason": null
+  },
+  "handset_growth_age": {
+    "status": "fresh",
+    "updated": "2026-07-02",
+    "age_days": 146,
+    "label": null
   },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",

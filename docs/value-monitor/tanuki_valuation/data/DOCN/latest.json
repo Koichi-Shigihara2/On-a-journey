@@ -4,6 +4,11 @@
   "upside_percent_beta": -55.0,
   "intrinsic_value_rf": 308.59,
   "upside_percent_rf": 317.0,
+  "reverse_growth": {
+    "status": "ok",
+    "reverse_g": 0.31296512092117157,
+    "reason": null
+  },
   "intrinsic_value_rf_rate": 0.049040002822875975,
   "v0": 4182892965.6815553,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
@@ -44,7 +49,7 @@
     }
   },
   "upside_percent": -20.3,
-  "calculation_date": "2026-11-25T10:31:49+09:00",
+  "calculation_date": "2026-11-25T11:19:55+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -221,7 +226,7 @@
       "total_transient_amount": 17726000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的な貸倒引当金の増加で、事業運営上の構造的悪化を示すものではない。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響と明記されており、事業の構造的悪化ではなく一過性の財務調整と判断される。"
       }
     },
     "action": "flagged",
@@ -595,6 +600,22 @@
     "revisions_down_30d": 3,
     "reason": null,
     "estimates_fetched_at": "2026-11-25T01:18:31.260219+00:00"
+  },
+  "upside_context": {
+    "upside_percent_beta": -55.0,
+    "reverse_g": 0.31296512092117157,
+    "tanuki_growth": 0.2186,
+    "analyst_revenue_growth": 0.6164,
+    "gap_tanuki_pt": -9.4,
+    "gap_analyst_pt": 30.3,
+    "status": "ok",
+    "reason": null
+  },
+  "handset_growth_age": {
+    "status": "none",
+    "updated": null,
+    "age_days": null,
+    "label": null
   },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",

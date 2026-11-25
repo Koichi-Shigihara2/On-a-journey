@@ -4,6 +4,11 @@
   "upside_percent_beta": -79.0,
   "intrinsic_value_rf": 272.67,
   "upside_percent_rf": 113.3,
+  "reverse_growth": {
+    "status": "ok",
+    "reverse_g": 0.28475801719391713,
+    "reason": null
+  },
   "intrinsic_value_rf_rate": 0.049040002822875975,
   "v0": 7054068852.885344,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
@@ -44,7 +49,7 @@
     }
   },
   "upside_percent": -66.1,
-  "calculation_date": "2026-11-25T10:34:28+09:00",
+  "calculation_date": "2026-11-25T11:21:53+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +220,7 @@
       "total_transient_amount": 23500000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての理由欄に『一過性の事業再編費用』と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "理由欄の記述がすべて『一過性の事業再編費用』と明記されており、事業運営上の一時的な費用と判断される。"
       }
     },
     "action": "flagged",
@@ -578,6 +583,22 @@
     "revisions_down_30d": 0,
     "reason": null,
     "estimates_fetched_at": "2026-11-25T01:18:38.055091+00:00"
+  },
+  "upside_context": {
+    "upside_percent_beta": -79.0,
+    "reverse_g": 0.28475801719391713,
+    "tanuki_growth": 0.0656,
+    "analyst_revenue_growth": 0.15010001,
+    "gap_tanuki_pt": -21.9,
+    "gap_analyst_pt": -13.5,
+    "status": "ok",
+    "reason": null
+  },
+  "handset_growth_age": {
+    "status": "fresh",
+    "updated": "2026-09-05",
+    "age_days": 81,
+    "label": null
   },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
