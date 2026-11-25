@@ -153,7 +153,65 @@ STONKS に無い銘柄が対象。新しい規則では「TTM の FCF<0」の銘
 - **(e)** 印（`noncash_adjustment`＝applied／none／candidate）を出す場所（STONKS の黒字化パスの行・`profitability.json`・TANUKI の report.txt）と文言。
 - **(f)** 公開の日（①を日曜の連鎖〈11-29〉の後、②をその次、など）。
 
-## 5. 限界
+## 5. 実装と試算（2026-11-26。ブランチ2本、未公開）と公開の手順
+
+決定（(a)〜(f)）: ①は TTM の FCF を `reader.py` の1か所に置き STONKS と TANUKI の両方が呼ぶ（TTMが取れない・期末がずれる銘柄は年次に戻して印）、(b) 金融は runway と減点の対象から外す、(c) 閾値（24・12か月）と減点（−30）は変えない（FINDINGS に1行）、(d) ②の許可リストは条件付き対価の公正価値の変動とのれん・無形資産・長期性資産の減損（設定ファイル、銘柄名なし）、(e) 印は applied・none・candidate、(f) ①は 11-26（手順46の後）・②は 11-27 に公開。**今日は kaihatsu にコードを入れていない**（このdocsと FINDINGS だけ）。
+
+### 5-1. ブランチ（origin に控えを置いた）
+
+| | ブランチ | コミット | 中身 |
+|---|---|---|---|
+| ① | `stonks-runway-ttm` | `9911c3feb8`（実装）→ `c419b16d26`（金融の判定の直し）→ scope | `common/sec_data/reader.py::get_runway_burn`（1か所）・`stonks_silo/analyzer.py::_analyze_runway`（TTM・金融は対象外・`burn_basis`）・`pipeline.py`（`computed_runway_months`・`computed_runway_basis`・report.txt の `Runway_Basis`）・STONKS の画面（流出の基準のツールチップ）・テスト `tests/test_runway_ttm.py`（8件） |
+| ② | `profitability-noncash` | `1f8d1539ff`（実装）→ `ef11a55627`（scope） | `config/noncash_operating_items.json`（許可リスト）・`config/sec_concept_definitions.json`（Layer3 の4項目: `contingent_consideration_change`・`goodwill_impairment`・`intangible_impairment`・`longlived_impairment`）・`q4_implied.py`（Q4 を年次−9か月で作る）・`ttm_calculator.py`（TTM出力の対象外）・`common/profitability.py`（足し戻し・`noncash_adjustment`）・STONKS の黒字化パス・report.txt の `Breakeven_Noncash`・テスト `tests/test_profitability_noncash.py`（5件） |
+
+どちらも `kaihatsu` から切り、pytest（①3073・②3071通過）・rcc NG 0・audit 0。
+
+### 5-2. ① の試算（TANUKI→HypeCore→TANUKI と STONKS の全17銘柄。前＝kaihatsu、後＝ブランチ。同じデータ）
+
+STEP 0 の試算と同じ結果になった。
+- **理論株価・判定・funda・stage の変化: 0**（82銘柄、保有9銘柄とも）。SOFI は**対象外**になった（`computed_runway_basis=financial_excluded`、`computed_runway_months` なし。funda は 100 のまま。STEP 0 の試算では 23.4 → 8.9か月で funda 100 → 70 だった）。
+- **SOUN: 24.2 → 19.3か月（SAFE → WATCH）**（10-Q の約18〜19か月）。**IONQ: 40.0 → 17.5か月（SAFE → WATCH）、総合 10x_CANDIDATE 83 → PROMISING 71**。SOUN の総合は 10x_CANDIDATE のまま（90 → 78）。
+- STONKS の runway が変わるのは7銘柄（ASTS 56.0 → 35.3・AVAV 42.3 → 155.5・CRWV 6.9 → 2.5・IONQ・JOBY 46.8 → 33.6・RKLB 171.8 → 169.8・SOUN）。TANUKI の `computed_runway_months` は ASTS・AVAV・CRWV・IONQ・JOBY・SOUN（STONKS の値と同じ）と COHR（28.3 → 15.8）・AMZN（なし → 29.2）・SOFI（23.4 → 対象外）。
+- 基準の内訳: TTM 79銘柄・**年次に戻したのは2銘柄**（RCAT: `ocf_ttm_incomplete`〈4四半期がそろわない〉、CPRT: `cash_end_mismatch:2023-04-30!=2026-07-31`〈現金の系列が古い。FCFがプラスで runway は出ない〉）・金融の対象外1（SOFI）。SITM は現金の期末を確かめられないが TTM（`cash_end_unverified`、FCF がプラスで runway は出ない）。
+- **scope（`method_change_scope.py`、ID `STONKS-DEFICIT-REALITY-EPIC-1-1`）**: 17銘柄（STONKS の `runway.*` と `summary`・`overall_score`・`overall_verdict`〈IONQ〉と TANUKI の `computed_runway_months`）。理論株価・funda・判定・stage が変わる銘柄は **0**（SOFI の funda は金融の対象外で変わらない）。公開の直前に作り直す。
+
+### 5-3. ② の試算（同じ方法。`profitability.json` は試算の間だけ作り直した値を置いた）
+
+- **理論株価・判定・funda・stage の変化: 0**（TANUKI→HypeCore→TANUKI、82銘柄）。STONKS の総合の判定も変わらない（SOUN は 10x_CANDIDATE 90 のまま）。
+- **SOUN: 黒字化の予測 PREDICTED 0.72四半期（2026年、R² 0.696、収益の段階 near_profit）→ TOO_FAR 14.99四半期（2030年、R² 0.964、loss）**。STONKS の黒字化パスの `op_breakeven_year` 2026 → 2030。STEP 0 の簡易な試算と同じ値。
+- `profitability.json` の84銘柄のうち変わるのは5銘柄（分類が変わるのは SOUN だけ）: RKLB 10.42 → 12.21四半期（TOO_FAR のまま）・S 14.64 → 14.70・RCAT R² 0.175 → 0.001（LOW_FIT のまま）・AVAV R² 0.859 → 0.749（NO_TREND のまま）。`noncash_adjustment` は applied 12・candidate 2（IONQ のワラント・SITM）・none 70。STONKS の17銘柄では AVAV・RKLB・SOUN が applied、IONQ・SITM が candidate。
+- **scope（ID `STONKS-DEFICIT-REALITY-EPIC-1-2`）**: 1銘柄（SOUN: `stonks.profitability_path.op_breakeven_year`・`op_breakeven_reason`・`verdict_reason`・`summary`）。`profitability.json` 自体は `method_change_scope.py` のスナップショットの対象外のため、上の5銘柄の表をここに残す。
+
+**STEP 0 の簡易な試算との違い**（Layer3 の `first_val` と同じ四半期の値で作り直した結果）:
+- 最初に Layer3 の4項目を足しただけでは Q4（年次−9か月）が作られず、SOUN は足し戻しが −67.1M（Q1〜Q3 2026 だけ）・PREDICTED 1.07四半期になった。**`q4_implied.py` の Q4 の対象に4項目を足して**、SOUN は −151.7M・TOO_FAR 14.99四半期・R² 0.964 になり、STEP 0 と同じになった。
+- **AVAV**: 足し戻し 151.3M（STEP 0 は 240.7M）、R² 0.749（STEP 0 は 0.441）。STEP 0 は `GoodwillImpairmentLoss` と `GoodwillAndIntangibleAssetImpairment` を両方足していて、重なる分が二重に入っていた。Layer3 は項目ごとに優先順位で1つのタグを採る（二重にならない）。**VST**: 269M（STEP 0 は 424M）、同じ理由。ABBV・ELF・MRVL は同じ。
+- 分類（PREDICTED／TOO_FAR／NO_TREND）が変わるのは SOUN だけで、STEP 0 と同じ。
+
+### 5-4. 公開の手順（①は明日の依頼文、②は明後日の依頼文で行う）
+
+共通（`CLAUDE_CODE_PROCEDURES.md`「計算方法の変更の手順」）。公開の日の朝に、前の公開の確認（手順46・①の確認）が済んでいることを確かめる。
+1. kaihatsu を最新にし（bot の差分だけなら追いつき）、ブランチを kaihatsu に rebase（競合が出たら止まる）。
+2. **試算と scope を作り直す**（公開の直前のデータで）: 前（kaihatsu）と後（ブランチ）を同じデータで `tools/sim`（`chain`）と STONKS で回し、`method_change_scope.py snapshot/diff --id … --write`。ノイズ（市場データの更新による判定の変化）は前後を同時に回して除く。
+3. ゲート3種（pytest・rcc `--fail-on-ng`・audit）、`build_output_inventory.py` の作り直しが要るか確認。
+4. `git merge --no-ff <ブランチ>` → push（kaihatsu）。
+5. **② だけ**: `python common/profitability.py --all` で `docs/common/profitability.json` を作り直して同じ公開に入れる（Market Data Weekly の段と同じ呼び出し）。続けて `python common/stage_v2.py --all`（並行計算の収益の部品が SOUN で near_profit → loss になる）。
+6. 手動の連鎖: `gh workflow run TANUKI_VALUATION_Update.yml`（→ 終わったら）`HypeCore_Update.yml`（→ TANUKI が自動で起動）と、**STONKS** `gh workflow run Stonks_Silo_Update.yml`（①②とも results.json が変わる）。
+7. 確認: 1回目の🛠（`score_watcher`）／`method_change` の印の銘柄が scope と一致、2回目で印が付かない、理論株価・判定が前の試算の値と同じ。次回の確認手順に足す（①: 次の定時の後、②: 次の Market Data Weekly〔日曜〕の後）。
+
+| | ① 11-26 | ② 11-27 |
+|---|---|---|
+| ブランチ | `stonks-runway-ttm` | `profitability-noncash` |
+| ID | `STONKS-DEFICIT-REALITY-EPIC-1-1` | `STONKS-DEFICIT-REALITY-EPIC-1-2` |
+| 公開で作り直すもの | なし（STONKS の `results.json` は手動の STONKS で） | `profitability.json`・`stage_v2` の並行計算・STONKS |
+| 次回の確認 | 11-27 朝の定時の後（印0・runway が公開直後の値と同じ・SOFI が対象外のまま・RCAT・CPRT が `annual_fallback`） | 11-30 朝（日曜の Market Data Weekly の後。`profitability.json` が同じ値・SOUN が TOO_FAR のまま） |
+| BACKLOG | `[[STONKS-DEFICIT-REALITY-EPIC-1]]` の①を済、②は残す | ②を済、③④は残す |
+
+### 5-5. 残り（この STEP 0 の範囲外）
+
+- FINDINGS に1行: **runway の減点 −30 は段の形**（12か月未満で一律 −30）。DILUTION と同じく傾斜にするかは次の束ねで。
+- STONKS の画面の流出の基準は、ツールチップだけ（年次に戻した銘柄に「年」の添え字）。画面の表示は公開の日の Playwright で確かめる。
+
+## 6. 限界（STEP 0 の時点）
 
 - ①の TANUKI への funda の効きは、`computed_runway_months` を差し替えて3銘柄（SOFI・COHR・AMZN）だけ確かめた。全銘柄の `chain`（TANUKI→HypeCore→TANUKI）の試算は、実装の後に scope を作るときに回す。
 - ②は `company_facts` の事実から四半期の値を作る簡易な方法（申告日の新しい値、Q4＝年次−9か月）。Layer3 の `first_val`（その時点で最初に申告された値）の semantics とは一致しないので、実装では Layer3 の項目にするか、同じ規則に合わせる。
