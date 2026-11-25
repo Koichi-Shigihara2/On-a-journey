@@ -98,6 +98,9 @@ EXCLUDED_FIELDS = frozenset([
     # 直接読む別経路で消費されるため、TTM層での分類は不要（GATE2-PHASE3B-1
     # 事前調査で確認済み。ttm.jsonを経由しないだけで実際には正常に消費されている）。
     "rpo",
+    # [[STONKS-DEFICIT-REALITY-EPIC-1]] ②（2026-11-27）: 黒字化の予測のために営業利益へ足し戻す、現金を伴わない評価損益・減損。
+    # common/profitability.py が Layer3 から直接読む（config/noncash_operating_items.json）。TTM出力には出さない
+    "contingent_consideration_change", "goodwill_impairment", "intangible_impairment", "longlived_impairment",
 ])
 
 # GATE2-PHASE3B-1②規約C: Layer3フィールド定義（config/

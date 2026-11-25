@@ -1,0 +1,41 @@
+{
+  "_description": "黒字化の予測（common/profitability.py）で、営業利益に含まれる現金を伴わない評価損益・減損を足し戻す許可リスト。[[STONKS-DEFICIT-REALITY-EPIC-1]] ②（2026-11-27、method_change ID STONKS-DEFICIT-REALITY-EPIC-1-2）。銘柄名は書かない。項目は Layer3（config/sec_concept_definitions.json）の同名の項目。値は正＝営業利益を押し下げる費用・損失で、営業利益 ＋ 値（符号 sign をかけて）が調整後。営業外に載ることが分かったタグはここに入れない（理由を note に）",
+  "items": [
+    {
+      "field": "contingent_consideration_change",
+      "kind": "fair_value_change",
+      "label": "条件付き対価（買収のアーンアウト）の公正価値の変動",
+      "sign": 1,
+      "note": "負債の増加が正（費用）、減少が負（評価益）。営業費用の行に載る会社が多い"
+    },
+    {
+      "field": "goodwill_impairment",
+      "kind": "impairment",
+      "label": "のれんの減損",
+      "sign": 1,
+      "note": "営業費用の行"
+    },
+    {
+      "field": "intangible_impairment",
+      "kind": "impairment",
+      "label": "無形資産の減損",
+      "sign": 1,
+      "note": "営業費用の行"
+    },
+    {
+      "field": "longlived_impairment",
+      "kind": "impairment",
+      "label": "長期性資産の減損",
+      "sign": 1,
+      "note": "営業費用の行"
+    }
+  ],
+  "min_share_applied": 0.02,
+  "candidate": {
+    "name_pattern": "Impairment|ContingentConsideration|Earnout|FairValueAdjust|ChangeInFairValue|Remeasurement|WriteDown|Writedown",
+    "min_share_of_ttm_operating_income": 0.1,
+    "min_share_of_ttm_revenue": 0.02,
+    "min_abs_usd": 5000000,
+    "note": "許可リストに無いが評価損益らしいタグ。営業利益に入るかはタグだけでは分からない（営業外のことも多い）ので、自動では除かず印だけ"
+  }
+}

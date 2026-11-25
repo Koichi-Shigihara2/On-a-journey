@@ -391,6 +391,44 @@
         "MinorityInterest"
       ],
       "_note": "2026-10-10 [[ROTCE-PTBV-1]] TCEの控除項目（非支配持分）。stockholders_equityが非支配持分込みのタグ（source_tag）の期末日だけ引く"
+    },
+    "contingent_consideration_change": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "BusinessCombinationContingentConsiderationArrangementsChangeInAmountOfContingentConsiderationLiability1"
+      ],
+      "_note": "2026-11-27 [[STONKS-DEFICIT-REALITY-EPIC-1]] ② 黒字化の予測から現金を伴わない評価損益を除くための項目。common/profitability.py が config/noncash_operating_items.json の許可リストで営業利益に足し戻す。TTM出力の対象外（ttm_calculator.EXCLUDED_FIELDS）。正の値＝営業利益を押し下げる費用・損失（条件付き対価は負債の増加が正）"
+    },
+    "goodwill_impairment": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "GoodwillImpairmentLoss",
+        "GoodwillAndIntangibleAssetImpairment"
+      ],
+      "_note": "2026-11-27 [[STONKS-DEFICIT-REALITY-EPIC-1]] ② 黒字化の予測から現金を伴わない評価損益を除くための項目。common/profitability.py が config/noncash_operating_items.json の許可リストで営業利益に足し戻す。TTM出力の対象外（ttm_calculator.EXCLUDED_FIELDS）。正の値＝営業利益を押し下げる費用・損失（条件付き対価は負債の増加が正）"
+    },
+    "intangible_impairment": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "ImpairmentOfIntangibleAssetsExcludingGoodwill",
+        "ImpairmentOfIntangibleAssetsFinitelived",
+        "ImpairmentOfIndefinitelivedIntangibleAssetsExcludingGoodwill"
+      ],
+      "_note": "2026-11-27 [[STONKS-DEFICIT-REALITY-EPIC-1]] ② 黒字化の予測から現金を伴わない評価損益を除くための項目。common/profitability.py が config/noncash_operating_items.json の許可リストで営業利益に足し戻す。TTM出力の対象外（ttm_calculator.EXCLUDED_FIELDS）。正の値＝営業利益を押し下げる費用・損失（条件付き対価は負債の増加が正）"
+    },
+    "longlived_impairment": {
+      "category": "flow",
+      "unit": "USD",
+      "candidates": [
+        "ImpairmentOfLongLivedAssetsHeldForUse",
+        "ImpairmentOfLongLivedAssetsToBeDisposedOf",
+        "AssetImpairmentCharges",
+        "OtherAssetImpairmentCharges"
+      ],
+      "_note": "2026-11-27 [[STONKS-DEFICIT-REALITY-EPIC-1]] ② 黒字化の予測から現金を伴わない評価損益を除くための項目。common/profitability.py が config/noncash_operating_items.json の許可リストで営業利益に足し戻す。TTM出力の対象外（ttm_calculator.EXCLUDED_FIELDS）。正の値＝営業利益を押し下げる費用・損失（条件付き対価は負債の増加が正）"
     }
   },
   "_ticker_overrides_source": "銘柄別の上書き設定はcommon/sec_data/quarterly.py::TICKER_RESTRICTIONSが唯一の正で、layer3_builder.pyも同じ定義を直接読む（[[TICKER-OVERRIDES-SINGLE-SOURCE-1]]、2026-09-24にJSON側の写しticker_overridesを廃止。2026-07-24移行以降に追加されたCPRT/HEI/CEG/JOBY/LYFTの設定がLayer3に反映されていなかったため）"
