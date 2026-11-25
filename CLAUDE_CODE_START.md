@@ -56,7 +56,7 @@
 46. **TANUKI-UPSIDE-MAGNITUDE-INFLATED-1 6-1・6-2（古さの印・逆算した成長率）の、定時の後の確認**（公開は2026-11-25 手動: TANUKI `45531138291`。表示だけ・method_changeなし。理論株価・判定の変化0〔82銘柄〕）
    - 日時: 2026-11-26（木）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（古さの印の件数は 11-27 以降に GOOGL・AAPL・INTU が加わる）
    - 期限: 2026-11-30
-   - 確認の手順: ①`latest.json`の`upside_context`が82銘柄にあり、`status`が`ok`（79前後）か`unsolved`（理由つき。ASTS・RCAT・TSLA型）②`handset_growth_age.status=stale`の銘柄が`updated`から180日超の銘柄と一致する（11-26: AMD・AMZN・CELH・META・MSFT）③report.txtに`Upside_Context`行がある ④理論株価・判定が前日と同じ。⑤**`TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1`（逓減をメインにも＋phase1の年数7年上限）の2回目**: 全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`-1-1`）・22銘柄の理論株価が公開の直後の値と同じ（動くのは新しい決算・株価の分だけ）・判定の変化が相場の分だけ。**2回目が合格したら`[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`をBACKLOG_DONE.mdへ移設する**（公開は2026-11-25 手動: TANUKI→HypeCore→TANUKI。1回目の🛠はscopeの22銘柄と一致すること）
+   - 確認の手順: ①`latest.json`の`upside_context`が82銘柄にあり、`status`が`ok`（79前後）か`unsolved`（理由つき。ASTS・RCAT・TSLA型）②`handset_growth_age.status=stale`の銘柄が`updated`から180日超の銘柄と一致する（11-26: AMD・AMZN・CELH・META・MSFT）③report.txtに`Upside_Context`行がある ④理論株価・判定が前日と同じ。⑤**`TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1`（逓減をメインにも＋phase1の年数7年上限）の2回目**: 全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`-1-1`）・22銘柄の理論株価が公開の直後の値と同じ（動くのは新しい決算・株価の分だけ）・判定の変化が相場の分だけ。**2回目が合格したら`[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`をBACKLOG_DONE.mdへ移設する**（公開は2026-11-25 手動: TANUKI→HypeCore→TANUKI。1回目の🛠はscopeの22銘柄と一致すること。**1回目は確認済み（2026-11-25）**: TANUKI `45536197714`・HypeCore `45537946722`・TANUKI `45538246008`。1回目の`method_change`の印は22銘柄でscopeと一致、3回目は印0・`method_change_applied`が82銘柄、理論株価は公開の前の試算と同じ〈APP 865.26・NVDA 495.13・SOUN 4.88・ADBE 527.83・SOFI 30.03・V 268.72〈TRIM〉・LLY 912.41〈TRIM〉〉）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
