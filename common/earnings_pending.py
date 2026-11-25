@@ -5,7 +5,7 @@
 「最新の決算は反映前」と表示する。表示だけで、理論株価・判定・stageは変えない（method_changeには登録しない）。
 
 判定（この関数の1か所だけ。銘柄名は書かない）:
-  発表日 ≤ 今日、かつ Layer3の最新の四半期の期末 < その発表の四半期の期末。
+  発表日 ≤ 今日（米国東部の日付。us_today）、かつ Layer3の最新の四半期の期末 < その発表の四半期の期末。
   - 発表日: Yahooの予定日（common/market_data の calendar.earnings_date）のうち今日以前で一番新しい日。
     8-K Item 2.02 の提出日が手元にあれば（item_202_dates）それを優先して確かめに使う（追加の取得はしない。今は手元に無い）
   - 発表の四半期の期末: Layer3の最新の期末の3か月後（その期末が発表日より前なら、その期の決算の発表と見なす）
@@ -27,6 +27,18 @@ NO_DATE = "no_date"        # 予定日が取れず、印を付けられない
 NO_LAYER3 = "no_layer3"    # Layer3の最新の期末が分からず、印を付けられない
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def us_today() -> date:
+    """発表日（米国の日付）と比べる「今日」は米国東部の日付にする。日本の朝は米国で前日の午後なので、
+    その日の引け後の発表（ADSK・DELL型）を、発表の前に「発表済み」にしないため"""
+    try:
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        return datetime.now(ZoneInfo("America/New_York")).date()
+    except Exception:
+        from datetime import datetime, timedelta, timezone
+        return (datetime.now(timezone.utc) - timedelta(hours=5)).date()
 
 
 def _d(v: Any) -> Optional[date]:
@@ -99,7 +111,7 @@ def evaluate(earnings_dates: Optional[Iterable[Any]], layer3_end: Optional[str],
 def build(ticker: str, today: Optional[date] = None, calendar_dict: Optional[dict] = None,
           prev: Optional[dict] = None) -> dict:
     """銘柄の印。calendar_dict を渡さなければ common.market_data.reader.get_calendar から読む"""
-    today = today or date.today()
+    today = today or us_today()
     if calendar_dict is None:
         try:
             from common.market_data.reader import get_calendar

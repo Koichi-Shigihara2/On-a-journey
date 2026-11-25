@@ -64,3 +64,8 @@ def test_prev_pending_date_is_carried_when_yahoo_rolled():
 def test_no_layer3_not_marked():
     r = ep.evaluate(["2026-11-18"], None, TODAY)
     assert r["status"] == ep.NO_LAYER3 and ep.report_line(r) is None
+
+
+def test_us_today_is_a_date_not_ahead_of_japan():
+    from datetime import timedelta
+    assert ep.us_today() <= date.today() + timedelta(days=1)
