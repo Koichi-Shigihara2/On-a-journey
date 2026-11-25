@@ -2961,6 +2961,12 @@ class TanukiValuationPipeline:
         else:
             L.append("Insider_Activity: N/A")
         L.append(f"Runway_Months: {runway_m}" if runway_m != "N/A" else "Runway_Months: N/A (profitable or not in STONKS)")
+        # 流出の基準（[[STONKS-DEFICIT-REALITY-EPIC-1]] ①）。STONKS の値を使うときは STONKS の、無いときは computed の基準
+        _rb = (stonks_data.get("runway", {}).get("burn_basis") if stonks_data else None) or (extra or {}).get("computed_runway_basis")
+        if _rb in ("ttm", "annual_fallback", "financial_excluded"):
+            _rb_txt = {"ttm": "直近4四半期（営業CF−設備投資）", "annual_fallback": "最新の年次（直近4四半期が取れない・現金の期末とずれる）",
+                       "financial_excluded": "金融は資金の持ちの対象外"}[_rb]
+            L.append(f"Runway_Basis: {_rb_txt}")
         L.append(f"Revenue_Growth_YoY: {rev_growth_str}%")
         L.append(f"Next_Earnings_Date: {next_earnings}")
         # 黒字化の予測（会計）は収益の部品の値（common/profitability.py::breakeven_view。[[DEFICIT-QUALITY-ADOPT-1]]）
@@ -3129,19 +3135,37 @@ class TanukiValuationPipeline:
             # report_consistency_check.py（WARN-48）で継続する。
             # 下記の発動条件`cash < 100_000_000`はcash_and_equivalentsのみの
             # 従来判定を維持している（本件の対象外）。
+            # [[STONKS-DEFICIT-REALITY-EPIC-1]] ①（2026-11-26、method_change ID STONKS-DEFICIT-REALITY-EPIC-1-1）:
+            # 流出は Layer3 の直近4四半期（営業CF − 設備投資）。STONKS SILO の _analyze_runway と同じ
+            # common/sec_data/reader.py::get_runway_burn の1か所。TTMが取れない・現金の期末とずれるときだけ今の最新の年次FCF。
+            # 金融（valuation["financial"]）は営業CFに貸出の組成などが入り資金の持ちが意味を持たないので対象外（決定(b)）
             _latest_fcf = fcf_history[-1]["fcf"] if fcf_history else None
             _latest_q_eps = self._load_eps_map().get(ticker, {}).get("gaap_eps")
-            _needs_runway = (
-                (_latest_q_eps is not None and _latest_q_eps < 0)
-                or (_latest_fcf is not None and _latest_fcf < 0)
-                or cash < 100_000_000
-            )
             _runway_cash = get_runway_cash(bs_adj)
-            if (_needs_runway and _runway_cash is not None
-                    and _latest_fcf is not None and _latest_fcf < 0):
-                _monthly_burn = abs(_latest_fcf) / 12
-                if _monthly_burn > 0:
-                    result["computed_runway_months"] = _runway_cash / _monthly_burn
+            if valuation.get("financial"):
+                result["computed_runway_basis"] = "financial_excluded"
+            else:
+                from common.sec_data.reader import get_runway_burn, RUNWAY_BURN_BASIS_TTM
+                _burn = get_runway_burn(ticker, self._get_layer3_store(ticker))
+                if _burn["basis"] == RUNWAY_BURN_BASIS_TTM and _burn["fcf_ttm"] is not None:
+                    _runway_fcf = _burn["fcf_ttm"]
+                    result["computed_runway_basis"] = RUNWAY_BURN_BASIS_TTM
+                    result["computed_runway_ttm_end"] = _burn["ttm_end"]
+                else:
+                    _runway_fcf = _latest_fcf
+                    result["computed_runway_basis"] = "annual_fallback"
+                    if _burn.get("reason"):
+                        result["computed_runway_basis_reason"] = _burn["reason"]
+                _needs_runway = (
+                    (_latest_q_eps is not None and _latest_q_eps < 0)
+                    or (_runway_fcf is not None and _runway_fcf < 0)
+                    or cash < 100_000_000
+                )
+                if (_needs_runway and _runway_cash is not None
+                        and _runway_fcf is not None and _runway_fcf < 0):
+                    _monthly_burn = abs(_runway_fcf) / 12
+                    if _monthly_burn > 0:
+                        result["computed_runway_months"] = _runway_cash / _monthly_burn
 
         # 希薄化率（株数の変化）: [[DILUTION-DEFINITION-UNIFY-1]]（2026-11-12）。直近の四半期の加重平均の希薄化後株数 ÷ 12四半期前の年率。
         # 分割は split_history.yaml で調整、未登録の分割の疑いは割り戻さず印（split_suspect）。定義は common/dilution.py の1か所

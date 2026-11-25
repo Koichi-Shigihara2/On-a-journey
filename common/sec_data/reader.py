@@ -98,6 +98,60 @@ def get_runway_cash(net_cash_data: Optional[dict]) -> Optional[float]:
     )
 
 
+RUNWAY_BURN_BASIS_TTM = "ttm"                    # 直近4四半期（営業CF − 設備投資）
+RUNWAY_BURN_BASIS_ANNUAL = "annual_fallback"     # TTMが取れない・期末がずれる → 呼び出し元が今の年次に戻す
+
+
+def get_runway_burn(ticker: str, store: Optional[dict] = None) -> dict:
+    """資金の持ち（runway）の流出側: Layer3の直近4四半期の営業CF − 設備投資（TTMのFCF）。
+    STONKS SILO（analyzer.py::_analyze_runway）とTANUKI VALUATION（pipeline.py::computed_runway_months）が
+    この1か所を呼ぶ（[[STONKS-DEFICIT-REALITY-EPIC-1]] ①、2026-11-26、method_change ID STONKS-DEFICIT-REALITY-EPIC-1-1）。
+    以前は流出が最新の年次で、現金（四半期優先）と期末が約9か月ずれ、流出が加速している銘柄ほど資金の持ちが長く出た
+    （SOUN: 年次24.2か月、TTM 19.3か月＝10-Qの約18〜19か月）。
+
+    戻り値: {"basis": "ttm" | "annual_fallback", "fcf_ttm": float|None, "ttm_end": str|None, "cash_end": str|None, "reason": str|None}
+      - ttm: fcf_ttm（営業CF − 設備投資。式は fcf.py::free_cash_flow。設備投資の欠けは0の今の扱い）を使う
+      - annual_fallback: 4四半期がそろわない・営業CFが欠ける・現金の最新の期末とTTMの期末が違う。fcf_ttm は None。
+        呼び出し元は今の年次で計算し、basis を出力に残す（印）
+    現金の期末が分からない（Layer3の現金の系列が空）ときは、確かめられないがTTMを使う（reason に cash_end_unverified）。
+    """
+    from .layer3_builder import build_ticker_store, get_quarterly_series
+    from .ttm_calculator import calc_ttm_series
+    from .fcf import free_cash_flow
+    out = {"basis": RUNWAY_BURN_BASIS_ANNUAL, "fcf_ttm": None, "ttm_end": None, "cash_end": None, "reason": None}
+    try:
+        st = store if store is not None else build_ticker_store(ticker)
+        series = calc_ttm_series(ticker, st, n_periods=1)
+    except Exception as e:  # noqa: BLE001
+        out["reason"] = f"ttm_unavailable:{str(e)[:40]}"
+        return out
+    if not series:
+        out["reason"] = "ttm_unavailable"
+        return out
+    ttm_end = series[0].get("ttm_end")
+    out["ttm_end"] = ttm_end
+    fl = series[0].get("flow") or {}
+    ocf = fl.get("operating_cash_flow") or {}
+    cap = fl.get("capital_expenditure") or {}
+    if ocf.get("val") is None or ocf.get("quarters_used") != 4 or ocf.get("missing"):
+        out["reason"] = "ocf_ttm_incomplete"
+        return out
+    try:
+        cs = [x for x in get_quarterly_series(st, "cash_and_equivalents") if x.get("val") is not None]
+        cash_end = max(x["end"] for x in cs) if cs else None
+    except Exception:  # noqa: BLE001
+        cash_end = None
+    out["cash_end"] = cash_end
+    if cash_end is not None and cash_end != ttm_end:
+        out["reason"] = f"cash_end_mismatch:{cash_end}!={ttm_end}"
+        return out
+    out["fcf_ttm"] = free_cash_flow(ocf["val"], cap.get("val") if cap.get("val") is not None else 0)
+    out["basis"] = RUNWAY_BURN_BASIS_TTM
+    if cash_end is None:
+        out["reason"] = "cash_end_unverified"
+    return out
+
+
 class SECReader:
     """SECデータ読み取りインターフェース"""
     

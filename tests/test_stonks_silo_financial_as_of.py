@@ -123,7 +123,7 @@ def test_pipeline_run_writes_financial_as_of_without_touching_scores(monkeypatch
     monkeypatch.setattr(sp, "SECReader", _Reader)
 
     class _Analyzer:
-        def analyze(self, data, net_cash_data=None):
+        def analyze(self, data, net_cash_data=None, **kw):
             return _FakeAnalysis()
     monkeypatch.setattr(sp, "StonksAnalyzer", _Analyzer)
     monkeypatch.setattr(sp, "_to_dict", lambda obj: {"overall_score": 70.0, "overall_verdict": "PROMISING"}
@@ -162,7 +162,7 @@ def test_pipeline_financial_as_of_failure_does_not_break_ticker(monkeypatch, tmp
     monkeypatch.setattr(sp, "SECReader", _Reader)
 
     class _Analyzer:
-        def analyze(self, data, net_cash_data=None):
+        def analyze(self, data, net_cash_data=None, **kw):
             return _FakeAnalysis()
     monkeypatch.setattr(sp, "StonksAnalyzer", _Analyzer)
     monkeypatch.setattr(sp, "_to_dict", lambda obj: {"overall_score": 70.0} if isinstance(obj, _FakeAnalysis) else obj)

@@ -174,7 +174,7 @@ class TestRunNetCashSwitch:
             sp.StonksAnalyzer, "analyze",
             # run()はget_net_cash()の返却値をanalyze(net_cash_data=...)へ渡す
             # （[[BBAI-RDW-RUNWAY-VERIFICATION-1]]）
-            lambda self, d, net_cash_data=None: _make_analysis(overall_score, overall_verdict),
+            lambda self, d, net_cash_data=None, **kw: _make_analysis(overall_score, overall_verdict),
         )
         monkeypatch.setattr(
             sp, "fetch_valuation",
@@ -262,7 +262,7 @@ class TestRunNetIncomeFyRename:
             sp.StonksAnalyzer, "analyze",
             # run()はget_net_cash()の返却値をanalyze(net_cash_data=...)へ渡す
             # （[[BBAI-RDW-RUNWAY-VERIFICATION-1]]）
-            lambda self, d, net_cash_data=None: _make_analysis(overall_score, overall_verdict),
+            lambda self, d, net_cash_data=None, **kw: _make_analysis(overall_score, overall_verdict),
         )
         monkeypatch.setattr(
             sp, "fetch_valuation",
