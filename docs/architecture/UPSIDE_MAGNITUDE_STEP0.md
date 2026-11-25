@@ -139,7 +139,82 @@ TANUKIの成長率が逆算より高い上位10銘柄（TANUKIの成長率／逆
   - 「市場が織り込んだ成長率（逆算）」と、TANUKIの成長率・アナリストの予想との差（pt）を並べる（§5。TANUKI SCORE の列と stock.html の行）。
 - 決めてほしいこと: (a) 6-1 の古さの印・6-3 の併記を先に入れるか（表示だけ。method_change なし）。(b) 計算の変更（6-2 の①②）を進めるか。進めるならどれか（①は設計の見直し、②は片側の上限）。(c) 逆算を毎日の計算に入れるか（今は手元の試算だけ。毎日の計算に入れると、`calculate_pt` の呼び出しが銘柄あたり約40回増える）。
 
-## 7. この文書の限界
+## 7. 残りの STEP 0（2026-11-25〜26。逓減がかからない件と phase1 の年数の上限）
+
+試算の方法は §冒頭と同じ（`tools/sim` に前提を替える hook〈scratchpad の `variants2.py`、環境変数 UPS_VARIANT。`+` で組み合わせ〉を付けて全82銘柄を回す）。組み合わせは `chain`（TANUKI → HypeCore → TANUKI）で回し、HypeCore の stage と `method_change_scope.py diff` の scope も出した。公開のコード・データは変えていない。
+
+### 7-1. 設定済みの成長率に逓減がかからない件（FINDINGS 2026-11-25）
+
+**過去の決定（BACKLOG_DONE.md・git log の確認）**
+- 逓減の導入は **DCF-1（2026-05-31、`9d9911900d`）**。対象は `growth_model==decay` の推奨成長率の銘柄（`segment_configured=False` の再計算ブロック）。BACKLOG_DONE の同項に「適用外の銘柄と理由: `segment_configured=True` の銘柄（NVDA/META/GOOGL等）→ **手動設定済みのため再計算ブロック非実行**。将来: `segment_configured` 銘柄への逓減対応は **DCF-1b として別途検討**」とある。
+- DCF-1b は **2026-09-25 に「3段階DCFの Phase1 逓減」として完了**（3段階は Phase1→Phase2 へ線形に下げる）。**設定済みの2段階への逓減は未着手のまま**。
+- 手書きの値を「そのまま採用する」設計は、もっと前からの方針: 「`segment_configured=True` の場合 recommended_g サニティ回避（weighted_growth 直接採用）」（growth_floor bypass、BACKLOG_DONE の SEGMENT 系の項）。2026-08-23 登録の項（Layer1〈設定済み〉にはHypePhase減速が効かない）も同じ指摘で、結論は「HypePhase依存を削除する方向」（GROWTH-1 は 2026-08-26 に廃止）。
+- TANUKI-CALC-CONTINUITY-1 (3)③（s=0 でも終点＝推奨成長率で渡す）で、逓減が「推奨成長率より高いときだけ効く」連続な形になり、設定済みとの差が表に出た。
+- **結論: 設定済みのメインに逓減を渡さないと決めた記録は無い。「手動設定の値は直接採用する」設計の帰結で、設定済みの2段階への逓減（DCF-1b の残り）が未着手。意図した設計というより、やり残し。** 今の状況（設定が古い・180日の印）を並べると、手書きは更新されない値なので、逓減で推奨成長率に近づける理由は強まる（手書き25銘柄の最後の更新は 2026-04-29〜09-05、5銘柄が180日超）。
+
+**経路の違い**
+
+| 銘柄の種類 | メイン・基準（理論株価） | BULL | BEAR | 逓減 |
+|---|---|---|---|---|
+| 未設定（`General` 1行・50銘柄） | 1回目で成長率を決め、`recommended_g` で**再計算**（`tapering_g_end` を渡す） | 逓減あり | 逓減あり | 推奨成長率より高い成長率だけ |
+| 設定済み・2段階（手書き・XBRL） | **1回目だけ。`tapering_g_end` なし** | 逓減なし | 逓減なし（`bear_multiplier` 再計算がある銘柄だけ逓減あり） | **かからない** |
+| 設定済み・3段階（NVDA・PLTR・APP・CELH・TSLA・AMD） | 3段階DCF（Phase1→Phase2 の線形逓減。`tapering_g_end` は使わない） | 同左 | 同左 | 3段階が担当 |
+
+**該当の銘柄**: 設定済み32（手書き25＋XBRLセグメント7）のうち、成長率が逓減の終点（`growth_sanity` の推奨成長率と業種から決まる値）より高い銘柄が11。うち3段階が6（NVDA・PLTR・APP・CELH・TSLA・AMD。逓減は不要）、**2段階が5（SOUN・TER・SOFI・LITE・CEG）**。
+
+**試算（メインにも `tapering_g_end` を渡す。`taper_main`）**: 変わるのは上の5銘柄だけ。
+
+| 銘柄 | 理論株価の変化 | 上昇余地 | 判定 |
+|---|---|---|---|
+| SOUN（保有） | −29.4% | +163% → +86% | WATCH のまま |
+| TER | −25.2% | — | TRIM のまま |
+| SOFI（保有） | −7.8% | +153% → +134% | WATCH のまま |
+| CEG | −2.3% | — | WATCH のまま |
+| LITE | −2.3% | — | TRIM のまま |
+
+判定の変化 0、保有では SOUN・SOFI だけ（CELH・NVDA・APP・PLTR・TSLA は3段階なので変化 0）。
+
+### 7-2. phase1 の年数の上限
+
+**今の決め方**: `calculate_moat_score`（`calculator/adjustments.py`）。Moat Score ＝ 0.4×粗利率（3年平均）＋ 0.4×（ROIC − 10%）÷ 30% ＋ 0.2×FCFマージン（3年平均）÷ 30%（各0〜1に正規化）。**phase1 の年数 ＝ 3 ＋ round(7 × Moat Score) ＝ 3〜10年**。**成長率とは無関係**（粗利率・ROIC・FCFマージンだけ）。
+
+**分布（82銘柄）**: 3年1・4年11・5年22・6年19・7年12・8年8・9年4・10年5（中央値6年）。成長率の高さで分けても平均の年数は違わない（成長率30%以上 5.7年・15〜30% 5.9年・15%未満 6.6年）。そのため **高成長の銘柄でも、粗利率・ROICが高ければ長く成長が続く前提**になる。phase1 の終わりの FCF が今の何倍か（`(1+g)^年数`）は、中央値 2.7倍・3倍超が31銘柄・**5倍超が14銘柄**: NVDA 38.4倍（9年・50%）・APP 31.3倍（10年・41%）・PLTR 17.1倍・ALAB 13.8倍・SOFI 8.8倍・CRWV 7.6倍・NET 7.0倍・DDOG 6.6倍・PAYS 6.4倍・IONQ 5.7倍・LLY 5.7倍・**FICO 5.5倍（10年・19%）**。
+
+**案（phase1 の年数に上限）と全銘柄の試算**（`taper_main` なし・単独）:
+
+| 案 | 内容 | 理論株価が変わる銘柄 | 変化の平均 | −10%超 | 判定の変化 | 保有の理論株価の変化 |
+|---|---|---|---|---|---|---|
+| p7 | 年数の上限を7年 | 17 | −2.7% | 9 | 2（V・LLY HOLD→TRIM） | APP −37.5%・NVDA −32.4%・ADBE −14.2%（BUYのまま） |
+| pmed_cap | 業種の中央値を上限（業種ごと。Technology 6年・Industrials 5年・Healthcare 8年 など） | 28 | −4.4% | 13 | 3（FICO BUY→WATCH・**保有 PLTR HOLD→TRIM**・RMBS BUY→WATCH） | NVDA −44.5%・APP −26.7%・ADBE −18.8%・PLTR −17.4% |
+| pcum5 | phase1 の終わりの FCF が5倍を超えない年数（下限3年。成長率が高いほど短く） | 14 | −6.8% | 14 | 5（PLTR HOLD→TRIM・ALAB・S → GROWTH_PREMIUM・DDOG BUY→WATCH・LLY HOLD→TRIM） | **CRWV −118%（理論株価がマイナス〈−6.1〉に）**・NVDA −69.8%・APP −61.7%・PLTR −53.8%・SOUN −26.4%・SOFI −39.6% |
+
+読み取り: p7 は片側（下がる側だけ）で影響が小さい。pmed_cap は業種の中央値より短い銘柄は変わらず、長い銘柄だけ下がる（片側）。pcum5 は成長率が高い銘柄を強く削り、**CRWV のように理論株価が負になる**（基準のFCFが小さく負債が大きい銘柄で、年数を3年まで削ると逓減の恩恵が消える）。年数を成長率の高さで決める考え方は筋が通るが、5倍の閾値は強すぎる（閾値を緩める試算〈例 8倍〉は未実施）。
+
+### 7-3. 組み合わせの試算（逓減をメインにも渡す＋phase1 の上限）
+
+組み合わせは足し合わせられないため、`taper_main` ＋ 各案を全82銘柄で `chain` 試算した（基準も `chain`）。HypeCore の stage は3案とも**変化 0**（最新の月の stage・推奨）。
+
+| 組み合わせ | 理論株価が変わる銘柄 | 判定の変化 | 保有の理論株価 | scope（`method_change_scope.py`。理論株価・判定・funda・乖離率・stage が変わる銘柄／参考の逆算値などのキーも含めて動く銘柄） |
+|---|---|---|---|---|
+| taper_main ＋ p7 | 22 | 2（V・LLY HOLD→TRIM） | APP −37.5%・NVDA −32.4%・SOUN −29.4%・ADBE −14.2%・SOFI −7.8%。判定は全保有で変化なし | 39／52 |
+| taper_main ＋ pmed_cap | 33 | 3（FICO BUY→WATCH・PLTR HOLD→TRIM・RMBS BUY→WATCH） | NVDA −44.5%・SOUN −29.4%・APP −26.7%・ADBE −18.8%・PLTR −17.4%・SOFI −7.8%。PLTR HOLD→TRIM | 49／59 |
+| taper_main ＋ pcum5 | 17 | 5（PLTR・ALAB・DDOG・S・LLY） | CRWV −118%・NVDA −69.8%・APP −61.7%・PLTR −53.8%・SOUN −43.2%・SOFI −42.6%。PLTR HOLD→TRIM | 33／47 |
+
+注意: `chain` の2本の比較には、理論株価が同じなのに判定が変わる銘柄（ABBV TRIM→HOLD・MSCI HOLD→TRIM）が出る。基準の `chain` と変種の `chain` を回す間に市場データが更新された影響で、変種の効果ではない（単独の試算の判定の変化には出ない）。表の「判定の変化」はこの2銘柄を除いた数。
+
+### 7-4. 案と決めてほしいこと（採るなら、計算方法の変更の手順で1回の公開にまとめる前提）
+
+**勧め**: **逓減をメインにも渡す（`taper_main`）＋ phase1 の年数を7年上限（`p7`）を1回の公開で**。理由: どちらも片側（理論株価が下がる側だけ）で、判定の変化が2・保有の判定は全て変わらず、影響が裾（NVDA・APP・FICO・SOUN・TER など）に集まる。膨らみの原因（高成長・高 β）のうち、年数と逓減の2つを、設計の整合として直せる。割引率は決定どおり今の設計のまま。
+
+| 項目 | 案 | 影響の大きさ | 決めてほしいこと |
+|---|---|---|---|
+| 逓減 | メインに `tapering_g_end` を渡す（設定済みの2段階5銘柄。3段階は対象外） | SOUN −29%・TER −25%・SOFI −8%・CEG・LITE −2%。判定0 | (a) 手書き・XBRL の成長率を「直接採用」から「推奨成長率へ逓減」に変えてよいか（手書きの値を尊重する設計との関係。逓減は成長率の初年度を変えず、終点だけ推奨成長率へ寄せる） |
+| phase1 の上限 | p7（7年上限）／pmed_cap（業種の中央値）／pcum5（FCF 5倍）／やらない | p7: 17銘柄・判定2・NVDA −32%・APP −38%。pmed_cap: 28銘柄・判定3（PLTR HOLD→TRIM）。pcum5: 強すぎる（CRWV が負） | (b) どれにするか。年数を成長率で決める案は閾値の再試算（8倍など）が先 |
+| 公開 | 計算方法の変更の手順（`CLAUDE_CODE_PROCEDURES.md`）で1回: コード（`core_calculator.py` の上限・`pipeline.py` の逓減）→ 全銘柄の試算（上のとおり済み）→ scope（`method_change_scope.py`）→ method_change 登録（理論株価・判定が動くので🛠で通知）→ 派生ファイル → 手動の連鎖（TANUKI→HypeCore→TANUKI）→ 次回の確認手順 | scope は p7 の組み合わせで約52銘柄 | (c) 公開の時期（日曜の連鎖の後〈11-30〉にそろえるか） |
+
+保有への影響（p7＋taper_main）: APP −37.5%・NVDA −32.4%・SOUN −29.4%・ADBE −14.2%・SOFI −7.8%（いずれも判定は BUY／WATCH のまま。上昇余地は NVDA +371% → +219%、APP +263% → +127%、SOUN +163% → +86%）。
+
+## 8. この文書の限界
 
 - 前提を**1つずつ**替えた試算で、組み合わせの効果（割引率と成長率の両方など）は足し合わせられない。
 - アナリストの売上予想の伸び（次の会計年度）は、会計年度のずれ・買収・取得の揺れがある（`GUIDANCE_REVISION_STEP0.md` §6）。成長率→予想の変種で予想のほうが高い銘柄（CRWV・SITM・AMD など）は、理論株価が上がる向きになる。
@@ -147,3 +222,5 @@ TANUKIの成長率が逆算より高い上位10銘柄（TANUKIの成長率／逆
 - 試算は2026-11-25のデータ・株価。株価が動けば上昇余地は変わる。
 - 判定は `tanuki_score`（funda と timing で決まる）の変化で、HypeCore の stage との読み合い（chain）は含まない。
 - hook・集計の道具は scratchpad（`variants.py`・`an1.py`・`an2.py`・`mkdoc.py`）。再現は `tools/sim/sim.py run NAME --hook variants.py`（環境変数 UPS_VARIANT）。
+- §7 の試算の hook は scratchpad の `variants2.py`（`taper_main`・`p7`・`pmed_cap`・`pcum5`、`+` で組み合わせ）。基準・組み合わせの `chain` は `tools/sim/sim.py chain`、scope は `scripts/method_change_scope.py snapshot/diff`（`--write` はしていない）。
+- §7-3 の `chain` の比較は、基準と変種を回す間に市場データが更新された影響（ABBV・MSCI の判定）を含む。stage は最新の月の `stage`・推奨を比べた。STONKS・ROTCE は回していない（この変更の対象外のはず。公開の手順で前後を確かめる）。
