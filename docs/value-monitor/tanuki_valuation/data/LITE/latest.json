@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -90.3,
-  "calculation_date": "2026-11-25T09:47:58+09:00",
+  "calculation_date": "2026-11-25T10:27:03+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -209,7 +209,7 @@
       "total_transient_amount": 3700000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目がマクロ変動や事業再編による一過性費用と明記されており、事業運営上の一時的な問題と判断される。"
+        "reasoning": "すべての項目がマクロ変動や事業再編による一過性費用と明記されており、事業運営上の一時的な問題を示す。"
       }
     },
     "action": "flagged",
@@ -371,10 +371,10 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 0.0,
     "per_gaap_ttm_sec": null,
-    "per_forward_yf": 11.474908,
+    "per_forward_yf": 12.137179,
     "market_cap_sec": 49540103503.41797,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": -0.15696525718565502,
+    "market_cap_yf_gap": -0.10830960817527902,
     "shares_wd": 101700000.0,
     "shares_issued": 0.0,
     "shares_note": null,
@@ -382,9 +382,9 @@
     "shares_cover_date": "2026-10-28",
     "outstanding_gap_pct": -10.8,
     "per_adjusted_ttm": null,
-    "peg": 0.63,
+    "peg": null,
     "ps_ttm_sec": 13.23610759415891,
-    "ev_ebitda": 35.836,
+    "ev_ebitda": 37.931,
     "ma200": 815.5506007385255,
     "forward_eps": 40.13453,
     "next_quarter_eps": 5.98,
@@ -554,9 +554,10 @@
   "next_earnings_date": "2027-02-02",
   "earnings_pending": {
     "status": "none",
-    "earnings_date": null,
-    "earnings_source": null,
-    "layer3_period_end": "2026-09-26"
+    "earnings_date": "2026-11-02",
+    "earnings_source": "yahoo_calendar",
+    "layer3_period_end": "2026-09-26",
+    "announced_period_end_est": "2026-12-26"
   },
   "segments": [
     {
@@ -579,6 +580,17 @@
   "recommended_g": 0.16004937563218807,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
+  "guidance_gap": {
+    "status": "ok",
+    "growth_gap_pt": -40.8,
+    "tanuki_growth": 0.1776,
+    "analyst_revenue_growth": 0.5851,
+    "analyst_count": 21,
+    "revisions_up_30d": 12,
+    "revisions_down_30d": 0,
+    "reason": null,
+    "estimates_fetched_at": "2026-11-25T01:16:17.977322+00:00"
+  },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,

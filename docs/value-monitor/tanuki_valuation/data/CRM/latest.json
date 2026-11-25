@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 87.7,
-  "calculation_date": "2026-11-25T09:46:22+09:00",
+  "calculation_date": "2026-11-25T10:25:13+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -227,7 +227,7 @@
       "total_transient_amount": 720000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断される。"
+        "reasoning": "すべての項目が「一過性の事業再編費用」と明記されており、事業運営上の臨時的なリストラ費用と判断されるため。"
       }
     },
     "action": "flagged",
@@ -391,10 +391,10 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 0.22497361070031918,
     "per_gaap_ttm_sec": 16.48177836083556,
-    "per_forward_yf": 11.282403,
+    "per_forward_yf": 12.071959,
     "market_cap_sec": 159246942522.3932,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": -0.066542439223931,
+    "market_cap_yf_gap": -0.0012180484430079908,
     "shares_wd": 821000000.0,
     "shares_issued": 3000000.0,
     "shares_note": null,
@@ -404,17 +404,17 @@
     "per_adjusted_ttm": 16.34,
     "peg": 0.6448,
     "ps_ttm_sec": 3.624355740415886,
-    "ev_ebitda": 13.925,
+    "ev_ebitda": 14.732,
     "ma200": 197.7267749786377,
     "forward_eps": 16.009,
     "next_quarter_eps": 3.45,
-    "analyst_target_median": 285.0,
-    "analyst_target_mean": 286.1402,
+    "analyst_target_median": 280.0,
+    "analyst_target_mean": 284.44208,
     "analyst_target_low": 165.0,
     "analyst_target_high": 475.0,
     "analyst_count": 53,
     "analyst_rec_key": "buy",
-    "dividend_yield": 0.009339371,
+    "dividend_yield": 0.009231101,
     "payout_ratio": 0.1566,
     "insider_buy_count": 1,
     "insider_sell_count": 2,
@@ -422,7 +422,7 @@
     "insider_latest_date": "2026-11-23",
     "revenue_ttm": 43938000000,
     "revenue_ttm_end": "2026-07-31",
-    "analyst_vs_iv": -21.4,
+    "analyst_vs_iv": -22.8,
     "max_eps": 14.8078,
     "per_max_eps_ttm": 13.1,
     "max_eps_reliability": "HIGH",
@@ -576,9 +576,10 @@
   "next_earnings_date": "2026-12-03",
   "earnings_pending": {
     "status": "none",
-    "earnings_date": null,
-    "earnings_source": null,
-    "layer3_period_end": "2026-07-31"
+    "earnings_date": "2026-08-26",
+    "earnings_source": "yahoo_calendar",
+    "layer3_period_end": "2026-07-31",
+    "announced_period_end_est": "2026-10-31"
   },
   "segments": [
     {
@@ -595,6 +596,17 @@
   "recommended_g": 0.14254078986342145,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
+  "guidance_gap": {
+    "status": "ok",
+    "growth_gap_pt": 4.7,
+    "tanuki_growth": 0.1425,
+    "analyst_revenue_growth": 0.095699996,
+    "analyst_count": 47,
+    "revisions_up_30d": 2,
+    "revisions_down_30d": 1,
+    "reason": null,
+    "estimates_fetched_at": "2026-11-25T01:17:19.555894+00:00"
+  },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,

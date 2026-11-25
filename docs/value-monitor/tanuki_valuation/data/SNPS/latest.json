@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -20.1,
-  "calculation_date": "2026-11-25T09:53:47+09:00",
+  "calculation_date": "2026-11-25T10:33:48+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -239,7 +239,7 @@
       "total_transient_amount": 285519000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「マクロ変動による一時的影響」または「一過性の事業再編費用」と明記されており、構造的悪化を示す記述はない。"
+        "reasoning": "すべての項目の理由がマクロ変動による一時的影響または一過性の事業再編費用と明記されており、構造的な悪化ではなく事業運営上の一時的な問題を示す。"
       }
     },
     "action": "flagged",
@@ -401,10 +401,10 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 0.5609900440811276,
     "per_gaap_ttm_sec": 74.14334898237858,
-    "per_forward_yf": 21.196693,
+    "per_forward_yf": 22.174433,
     "market_cap_sec": 79819689637.1205,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": -0.04884762833388978,
+    "market_cap_yf_gap": -0.004071431379875534,
     "shares_wd": 192319000.0,
     "shares_issued": 100646.0,
     "shares_note": null,
@@ -414,9 +414,9 @@
     "per_adjusted_ttm": 28.14,
     "peg": 2.0609,
     "ps_ttm_sec": 8.476608752554222,
-    "ev_ebitda": 40.065,
+    "ev_ebitda": 41.787,
     "ma200": 440.801901550293,
-    "forward_eps": 18.69018,
+    "forward_eps": 18.70713,
     "next_quarter_eps": 4.13,
     "analyst_target_median": 600.0,
     "analyst_target_mean": 591.4865,
@@ -583,9 +583,10 @@
   "next_earnings_date": "2026-12-09",
   "earnings_pending": {
     "status": "none",
-    "earnings_date": null,
-    "earnings_source": null,
-    "layer3_period_end": "2026-07-31"
+    "earnings_date": "2026-08-26",
+    "earnings_source": "yahoo_calendar",
+    "layer3_period_end": "2026-07-31",
+    "announced_period_end_est": "2026-10-31"
   },
   "segment_configured": false,
   "phase1_growth_original": 0.15,
@@ -593,6 +594,17 @@
   "recommended_g": 0.17729238731819397,
   "fcf_margin_bear_mult_applied": true,
   "fcf_margin_note": "FCFマージン悪化(22.0%→19.1%) BEAR補正係数=0.868",
+  "guidance_gap": {
+    "status": "ok",
+    "growth_gap_pt": 4.2,
+    "tanuki_growth": 0.1773,
+    "analyst_revenue_growth": 0.1356,
+    "analyst_count": 24,
+    "revisions_up_30d": 14,
+    "revisions_down_30d": 1,
+    "reason": null,
+    "estimates_fetched_at": "2026-11-25T01:17:33.835723+00:00"
+  },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
@@ -620,7 +632,7 @@
     "fcf_margin_bear_multiplier": 0.8682,
     "fcf_margin_note": "FCFマージン悪化(22.0%→19.1%) BEAR補正係数=0.868"
   },
-  "erp": -0.004,
+  "erp": -0.0039,
   "dilution_severity": "medium",
   "dilution_comment": "やや高い希薄化 ℹ️ 要注意"
 }

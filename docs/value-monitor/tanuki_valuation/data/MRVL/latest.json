@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -66.1,
-  "calculation_date": "2026-11-25T09:48:25+09:00",
+  "calculation_date": "2026-11-25T10:27:40+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -215,7 +215,7 @@
       "total_transient_amount": 31300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業運営上の一時的なリストラ費用と判断されるため。"
+        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -377,10 +377,10 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 0.11620895622114884,
     "per_gaap_ttm_sec": 45.91169769577269,
-    "per_forward_yf": 16.589134,
+    "per_forward_yf": 17.849464,
     "market_cap_sec": 121202290747.07031,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": -0.0922335871225316,
+    "market_cap_yf_gap": -0.023267578143018497,
     "shares_wd": 921200000.0,
     "shares_issued": 0.0,
     "shares_note": null,
@@ -390,17 +390,17 @@
     "per_adjusted_ttm": 29.13,
     "peg": 0.3007,
     "ps_ttm_sec": 12.825232082269379,
-    "ev_ebitda": 38.094,
+    "ev_ebitda": 40.953,
     "ma200": 189.16367500305176,
     "forward_eps": 7.37109,
     "next_quarter_eps": 1.1,
     "analyst_target_median": 300.0,
-    "analyst_target_mean": 309.14325,
+    "analyst_target_mean": 301.01825,
     "analyst_target_low": 175.0,
     "analyst_target_high": 450.0,
     "analyst_count": 40,
     "analyst_rec_key": "strong_buy",
-    "dividend_yield": 0.0017332274,
+    "dividend_yield": 0.0016581456,
     "payout_ratio": 0.0789,
     "insider_buy_count": 0,
     "insider_sell_count": 8,
@@ -562,9 +562,10 @@
   "next_earnings_date": "2026-12-02",
   "earnings_pending": {
     "status": "none",
-    "earnings_date": null,
-    "earnings_source": null,
-    "layer3_period_end": "2026-08-01"
+    "earnings_date": "2026-08-27",
+    "earnings_source": "yahoo_calendar",
+    "layer3_period_end": "2026-08-01",
+    "announced_period_end_est": "2026-11-01"
   },
   "segments": [
     {
@@ -581,6 +582,17 @@
   "recommended_g": 0.17849550656618512,
   "fcf_margin_bear_mult_applied": true,
   "fcf_margin_note": "FCFマージン悪化(20.0%→17.0%) BEAR補正係数=0.850",
+  "guidance_gap": {
+    "status": "ok",
+    "growth_gap_pt": -46.1,
+    "tanuki_growth": 0.1785,
+    "analyst_revenue_growth": 0.6391,
+    "analyst_count": 37,
+    "revisions_up_30d": 26,
+    "revisions_down_30d": 1,
+    "reason": null,
+    "estimates_fetched_at": "2026-11-25T01:16:22.183424+00:00"
+  },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,

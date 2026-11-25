@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 81.3,
-  "calculation_date": "2026-11-25T09:51:42+09:00",
+  "calculation_date": "2026-11-25T10:31:29+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -239,7 +239,7 @@
       "total_transient_amount": 357000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営の一過性調整で構造的悪化の兆候とは言えない。"
+        "reasoning": "マクロ変動による一時的影響と理由に明記されており、事業運営上の構造的悪化を示す内容ではないため。"
       }
     },
     "action": "flagged",
@@ -404,10 +404,10 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 2.328653330548667,
     "per_gaap_ttm_sec": 19.363819687318575,
-    "per_forward_yf": 13.612264,
+    "per_forward_yf": 13.789105,
     "market_cap_sec": 16168150432.861328,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": -0.08183730887189455,
+    "market_cap_yf_gap": -0.06990916255727186,
     "shares_wd": 22988000.0,
     "shares_issued": 0.0,
     "shares_note": "wd_not_quarterly:annual_weighted",
@@ -415,14 +415,14 @@
     "shares_cover_date": "2026-10-23",
     "outstanding_gap_pct": -7.0,
     "per_adjusted_ttm": 16.75,
-    "peg": 0.6603,
+    "peg": 0.6879,
     "ps_ttm_sec": 6.378288155998872,
-    "ev_ebitda": 15.208,
+    "ev_ebitda": 15.355,
     "ma200": 1057.5617974853515,
     "forward_eps": 51.00621,
     "next_quarter_eps": 9.56,
     "analyst_target_median": 800.0,
-    "analyst_target_mean": 821.3668,
+    "analyst_target_mean": 814.9458,
     "analyst_target_low": 481.0,
     "analyst_target_high": 1230.97,
     "analyst_count": 19,
@@ -583,9 +583,10 @@
   "next_earnings_date": "2027-01-28",
   "earnings_pending": {
     "status": "none",
-    "earnings_date": null,
-    "earnings_source": null,
-    "layer3_period_end": "2026-09-30"
+    "earnings_date": "2026-11-04",
+    "earnings_source": "yahoo_calendar",
+    "layer3_period_end": "2026-09-30",
+    "announced_period_end_est": "2026-12-31"
   },
   "segment_configured": false,
   "phase1_growth_original": 0.1973,
@@ -593,6 +594,17 @@
   "recommended_g": 0.18546314803805589,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
+  "guidance_gap": {
+    "status": "ok",
+    "growth_gap_pt": 12.1,
+    "tanuki_growth": 0.1855,
+    "analyst_revenue_growth": 0.0647,
+    "analyst_count": 17,
+    "revisions_up_30d": 1,
+    "revisions_down_30d": 13,
+    "reason": null,
+    "estimates_fetched_at": "2026-11-25T01:15:18.634838+00:00"
+  },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,

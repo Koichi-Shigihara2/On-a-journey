@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": -1.4,
-  "calculation_date": "2026-11-25T09:45:26+09:00",
+  "calculation_date": "2026-11-25T10:24:17+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -233,7 +233,7 @@
       "total_transient_amount": 15995000.0,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "理由欄に『マクロ変動による一時的影響』や『一過性の在庫評価損』と明記されており、すべて一時的な費用と判断される。"
+        "reasoning": "すべての費用がマクロ変動による一時的影響または一過性の在庫評価損と明記されており、事業運営上の一時的な問題を示す。"
       }
     },
     "action": "excluded",
@@ -393,10 +393,10 @@
     "growth_option_pv": 0,
     "alpha_uncapped": 0.010130367370531027,
     "per_gaap_ttm_sec": null,
-    "per_forward_yf": 19.688175,
+    "per_forward_yf": 20.28025,
     "market_cap_sec": 4473152946.1477585,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": -0.013955254134897732,
+    "market_cap_yf_gap": 0.015697723439730193,
     "shares_wd": 49822595.0,
     "shares_issued": 212672.0,
     "shares_note": null,
@@ -406,15 +406,15 @@
     "per_adjusted_ttm": 50.63,
     "peg": 0.7508,
     "ps_ttm_sec": 2.2336068927100214,
-    "ev_ebitda": 21.319,
+    "ev_ebitda": 21.923,
     "ma200": 169.1729248809814,
     "forward_eps": 4.40823,
     "next_quarter_eps": 0.42,
-    "analyst_target_median": 210.0,
-    "analyst_target_mean": 212.1987,
+    "analyst_target_median": 207.5,
+    "analyst_target_mean": 210.85709,
     "analyst_target_low": 148.57,
     "analyst_target_high": 315.0,
-    "analyst_count": 23,
+    "analyst_count": 24,
     "analyst_rec_key": "buy",
     "dividend_yield": 0.0,
     "payout_ratio": 0.0,
@@ -425,7 +425,7 @@
     "revenue_ttm": 2002659000,
     "revenue_ttm_end": "2026-08-01",
     "structural_deficit_kind": "cash_loss",
-    "analyst_vs_iv": 138.2,
+    "analyst_vs_iv": 135.4,
     "max_eps": null,
     "per_max_eps_ttm": null,
     "max_eps_reliability": "HIGH",
@@ -585,12 +585,13 @@
     "reliability": "LOW",
     "reliability_reason": "単四半期NI集中（一過性要因の可能性）"
   },
-  "next_earnings_date": "2026-12-03",
+  "next_earnings_date": "2026-12-09",
   "earnings_pending": {
     "status": "none",
-    "earnings_date": null,
-    "earnings_source": null,
-    "layer3_period_end": "2026-08-01"
+    "earnings_date": "2026-09-09",
+    "earnings_source": "yahoo_calendar",
+    "layer3_period_end": "2026-08-01",
+    "announced_period_end_est": "2026-11-01"
   },
   "segments": [
     {
@@ -619,6 +620,17 @@
   "recommended_g": 0.40758208590373834,
   "fcf_margin_bear_mult_applied": false,
   "fcf_margin_note": null,
+  "guidance_gap": {
+    "status": "ok",
+    "growth_gap_pt": 1.0,
+    "tanuki_growth": 0.1631,
+    "analyst_revenue_growth": 0.15359999,
+    "analyst_count": 22,
+    "revisions_up_30d": 7,
+    "revisions_down_30d": 5,
+    "reason": null,
+    "estimates_fetched_at": "2026-11-25T01:18:17.661437+00:00"
+  },
   "growth_sanity": {
     "verdict": "PLAUSIBLE",
     "floor_hit": false,
