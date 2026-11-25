@@ -44,7 +44,7 @@
     }
   },
   "upside_percent": 63.5,
-  "calculation_date": "2026-11-25T08:51:37+09:00",
+  "calculation_date": "2026-11-25T09:11:46+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -233,7 +233,7 @@
       "total_transient_amount": 133000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的支出であるため、構造的悪化ではなく一時的問題と判断される。"
+        "reasoning": "すべての項目の理由が「一過性の事業再編費用」と明記されており、事業再編に伴う一時的費用と判断できるため。"
       }
     },
     "action": "flagged",
@@ -577,12 +577,10 @@
   },
   "next_earnings_date": "2026-11-25",
   "earnings_pending": {
-    "status": "pending",
-    "earnings_date": "2026-11-25",
-    "earnings_source": "yahoo_calendar",
-    "layer3_period_end": "2026-07-31",
-    "announced_period_end_est": "2026-10-31",
-    "label": "最新の決算（11-25 発表）は未反映。次の取り込みは日曜"
+    "status": "none",
+    "earnings_date": null,
+    "earnings_source": null,
+    "layer3_period_end": "2026-07-31"
   },
   "segment_configured": false,
   "phase1_growth_original": 0.15,
