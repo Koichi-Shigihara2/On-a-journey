@@ -1,15 +1,15 @@
 {
   "intrinsic_value_per_share": 4.853742098287644,
   "intrinsic_value_beta": 3.87,
-  "upside_percent_beta": 124.2,
-  "intrinsic_value_rf": 13.81,
-  "upside_percent_rf": 700.4,
+  "upside_percent_beta": 119.7,
+  "intrinsic_value_rf": 14.18,
+  "upside_percent_rf": 705.6,
   "reverse_growth": {
     "status": "unsolved",
     "reverse_g": null,
     "reason": "株価が成長率-30%の理論株価より低い（解が範囲の外）"
   },
-  "intrinsic_value_rf_rate": 0.049040002822875975,
+  "intrinsic_value_rf_rate": 0.04848000049591064,
   "v0": 349656809.3448268,
   "v0_note": "v0はβ込みCAPMベース（intrinsic_value_betaの参考値）。メインの理論株価計算根拠はdcf_components.v0_rm（market_return 10%固定・βなし）を参照すること。",
   "alpha": 0.0,
@@ -25,31 +25,31 @@
     "1年後": {
       "future_value": 7.54,
       "value_growth_pct": 55.5,
-      "expected_return_pct": 337.1
+      "expected_return_pct": 328.4
     },
     "2年後": {
       "future_value": 11.72,
       "value_growth_pct": 141.6,
-      "expected_return_pct": 579.4
+      "expected_return_pct": 565.9
     },
     "3年後": {
       "future_value": 18.21,
       "value_growth_pct": 275.5,
-      "expected_return_pct": 955.7
+      "expected_return_pct": 934.7
     },
     "4年後": {
       "future_value": 18.76,
       "value_growth_pct": 286.8,
-      "expected_return_pct": 987.5
+      "expected_return_pct": 965.9
     },
     "5年後": {
       "future_value": 19.32,
       "value_growth_pct": 298.4,
-      "expected_return_pct": 1020.0
+      "expected_return_pct": 997.7
     }
   },
-  "upside_percent": 181.4,
-  "calculation_date": "2026-11-25T12:18:20+09:00",
+  "upside_percent": 175.8,
+  "calculation_date": "2026-11-26T06:39:59+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -300,7 +300,7 @@
     "roe_10yr_avg": -0.5152251275168697,
     "roe_years_used": 6,
     "roe_outlier_adj": true,
-    "current_price": 1.725000023841858,
+    "current_price": 1.7599999904632568,
     "latest_revenue": 40729000.0,
     "rpo": 270,
     "beta": 1.515,
@@ -334,9 +334,9 @@
     "alpha_uncapped": 0.0,
     "per_gaap_ttm_sec": null,
     "per_forward_yf": -2.6953125,
-    "market_cap_sec": 263850745.84677792,
+    "market_cap_sec": 269204234.06128883,
     "market_cap_source": "sec",
-    "market_cap_yf_gap": 2.3320843922647327e-08,
+    "market_cap_yf_gap": -0.019886321921927963,
     "shares_wd": 152820000.0,
     "shares_issued": 136952.0,
     "shares_note": null,
@@ -345,9 +345,9 @@
     "outstanding_gap_pct": 0.0,
     "per_adjusted_ttm": null,
     "peg": null,
-    "ps_ttm_sec": 3.4830260133821733,
+    "ps_ttm_sec": 3.55369603803431,
     "ev_ebitda": null,
-    "ma200": 9.557099950909619,
+    "ma200": 9.502799951434133,
     "forward_eps": -0.64,
     "next_quarter_eps": -0.21,
     "analyst_target_median": 8.0,
@@ -397,18 +397,18 @@
     "ai_comment": null
   },
   "phase1_growth": 0.554375784771699,
-  "required_growth_rf_base": -0.2744696722369251,
-  "risk_free_rate_live": 0.049040002822875975,
-  "risk_free_rate_live_date": "2026-11-24",
+  "required_growth_rf_base": -0.2715491019780324,
+  "risk_free_rate_live": 0.04848000049591064,
+  "risk_free_rate_live_date": "2026-11-25",
   "risk_free_rate_live_source": "tnx",
-  "required_growth_rf_live": -0.21693051188371482,
+  "required_growth_rf_live": -0.21845856444385825,
   "tanuki_score": "WATCH",
   "funda_score": 50,
   "score_comment": "DCF信頼性LOW(実績FCF赤字)のためupside依存判定を抑制→WATCH",
   "timing_score": 80,
   "sell_reason": null,
   "pre_rounding_score": "BUY",
-  "pre_rounding_comment": "割安圏(181%)で買い余地大、FCF黒字、売上成長加速",
+  "pre_rounding_comment": "割安圏(176%)で買い余地大、FCF黒字、売上成長加速",
   "rounded_by_policy": "A",
   "matrix": {
     "matrix": "④キャッシュ創出力系",
@@ -494,7 +494,7 @@
       "included_in_debt": null
     }
   },
-  "net_current_assets_ratio": 1.3486,
+  "net_current_assets_ratio": 1.3217,
   "dupont": {
     "ni_ttm": -121916241,
     "revenue_ttm": 73663000,
@@ -541,7 +541,7 @@
     "estimates_fetched_at": "2026-11-25T01:18:26.110021+00:00"
   },
   "upside_context": {
-    "upside_percent_beta": 124.2,
+    "upside_percent_beta": 119.7,
     "reverse_g": null,
     "tanuki_growth": 0.5544,
     "analyst_revenue_growth": 1.1348001,
@@ -584,5 +584,5 @@
     "fcf_margin_bear_multiplier": 1.0,
     "fcf_margin_note": null
   },
-  "erp": -0.4201
+  "erp": -0.4121
 }
