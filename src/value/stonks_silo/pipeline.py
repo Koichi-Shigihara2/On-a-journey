@@ -119,7 +119,7 @@ def run(tickers: list[str] | None = None) -> dict:
             # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]: Runwayのcashも同じ返却値から
             # 四半期優先で算出するため、analyze()より前に取得して渡す。
             net_cash_data = sec_reader.get_net_cash(ticker, sector=val["sector"], industry=val["industry"])
-            analysis = analyzer.analyze(data, net_cash_data=net_cash_data)
+            analysis = analyzer.analyze(data, net_cash_data=net_cash_data, sector=val["sector"], industry=val["industry"])
             result = _to_dict(analysis)
             # [[NETINCOME-DUAL-PIPELINE-1]]: 出力表示用フィールドをnet_income_fy
             # へ改名（単年度決算であることの明示、NAMING_CONVENTIONS.md規則2）。
