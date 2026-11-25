@@ -3138,11 +3138,16 @@ class TanukiValuationPipeline:
             # [[STONKS-DEFICIT-REALITY-EPIC-1]] ①（2026-11-26、method_change ID STONKS-DEFICIT-REALITY-EPIC-1-1）:
             # 流出は Layer3 の直近4四半期（営業CF − 設備投資）。STONKS SILO の _analyze_runway と同じ
             # common/sec_data/reader.py::get_runway_burn の1か所。TTMが取れない・現金の期末とずれるときだけ今の最新の年次FCF。
-            # 金融（valuation["financial"]）は営業CFに貸出の組成などが入り資金の持ちが意味を持たないので対象外（決定(b)）
+            # 金融（components.financial＝業種のマスター）は営業CFに貸出の組成などが入り資金の持ちが意味を持たないので対象外（決定(b)）
             _latest_fcf = fcf_history[-1]["fcf"] if fcf_history else None
             _latest_q_eps = self._load_eps_map().get(ticker, {}).get("gaap_eps")
             _runway_cash = get_runway_cash(bs_adj)
-            if valuation.get("financial"):
+            _comps_rw = valuation.get("components") or {}
+            _fin_rw = _comps_rw.get("financial")
+            if _fin_rw is None:
+                from common.sector_master import is_financial_ticker as _is_fin_rw
+                _fin_rw = _is_fin_rw(ticker, _comps_rw.get("sector"), _comps_rw.get("industry"))
+            if _fin_rw:
                 result["computed_runway_basis"] = "financial_excluded"
             else:
                 from common.sec_data.reader import get_runway_burn, RUNWAY_BURN_BASIS_TTM
