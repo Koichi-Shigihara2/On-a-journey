@@ -185,7 +185,7 @@
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 38・378・397・459（経由 `src/tail/sec_ctrl_fetcher.py::load_tail_tickers`）
 - Python・保存済みファイル: `src/tail/workflow_write.py` 行 32
 - JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 37
-- JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 379
+- JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 380
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 866
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
@@ -352,88 +352,88 @@
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
-| — | `all` | この段階の書き手あり<br>`docs/portfolio/tail/data/review_queue.json`<br>`docs/portfolio/tail/data/rss_state.json` | 314・383・397 | 残す（2026-10-22） |
-| / データの時点 | `backfilled` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 560・599・964・965 | 残す（2026-10-22） |
-| 後付け | `backfilled_note` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 941 | 残す（2026-10-22） |
-| DCFシナリオ | `base` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 621・630・639・792 | 残す（2026-10-22） |
-| 現在 | `base_intrinsic_value` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 646 | 残す（2026-10-22） |
-| DCFシナリオ | `bear` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 621・630・639・792 | 残す（2026-10-22） |
-| DCFシナリオ | `bull` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 621・630・639・792 | 残す（2026-10-22） |
-| レビューデータなし | `call2` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 726 | 残す（2026-10-22） |
-| 歴史的類比: ' + esc(ha.company) + ' | `company` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 747・749 | 残す（2026-10-22） |
+| — | `all` | この段階の書き手あり<br>`docs/portfolio/tail/data/review_queue.json`<br>`docs/portfolio/tail/data/rss_state.json` | 314・384・398 | 残す（2026-10-22） |
+| / データの時点 | `backfilled` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 561・600・965・966 | 残す（2026-10-22） |
+| 後付け | `backfilled_note` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 942 | 残す（2026-10-22） |
+| DCFシナリオ | `base` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 622・631・640・793 | 残す（2026-10-22） |
+| 現在 | `base_intrinsic_value` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 647 | 残す（2026-10-22） |
+| DCFシナリオ | `bear` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 622・631・640・793 | 残す（2026-10-22） |
+| DCFシナリオ | `bull` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 622・631・640・793 | 残す（2026-10-22） |
+| レビューデータなし | `call2` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 727 | 残す（2026-10-22） |
+| 歴史的類比: ' + esc(ha.company) + ' | `company` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 748・750 | 残す（2026-10-22） |
 | — | `components` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 370 | 残す（2026-10-22） |
-| ⚠ 楽観バイアス警告 | `concerns` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 579 | 残す（2026-10-22） |
-| — | `current_price` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 372・450・640 | 残す（2026-10-22） |
-| — | `data` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json` | 525・531 | 残す（2026-10-22） |
-| / データの時点 | `data_as_of` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 559・559 | 残す（2026-10-22） |
-| / データの時点 | `earnings_pending` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 562 | 残す（2026-10-22） |
-| 有効 (Effective) | `effective` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 885・886 | 残す（2026-10-22） |
-| — | `entry_condition` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 503・504 | 残す（2026-10-22） |
-| 登録日: ' + esc(th.entry_date \|\| '–') + ' | `entry_date` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 508 | 残す（2026-10-22） |
-| テーゼデータなし | `entry_price` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 486・486 | 残す（2026-10-22） |
-| — | `entry_story` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 497・498 | 残す（2026-10-22） |
-| エントリーストーリー進捗 | `entry_story_progress` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 755・755 | 残す（2026-10-22） |
-| — | `excerpt` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 920 | 残す（2026-10-22） |
-| — | `excerpt_ja` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 919 | 残す（2026-10-22） |
-| — | `exit_condition` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 501・502 | 残す（2026-10-22） |
-| — | `exit_distance` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 587 | 残す（2026-10-22） |
-| 遠 | `exit_distance_reason` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 591 | 残す（2026-10-22） |
-| — | `exit_guide` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 495・496 | 残す（2026-10-22） |
-| / 提出日: | `filing_date` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 910・913・913 | 残す（2026-10-22） |
-| マクロ環境の示唆 | `five_perspectives` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 760 | 残す（2026-10-22） |
+| ⚠ 楽観バイアス警告 | `concerns` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 580 | 残す（2026-10-22） |
+| — | `current_price` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 372・451・641 | 残す（2026-10-22） |
+| — | `data` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json` | 526・532 | 残す（2026-10-22） |
+| / データの時点 | `data_as_of` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 560・560 | 残す（2026-10-22） |
+| / データの時点 | `earnings_pending` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 375・563 | 残す（2026-10-22） |
+| 有効 (Effective) | `effective` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 886・887 | 残す（2026-10-22） |
+| — | `entry_condition` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 504・505 | 残す（2026-10-22） |
+| 登録日: ' + esc(th.entry_date \|\| '–') + ' | `entry_date` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 509 | 残す（2026-10-22） |
+| テーゼデータなし | `entry_price` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 487・487 | 残す（2026-10-22） |
+| — | `entry_story` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 498・499 | 残す（2026-10-22） |
+| エントリーストーリー進捗 | `entry_story_progress` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 756・756 | 残す（2026-10-22） |
+| — | `excerpt` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 921 | 残す（2026-10-22） |
+| — | `excerpt_ja` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 920 | 残す（2026-10-22） |
+| — | `exit_condition` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 502・503 | 残す（2026-10-22） |
+| — | `exit_distance` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 588 | 残す（2026-10-22） |
+| 遠 | `exit_distance_reason` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 592 | 残す（2026-10-22） |
+| — | `exit_guide` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 496・497 | 残す（2026-10-22） |
+| / 提出日: | `filing_date` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 911・914・914 | 残す（2026-10-22） |
+| マクロ環境の示唆 | `five_perspectives` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 761 | 残す（2026-10-22） |
 | — | `from` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`<br>`docs/portfolio/tail/data/review_queue.json` | 261 | 残す（2026-10-22） |
-| 現在 | `future_values` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 647 | 残す（2026-10-22） |
-| — | `generated_at` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 558・558 | 残す（2026-10-22） |
-| — | `health_score` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 421・453・553・602 | 残す（2026-10-22） |
-| — | `historical_analogy` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 746 | 残す（2026-10-22） |
-| 示唆: | `implication` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 752 | 残す（2026-10-22） |
-| — | `intrinsic_value` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 449 | 残す（2026-10-22） |
+| 現在 | `future_values` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 648 | 残す（2026-10-22） |
+| — | `generated_at` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 559・559 | 残す（2026-10-22） |
+| — | `health_score` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 422・454・554・603 | 残す（2026-10-22） |
+| — | `historical_analogy` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 747 | 残す（2026-10-22） |
+| 示唆: | `implication` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 753 | 残す（2026-10-22） |
+| — | `intrinsic_value` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 450 | 残す（2026-10-22） |
 | — | `intrinsic_value_per_share` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 373 | 残す（2026-10-22） |
-| Y1成長率 | `key` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`<br>`docs/portfolio/tail/data/review_queue.json` | 279・347・664・693 | 残す（2026-10-22） |
-| — | `key_assumptions` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 701 | 残す（2026-10-22） |
-| KPIデータなし | `kpi` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 326・521・523 | 残す（2026-10-22） |
-| — | `kpi_current` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 797 | 残す（2026-10-22） |
-| 1年後 | `kpi_forecasts` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 808・850・851 | 残す（2026-10-22） |
-| — | `kpi_format` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 799 | 残す（2026-10-22） |
-| — | `kpi_layer1_keys` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 798 | 残す（2026-10-22） |
-| KPIデータなし | `kpis` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/journal.json` | 523 | 残す（2026-10-22） |
-| ⏳ 決算の反映前 | `label` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 564・666・694・770 | 残す（2026-10-22） |
-| マクロ環境の示唆 | `macro_implications` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 757・757 | 残す（2026-10-22） |
-| 世の中の注目ポイント | `market_attention` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 756・756 | 残す（2026-10-22） |
-| — | `match` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 1080 | 残す（2026-10-22） |
-| — | `material_weaknesses` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 892 | 残す（2026-10-22） |
-| — | `next_kpis` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 593 | 残す（2026-10-22） |
-| テーゼへの問いかけ | `next_review_focus` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 738 | 残す（2026-10-22） |
+| Y1成長率 | `key` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`<br>`docs/portfolio/tail/data/review_queue.json` | 279・347・665・694 | 残す（2026-10-22） |
+| — | `key_assumptions` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 702 | 残す（2026-10-22） |
+| KPIデータなし | `kpi` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 326・522・524 | 残す（2026-10-22） |
+| — | `kpi_current` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 798 | 残す（2026-10-22） |
+| 1年後 | `kpi_forecasts` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 809・851・852 | 残す（2026-10-22） |
+| — | `kpi_format` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 800 | 残す（2026-10-22） |
+| — | `kpi_layer1_keys` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 799 | 残す（2026-10-22） |
+| KPIデータなし | `kpis` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/journal.json` | 524 | 残す（2026-10-22） |
+| ⏳ 決算の反映前 | `label` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 565・667・695・771 | 残す（2026-10-22） |
+| マクロ環境の示唆 | `macro_implications` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 758・758 | 残す（2026-10-22） |
+| 世の中の注目ポイント | `market_attention` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 757・757 | 残す（2026-10-22） |
+| — | `match` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 1081 | 残す（2026-10-22） |
+| — | `material_weaknesses` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 893 | 残す（2026-10-22） |
+| — | `next_kpis` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 594 | 残す（2026-10-22） |
+| テーゼへの問いかけ | `next_review_focus` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 739 | 残す（2026-10-22） |
 | — | `ok` | この段階の書き手あり<br>`docs/portfolio/tail/data/kpi/{T}_layer2.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 302・308・316・324 | 残す（2026-10-22） |
-| — | `operating_margin_terminal` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 698 | 残す（2026-10-22） |
-| ⚠ 楽観バイアス警告 | `optimism_bias_warning` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 575・576 | 残す（2026-10-22） |
-| その後: | `outcome` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 751 | 残す（2026-10-22） |
-| — | `period` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 909 | 残す（2026-10-22） |
-| — | `positions` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 383 | 残す（2026-10-22） |
-| ⚠ 楽観バイアス警告 | `positives` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 578 | 残す（2026-10-22） |
-| — | `quarter` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 315・318・533・533 | 残す（2026-10-22） |
+| — | `operating_margin_terminal` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 699 | 残す（2026-10-22） |
+| ⚠ 楽観バイアス警告 | `optimism_bias_warning` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 576・577 | 残す（2026-10-22） |
+| その後: | `outcome` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 752 | 残す（2026-10-22） |
+| — | `period` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 910 | 残す（2026-10-22） |
+| — | `positions` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 384 | 残す（2026-10-22） |
+| ⚠ 楽観バイアス警告 | `positives` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 579 | 残す（2026-10-22） |
+| — | `quarter` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 315・318・534・534 | 残す（2026-10-22） |
 | — | `queue` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 311 | 残す（2026-10-22） |
-| — | `recommendation` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 422・454・554・956 | 残す（2026-10-22） |
-| — | `revenue_growth_y1` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 695 | 残す（2026-10-22） |
-| — | `revenue_growth_y2` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 696 | 残す（2026-10-22） |
-| — | `revenue_growth_y3` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 697 | 残す（2026-10-22） |
-| — | `risk_factors` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 702 | 残す（2026-10-22） |
-| DCFシナリオ | `scenarios` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 360・621・621・621 | 残す（2026-10-22） |
-| — | `significant_deficiencies` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 900 | 残す（2026-10-22） |
-| 類似点: | `similarity` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 750 | 残す（2026-10-22） |
-| — | `source` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 912・912 | 残す（2026-10-22） |
-| — | `stage1` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 420・452・552・602 | 残す（2026-10-22） |
-| — | `stage2` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 628・801 | 残す（2026-10-22） |
-| ステータス: ' + esc(th.status \|\| '–') + ' | `status` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 312・347・360・390 | 残す（2026-10-22） |
-| — | `strategy_name` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 500 | 残す（2026-10-22） |
-| — | `summary` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 572・573・958・959 | 残す（2026-10-22） |
-| — | `thesis` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 304・416・481・494 | 残す（2026-10-22） |
-| — | `thesis_questions` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 733 | 残す（2026-10-22） |
-| — | `ticker` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 312・315・393・393 | 残す（2026-10-22） |
-| テーゼデータなし | `type` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 392・392・392・417 | 残す（2026-10-22） |
-| — | `unit` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 536 | 残す（2026-10-22） |
-| — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 374・448 | 残す（2026-10-22） |
-| / データの時点 | `val` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 371・447・562・562 | 残す（2026-10-22） |
+| — | `recommendation` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 423・455・555・957 | 残す（2026-10-22） |
+| — | `revenue_growth_y1` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 696 | 残す（2026-10-22） |
+| — | `revenue_growth_y2` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 697 | 残す（2026-10-22） |
+| — | `revenue_growth_y3` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 698 | 残す（2026-10-22） |
+| — | `risk_factors` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 703 | 残す（2026-10-22） |
+| DCFシナリオ | `scenarios` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 360・622・622・622 | 残す（2026-10-22） |
+| — | `significant_deficiencies` | この段階の書き手あり<br>`docs/portfolio/tail/data/ctrl/{T}/index.json`<br>`docs/portfolio/tail/data/ctrl/{T}/latest.json` | 901 | 残す（2026-10-22） |
+| 類似点: | `similarity` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 751 | 残す（2026-10-22） |
+| — | `source` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 913・913 | 残す（2026-10-22） |
+| — | `stage1` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 421・453・553・603 | 残す（2026-10-22） |
+| — | `stage2` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 629・802 | 残す（2026-10-22） |
+| ステータス: ' + esc(th.status \|\| '–') + ' | `status` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 312・347・360・391 | 残す（2026-10-22） |
+| — | `strategy_name` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 501 | 残す（2026-10-22） |
+| — | `summary` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 573・574・959・960 | 残す（2026-10-22） |
+| — | `thesis` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 304・417・482・495 | 残す（2026-10-22） |
+| — | `thesis_questions` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 734 | 残す（2026-10-22） |
+| — | `ticker` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 312・315・394・394 | 残す（2026-10-22） |
+| テーゼデータなし | `type` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 393・393・393・418 | 残す（2026-10-22） |
+| — | `unit` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 537 | 残す（2026-10-22） |
+| — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 374・449 | 残す（2026-10-22） |
+| / データの時点 | `val` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 371・448・563・563 | 残す（2026-10-22） |
 | — | `value` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 264・347・347・360 | 残す（2026-10-22） |
 
 ### `docs/portfolio/tail/index.html`（108項目）

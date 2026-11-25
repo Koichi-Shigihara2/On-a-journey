@@ -2258,6 +2258,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 **登録日:** 2026-11-22
 **発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
 **STEP 0の結果（2026-11-25）:** `docs/architecture/EARNINGS_REFLECTION_LAG_STEP0.md`。遅れの正体は日曜1回の取得（提出→Layer3 中央値4.5日、Layer3→TANUKIは0日）。案A（平日に提出を検知して銘柄だけ取る）・案B（反映前の印）の決めてほしいこと(a)〜(g)あり。NVDAは11-22時点でsubmissionsに新しい10-Qが無い（提出日はEDGARで要確認）。**登録だけで、実装は許可されていない**
+**案B公開済み（2026-11-25、`e8eb2a5d17`ほか。表示だけ）:** `common/earnings_pending.py`（判定は1か所。発表日 ≤ 米国東部の今日 かつ Layer3の最新の期末の次の四半期が発表日より前）、`latest.json`の`earnings_pending`・`report.txt`の`Earnings_Pending`・stock.html・TANUKI SCORE・TAILレビューの表示。案Aは`[[SEC-FILING-WATCH-WEEKDAY-1]]`（IDEAS_AND_WATCH.md）へ。確認は手順44（日曜の取り込みの後に印が外れること）。**確認の後にBACKLOG_DONE.mdへ移設する**
 **着手条件:** 上の行列の後
 
 #### 内容
