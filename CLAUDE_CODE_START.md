@@ -54,8 +54,8 @@
    - 確認の手順: ①`attributes/{T}.json` の `estimates.fetched_at` が日曜の定時の時刻に更新されている（監視銘柄84のうち取れない銘柄は一覧にして報告。CIXが取れない理由を確認）②`latest.json` の `guidance_gap.status` が82銘柄で `ok` か `no_estimate`（理由つき）、`report.txt` に `Guidance_Gap` 行がある ③TANUKI SCOREの「成長率−予想(pt)」列で並べ替えられ、stock.htmlに行が出る ④理論株価・判定が前日と同じ。合格したら`[[TANUKI-GUIDANCE-REVISION-BLIND-1]]`をBACKLOG_DONE.mdへ移設する
 
 47. **STONKS-DEFICIT-REALITY-EPIC-1 ①（資金の持ちの流出をTTMに）の、定時の後の確認**（公開は2026-11-26 手動: kaihatsu `f7b9d04284`・Stonks `45832636938`・TANUKI `45832652097`→HypeCore `45834738589`→TANUKI `45835195932`。ID `STONKS-DEFICIT-REALITY-EPIC-1-1`、scope 17銘柄。理論株価・判定・funda・stageの変化0〔82銘柄〕）
-   - 日時: 2026-11-27（金）06:30 JST ごろのTANUKI・Stonksの定時の実行の後（1回目の🛠は公開の手動の連鎖で付いた。この回が2回目）
-   - 期限: 2026-11-30
+   - 日時: **2026-11-28（土）06:30 JST ごろ**のTANUKI・Stonksの定時の実行の後（1回目の🛠は公開の手動の連鎖で付いた。この回が2回目。当初は11-27朝だったが、11-26 は米国の感謝祭でNYSE休場のため Market Data Daily がガードで何もせず連鎖が動かない〈11-26 10:03・10:52 UTCの実行は cancelled・下流 skipped を確認〉。11-27 は米国の短縮日で、その分の Daily が 11-28 朝に動く）
+   - 期限: 2026-11-30（②の公開はこの確認の後。11-28 朝に合格したら 11-28 中に公開できる）
    - 確認の手順: ①`latest.json`と`stonks-silo/data/results.json`に`method_change`の印が付かない（`method_change_applied`に`STONKS-DEFICIT-REALITY-EPIC-1-1`）②runwayが公開の直後の値と同じ（SOUN 19.27か月・IONQ 17.47か月〔総合 PROMISING 70.7〕・ASTS 35.34・AVAV 155.48・CRWV 2.46・JOBY 33.62・RKLB 169.81、TANUKIの`computed_runway_months`はCOHR 15.82・AMZN 29.23）③SOFIの`computed_runway_basis`が`financial_excluded`のまま（runwayなし・fundaは変わらない）④RCAT・CPRTが`annual_fallback`のまま ⑤理論株価・判定が前日と同じ。合格したら`[[STONKS-DEFICIT-REALITY-EPIC-1]]`の①を済にする（②③④は残す）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
