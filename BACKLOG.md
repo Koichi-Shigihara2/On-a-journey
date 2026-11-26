@@ -2111,6 +2111,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 **分類:** STONKS SILO / `src/value/stonks_silo/analyzer.py`・`common/profitability.py`・`src/tail/sec_items_fetcher.py`・TANUKIの`computed_runway_months`
 **登録日:** 2026-11-22
 **①②のSTEP 0の結果（2026-11-25）:** `docs/architecture/STONKS_DEFICIT_REALITY_STEP0.md`。①は流出が年次（現金は四半期）で期末がずれている。規則案＝Layer3の直近4四半期の営業CF−設備投資を1か所の関数にして STONKS・TANUKI の両方が呼ぶ。SOUNは24.2→19.3か月（原本の約18〜19か月と一致）・SAFE→WATCH、IONQも SAFE→WATCH（総合は10x_CANDIDATE→PROMISING）、TANUKIはSOFIだけ新しく12か月未満（funda 100→70、金融の扱いを決める）。理論株価・stageは変わらない。②は条件付き対価・減損のXBRLタグの許可リストで足し戻す案で、予測が変わるのはSOUN（0.72四半期・R² 0.696 → 15.0四半期・R² 0.964）・RKLB・S。STONKSの総合・TANUKIの判定は変わらない。method_changeは①②とも要。順は①→②。決めてほしいこと(a)〜(f)あり。**登録だけで、実装は許可されていない**
+**③④のSTEP 0の結果（2026-11-27）:** `docs/architecture/STONKS_DEFICIT_REALITY_STEP0.md` §6。対象は24銘柄（STONKS 17∪保有9）。③は`common/filing_text/`に2節だけ・直近8四半期・初回最大96書類（TAILの3項目が同じ書類を3回取っているのも1回に）。④は、内部統制は今の`sec_ctrl_fetcher.py`（正規表現だけ・保有9の10-Qだけ）を24銘柄・10-Kに広げる／going concernはXBRLに無く本文の定型文（AI不要）／人員削減はXBRLに出るのが遅くSOUNの27%も無いので8-K Item 2.05（`submissions`の`items`、追加リクエスト0）／ATMは標準タグで他の増資と分けられずAI（Grok）が要る。ATMは`share_count_change`（3年の実績）と混ぜず、時価総額比で並べて表示（funda・理論株価に入れない）。試しは保存済みの`ctrl/`で SOUN・CRWV が内部統制の印、SOUNは8-K・ATMの経路だけが拾える。**SEC本文は未取得**（`SEC_USER_AGENT_EMAIL`が無く実測は未）。決めてほしいこと(a)〜(f)あり。**登録だけで、実装は許可されていない**
 **着手条件:** 公開と確認の行列（手順34〜37・39 → Dailyの取り消しの原因 → 手順33 → [[TANUKI-SHARES-SINGLE-SOURCE-1]]の公開とその次の定時の確認）の後、かつ [[UNIVERSE-REBALANCE-2026Q4-1]] の削除の後。①②は値（results.json・latest.json）を変えるので、それまで読み取りの調査も始めない
 **発見:** 2026-11-22 チャット（STONKSの登録銘柄から早く黒字化しそうな銘柄を選ぶ→SOUNのFCF悪化の理由→2026/Q3の10-Qを読む→倒産リスク、の流れで判明）
 **経緯:** STONKS SILOとprofitability.jsonはSOUNを「資金の持ち24か月」「約0.72四半期後に黒字化（R² 0.696）」としていた。10-Q（0001840856-26-000028、2026-11-09提出）と8-K（2026-11-05）で確認した実態は、営業CFのTTMが−109.5M→−117.9Mで4四半期続けて悪化（−21.9→−26.3→−33.7→−36.0）、現金207.6Mで資金の持ちは約18〜19か月、営業利益は条件付き対価（買収のアーンアウト）の評価損益で大きく振れる（2025/Q1 +128.1M、9か月2026で評価益67.1M）。会社の目標は調整後EBITDAの黒字化を2027年後半、人員の27%削減（現金の費用16〜19M）、株式売出し枠の残り300M、内部統制のmaterial weaknessあり
@@ -2554,6 +2555,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **注（2026-11-23）:** 本件の調べに出るKULR（逆算Q4の粗利）・SPIR・BBAI・ONDS・XOM・FCX・VZ等は[[UNIVERSE-REBALANCE-2026Q4-1]]で登録を抹消した（データ・設定も削除。過去の試算・記録はそのまま）
 **着手条件:** なし（登録のみ。次の作業の順は`PROJECT_STATUS.md`）
 **段1の確認（2026-11-23）:** 公開（2026-11-16、`-1-1`）後の確認に合格（11-17朝・11-23の日曜の連鎖で96銘柄とも印0件・`quarterly_*.json`のbsは新しい四半期の分だけ増え・CAKE 41.25／KOは26.17で不変〈CONTINUITYの後の値〉）。段2以降が残るので本件は閉じない
+**段2のSTEP 0（2026-11-27、`docs/architecture/PARSER_LAYER3_STAGE2_STEP0.md`・`PARSER_LAYER3_STAGE2_cells.csv`・`PARSER_LAYER3_STAGE2_readers.csv`）:** 四半期のCF・PL・株数・RPOをLayer3の`val`で置き換えるセルは979（277ファイル・54銘柄。改訂640・分割の調整後など201・丸め63・定義の違い70・印つき5）。理論株価・判定・funda・HypeCore stageの変化0（TANUKI 82銘柄・保有9とも±0.0%）、読み手はparserの四半期のpl・cf・株数を読むものがほぼ無い（`get_quarterly`は呼び出し元0、rcc CHECK-59だけ）。`val_guard`・SEC-RETAGは段2でそのまま使える（当たり0・再タグ由来0）。試算は本番の`quarterly_bs.py`の`REPLACED_FIELDS`を広げて当てたもの（試算＝本番）。段を2a（CF＋PL〈EPS除く〉＋RPO 681セル）・2b（EPS・株数 298セル）に分ける案、method_changeは不要。決めてほしいこと(a)〜(f)あり。**実装は許可されていない**
 **発見:** FINDINGS 2026-11-04の3行（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
 
 #### 内容

@@ -1,0 +1,14 @@
+﻿読み手,読み方,読む項目,値が変わるセルを読むか,印（val_guard_marks）が届くか
+TANUKI VALUATION（pipeline.py・data_fetcher.py・core_calculator.py）,Layer3を直接（build_ticker_store・get_quarterly_series・ttm/）＋parserの四半期は最新1本の bs だけ（get_net_cash・DuPont）,PL・CF・株数・RPOはLayer3。parserの四半期から読むのは bs（total_assets・stockholders_equity・current_assets・current_liabilities・現金・借入金）,読まない（段2で変えるのは cf・pl・shares・other のセル）,届く（段1のとおり。段2で追加なし）
+SECReader.get_net_cash（TANUKI・STONKSの現金とRunway）,parserの四半期 quarterly_*.json の最新1本の bs,cash・短期投資・借入金,読まない（bsは段1で置き換え済み）,同上
+SECReader.get_quarterly・get_quarterly_range・get_eps_diluted,parserの四半期の全区分,pl・cf・shares・other 全部,読む（唯一の読み口）が、リポジトリ内に呼び出し元が無い（docstringの例〈common/sec_data/__init__.py〉だけ。grep: src・common・scripts・tools・tests・.github）,届かない（印を渡す経路なし）
+HypeCore（hypecore.py）,Layer3を直接（fetch_quarterly_fundamentals→get_quarterly_series）,売上・営業利益・EPSなど,読まない,—
+STONKS SILO（analyzer.py・fetcher.py・pipeline.py）,parserの年次 annual_*.json ＋ Layer3（financial_trend_calculator は get_quarterly_series）＋get_net_cash,年次のpl・cf・bs／四半期はLayer3,読まない（parserの四半期のpl・cfは読まない。年次は段2で変えない）,—
+TAIL（quarterly_review_generator.py・xbrl_segment_fetcher.py）,Layer3を直接。期の時点の値 first_val（TAIL-REVIEW-PERIOD-FILTER-1）,売上・営業利益・純益など,読まない,—
+EPS ANALYZER（adjusted_eps_analyzer）,company_facts を直接,EPS・株数,読まない（parserもLayer3も通らない）,—
+倍率の履歴（common/multiples.py）・収益の段階（common/profitability.py）・stage_v2・ROTCE（rotce.py）・ttm_calculator・q4_implied・normalizer,Layer3（またはcompany_facts）を直接,純益・売上・粗利・営業利益・OCF・capex・株数,読まない,—
+ROIC（common/sec_data/roic.py）・screening（dcf_validity_checker.py）,parserの年次,年次のpl・cf・bs,読まない（年次は段2で変えない）,—
+rcc CHECK-59（report_consistency_check.py::_check_share_count_outliers）,parserの年次・四半期の shares_diluted・shares_basic（前後2期の中央値比・表紙との比）,株数,読む: 四半期のshares 75＋78セル（うち分割の調整の違いが約200セル〈eps・sharesの合計〉）。WARN-59は3銘柄→2銘柄（SOUNの2022Q1 shares_basic 4,161,000が解消）,rccは印を読まない
+rcc CHECK-12（Cash-STI期ズレ）,parserの最新の四半期・年次の bs,現金・短期投資,読まない（bs）,—
+画面（stock.html・tanuki_score・portfolio・stonks-silo・tail）,TANUKI・STONKS・TAILの出力（latest.json・results.json・各json）,出力の値,上のどの読み手も値を変えないので画面の値は不変,—
+docs 配下のJS・HTML,normalized/ の json を読む（stock.html）。parserの quarterly_*.json は読まない,—,読まない,—
