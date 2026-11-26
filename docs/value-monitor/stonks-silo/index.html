@@ -552,6 +552,12 @@ function render() {
       </div>`;
     }
 
+    // 流出の基準（[[STONKS-DEFICIT-REALITY-EPIC-1]] ①）: ttm＝直近4四半期、annual_fallback＝TTMが取れない・期末がずれる、financial_excluded＝金融は対象外
+    const burnTitle = ra.burn_basis === 'ttm' ? `流出＝直近4四半期（期末 ${ra.burn_ttm_end || '—'}）の営業CF−設備投資`
+      : ra.burn_basis === 'annual_fallback' ? `流出＝最新の年次（直近4四半期が取れない／現金の期末とずれる: ${ra.burn_reason || '—'}）`
+      : ra.burn_basis === 'financial_excluded' ? '金融は資金の持ちの対象外' : '';
+    if (burnTitle) runwayHtml = `<span title="${burnTitle}">${runwayHtml}${ra.burn_basis === 'annual_fallback' ? '<sup style="color:var(--mut)">年</sup>' : ''}</span>`;
+
     return `
     <tr data-ticker="${ticker}" onclick="toggleDetail('${ticker}')" style="${isPinned?'background:rgba(244,63,94,0.04)':''}">
       <td style="padding:10px 6px 10px 10px;width:28px">

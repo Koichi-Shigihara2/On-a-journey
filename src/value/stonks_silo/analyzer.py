@@ -96,6 +96,11 @@ class RunwayAnalysis:
     # short_term_investmentsが存在せず0として計算した場合True（実測ゼロはFalse）。
     # report_consistency_check.py CHECK-49が参照する
     sti_quarterly_missing: bool = False
+    # [[STONKS-DEFICIT-REALITY-EPIC-1]] ①（2026-11-26）: 流出の基準。ttm＝Layer3の直近4四半期（営業CF−設備投資）、
+    # annual_fallback＝TTMが取れない・期末がずれるため今の年次、financial_excluded＝金融は資金の持ちの対象外
+    burn_basis: str = "annual"
+    burn_ttm_end: Optional[str] = None
+    burn_reason: Optional[str] = None
 
 
 @dataclass
@@ -165,7 +170,8 @@ class StonksAnalysis:
 
 class StonksAnalyzer:
 
-    def analyze(self, data: dict, net_cash_data: Optional[dict] = None) -> StonksAnalysis:
+    def analyze(self, data: dict, net_cash_data: Optional[dict] = None,
+                sector: Optional[str] = None, industry: Optional[str] = None) -> StonksAnalysis:
         """
         fetcher.load_annual_data() の戻り値を受け取り、StonksAnalysis を返す。
 
@@ -177,7 +183,7 @@ class StonksAnalyzer:
         records = data["records"]
 
         dq = self._analyze_deficit_quality(years, records)
-        ra = self._analyze_runway(years, records, net_cash_data)
+        ra = self._analyze_runway(years, records, net_cash_data, ticker=ticker, sector=sector, industry=industry)
         pp = self._analyze_profitability_path(years, records, ticker)
         dq.deficit_fixed_risk = self._calc_deficit_fixed_risk(dq, pp)
 
@@ -424,7 +430,8 @@ class StonksAnalyzer:
     # ------------------------------------------------------------------
 
     def _analyze_runway(
-        self, years: list[int], records: dict, net_cash_data: Optional[dict] = None
+        self, years: list[int], records: dict, net_cash_data: Optional[dict] = None,
+        ticker: Optional[str] = None, sector: Optional[str] = None, industry: Optional[str] = None,
     ) -> RunwayAnalysis:
         # [[BBAI-RDW-RUNWAY-VERIFICATION-1]]（2026-09-25）: cashは
         # common/sec_data/reader.py::get_runway_cash()（TANUKI VALUATIONの
@@ -455,13 +462,29 @@ class StonksAnalyzer:
         ocf = cf.get("operating_cash_flow")
         capex = cf.get("capital_expenditure")
 
-        # 月次バーン = (OCF - |CapEx|) / 12
-        # CapEx は正・負どちらで格納されていても abs() で正規化して差し引く
-        monthly_burn = None
-        # 式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]）。
-        # CapExの欠けは0とみなす（今の扱い。1つの規則にするのは段5）
+        # 金融（銀行・資産の重い業種）は営業CFに貸出の組成などが入り、資金の持ちが意味を持たないので対象外
+        # （[[STONKS-DEFICIT-REALITY-EPIC-1]] ①、決定(b)）。業種の判定は common/sector_master.py の1か所
+        if ticker:
+            from common.sector_master import is_financial_ticker
+            if is_financial_ticker(ticker, sector, industry):
+                return RunwayAnalysis(
+                    latest_year=latest_year, cash=cash, monthly_burn=None, runway_months=None,
+                    ocf_annual=ocf, capex_annual=capex, verdict="UNKNOWN",
+                    verdict_reason="金融は資金の持ちの対象外", sti_quarterly_missing=sti_quarterly_missing,
+                    burn_basis="financial_excluded",
+                )
+
+        # 月次バーン = FCF / 12。流出は Layer3 の直近4四半期（営業CF − 設備投資）。TTMが取れない・現金の期末とずれるときだけ
+        # 今の最新の年次（CapEx は正・負どちらで格納されていても abs() で正規化して差し引く）
+        # 式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]）。CapExの欠けは0とみなす（今の扱い。段5）
         from common.sec_data.fcf import free_cash_flow
-        if ocf is not None:
+        from common.sec_data.reader import get_runway_burn, RUNWAY_BURN_BASIS_TTM
+        burn = get_runway_burn(ticker) if ticker else {"basis": "annual_fallback", "fcf_ttm": None, "ttm_end": None,
+                                                         "reason": "no_ticker"}
+        monthly_burn = None
+        if burn["basis"] == RUNWAY_BURN_BASIS_TTM and burn["fcf_ttm"] is not None:
+            monthly_burn = burn["fcf_ttm"] / 12
+        elif ocf is not None:
             monthly_burn = free_cash_flow(ocf, capex if capex is not None else 0) / 12
 
         # Runway 計算
@@ -486,6 +509,9 @@ class StonksAnalyzer:
             verdict=verdict,
             verdict_reason=reason,
             sti_quarterly_missing=sti_quarterly_missing,
+            burn_basis=burn["basis"] if burn["basis"] == RUNWAY_BURN_BASIS_TTM else "annual_fallback",
+            burn_ttm_end=burn.get("ttm_end"),
+            burn_reason=burn.get("reason"),
         )
 
     def _runway_verdict(
