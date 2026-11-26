@@ -4,6 +4,31 @@
 
 ## 2026-11-23（完了）
 
+### ✅ [TANUKI-UPSIDE-MAGNITUDE-INFLATED-1] 割安度の絶対値が大きく出すぎる（NVDA +484%、BUY 19銘柄の多くが+100%前後）
+**完了（2026-11-26）:** 公開（2026-11-25）後の2回目の確認に合格。82銘柄とも`method_change`の印0件（`method_change_applied`に`TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1`）、全82銘柄の理論株価が11-25の公開値と同じ（APP 865.26・NVDA 495.13・SOUN 4.88・ADBE 527.83・SOFI 30.03・V 268.72・LLY 912.41）、`upside_context`はok 78・unsolved 4、古さの印はAMD・AMZN・CELH・META・MSFTの5銘柄、report.txtに`Upside_Context`行（手順46）
+**型・処置:** 調査
+**優先度:** 中
+**分類:** TANUKI VALUATION / DCFの前提
+**登録日:** 2026-11-22
+**発見:** 2026-11-22 チャット（F&G 9.6のExtreme Fearで週明けに買う株を検討し、On-a-journeyの出力を外部の決算・ニュースと突き合わせた）
+**STEP 0の結果（2026-11-25）:** `docs/architecture/UPSIDE_MAGNITUDE_STEP0.md`。理論株価の割引率は全銘柄 Rm=10%固定（β込みWACCは参考値）で、高βの上昇余地を大きくしている（β込みWACCに替えると中央値−22.7%・NVDA−65%・APP−69%・判定18〈保有APP BUY→WATCH・PLTR HOLD→TRIM〉）。ほかは成長率がアナリスト予想より高い銘柄（PAYS・FICO・SOFI・APP）。上昇余地の中央値は−23%で全体は膨らんでいない。手書き25銘柄を recommended_g に置き換えると下がらず上がる（中央値+10.5%）ので期限・印を勧める。ターミナルは問題なし（全銘柄3.5%以下）。逆算の成長率（市場の織り込み）はNVDA 5.2%・PAYS −4.5%・INTU −1.1%。決めてほしいこと（6-1〜6-3）あり。**登録だけで、実装は許可されていない**
+**6-1・6-2 公開済み（2026-11-25、`5e32f3c6b1`。表示だけ・method_changeなし。理論株価・判定の変化0〔82銘柄〕）:** 手書きの成長率の古さの印（`common/handset_growth.py`・`segment_config.json`の各ブロックに`updated`、180日超で印。2026-11-25の時点で AMD・AMZN・CELH・META・MSFT の5銘柄、GOOGL・AAPL・INTUは11-27から）、上昇余地の横にβ込みWACCの上昇余地・逆算した成長率・TANUKIとアナリストとの差（`common/reverse_growth.py`。79/82で解け、ASTS・RCAT・TSLAは範囲外で空欄に理由）。**残り（この件は閉じない）: phase1の年数の上限の試算**（STEP 0b。割引率は今の設計〈Rm10%固定・βなし〉のまま）。確認は手順46
+**残りのSTEP 0の結果（2026-11-26）:** `UPSIDE_MAGNITUDE_STEP0.md` §7。設定済みの成長率に逓減がかからない件は、DCF-1（2026-05-31）の「手動設定済みのため再計算ブロック非実行・将来DCF-1bで検討」のやり残し（DCF-1bは3段階だけ完了）で、意図して外した記録は無い。メインに逓減を渡すと変わるのは2段階の5銘柄だけ（SOUN −29%・TER −25%・SOFI −8%・CEG・LITE −2%、判定0）。phase1の年数（Moat Scoreで3〜10年、成長率と無関係）の上限は p7（7年）が片側で影響小（17銘柄・判定2・APP −38%・NVDA −32%）、pmed_cap（業種の中央値）は28銘柄・判定3（PLTR HOLD→TRIM）、pcum5（FCF5倍）は強すぎる。勧めは taper_main＋p7を計算方法の変更の手順で1回の公開（scope 約52銘柄）。決めてほしいこと(a)〜(c)あり。**実装は許可されていない**
+**残りの公開（2026-11-25、ID `TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1`、scope 22銘柄）:** 設定済みの2段階にも逓減をメインに渡す（`pipeline.py`）＋phase1の年数の上限7年（`PHASE1_YEARS_MAX`）。理論株価が変わる22銘柄（保有 APP −37.5%・NVDA −32.4%・SOUN −29.4%・ADBE −14.2%・SOFI −7.8%）・判定の変化2（LLY・V HOLD→TRIM）・stage 0。内訳は`UPSIDE_MAGNITUDE_STEP0.md` §7-5。**2回目の確認（11-26朝の定時）の後に移設する**（手順46）
+**着手条件:** 上の行列の後
+
+#### 内容
+- NVDAはIV 734ドル・株価125.5ドル。PAYS +665%・FICO +97%はIVが30日で2倍超（計算方法の変更による）
+- 原因の切り分け（成長率の上限0.5・phase1の年数・ターミナル・割引率）から。推移（自分の過去との比較）は判断に使えている
+
+#### 投資判断への影響
+今あり（絶対値をそのまま信じられない）
+
+#### 規模の見込み
+中
+
+---
+
 ### ✅ [SEC-RETAG-RECONCILE-1] 申告のタグの付け替え・漏れで、Layer3とbs_linesが値を取りこぼす（COHR D&A・SPIR・DOCNの短期投資・KULRの営業CF）
 **完了（2026-11-25）:** 公開（2026-11-24）後の2回目の確認に合格。82銘柄とも`method_change`の印0件（`method_change_applied`に`SEC-RETAG-RECONCILE-1-1`）、DOCNの理論株価 58.99、COHR D&A 546M・ENTG 340M・MSCI 198M・FLYW 29.7M、DOCNの`bs_lines`に`MarketableSecurities`の行。確認は手順42（済。日曜の`SEC_Data_Update`〈11-29〉の後の`ttm/`・`bs_lines/`は、日曜の連鎖の確認〈手順41〉と一緒に見る）
 **型・処置:** 型A・根治策

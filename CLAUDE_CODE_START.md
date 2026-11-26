@@ -5,7 +5,7 @@
 
 ## 今の状態（2026-11-12 終業）
 
-- BACKLOG.md のアクティブは **22件**（`^### [` の機械カウント）。rcc NG 0・WARN 223、pytest 2960件通過・失敗2（kaihatsu。ruffの無い環境の1件と、SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
+- BACKLOG.md のアクティブは **21件**（`^### [` の機械カウント）。rcc NG 0・WARN 223、pytest 2960件通過・失敗2（kaihatsu。ruffの無い環境の1件と、SITMの既知の例外 `test_stonks_flag_rule`）・skip 6。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider --deselect tests/test_common_path_guard.py::test_no_open_without_encoding_ruff_plw1514`（`PYTHONUTF8=1`。ruffの無い環境ではその1件を除く）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
 - **未公開のコードの置き場所は無い**（Layer3の定義の列〈PARSER段1・CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARES〉は2026-11-23に全部公開済み。記録は`BACKLOG_DONE.md`・各STEP 0・`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`）。PARSER-LAYER3は段2以降が残る
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
@@ -53,10 +53,10 @@
    - 期限: 2026-12-01
    - 確認の手順: ①`attributes/{T}.json` の `estimates.fetched_at` が日曜の定時の時刻に更新されている（監視銘柄84のうち取れない銘柄は一覧にして報告。CIXが取れない理由を確認）②`latest.json` の `guidance_gap.status` が82銘柄で `ok` か `no_estimate`（理由つき）、`report.txt` に `Guidance_Gap` 行がある ③TANUKI SCOREの「成長率−予想(pt)」列で並べ替えられ、stock.htmlに行が出る ④理論株価・判定が前日と同じ。合格したら`[[TANUKI-GUIDANCE-REVISION-BLIND-1]]`をBACKLOG_DONE.mdへ移設する
 
-46. **TANUKI-UPSIDE-MAGNITUDE-INFLATED-1 6-1・6-2（古さの印・逆算した成長率）の、定時の後の確認**（公開は2026-11-25 手動: TANUKI `45531138291`。表示だけ・method_changeなし。理論株価・判定の変化0〔82銘柄〕）
-   - 日時: 2026-11-26（木）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（古さの印の件数は 11-27 以降に GOOGL・AAPL・INTU が加わる）
+47. **STONKS-DEFICIT-REALITY-EPIC-1 ①（資金の持ちの流出をTTMに）の、定時の後の確認**（公開は2026-11-26 手動: kaihatsu `f7b9d04284`・Stonks `45832636938`・TANUKI `45832652097`→HypeCore `45834738589`→TANUKI `45835195932`。ID `STONKS-DEFICIT-REALITY-EPIC-1-1`、scope 17銘柄。理論株価・判定・funda・stageの変化0〔82銘柄〕）
+   - 日時: 2026-11-27（金）06:30 JST ごろのTANUKI・Stonksの定時の実行の後（1回目の🛠は公開の手動の連鎖で付いた。この回が2回目）
    - 期限: 2026-11-30
-   - 確認の手順: ①`latest.json`の`upside_context`が82銘柄にあり、`status`が`ok`（79前後）か`unsolved`（理由つき。ASTS・RCAT・TSLA型）②`handset_growth_age.status=stale`の銘柄が`updated`から180日超の銘柄と一致する（11-26: AMD・AMZN・CELH・META・MSFT）③report.txtに`Upside_Context`行がある ④理論株価・判定が前日と同じ。⑤**`TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1`（逓減をメインにも＋phase1の年数7年上限）の2回目**: 全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`-1-1`）・22銘柄の理論株価が公開の直後の値と同じ（動くのは新しい決算・株価の分だけ）・判定の変化が相場の分だけ。**2回目が合格したら`[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`をBACKLOG_DONE.mdへ移設する**（公開は2026-11-25 手動: TANUKI→HypeCore→TANUKI。1回目の🛠はscopeの22銘柄と一致すること。**1回目は確認済み（2026-11-25）**: TANUKI `45536197714`・HypeCore `45537946722`・TANUKI `45538246008`。1回目の`method_change`の印は22銘柄でscopeと一致、3回目は印0・`method_change_applied`が82銘柄、理論株価は公開の前の試算と同じ〈APP 865.26・NVDA 495.13・SOUN 4.88・ADBE 527.83・SOFI 30.03・V 268.72〈TRIM〉・LLY 912.41〈TRIM〉〉）
+   - 確認の手順: ①`latest.json`と`stonks-silo/data/results.json`に`method_change`の印が付かない（`method_change_applied`に`STONKS-DEFICIT-REALITY-EPIC-1-1`）②runwayが公開の直後の値と同じ（SOUN 19.27か月・IONQ 17.47か月〔総合 PROMISING 70.7〕・ASTS 35.34・AVAV 155.48・CRWV 2.46・JOBY 33.62・RKLB 169.81、TANUKIの`computed_runway_months`はCOHR 15.82・AMZN 29.23）③SOFIの`computed_runway_basis`が`financial_excluded`のまま（runwayなし・fundaは変わらない）④RCAT・CPRTが`annual_fallback`のまま ⑤理論株価・判定が前日と同じ。合格したら`[[STONKS-DEFICIT-REALITY-EPIC-1]]`の①を済にする（②③④は残す）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

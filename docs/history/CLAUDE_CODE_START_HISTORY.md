@@ -3383,3 +3383,12 @@ Update workflows実装・本番消費者8ファイル中3/8切替完了〉へ既
    - 期限: 2026-11-26
    - 確認の手順: ①全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`SEC-RETAG-RECONCILE-1-1`）②DOCNの理論株価が58.99前後・判定HOLD、COHRの`fcf_estimation.da`が546M前後・ENTG 340M・MSCI 198M・FLYW 29.7M ③日曜の`SEC_Data_Update`の後も、`ttm/`のCOHR・ENTG・MSCI・FLYWのD&Aが同じ値で、`bs_lines/`のDOCNの最新の申告に`MarketableSecurities`の行がある（日曜の更新が新しい申告で`MarketableSecurities`の行を取る）④rccのCHECK-INVが新しいキー（`retag_alias`・`total_tag_was_partial`・`partial_concept_only`）で出ない。**不合格なら`[[SEC-RETAG-RECONCILE-1]]`をBACKLOGに戻して報告する**
    - **結果（2026-11-25）**: TANUKI 06:46 JSTの定時の後、82銘柄とも`method_change`の印0件（`method_change_applied`に`SEC-RETAG-RECONCILE-1-1`）・DOCN 58.99・COHR D&A 546.2M・ENTG 340.4M・MSCI 197.9M・FLYW 29.7M・DOCNの`bs_lines`に`MarketableSecurities`。日曜（11-29）の`SEC_Data_Update`の後の`ttm/`・`bs_lines/`は手順41の回と一緒に見る
+
+### 手順46（済 2026-11-26）
+
+46. **TANUKI-UPSIDE-MAGNITUDE-INFLATED-1 6-1・6-2（古さの印・逆算した成長率）の、定時の後の確認**（公開は2026-11-25 手動: TANUKI `45531138291`。表示だけ・method_changeなし。理論株価・判定の変化0〔82銘柄〕）
+   - 日時: 2026-11-26（木）06:30 JST ごろのTANUKI VALUATIONの定時の実行の後（古さの印の件数は 11-27 以降に GOOGL・AAPL・INTU が加わる）
+   - 期限: 2026-11-30
+   - 確認の手順: ①`latest.json`の`upside_context`が82銘柄にあり、`status`が`ok`（79前後）か`unsolved`（理由つき。ASTS・RCAT・TSLA型）②`handset_growth_age.status=stale`の銘柄が`updated`から180日超の銘柄と一致する（11-26: AMD・AMZN・CELH・META・MSFT）③report.txtに`Upside_Context`行がある ④理論株価・判定が前日と同じ。⑤**`TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1`（逓減をメインにも＋phase1の年数7年上限）の2回目**: 全銘柄の`latest.json`の`method_change`が付かない（`method_change_applied`に`-1-1`）・22銘柄の理論株価が公開の直後の値と同じ（動くのは新しい決算・株価の分だけ）・判定の変化が相場の分だけ。**2回目が合格したら`[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`をBACKLOG_DONE.mdへ移設する**（公開は2026-11-25 手動: TANUKI→HypeCore→TANUKI。1回目の🛠はscopeの22銘柄と一致すること。**1回目は確認済み（2026-11-25）**: TANUKI `45536197714`・HypeCore `45537946722`・TANUKI `45538246008`。1回目の`method_change`の印は22銘柄でscopeと一致、3回目は印0・`method_change_applied`が82銘柄、理論株価は公開の前の試算と同じ〈APP 865.26・NVDA 495.13・SOUN 4.88・ADBE 527.83・SOFI 30.03・V 268.72〈TRIM〉・LLY 912.41〈TRIM〉〉）
+
+   - **結果（2026-11-26）**: 06:47 JSTの定時の後、82銘柄とも`method_change`の印0件（`method_change_applied`に`TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1`）、全82銘柄の理論株価が11-25の公開値と同じ（APP 865.26・NVDA 495.13・SOUN 4.88・ADBE 527.83・SOFI 30.03・V 268.72・LLY 912.41）、`upside_context`はok 78・unsolved 4、古さの印はAMD・AMZN・CELH・META・MSFTの5銘柄、report.txtに`Upside_Context`行。`[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]`をBACKLOG_DONE.mdへ移設
