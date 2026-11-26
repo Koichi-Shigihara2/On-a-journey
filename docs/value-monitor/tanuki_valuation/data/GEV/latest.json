@@ -49,7 +49,7 @@
     }
   },
   "upside_percent": 9.4,
-  "calculation_date": "2026-11-26T06:44:28+09:00",
+  "calculation_date": "2026-11-26T22:58:16+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -244,7 +244,7 @@
       "total_transient_amount": 69000000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目が「マクロ変動による一時的影響」または「一過性の事業再編費用」と明記されており、性質上いずれも一時的と判断される。"
+        "reasoning": "すべての項目がマクロ変動による一時的影響または一過性の事業再編費用と明記されており、事業運営上の一時的な問題と判断される。"
       }
     },
     "action": "flagged",
@@ -508,7 +508,8 @@
     "DILUTION-DEFINITION-UNIFY-1-1",
     "TANUKI-SHARES-SINGLE-SOURCE-1-1",
     "SEC-RETAG-RECONCILE-1-1",
-    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1"
+    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1",
+    "STONKS-DEFICIT-REALITY-EPIC-1-1"
   ],
   "fcf_history": [
     {
@@ -574,6 +575,8 @@
     ],
     "buyback_ttm": 6371000000.0
   },
+  "computed_runway_basis": "ttm",
+  "computed_runway_ttm_end": "2026-09-30",
   "net_current_assets_ratio": -0.0563,
   "dupont": {
     "ni_ttm": 10368000000,

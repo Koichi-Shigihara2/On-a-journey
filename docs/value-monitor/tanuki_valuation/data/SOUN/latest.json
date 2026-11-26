@@ -49,7 +49,7 @@
     }
   },
   "upside_percent": 84.4,
-  "calculation_date": "2026-11-26T06:40:40+09:00",
+  "calculation_date": "2026-11-26T22:54:46+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + tapering DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "tapering",
   "growth": {
@@ -211,7 +211,7 @@
       "total_transient_amount": 316000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的悪化を示す内容ではない。"
+        "reasoning": "マクロ変動による一時的影響と明記されており、事業運営上の構造的悪化ではなく外部要因による一過性の費用と判断される。"
       }
     },
     "action": "flagged",
@@ -384,7 +384,7 @@
     "insider_buy_count": 0,
     "insider_sell_count": 6,
     "insider_net_direction": "Sell優勢",
-    "insider_latest_date": "2026-09-21",
+    "insider_latest_date": "2026-11-25",
     "revenue_ttm": 223576000,
     "revenue_ttm_end": "2026-09-30",
     "structural_deficit_kind": "cash_loss",
@@ -440,6 +440,7 @@
     "qx": true,
     "qy": false
   },
+  "method_change": "STONKS-DEFICIT-REALITY-EPIC-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -459,7 +460,8 @@
     "DILUTION-DEFINITION-UNIFY-1-1",
     "TANUKI-SHARES-SINGLE-SOURCE-1-1",
     "SEC-RETAG-RECONCILE-1-1",
-    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1"
+    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1",
+    "STONKS-DEFICIT-REALITY-EPIC-1-1"
   ],
   "fcf_history": [
     {
@@ -526,7 +528,9 @@
       "2026-09-30"
     ]
   },
-  "computed_runway_months": 24.15488150188123,
+  "computed_runway_basis": "ttm",
+  "computed_runway_ttm_end": "2026-09-30",
+  "computed_runway_months": 19.27172853451344,
   "net_current_assets_ratio": 0.1356,
   "dupont": {
     "ni_ttm": -73577000,

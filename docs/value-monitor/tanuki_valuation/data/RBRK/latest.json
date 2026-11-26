@@ -49,7 +49,7 @@
     }
   },
   "upside_percent": -34.5,
-  "calculation_date": "2026-11-26T06:39:55+09:00",
+  "calculation_date": "2026-11-26T22:54:10+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -417,6 +417,7 @@
     "qx": false,
     "qy": true
   },
+  "method_change": "STONKS-DEFICIT-REALITY-EPIC-1-1",
   "method_change_applied": [
     "FCF-DEFINITION-SINGLE-SOURCE-1",
     "FCF-DEFINITION-SINGLE-SOURCE-1-2",
@@ -436,7 +437,8 @@
     "DILUTION-DEFINITION-UNIFY-1-1",
     "TANUKI-SHARES-SINGLE-SOURCE-1-1",
     "SEC-RETAG-RECONCILE-1-1",
-    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1"
+    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1",
+    "STONKS-DEFICIT-REALITY-EPIC-1-1"
   ],
   "fcf_history": [
     {
@@ -501,6 +503,8 @@
       "2026-07-31"
     ]
   },
+  "computed_runway_basis": "ttm",
+  "computed_runway_ttm_end": "2026-07-31",
   "net_current_assets_ratio": 0.0399,
   "dupont": {
     "excluded": true,
@@ -512,7 +516,7 @@
     "earnings_date": "2026-08-27",
     "earnings_source": "yahoo_calendar",
     "layer3_period_end": "2026-07-31",
-    "announced_period_end_est": "2026-10-31"
+    "note": "今以前の一番新しい発表日が90日より古い（取り込みの遅れとは見ない）"
   },
   "segments": [
     {

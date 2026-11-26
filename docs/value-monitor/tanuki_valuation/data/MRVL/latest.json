@@ -49,7 +49,7 @@
     }
   },
   "upside_percent": -65.9,
-  "calculation_date": "2026-11-26T06:39:02+09:00",
+  "calculation_date": "2026-11-26T22:53:21+09:00",
   "formula": "Koichi式 v8.2.0（動的WACC + two_stage DCF + FCFベース自動判定 + 成長オプション）",
   "dcf_type": "two_stage",
   "growth": {
@@ -220,7 +220,7 @@
       "total_transient_amount": 31300000,
       "ai_assessment": {
         "assessment": "transient",
-        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、事業運営上の一時的な問題を示すため。"
+        "reasoning": "すべての項目の理由が『一過性の事業再編費用』と明記されており、構造的な悪化を示す記述はないため、一時的な事業運営上の費用と判断。"
       }
     },
     "action": "flagged",
@@ -486,7 +486,8 @@
     "DILUTION-DEFINITION-UNIFY-1-1",
     "TANUKI-SHARES-SINGLE-SOURCE-1-1",
     "SEC-RETAG-RECONCILE-1-1",
-    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1"
+    "TANUKI-UPSIDE-MAGNITUDE-INFLATED-1-1",
+    "STONKS-DEFICIT-REALITY-EPIC-1-1"
   ],
   "fcf_history": [
     {
@@ -552,6 +553,8 @@
     ],
     "buyback_ttm": 1900100000.0
   },
+  "computed_runway_basis": "ttm",
+  "computed_runway_ttm_end": "2026-08-01",
   "net_current_assets_ratio": 0.0449,
   "dupont": {
     "ni_ttm": 2639900000,
@@ -572,7 +575,7 @@
     "earnings_date": "2026-08-27",
     "earnings_source": "yahoo_calendar",
     "layer3_period_end": "2026-08-01",
-    "announced_period_end_est": "2026-11-01"
+    "note": "今以前の一番新しい発表日が90日より古い（取り込みの遅れとは見ない）"
   },
   "segments": [
     {
