@@ -12,7 +12,9 @@ Market_Data_Daily_Update.ymlは20:47〜23:17 UTCの間に30分おきに起動す
       取り直しは期待する日から JPX_RETRY_DAYS 日以内だけ（Yahooに足が無い日で毎回起動し続けない）
 
 使い方: python common/market_data/daily_guard.py [--now 2026-09-29T20:30:00Z]
-出力（標準出力）: run=true|false / reason=... / expected_date=YYYY-MM-DD
+出力（標準出力）: run=true|false / reason=... / expected_date=YYYY-MM-DD / mode=full|jpx_only
+  mode=jpx_only は(3)の起動（日本の行の取り直しだけ）。ワークフローは ^N225 だけを取り、保存した後に自分を取り消して下流
+  （Market Pulse・Stonks・TANUKI）を起動しない（下流は「新しいデータを保存した成功の実行」だけで動く作り）。米国の終値の取得（mode=full）とは別
 """
 import argparse
 import json
@@ -32,6 +34,7 @@ BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "daily")
 CLOSE_WAIT = timedelta(minutes=20)
 COMPLETE_RATIO = 0.95
 JPX_RETRY_DAYS = 4
+MODE_FULL, MODE_JPX_ONLY = "full", "jpx_only"
 
 
 def _valid_close(r):
@@ -87,7 +90,8 @@ def decide(now: datetime, base: str = BASE) -> dict:
     if sched.empty:
         pend = jpx_pending(now, base)
         if pend:
-            return {"run": "true", "reason": f"NYSE休場日（{day}）だが、^N225の{pend}の足が未保存", "expected_date": day}
+            return {"run": "true", "reason": f"NYSE休場日（{day}）だが、^N225の{pend}の足が未保存（日本の行の取り直しだけ）",
+                    "expected_date": day, "mode": MODE_JPX_ONLY}
         return {"run": "false", "reason": f"NYSE休場日（{day}）", "expected_date": day}
     close = sched["market_close"].iloc[0].to_pydatetime()
     if now < close + CLOSE_WAIT:
@@ -96,9 +100,10 @@ def decide(now: datetime, base: str = BASE) -> dict:
     if active and have / active >= COMPLETE_RATIO:
         pend = jpx_pending(now, base)
         if pend:
-            return {"run": "true", "reason": f"{day}の終値はそろっているが、^N225の{pend}の足が未保存（{have}/{active}銘柄）", "expected_date": day}
+            return {"run": "true", "reason": f"{day}の終値はそろっているが、^N225の{pend}の足が未保存（{have}/{active}銘柄。日本の行の取り直しだけ）",
+                    "expected_date": day, "mode": MODE_JPX_ONLY}
         return {"run": "false", "reason": f"{day}の終値はそろっている（{have}/{active}銘柄）", "expected_date": day}
-    return {"run": "true", "reason": f"{day}の終値が未取得（{have}/{active}銘柄）", "expected_date": day}
+    return {"run": "true", "reason": f"{day}の終値が未取得（{have}/{active}銘柄）", "expected_date": day, "mode": MODE_FULL}
 
 
 def main():

@@ -203,7 +203,12 @@ def stage5(ind: dict, rotation: Optional[dict] = None) -> dict:
     # 実装B: セクター4象限でStrongのセクター名を添える（設計書1章 段階5）
     strong = ((rotation or {}).get("by_quadrant") or {}).get("Strong")
     if line is not None and rotation is not None:
-        line += "／Strong: " + ("・".join(strong) if strong else "なし")
+        from sector_rotation import RELATIVE_STRONG_TEXT, moves_summary
+        # 型E: 象限はSPYと比べた相対の強さ（絶対の騰落ではない）。実際の1日・5日の騰落を並べて出す
+        line += f"／{RELATIVE_STRONG_TEXT}（Strong）: " + ("・".join(strong) if strong else "なし")
+        mv = moves_summary(rotation)
+        if mv:
+            line += "／" + mv
     return {"label": label, "line": line, "inputs": {"ivw_minus_ive_pt": gv}}
 
 
@@ -414,7 +419,7 @@ def stage6(semis: Optional[dict]) -> dict:
 
 
 def stage7(wl: Optional[dict]) -> dict:
-    """段階7（設計書1章）: 資金が向かっているセクターにいる監視銘柄（上位2銘柄の名前と残りの件数）。"""
+    """段階7（設計書1章）: SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄（上位2銘柄の名前と残りの件数）。"""
     from sector_rotation import stage7_line
     if not wl:
         return {"label": None, "line": None}

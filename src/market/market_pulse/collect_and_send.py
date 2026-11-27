@@ -1069,6 +1069,31 @@ def get_market_news():
     return all_entries
 
 
+SENTIMENT_NAMES = {"vix_level": "VIX水準", "sp500_ma_dev": "S&P500の50日MA乖離", "ad_ratio": "騰落比率（5日）", "hyg_lqd_dir": "HYG/LQDの方向",
+                   "nh_nl": "新高値−新安値", "growth_value": "グロース対バリュー", "distribution": "出来高の売り抜け判定",
+                   "rsp_spy_divergence": "RSP/SPY乖離（20日平均）"}
+
+
+def sentiment_contributions(sub_scores):
+    """センチメント指数の内訳: 指標ごとの点数（0〜100）・重み・寄与（pt）。寄与＝重み×（点数−50）/重みの合計で、全部足すと「指数−50」になる
+    （50＝中立。中立から指数を押し上げた分が＋、押し下げた分が−）。値が取れず中立（50）に固定した指標は used=false・寄与0。
+    AIの解説と画面が同じ数字を使い、寄与0の指標を理由に挙げないための入力（型E）。寄与の絶対値の大きい順。出せなければ None"""
+    if not isinstance(sub_scores, dict) or not sub_scores:
+        return None
+    total_w = sum((v or {}).get("weight") or 0 for v in sub_scores.values())
+    if not total_w:
+        return None
+    rows = []
+    for k, v in sub_scores.items():
+        v = v or {}
+        sc, w = v.get("score"), v.get("weight") or 0
+        used = v.get("raw") is not None and sc is not None
+        contrib = round(w * (sc - 50) / total_w, 2) if used else 0.0
+        rows.append({"指標": SENTIMENT_NAMES.get(k, k), "点数": sc, "重み": w, "寄与pt": contrib, "使った値": used})
+    rows.sort(key=lambda r: -abs(r["寄与pt"]))
+    return rows
+
+
 def build_ai_facts(stage_result, structured_data, sentiment_data, fear_greed_data, tech_pulse_data, asset_flow_data, credit_data=None):
     """MP-28（指示書㉓）: AIに渡す「確定した事実」のJSON。各段階の結論1行・判定に使った数値・基準日だけを入れる。
     ニュース本文やAIに推測させる材料は入れない。"""
@@ -1086,6 +1111,7 @@ def build_ai_facts(stage_result, structured_data, sentiment_data, fear_greed_dat
         "段階1の事実タグ": (st.get("1") or {}).get("tags"),
         "資産の前営業日比": {k: (v or {}).get("change_pct") for k, v in (asset_flow_data or {}).items()},
         "センチメント指数": {"score": (sentiment_data or {}).get("score"), "label": (sentiment_data or {}).get("label")},
+        "センチメント指数の内訳（寄与ptの合計＝指数−50）": sentiment_contributions((sentiment_data or {}).get("sub_scores")),
         "CNN_Fear_Greed": {"score": (fear_greed_data or {}).get("score"), "rating": (fear_greed_data or {}).get("rating")},
         "Tech_Pulse": {"score": (tech_pulse_data or {}).get("score")},
         "市場の広がり": {k: ((sentiment_data or {}).get("breadth") or {}).get(k)
@@ -1105,6 +1131,8 @@ AI_PROMPT = """あなたは市場の解説者だ。以下のJSONは、本シス�
 - JSONに無い出来事・ニュース・発言・予定に触れない
 - 因果を断定しない（「〜が原因」「〜を受けて」は使わない）。同じ日に起きた事実として並べる
 - 将来の値動きを予測しない。売買を勧めない
+- センチメント指数の理由を述べるときは「センチメント指数の内訳」の寄与ptが0でない指標だけを、寄与の絶対値の大きい順に挙げる。寄与ptが0の指標・「使った値」がfalseの指標（値が取れず中立に固定）は、理由に挙げない
+- 業種の話は、段階5・7の結論の文言どおり「SPYより相対的に強い」と書く（「資金が向かう」とは書かない）。業種の実際の騰落は段階5の結論にある値だけを使う
 - Markdown記法は使わない。プレーンテキスト
 
 出力形式:
@@ -1360,6 +1388,12 @@ def calc_take_profit_checklist(fg_score, above_ma200, ma200_slope, hy_is_expandi
     }
 
 
+# BUYチェックリスト②の閾値（判定と画面の文言が同じ値から作られる。型E〈[[MARKETPULSE-REVIEW-EPIC-1]] 順2〉）。
+# 判定は「現在値が90日の最大値より HY_BUY_MARGIN 以上低い」で、「縮小に転じているか」（方向）は見ていない
+HY_BUY_MARGIN = 0.30
+HY_BUY_RULE_TEXT = f"HYスプレッドが90日の最大値より{HY_BUY_MARGIN:.2f}%以上低いか（現在値と90日最大値の差。直近の方向は見ない）"
+
+
 def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active):
     """BUYチェックリスト（F&G<=25で発動）
     3チェック項目、1点ずつ採点: 2点以上→BUY
@@ -1382,8 +1416,9 @@ def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90
 
     # チェック②: HYスプレッドが90日最高値から30bps縮小（信用収縮が緩和）
     if hy_current is not None and hy_max_90d is not None:
-        is_contracting = bool(hy_current < hy_max_90d - 0.30)
+        is_contracting = bool(hy_current < hy_max_90d - HY_BUY_MARGIN)
         checks["hy_spread"] = {
+            "rule": HY_BUY_RULE_TEXT,
             "current": hy_current,
             "max_90d": hy_max_90d,
             "is_contracting": is_contracting,

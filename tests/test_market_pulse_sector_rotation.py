@@ -117,9 +117,9 @@ class TestWatchList:
         wl = sr.watch_list(str(root), rot, lambda t: attrs.get(t))
         assert wl["flowing"] == ["DDD", "AAA", "CCC"]      # Momentumの高い順（XLC→XLK）、同じセクター内はティッカー順
         assert [r["ticker"] for r in wl["rows"]] == ["DDD", "AAA", "CCC", "BBB"]
-        assert sr.stage7_line(wl) == "資金が向かっているセクターにいる監視銘柄：DDD・AAA ほか1銘柄"
-        assert sr.stage7_line({"flowing": []}) == "資金が向かっているセクターにいる監視銘柄：なし"
-        assert sr.stage7_line({"flowing": ["X", "Y"]}) == "資金が向かっているセクターにいる監視銘柄：X・Y"
+        assert sr.stage7_line(wl) == "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄：DDD・AAA ほか1銘柄"
+        assert sr.stage7_line({"flowing": []}) == "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄：なし"
+        assert sr.stage7_line({"flowing": ["X", "Y"]}) == "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄：X・Y"
 
     def test_real_watch_tickers_is_union(self):
         repo = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
@@ -139,9 +139,20 @@ class TestStageIntegration:
 
     def test_stage5_appends_strong(self):
         ind = {"グロース対バリュー比": {"diff_percent": 0.58}}
-        assert sc.stage5(ind, {"by_quadrant": {"Strong": ["XLK", "XLC"]}})["line"] == "グロース優勢（IVW−IVE +0.58pt）／Strong: XLK・XLC"
-        assert sc.stage5(ind, {"by_quadrant": {"Strong": []}})["line"].endswith("／Strong: なし")
+        assert sc.stage5(ind, {"by_quadrant": {"Strong": ["XLK", "XLC"]}})["line"] == "グロース優勢（IVW−IVE +0.58pt）／SPYより相対的に強い（Strong）: XLK・XLC"
+        assert sc.stage5(ind, {"by_quadrant": {"Strong": []}})["line"].endswith("／SPYより相対的に強い（Strong）: なし")
         assert sc.stage5(ind)["line"] == "グロース優勢（IVW−IVE +0.58pt）"
+
+    def test_stage5_shows_actual_moves_next_to_relative_strength(self):
+        """型E（1-c）: 象限は相対の強さ。全業種が下げた日でも Strong は出るので、実際の1日・5日の騰落を並べる"""
+        ind = {"グロース対バリュー比": {"diff_percent": -1.55}}
+        rot = {"by_quadrant": {"Strong": ["XLP", "XLU"]},
+               "sectors": {"XLP": {"change_pct": -0.5, "change_5d_pct": -2.0}, "XLU": {"change_pct": -1.5, "change_5d_pct": -3.0},
+                           "XLK": {"change_pct": 0.4, "change_5d_pct": -4.0}}}
+        line = sc.stage5(ind, rot)["line"]
+        assert "SPYより相対的に強い（Strong）: XLP・XLU" in line
+        assert "業種の実際の騰落: 1日 平均-0.53%（上昇1/3）・5日 平均-3.00%（上昇0/3）" in line
+        assert sr.moves_summary({"sectors": {}}) is None and sr.moves_summary(None) is None
 
     def test_excluded_sector_makes_partial(self):
         ind = {k: {"change_percent": 0.1, "date": "2026-09-29"} for k in sc.DQ_INDICATORS}

@@ -491,12 +491,12 @@
       <div id="stage6Body"></div>
     </section>
     <section class="stage" id="stage7">
-      <div class="stage-h"><span class="stage-no">7</span>資金が向かっているセクターにいる監視銘柄</div>
+      <div class="stage-h"><span class="stage-no">7</span>SPYより相対的に強いセクターにいる監視銘柄</div>
       <div class="stage-line" id="stageLine7">—</div>
       <div id="stage7Body"></div>
     </section>
     <section class="stage" id="stage8">
-      <div class="stage-h"><span class="stage-no">8</span>明日どうなるか</div>
+      <div class="stage-h"><span class="stage-no">8</span>過去の似た日、その後どうなったか</div>
       <div class="stage-line" id="stageLine8">—</div>
       <div class="sub-h">先物・ドル円の最新値（取得時刻つき。データ基準日の判定には使わない）</div>
       <div id="futuresTable"></div>
@@ -661,7 +661,7 @@ const fmtDateFull=iso=>{
 };
 const fmtChg=v=>{if(v==null)return{text:"-",cls:"flat"};const t=(v>=0?"+":"")+v.toFixed(2)+"%";return{text:t,cls:v>0.05?"up":v<-0.05?"down":"flat"}};
 const phaseLabel=j=>j==="晴れ"?"\u2600 晴れ":j==="嵐"?"\u26C8 嵐":j==="曇り"?"\u2601 曇り":"\u2212 不明";
-const STAGE_TITLES={0:"データ基準日",1:"何が起きたか",2:"なぜ起きたか",3:"動きは本物か",4:"資金はどの資産へ",5:"株式のどこへ",6:"具体的に何が",7:"資金が向かっているセクターにいる監視銘柄",8:"明日どうなるか"};
+const STAGE_TITLES={0:"データ基準日",1:"何が起きたか",2:"なぜ起きたか",3:"動きは本物か",4:"資金はどの資産へ",5:"株式のどこへ",6:"具体的に何が",7:"SPYより相対的に強いセクターにいる監視銘柄",8:"過去の似た日、その後どうなったか"};
 const STAGE_KEYS=[0,1,2,3,4,5,6,7,8];
 let HOLIDAYS=new Set();
 function escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -1030,7 +1030,7 @@ function renderSectors(){
   const r=allData[allData.length-1]?.sector_rotation;
   if(!r){tb.innerHTML='<div class="stage-note">記録なし</div>';if(quadChartInst){quadChartInst.destroy();quadChartInst=null}return}
   const secs=Object.entries(r.sectors||{}).sort((a,b)=>b[1].momentum-a[1].momentum);
-  tb.innerHTML=`<table class="mp-table" id="sectorTableInner"><tr><th>セクター</th><th>週次の位置</th><th>RS-Ratio</th><th>RS-Momentum</th><th>今日の動き（前営業日比）</th></tr>${secs.map(([s,v])=>`<tr><td>${s} ${escHtml(v.name)}</td><td class="q-${v.quadrant}">${v.quadrant}（${QJA[v.quadrant]}）</td><td class="num">${Number(v.ratio).toFixed(2)}</td><td class="num">${Number(v.momentum).toFixed(2)}</td><td class="num ${v.change_pct>0?'up':v.change_pct<0?'down':'flat'}">${v.change_pct==null?'—':pctS(v.change_pct,2)+'%'}</td></tr>`).join('')}</table>${(r.excluded||[]).length?`<div class="stage-note">当日の終値が無く象限から外したセクター: ${escHtml(r.excluded.join('・'))}</div>`:''}<div class="stage-note">RS＝セクターETF÷SPY。RS-Ratio＝RS÷13週平均×100（100超＝平均より強い）、RS-Momentum＝RS-Ratio÷4週前×100（100超＝強さが増している）。週次の位置は「いまどこに資金が向いているか」の整理で、先行きの指標ではない（${escHtml(r.as_of)}時点）。</div>`;
+  tb.innerHTML=`<table class="mp-table" id="sectorTableInner"><tr><th>セクター</th><th>週次の位置</th><th>RS-Ratio</th><th>RS-Momentum</th><th>1日の騰落（前営業日比）</th><th>5日の騰落</th></tr>${secs.map(([s,v])=>`<tr><td>${s} ${escHtml(v.name)}</td><td class="q-${v.quadrant}">${v.quadrant}（${QJA[v.quadrant]}）</td><td class="num">${Number(v.ratio).toFixed(2)}</td><td class="num">${Number(v.momentum).toFixed(2)}</td><td class="num ${v.change_pct>0?'up':v.change_pct<0?'down':'flat'}">${v.change_pct==null?'—':pctS(v.change_pct,2)+'%'}</td><td class="num ${v.change_5d_pct>0?'up':v.change_5d_pct<0?'down':'flat'}">${v.change_5d_pct==null?'—':pctS(v.change_5d_pct,2)+'%'}</td></tr>`).join('')}</table><div class="stage-note">位置（Strong等）はSPYと比べた相対の強さで、絶対の騰落ではありません。全体が下げる日でも、SPYより下げが小さい業種はStrongになります。右の2列が実際の騰落です。</div>${(r.excluded||[]).length?`<div class="stage-note">当日の終値が無く象限から外したセクター: ${escHtml(r.excluded.join('・'))}</div>`:''}<div class="stage-note">RS＝セクターETF÷SPY。RS-Ratio＝RS÷13週平均×100（100超＝平均より強い）、RS-Momentum＝RS-Ratio÷4週前×100（100超＝強さが増している）。週次の位置は「いまどこに資金が向いているか」の整理で、先行きの指標ではない（${escHtml(r.as_of)}時点）。</div>`;
   const COLORS=["#3b82f6","#10b981","#f59e0b","#f43f5e","#a78bfa","#22d3ee","#f97316","#84cc16","#e879f9","#94a3b8","#facc15"];
   const ds=secs.map(([s,v],i)=>({label:s,data:v.trail.map(p=>({x:p.ratio,y:p.momentum})),showLine:true,borderColor:COLORS[i%COLORS.length],backgroundColor:COLORS[i%COLORS.length],pointRadius:v.trail.map((_,j)=>j===v.trail.length-1?5:1.5),borderWidth:1.2,tension:.2}));
   if(quadChartInst)quadChartInst.destroy();
@@ -1054,7 +1054,7 @@ function renderStage6(){
   <table class="mp-table" id="breakdownTable" style="max-width:560px"><tr><th></th><th>値</th><th>前日比</th><th>基準日</th></tr>${(bd||[]).map(r=>`<tr><td>${escHtml(r.name)}（${escHtml(r.symbol)}）</td><td class="num">${r.value==null?'—':Number(r.value).toLocaleString("ja-JP",{maximumFractionDigits:2})}</td><td class="num ${r.change_pct>0?'up':r.change_pct<0?'down':'flat'}">${r.change_pct==null?'—':f(r.change_pct)+'%'}</td><td>${escHtml(r.date||'—')}${provMark(r)}</td></tr>`).join('')}</table>`;
 }
 
-// ── 段階7: 資金が向かっているセクターにいる監視銘柄（実装B） ──
+// ── 段階7: SPYより相対的に強いセクターにいる監視銘柄（実装B） ──
 // 計算日の表示（TANUKI SCORE・HypeCoreはMarket Pulseより前の夜の計算結果。指示書㉗）
 function calcLabel(r){if(!r)return'<span class="calc-date">（計算日: —）</span>';return`<span class="calc-date">（計算日: ${escHtml(r[0]===r[1]?r[0]:r[0]+'〜'+r[1])}）</span>`}
 function renderStage7(){
@@ -1063,7 +1063,7 @@ function renderStage7(){
   if(!w){el.innerHTML='<div class="stage-note">記録なし</div>';return}
   const flow=new Set(w.flowing||[]);
   el.innerHTML=`<table class="mp-table" id="watchTable"><tr><th>銘柄</th><th>区分</th><th>セクター</th><th>週次の位置</th><th>TANUKI SCORE${calcLabel(w.calculated?.tanuki_score)}</th><th>HypeCoreのPhase${calcLabel(w.calculated?.hype_phase)}</th></tr>${(w.rows||[]).map(r=>`<tr class="${flow.has(r.ticker)?'flow':''}"><td>${escHtml(r.ticker)}</td><td>${[r.held?'保有':'',r.tail?'TAIL':''].filter(Boolean).join('・')}</td><td>${r.sector_etf?escHtml(r.sector_etf+' '+(r.sector_name||'')):'—'}</td><td class="${r.quadrant?'q-'+r.quadrant:''}">${r.quadrant?escHtml(r.quadrant+'（'+QJA[r.quadrant]+'）'):'—'}</td><td>${escHtml(r.tanuki_score||'—')}</td><td>${escHtml(r.hype_phase||'—')}</td></tr>`).join('')}</table>
-  <div class="stage-note">監視銘柄＝ポートフォリオの保有銘柄＋TANUKI TAILの監視銘柄。資金が向かっているセクター（Strong・Improving）にいる銘柄を先に、所属セクターのRS-Momentumの高い順（同じセクター内はティッカー順）に並べる。並び順に銘柄の評価は使っていない。売買を勧めるものではない。</div>`;
+  <div class="stage-note">監視銘柄＝ポートフォリオの保有銘柄＋TANUKI TAILの監視銘柄。SPYより相対的に強いセクター（Strong・Improving）にいる銘柄を先に、所属セクターのRS-Momentumの高い順（同じセクター内はティッカー順）に並べる。並び順に銘柄の評価は使っていない。売買を勧めるものではない。</div>`;
 }
 
 // ── 実装C（指示書㉗）: 段階2のニュースの見出し、段階8の先物・予定 ──
@@ -1173,7 +1173,7 @@ function renderTakeProfit(){
   const tp=latest?.take_profit_checklist;
   const fg=latest?.fear_greed?.score??latest?.tech_pulse?.components?.fg_score??null;
   if(!tp){
-    const fgTxt=fg!=null?`現在F&G: ${Math.round(fg)}`:'';
+    const fgSrc=latest?.fear_greed?.score!=null?"CNN":"feargreedchart.com（CNNとは別の取得元）";const fgTxt=fg!=null?`現在F&G（${fgSrc}）: ${Math.round(fg)}`:'';
     if(fg!=null&&fg<75){
       el.innerHTML=`<div style="color:var(--mut);font-size:13px;font-family:var(--mono);padding:4px 0">F&amp;G &lt; 75のため非発動${fgTxt?'（'+fgTxt+'）':''}。極端な強欲ゾーン到達時に利確シグナルを点検します。</div>`;
     } else {
@@ -1224,7 +1224,7 @@ function renderBuyChecklist(){
   const fg=latest?.fear_greed?.score??latest?.tech_pulse?.components?.fg_score??null;
   if(!bc){
     if(fg!=null&&fg>25){
-      el.innerHTML=`<div style="color:var(--mut);font-size:13px;font-family:var(--mono);padding:4px 0">F&amp;G &gt; 25のため非発動（現在: ${Math.round(fg)}）。極端な恐怖ゾーン到達時に買いシグナルを点検します。</div>`;
+      el.innerHTML=`<div style="color:var(--mut);font-size:13px;font-family:var(--mono);padding:4px 0">F&amp;G &gt; 25のため非発動（現在: ${Math.round(fg)}、${latest?.fear_greed?.score!=null?"CNN":"feargreedchart.com＝CNNとは別の取得元"}）。極端な恐怖ゾーン到達時に買いシグナルを点検します。</div>`;
     } else {
       el.innerHTML=`<div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div>`;
     }
@@ -1281,7 +1281,7 @@ function renderBuyChecklist(){
     {
       key:'hy_spread',
       gloss:'buy_hy_spread',
-      label:'HYスプレッドが縮小に転じているか',
+      label:'HYスプレッドが90日の最大値より0.30%以上低いか（現在値と90日最大値の差。直近の方向は見ない）',
       render(c){
         if(c.current==null)return'データ取得不可';
         const diff=c.max_90d!=null?round2(c.current-c.max_90d):null;

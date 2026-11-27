@@ -63,6 +63,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.guard }}" != "true" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "mode=full" >> "$GITHUB_OUTPUT"
             echo "reason=手動実行" >> "$GITHUB_OUTPUT"
           else
             python common/market_data/daily_guard.py >> "$GITHUB_OUTPUT"
@@ -73,7 +74,11 @@ jobs:
         id: fetch
         if: steps.guard.outputs.run == 'true'
         run: |
-          if [ -n "${{ github.event.inputs.tickers }}" ]; then
+          if [ "${{ steps.guard.outputs.mode }}" = "jpx_only" ]; then
+            # 日本の行の取り直しだけ（^N225の終値はYahooで引けの約39時間後に入る。米国の終値は取らない）。
+            # 保存の後に自分を取り消して下流を起動しない（下の「Cancel this run」）
+            python common/market_data/fetcher.py '^N225' --layer daily --status-file /tmp/daily_status.json
+          elif [ -n "${{ github.event.inputs.tickers }}" ]; then
             TICKERS=$(echo "${{ github.event.inputs.tickers }}" | tr ',' ' ')
             python common/market_data/fetcher.py $TICKERS --layer daily --status-file /tmp/daily_status.json
           else
@@ -85,14 +90,14 @@ jobs:
       # 保存した終値と手元のSECデータ（Layer3。SEC Data Update〈週次〉の後は翌営業日のこの実行で反映）で再計算する。
       # 有料APIは呼ばない。失敗しても株価の保存・下流の起動は止めない（continue-on-error）
       - name: Build ROTCE / P/TBV (reference only)
-        if: steps.guard.outputs.run == 'true' && steps.fetch.outputs.status != 'reset_window'
+        if: steps.guard.outputs.run == 'true' && steps.guard.outputs.mode != 'jpx_only' && steps.fetch.outputs.status != 'reset_window'
         continue-on-error: true
         run: python common/sec_data/rotce.py
 
       # [[EXTERNAL-SOURCE-CHANGE-WATCH-1]] B3（2026-11-04）: 先物の限月の切り替えの日に印（_contract_roll、値は変えない。
       # write_daily_rows の印だけの経路）。失敗しても株価の保存・下流の起動は止めない
       - name: Mark futures contract rolls
-        if: steps.guard.outputs.run == 'true' && steps.fetch.outputs.status != 'reset_window'
+        if: steps.guard.outputs.run == 'true' && steps.guard.outputs.mode != 'jpx_only' && steps.fetch.outputs.status != 'reset_window'
         continue-on-error: true
         run: python common/market_data/futures_roll.py
 
@@ -119,7 +124,8 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update Market Data Daily - $(date +'%Y-%m-%d')"
+            if [ "${{ steps.guard.outputs.mode }}" = "jpx_only" ]; then SUFFIX=" (日本の行の取り直しだけ: ^N225)"; else SUFFIX=""; fi
+            git commit -m "Update Market Data Daily - $(date +'%Y-%m-%d')${SUFFIX}"
             bash .github/scripts/push_with_retry.sh kaihatsu
           fi
 
@@ -128,7 +134,7 @@ jobs:
         run: |
           echo "## Market Data Daily Update" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- ガード: run=${{ steps.guard.outputs.run }}（${{ steps.guard.outputs.reason }}）" >> $GITHUB_STEP_SUMMARY
+          echo "- ガード: run=${{ steps.guard.outputs.run }} mode=${{ steps.guard.outputs.mode }}（${{ steps.guard.outputs.reason }}）" >> $GITHUB_STEP_SUMMARY
           echo "- 取得: status=${{ steps.fetch.outputs.status }} / 新しいデータの保存: ${{ steps.commit.outputs.saved }}" >> $GITHUB_STEP_SUMMARY
           count=$(ls -1 common/market_data/daily/*.json 2>/dev/null | wc -l)
           echo "- daily/ 保存銘柄数: ${count}" >> $GITHUB_STEP_SUMMARY
@@ -148,7 +154,7 @@ jobs:
       # 何もしなかった実行・新しいデータを保存しなかった実行は、下流を起動しないよう自分自身を取り消す
       # （conclusionが'cancelled'になり、下流のジョブの`conclusion == 'success'`の条件に当たらない）
       - name: Cancel this run when no new data was saved (downstream stays idle)
-        if: steps.guard.outputs.run != 'true' || steps.fetch.outputs.status != 'fetched' || steps.commit.outputs.saved != 'true'
+        if: steps.guard.outputs.run != 'true' || steps.guard.outputs.mode == 'jpx_only' || steps.fetch.outputs.status != 'fetched' || steps.commit.outputs.saved != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

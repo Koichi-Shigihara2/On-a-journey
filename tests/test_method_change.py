@@ -314,3 +314,60 @@ class TestCheckPreviousOutputs:
     def test_no_warn_without_new_form_entries(self, tmp_path):
         self._write(tmp_path, [True, True])
         assert mc.check_previous_outputs(str(tmp_path), _cfg(tmp_path, [_OLD])) == []
+
+
+# ───────── METHOD-CHANGE-NOTICE-ACCURACY-1（2026-11-27）: 形の検査・「残り」の読み分け ─────────
+class TestConfigFormValidation:
+    def test_repo_config_is_valid(self):
+        cfg = json.loads(open(mc.CONFIG_PATH, encoding="utf-8").read())
+        assert mc.validate_changes(cfg["changes"]) == []
+
+    def test_old_form_after_the_cutoff_is_rejected(self):
+        bad = [{"id": "NEW-THING-1", "date": "2026-11-27"}]
+        assert any("古い形は2026-11-02まで" in p for p in mc.validate_changes(bad))
+        assert mc.validate_changes([{"id": "QUARTERLY-BASIS-MIX-1", "date": "2026-11-02"}]) == []
+
+    def test_new_form_needs_committed_at_and_scope_shape(self):
+        ok = {"id": "A-B-1", "committed_at": "2026-11-27T10:00:00+09:00",
+              "scope": [{"ticker": "X", "fields": ["funda_score"], "before": {"funda_score": 1}, "after": {"funda_score": 2}}]}
+        assert mc.validate_changes([ok]) == []
+        assert mc.validate_changes([{**ok, "committed_at": ""}])
+        assert mc.validate_changes([{**ok, "scope": [{"ticker": "X"}]}])
+        assert mc.validate_changes([ok, ok])                                  # 同じIDの新しい形が2件
+
+
+class TestRestIsNotMarketForPriceFreeFields:
+    def _scope(self, **kw):
+        return {"fields": kw.get("fields", ["funda_score"]), "before": kw.get("before", {"funda_score": 60}),
+                "after": kw.get("after", {"funda_score": 50})}
+
+    def test_funda_rest_is_labeled_as_scope_gap_not_market(self):
+        from importlib import import_module
+        sw = import_module("score_watcher")
+        # SOUN型: 試算 60→50 だが公開は 60→35 → 残り −15 は相場ではない（ファンダは株価に依らない）
+        note = sw._method_part("funda", self._scope(), 60, 35)
+        assert "残り（試算と公開の違い）: -15.0pt" in note and "相場の変化ではない" in note and "残り（相場等）" not in note
+        assert "残り: なし" in sw._method_part("funda", self._scope(), 60, 50)
+
+    def test_upside_notes_when_scope_intrinsic_value_differs_from_published(self):
+        from importlib import import_module
+        sw = import_module("score_watcher")
+        scope = {"fields": ["upside_percent", "intrinsic_value_per_share"], "before": {"upside_percent": 10.0, "intrinsic_value_per_share": 100.0},
+                 "after": {"upside_percent": 0.0, "intrinsic_value_per_share": 90.0}}
+        note = sw._method_part("upside", scope, 10.0, -10.0, {"intrinsic_value_per_share": 80.0})
+        assert "残り（相場等）: -10.0pt" in note and "試算の理論株価 90.00 と公開の 80.00 が違う" in note
+        same = sw._method_part("upside", scope, 10.0, -10.0, {"intrinsic_value_per_share": 90.2})
+        assert "違う" not in same
+
+    def test_write_entry_refuses_a_malformed_entry(self, tmp_path):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("mcs", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "method_change_scope.py"))
+        m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+        cfg = tmp_path / "mc.json"
+        cfg.write_text(json.dumps({"changes": []}), encoding="utf-8")
+        try:
+            m.write_entry({"id": "A-B-1", "committed_at": "", "scope": []}, str(cfg))
+            raise AssertionError("committed_at が空の件を足せてしまった")
+        except SystemExit as e:
+            assert "committed_at" in str(e)
+        assert json.loads(cfg.read_text(encoding="utf-8"))["changes"] == []

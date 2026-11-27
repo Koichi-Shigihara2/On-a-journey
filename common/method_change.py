@@ -77,6 +77,46 @@ def _changes(cfg: dict) -> list[dict]:
     return [c for c in cfg.get("changes") or [] if isinstance(c, dict)]
 
 
+# 古い形 {"id","date"} を足せるのはこの日まで（2026-11-02に新しい形へ移した。[[METHOD-CHANGE-NOTICE-ACCURACY-1]]、2026-11-27）。
+# 古い形は「その日の実行の全銘柄」に印を付けるため、新しい件を足すと、Q3の10-Qや相場による変化まで🛠の下に入る
+OLD_FORM_LAST_DATE = "2026-11-02"
+
+
+def validate_changes(changes: list) -> list[str]:
+    """config/method_change.json の "changes" の形の検査。問題の文の一覧（無ければ空）。
+    古い形は OLD_FORM_LAST_DATE までの件だけ。それ以後は新しい形 {id, committed_at, scope:[{ticker, fields, before, after}]}"""
+    problems: list[str] = []
+    seen: set[str] = set()
+    for i, c in enumerate(changes or []):
+        cid = c.get("id") if isinstance(c, dict) else None
+        if not cid or not _ID_RE.match(str(cid)):
+            problems.append(f"{i}件目: idが無い・形が違う（{cid!r}）")
+            continue
+        if "scope" in c or "committed_at" in c:
+            if not c.get("committed_at"):
+                problems.append(f"{cid}: committed_at が無い")
+            sc = c.get("scope")
+            if sc is not None:
+                if not isinstance(sc, list):
+                    problems.append(f"{cid}: scope が配列でない")
+                else:
+                    for e in sc:
+                        if not (isinstance(e, dict) and e.get("ticker") and isinstance(e.get("fields"), list)
+                                and isinstance(e.get("before"), dict) and isinstance(e.get("after"), dict)):
+                            problems.append(f"{cid}: scope の要素に ticker・fields・before・after が揃っていない")
+                            break
+            if cid in seen:
+                problems.append(f"{cid}: 新しい形の件が重複している")
+            seen.add(cid)
+        else:
+            d = str(c.get("date") or "")
+            if not d:
+                problems.append(f"{cid}: 古い形なのに date が無い")
+            elif d > OLD_FORM_LAST_DATE:
+                problems.append(f"{cid}: 古い形は{OLD_FORM_LAST_DATE}まで（{d}）。新しい形 {{id, committed_at, scope}} を scripts/method_change_scope.py --write で足す")
+    return problems
+
+
 def _is_new_form(c: dict) -> bool:
     return "committed_at" in c and "date" not in c
 

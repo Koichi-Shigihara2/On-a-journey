@@ -2652,6 +2652,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **登録日:** 2026-11-11
 **着手条件:** なし（登録のみ）
 **発見:** FINDINGS 2026-11-03の2行（古い形の印・試算のEPSの食い違い）（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
+**照合と一部実装（2026-11-27、`docs/architecture/METHOD_CHANGE_NOTICE_AUDIT_2026-11-27.md`）:** 11-16〜11-26の公開（PARSER段1〜UPSIDE・STONKS ①）の通知を、`score_watcher`の再生で照合: 変化205件のうち🛠は29件、**内訳の誤りは0件**（「残り」は29件とも+0.0、scopeの試算と公開の差は3,659項目で1件〈METの`timing_score`、株価依存〉）。BACKLOGの2つの型はこの期間には起きていない（古い形の件は2026-11-02までの9件だけ・EPSが動く公開が無かった）が、止める仕組みが無かった。直した（通知の表示と形の検査だけ）: `validate_changes`（古い形は11-02まで・新しい形の形・重複。`method_change_scope.py --write`が検査）、ファンダの「残り」を「試算と公開の違い（相場ではない）」に、乖離率の「残り」に試算と公開の理論株価の差を添える。**残り**: scopeを作る試算のEPSを公開の値にそろえる（手順に1行）
 
 #### 内容
 - 束ねた行: (1) `config/method_change.json`の古い形（`{id, date}`）の印`QUARTERLY-BASIS-MIX-1`で、11-02のTANUKI SCOREの通知4通の変化がすべて🛠の下に入った（Q3の10-Q・相場による変化を含む）。古い形で新しい件を足すことを止める仕組みが無い (2) EPSが動く計算方法の変更で、手元の試算のEPS（SEC・Grok・Alpha Vantageを呼ばない）が公開のEPSと14銘柄で食い違い、scopeのbefore→afterと「計算方法の分／残り」が誤る（FCF-DEFINITION-SINGLE-SOURCE-1-3のSOUN: 「60→50／残り −15」、実際は60→35の全部が計算方法の分）
@@ -2743,6 +2744,8 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **進め方:** 着手時に、子項目ごとに他の画面・サブシステムへの影響を最初に洗い出してから設計する（個別の継ぎはぎにしない）
 **STEP 0と決定（2026-11-27）:** `docs/architecture/MARKETPULSE_REVIEW_STEP0.md`。9項目を型L（日付・鮮度）・型P（段・閾値の切り替わり）・型E（説明と計算のずれ）・型S（サイズ）にまとめ、共通の根治策を先に。決定: (a) 順は L→E→S→P→2-c→2-a (b) 1-aは①（日付の表示・鮮度の監視）だけ・取得の回は足さない (c) 「買い」の主はBUYチェックリスト（F&G）、自前の指数・Tech Pulseは参考表示（順5で実装） (d) 履歴は作り直さず、切り替えた日から新基準にし、画面のグラフに基準の変更の線を引く (e) [[HYPECORE-MARKET-WIDE-DRAWDOWN-1]]はEPICの外（計算方法の変更の手順で別に） (f) MACRO PULSEの分け方は11-22のKoichi決定（景気後退の予測に特化・政策金利は[[FED-POLICY-PAGE-1]]へ）
 **順1（型L）実装済み（2026-11-27）:** `common/value_freshness.py`（値の日付と鮮度の判定の1か所。kind＝us_close・jpx・fred_daily）。Market Pulseの`data_quality`が日経・HYスプレッドを含め同じ部品で判定（`freshness`・`expected_by_kind`）、画面は値ごとの日付と「古い」の印・HYスプレッドの日付、System Health [Q]、MACRO PULSEの`05_liquidity.csv`に`sp500_asof`・`hy_spread_asof`。1-aの原因: ^N225はYahooの日足の終値が引けの約39時間後になって入る（定時06:28 JSTの取得では前日の足に終値が無い）構造上の遅れで、さらに米国の休場日・米国の終値がそろった日は`daily_guard`が起動を止め取り直しが無かった→期待する日本の取引日の行が未保存なら起動する。理論株価・判定・funda・stage・TANUKI・HypeCoreへの影響なし。確認は手順48。次は順2（型E）
+**順1の追記（2026-11-27）:** `daily_guard`の取り直しは**日本の行だけ**の回（`mode=jpx_only`）にし、^N225だけを取り、保存の後に自分を取り消して下流（Market Pulse・Stonks・TANUKI）を起動しない。取り直しだけで成功にすると下流が動く作りだったため（下流は`conclusion == 'success'`の回で動く）。1日の回数は終値が入る21:30 UTC以降のcron（最大6回）。`docs/architecture/UPDATE_SCHEDULE.md`・手順48⑦
+**順2（型E）実装済み（2026-11-27）:** 文言を計算の定義から作った。①1-c: 段階5・7の文言を「SPYより相対的に強い（Strong）」にし、業種の実際の1日・5日の騰落を並べる（`sector_rotation`に`change_5d_pct`、画面のセクター表に5日の列と注記）②2-a: 段階8の題名を「過去の似た日、その後どうなったか」に（再設計は順6）③1-b: BUYチェックリスト②の文言を判定と同じ閾値の定数（`HY_BUY_MARGIN`）から作る（「90日の最大値より0.30%以上低いか」。判定は変えない）④3-b①: F&Gの表示に取得元（CNN／feargreedchart.com）を付ける ⑤AIの入力: MACRO PULSEの週次AI解説に8指標の点数と寄与（`score_contributions`。合計＝スコアの変化）を渡し、寄与0の指標を理由に挙げさせない（挙げたら1回だけ言い直させる）。Market Pulseの見解にセンチメント指数の内訳（寄与pt。合計＝指数−50、値が取れず中立に固定した指標は寄与0・`使った値=false`）を渡す。[[FED-POLICY-PAGE-1]]の部分（金利見通しの表示）は触っていない。理論株価・判定に効かない。確認は手順49
 **関連:** [[MARKETPULSE-DAILY-ENTRY-GAP-1]]（3-bのエントリの日付のずれ・欠けた日）、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]、[[FEAR-REGIME-CANDIDATE-SCREEN-1]]（2-c）。完了済みの [[MARKETPULSE-MINOR-INCONSISTENCIES-1]]・[[MARKETPULSE-HYG-LQD-DATE-MIX-1]]（BACKLOG_DONE）とは、3-bのクレジット判定・HYGとLQDの扱いが近いため、着手時に完了の内容と突き合わせて重複を避ける
 
 #### 優先度1：数字や判定が誤っているもの

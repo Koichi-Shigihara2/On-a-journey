@@ -1687,6 +1687,53 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
         'weight_total': total_w,
     }
 
+# 型E（[[MARKETPULSE-REVIEW-EPIC-1]] 順2、2026-11-27）: AIの説明が計算と合わない（寄与0のフィラデルフィア連銀・失業保険申請を
+# スコア変動の理由に挙げた）のは、AIに各指標の点数と寄与を渡していなかったため。計算の定義（SIGNAL_STEPS の点数×重み）から作る
+INDICATOR_ALIASES = {
+    "yc": ("イールドカーブ", "逆イールド", "10Y-2Y", "Yield Curve"),
+    "hy": ("HYスプレッド", "HY Spread", "ハイイールド"),
+    "philly": ("フィラデルフィア", "Philadelphia"),
+    "cfnai": ("シカゴ連銀", "CFNAI", "Chicago Fed"),
+    "claims": ("失業保険", "新規失業", "Initial Claims", "Claims"),
+    "cbcc2": ("住宅着工", "建築許可", "Building Permits", "Permits"),
+    "cbcc": ("ミシガン", "消費者信頼", "Michigan"),
+    "sahm": ("サーム", "Sahm"),
+}
+CONTRIB_EPS = 0.05     # この値（pt）未満の寄与は0とみなす
+
+
+def score_contributions(cur: dict, prev: dict) -> list:
+    """スコアの前の時点（prev）からの変化を、指標ごとの寄与（pt）に分ける。score = Σ(点数×重み)/使える重みの合計 なので、
+    指標の寄与 = 点数×重み/重みの合計（今）− 点数×重み/重みの合計（前）。全部足すと、丸める前のスコアの変化に一致する。
+    戻り値: [{key, name, value, score_now, score_prev, weight, contribution, zero}]（寄与の絶対値の大きい順）。出せなければ []"""
+    if not cur or not prev or cur.get("score") is None or prev.get("score") is None:
+        return []
+    now = {si["key"]: si for si in cur.get("score_inputs") or []}
+    pre = {si["key"]: si for si in prev.get("score_inputs") or []}
+    w_now, w_pre = cur.get("weight_total") or 0, prev.get("weight_total") or 0
+    if not w_now or not w_pre:
+        return []
+    rows = []
+    for key in sorted(set(now) | set(pre)):
+        a, b = now.get(key), pre.get(key)
+        c = ((a["score"] * a["weight"] / w_now) if a else 0.0) - ((b["score"] * b["weight"] / w_pre) if b else 0.0)
+        info = (cur.get("indicators") or {}).get(key) or {}
+        rows.append({"key": key, "name": info.get("name") or key, "value": info.get("value"),
+                     "score_now": a["score"] if a else None, "score_prev": b["score"] if b else None,
+                     "weight": (a or b)["weight"], "contribution": round(c, 2), "zero": abs(c) < CONTRIB_EPS})
+    rows.sort(key=lambda r: -abs(r["contribution"]))
+    return rows
+
+
+def zero_contribution_mentions(text: str, contributions: list) -> list:
+    """寄与0の指標を、文章（スコア変動の要因分析）が理由に挙げていないかの検査。挙げた指標の key の一覧"""
+    out = []
+    for r in contributions or []:
+        if r["zero"] and any(a in (text or "") for a in INDICATOR_ALIASES.get(r["key"], ())):
+            out.append(r["key"])
+    return out
+
+
 def _compute_score_change(events: pd.DataFrame, target_date: date, days_back: int) -> int:
     """N日前のスコアとの差分を計算"""
     past_date = target_date - timedelta(days=days_back)
@@ -1740,7 +1787,8 @@ def generate_weekly_analysis_with_grok(target_date: date, score_data: dict,
                                         recent_events: list,
                                         score_1w: int, score_1m: int,
                                         fed_context: dict,
-                                        indicator_deltas: dict = None) -> dict:
+                                        indicator_deltas: dict = None,
+                                        contributions: list = None) -> dict:
     """xAI Grok APIで週次AI解説を生成"""
     api_key = os.environ.get("XAI_API_KEY", "")
     if not api_key:
@@ -1779,6 +1827,18 @@ def generate_weekly_analysis_with_grok(target_date: date, score_data: dict,
         obs_date = info.get('date') or '不明'
         ind_lines.append(f"  - {info['name']}: {val} (観測日: {obs_date}, トレンド: {trend_str}{delta_info}){direction_note}")
 
+    # 点数と寄与（型E）: 計算の定義から作った数字だけを渡す。寄与0（点数が前の時点と同じ）の指標は理由に挙げさせない
+    contrib_lines, zero_names = [], []
+    for r in contributions or []:
+        if r["score_now"] is None:
+            continue
+        prev_txt = "なし" if r["score_prev"] is None else str(r["score_prev"])
+        tag = "（寄与0）" if r["zero"] else ""
+        contrib_lines.append(f"  - {r['name']}: 点数 {r['score_now']}（1週前 {prev_txt}）, 重み {r['weight']}, 寄与 {r['contribution']:+.2f}pt{tag}")
+        if r["zero"]:
+            zero_names.append(r["name"])
+    contrib_total = round(sum(r["contribution"] for r in contributions or []), 2)
+
     # 直近発表イベント
     event_lines = []
     for ev in recent_events[:10]:
@@ -1813,6 +1873,11 @@ def generate_weekly_analysis_with_grok(target_date: date, score_data: dict,
 ■ 8指標の最新値（週差=1週間前との差分、月差=1ヶ月前との差分）:
 {chr(10).join(ind_lines)}
 
+■ 8指標の点数と寄与（スコアの計算そのもの。寄与の合計 {contrib_total:+.2f}pt ＝ 1週前の計算とのスコアの差）:
+{chr(10).join(contrib_lines) if contrib_lines else '  （計算できず）'}
+【重要】スコアの変動の理由（factor_analysis）は、上の「寄与」が0でない指標だけを、寄与の絶対値の大きい順に挙げること。
+寄与0の指標（{('、'.join(zero_names)) if zero_names else 'なし'}）は、値や週差が動いていても、スコアの変動の理由に挙げない（点数が変わらないため）。
+
 ■ 直近1週間の主要発表:
 {chr(10).join(event_lines) if event_lines else '  なし'}
 
@@ -1835,6 +1900,24 @@ def generate_weekly_analysis_with_grok(target_date: date, score_data: dict,
     m = re.search(r'\{.*\}', raw, re.DOTALL)
     if m:
         result = json.loads(m.group())
+        # 寄与0の指標を理由に挙げていたら、1回だけ言い直させる（挙げたままなら最初の回答をそのまま出し、警告を残す）
+        bad = zero_contribution_mentions(result.get("factor_analysis", ""), contributions)
+        if bad:
+            names = "・".join(INDICATOR_ALIASES[k][0] for k in bad)
+            logger.warning(f"weekly analysis: 寄与0の指標を理由に挙げた（{names}）。言い直させる")
+            try:
+                text2 = grok_text([{"role": "user", "content": prompt + f"\n\n【修正指示】前の回答の factor_analysis は寄与0の指標（{names}）を理由に挙げていた。"
+                                   "それらを除き、寄与が0でない指標だけで書き直し、同じJSON形式で全体を回答すること。"}],
+                                  GROK_MODEL, "MACRO PULSE 週次の解説（言い直し）", api_key=api_key, max_tokens=4096, temperature=0.3)
+                m2 = re.search(r'\{.*\}', (text2 or "").strip(), re.DOTALL)
+                if m2:
+                    result2 = json.loads(m2.group())
+                    if not zero_contribution_mentions(result2.get("factor_analysis", ""), contributions):
+                        result = result2
+                    else:
+                        logger.warning("weekly analysis: 言い直しでも寄与0の指標を挙げた。最初の回答を使う")
+            except (ExternalApiError, ValueError) as e:
+                logger.warning(f"weekly analysis: 言い直しに失敗（{type(e).__name__}）。最初の回答を使う")
         result["_used_model"] = used_model
         logger.info(f"Weekly analysis generated via Grok ({used_model}).")
         return result
@@ -1914,7 +1997,7 @@ def run_weekly_analysis(target_date: date):
     # Grok で解説生成
     analysis = generate_weekly_analysis_with_grok(
         target_date, score_data, recent_events, score_1w, score_1m, fed_context,
-        indicator_deltas
+        indicator_deltas, contributions=score_contributions(score_data, score_data_1w)
     )
 
     # CSV に保存

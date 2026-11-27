@@ -254,7 +254,7 @@ class TestWeeklyDeltaFromSnapshot:
         monkeypatch.setattr(main05, "load_events", lambda: ev)
         captured = {}
 
-        def fake_grok(target_date, score_data, recent_events, score_1w, score_1m, fed_context, indicator_deltas=None):
+        def fake_grok(target_date, score_data, recent_events, score_1w, score_1m, fed_context, indicator_deltas=None, contributions=None):
             captured["score"] = score_data["score"]
             captured["score_1w"] = score_1w
             return {"summary": "", "_used_model": "test"}

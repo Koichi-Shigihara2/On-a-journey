@@ -70,7 +70,7 @@ def _run_guard_step(bash, tmp_path, event_name, guard_input):
 
 
 def test_manual_dispatch_skips_guard(bash, tmp_path):
-    assert _run_guard_step(bash, tmp_path, "workflow_dispatch", "false") == {"run": "true", "reason": "手動実行"}
+    assert _run_guard_step(bash, tmp_path, "workflow_dispatch", "false") == {"run": "true", "mode": "full", "reason": "手動実行"}
 
 
 def test_dispatch_with_guard_true_runs_guard(bash, tmp_path):

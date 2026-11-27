@@ -191,7 +191,7 @@ def detect_changes(ticker: str, prev_state: dict) -> tuple[list[dict], dict]:
     for c in changes:
         mc = mc_hype if c["type"] == "hype" else mc_latest
         if mc:
-            _attach_method_change(c, ticker, mc, prev_vals[c["type"]], cur_vals[c["type"]])
+            _attach_method_change(c, ticker, mc, prev_vals[c["type"]], cur_vals[c["type"]], latest)
 
     return changes, new_state
 
@@ -211,7 +211,26 @@ def _fmt(v) -> str:
     return "—" if v is None else str(v)
 
 
-def _method_part(ctype: str, scope: dict, prev, cur) -> str:
+# 価格に依らない項目（理論株価・ファンダ・判定の入力）。この項目の「残り」は相場ではなく、試算と公開の値の違い
+# （試算は SEC・Grok・Alpha Vantage を呼ばず、EPS等の入力が公開と違うことがある。FCF-DEFINITION-SINGLE-SOURCE-1-3 の SOUN は
+# 60→35 の全部が計算方法の分だったのに「60→50／残り −15」と出た。[[METHOD-CHANGE-NOTICE-ACCURACY-1]]、2026-11-27）
+_PRICE_FREE = {"funda"}
+
+
+def _iv_gap_note(scope: dict, latest: dict | None) -> str:
+    """試算の理論株価（scopeのafter）と公開の理論株価が0.5%超違うとき、その文。upside の「残り」に株価の変化と試算の違いが混ざるため"""
+    if not latest or "intrinsic_value_per_share" not in scope["fields"]:
+        return ""
+    est, pub = scope["after"].get("intrinsic_value_per_share"), latest.get("intrinsic_value_per_share")
+    try:
+        if est is None or pub is None or abs(est - pub) / max(abs(pub), 1e-9) <= 0.005:
+            return ""
+    except TypeError:
+        return ""
+    return f"／※試算の理論株価 {_fmt(est)} と公開の {_fmt(pub)} が違う（試算の入力の違い。残りの一部は相場ではない）"
+
+
+def _method_part(ctype: str, scope: dict, prev, cur, latest: dict | None = None) -> str:
     """scopeの before→after（計算方法の分）と、実際の変化との差（残り）の文"""
     fields = [f for f in _TYPE_FIELDS[ctype] if f in scope["fields"]]
     b, a = scope["before"], scope["after"]
@@ -222,7 +241,13 @@ def _method_part(ctype: str, scope: dict, prev, cur) -> str:
         try:
             method = a.get(f0) - b.get(f0)
             rest = (cur - prev) - method
-            text += f"／残り（相場等）: {rest:+.1f}" + ("pt" if ctype == "upside" else "")
+            if ctype in _PRICE_FREE:
+                # ファンダは株価に依らない: 残りは相場ではなく、試算と公開の値の違い
+                text += ("／残り: なし" if abs(rest) < 1e-9 else
+                         f"／残り（試算と公開の違い）: {rest:+.1f}pt（ファンダは株価に依らないので相場の変化ではない。試算の入力が公開と違う）")
+            else:
+                text += f"／残り（相場等）: {rest:+.1f}" + ("pt" if ctype == "upside" else "")
+                text += _iv_gap_note(scope, latest)
         except TypeError:
             text += "／残り（相場等）: —"
     elif ctype in ("score", "hype"):
@@ -235,7 +260,7 @@ def _method_part(ctype: str, scope: dict, prev, cur) -> str:
     return text
 
 
-def _attach_method_change(c: dict, ticker: str, mc: str, prev, cur) -> None:
+def _attach_method_change(c: dict, ticker: str, mc: str, prev, cur, latest: dict | None = None) -> None:
     covered: list[str] = []
     notes: list[str] = []
     for cid in [i for i in mc.split(",") if i]:
@@ -244,7 +269,7 @@ def _attach_method_change(c: dict, ticker: str, mc: str, prev, cur) -> None:
             covered.append(cid)
         elif scope and any(f in scope["fields"] for f in _TYPE_FIELDS[c["type"]]):
             covered.append(cid)
-            notes.append(f"{cid} {_method_part(c['type'], scope, prev, cur)}")
+            notes.append(f"{cid} {_method_part(c['type'], scope, prev, cur, latest if c['type'] != 'hype' else None)}")
     if covered:
         c["method_change"] = ",".join(covered)
         if notes:

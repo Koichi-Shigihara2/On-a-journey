@@ -142,3 +142,38 @@ def test_system_health_q_macro_liquidity_asof(tmp_path):
     assert sh._check_q(str(mp), str(liq))["ok"]
     liq.write_text("date,sp500\n2026-11-26,7000\n", encoding="utf-8")            # 日付の列が無い間は問題にしない
     assert sh._check_q(str(mp), str(liq))["ok"]
+
+
+# ───────── daily_guard の mode（日本の行の取り直しだけは下流を起動しない） ─────────
+def test_daily_guard_mode_jpx_only_vs_full(tmp_path):
+    from common.market_data import daily_guard as g
+    base = _n225(tmp_path, ["2026-11-19", "2026-11-20"])
+    holiday = g.decide(datetime(2026, 11, 26, 21, 47, tzinfo=UTC), base)
+    assert holiday["run"] == "true" and holiday["mode"] == "jpx_only" and "日本の行の取り直しだけ" in holiday["reason"]
+    # 米国の終値が未取得の通常の日は full（日経も一緒に取る）
+    full = g.decide(datetime(2026, 11, 27, 21, 47, tzinfo=UTC), base)
+    assert full["run"] == "true" and full["mode"] == "full"
+
+
+def test_daily_guard_jpx_only_when_us_closes_are_complete(tmp_path, monkeypatch):
+    from common.market_data import daily_guard as g
+    base = _n225(tmp_path, ["2026-11-19", "2026-11-20"])
+    monkeypatch.setattr(g, "completeness", lambda day, base=None: (576, 576))
+    out = g.decide(datetime(2026, 11, 27, 21, 47, tzinfo=UTC), base)
+    assert out["run"] == "true" and out["mode"] == "jpx_only"
+
+
+def _wf(name):
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return open(os.path.join(root, ".github", "workflows", name), encoding="utf-8").read()
+
+
+def test_workflow_jpx_only_fetches_only_n225_and_does_not_start_downstream():
+    daily = _wf("Market_Data_Daily_Update.yml")
+    assert "steps.guard.outputs.mode }}\" = \"jpx_only\"" in daily and "fetcher.py '^N225' --layer daily" in daily
+    # 日本の行の取り直しだけの回は、保存の後に自分を取り消す（下流は conclusion == 'success' の回だけで動く）
+    cancel = daily[daily.index("Cancel this run when no new data was saved"):]
+    assert "steps.guard.outputs.mode == 'jpx_only'" in cancel.split("run:")[0]
+    for name in ("Market_Pulse_Update.yml", "Stonks_Silo_Update.yml"):
+        assert "github.event.workflow_run.conclusion == 'success'" in _wf(name)      # 下流は成功した回だけ
+    assert "workflow_run.conclusion == 'success'" in _wf("TANUKI_VALUATION_Update.yml")

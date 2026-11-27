@@ -107,9 +107,11 @@ def sector_rotation(get_series: GetSeries, as_of: str) -> Dict[str, Any]:
         last = trail[-1]
         ds = sorted(c)
         prev = ds[-2] if len(ds) >= 2 else None
+        prev5 = ds[-6] if len(ds) >= 6 else None      # 5営業日前（型E: 象限は相対の強さ。実際の騰落を1日・5日で並べて出す）
         res["sectors"][s] = {"name": SECTOR_JA[s], "ratio": last["ratio"], "momentum": last["momentum"],
                              "quadrant": quadrant(last["ratio"], last["momentum"]), "trail": trail,
-                             "change_pct": round((c[as_of] / c[prev] - 1) * 100, 2) if prev else None}
+                             "change_pct": round((c[as_of] / c[prev] - 1) * 100, 2) if prev else None,
+                             "change_5d_pct": round((c[as_of] / c[prev5] - 1) * 100, 2) if prev5 else None}
     by_q: Dict[str, List[str]] = {q: [] for q in ("Strong", "Improving", "Weakening", "Weak")}
     for s, v in sorted(res["sectors"].items(), key=lambda kv: -kv[1]["momentum"]):
         by_q[v["quadrant"]].append(s)
@@ -278,9 +280,26 @@ def watch_list(repo_root: str, rotation: Dict[str, Any], get_attributes: Callabl
     return {"tickers": wt, "flowing": [r["ticker"] for r in flowing], "rows": flowing + others, "calculated": calc}
 
 
+# 象限の意味（画面・AIの説明が同じ文言を使う）。象限はSPYと比べた相対の強さで、絶対の騰落ではない
+RELATIVE_STRONG_TEXT = "SPYより相対的に強い"
+FLOWING_HEAD = "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄："
+
+
+def moves_summary(rotation: Optional[Dict[str, Any]]) -> Optional[str]:
+    """業種の実際の騰落（1日・5日）の要約文。象限が相対の強さなので、絶対の動きを並べて誤読を防ぐ（型E）。出せなければ None"""
+    secs = list(((rotation or {}).get("sectors") or {}).values())
+    parts = []
+    for key, label in (("change_pct", "1日"), ("change_5d_pct", "5日")):
+        vals = [v[key] for v in secs if isinstance(v.get(key), (int, float))]
+        if vals:
+            up = sum(1 for x in vals if x > 0)
+            parts.append(f"{label} 平均{sum(vals) / len(vals):+.2f}%（上昇{up}/{len(vals)}）")
+    return ("業種の実際の騰落: " + "・".join(parts)) if parts else None
+
+
 def stage7_line(wl: Dict[str, Any]) -> str:
     f = wl.get("flowing") or []
-    head = "資金が向かっているセクターにいる監視銘柄："
+    head = FLOWING_HEAD
     if not f:
         return head + "なし"
     return head + "・".join(f[:2]) + (f" ほか{len(f) - 2}銘柄" if len(f) > 2 else "")

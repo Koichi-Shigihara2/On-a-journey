@@ -132,6 +132,12 @@ def write_entry(entry: dict, config_path: str = CONFIG_PATH) -> None:
         if c.get("id") == entry["id"] and "committed_at" in c:
             raise SystemExit(f"{entry['id']} の新しい形の件がもうある（2回目の変更はIDの末尾に番号を足す）")
     cfg.setdefault("changes", []).append(entry)
+    if REPO_ROOT not in sys.path:
+        sys.path.insert(0, REPO_ROOT)
+    from common.method_change import validate_changes    # 新しい形以外・形の崩れは足せない（METHOD-CHANGE-NOTICE-ACCURACY-1）
+    problems = validate_changes(cfg["changes"])
+    if problems:
+        raise SystemExit("method_change.json の形が不正: " + " / ".join(problems))
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(cfg, f, ensure_ascii=False, indent=2)
         f.write("\n")
