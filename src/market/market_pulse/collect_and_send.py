@@ -708,13 +708,21 @@ def _calc_divergence_zscore(div_history):
     return round((div_history[-1] - mean) / stdev, 2)
 
 
+# Tech Pulse の反発・下落のシグナル（買いの主ではなく参考の表示。[[MARKETPULSE-REVIEW-EPIC-1]] 順5）。画面の文言はこの定数から作る
+TP_REBOUND_FG_MAX = 30
+TP_DIV_ABS = 10
+TP_Z_ABS = 1.0
+TP_SIGNAL_RULE_TEXT = (f"参考: F&Gが{TP_REBOUND_FG_MAX}未満で、QQQとSPYの乖離が+{TP_DIV_ABS}を超え乖離のZ値が{TP_Z_ABS}を超えると反発シグナル。"
+                       f"乖離が−{TP_DIV_ABS}を下回りZ値が−{TP_Z_ABS}を下回ると下落注意（乖離は過去90日の中での順位、F&Gの水準とは別の見方）")
+
+
 def _get_tp_signal(div_value, div_zscore, fg_score):
     """3条件シグナル文字列を返す"""
     if div_value is None or div_zscore is None or fg_score is None:
         return ""
-    if fg_score < 30 and div_value > 10 and div_zscore > 1.0:
+    if fg_score < TP_REBOUND_FG_MAX and div_value > TP_DIV_ABS and div_zscore > TP_Z_ABS:
         return "ハイテク先行反発シグナル"
-    if div_value < -10 and div_zscore < -1.0:
+    if div_value < -TP_DIV_ABS and div_zscore < -TP_Z_ABS:
         return "ハイテク先行下落注意"
     return ""
 
@@ -1400,6 +1408,11 @@ HY_BUY_RULE_TEXT = f"HYスプレッドが90日の最大値より{HY_BUY_MARGIN:.
 from common.step_rules import BASIS_ID as STEP_RULES_BASIS_ID  # noqa: E402
 BUY_TRIGGER_ENTER = 25
 BUY_TRIGGER_EXIT = 30
+BUY_EXTREME_FG = 10
+BUY_POINTS_MIN = 2
+# 買いの主の判断（順5の決定: 主は BUYチェックリスト）。画面の見出し・説明はこの定数から作る（別の指数・閾値の参考表示と取り違えないため）
+BUY_RULE_TEXT = (f"主の買いの判断。CNN の Fear & Greed が{BUY_TRIGGER_ENTER}以下で発動（前の日から発動中なら{BUY_TRIGGER_EXIT}以下の間は継続）、"
+                 f"発動したら3つの確認のうち{BUY_POINTS_MIN}点以上で BUY、それ未満は WATCH。F&G {BUY_EXTREME_FG}以下は極端な恐怖")
 
 
 def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active, prev_triggered=None):
@@ -1410,7 +1423,7 @@ def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90
     from common.step_rules import hysteresis_gate
     triggered = fg_score is not None and hysteresis_gate(prev_triggered, fg_score, BUY_TRIGGER_ENTER, BUY_TRIGGER_EXIT)
     trigger_held = bool(triggered and fg_score > BUY_TRIGGER_ENTER)       # 25を超えているが前の日からの継続
-    extreme = fg_score is not None and fg_score <= 10
+    extreme = fg_score is not None and fg_score <= BUY_EXTREME_FG
 
     checks = {}
 
@@ -1448,9 +1461,10 @@ def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90
         checks["hindenburg"] = {"active": None, "point": 0}
 
     points = sum(c["point"] for c in checks.values())
-    action = "BUY（積極的に拾う）" if points >= 2 else "WATCH（準備段階・様子見）"
+    action = "BUY（積極的に拾う）" if points >= BUY_POINTS_MIN else "WATCH（準備段階・様子見）"
 
     return {
+        "rule_text": BUY_RULE_TEXT,
         "triggered": triggered,
         "trigger_held": trigger_held,
         "extreme": extreme,
@@ -1632,6 +1646,14 @@ def bond_direction(tlt_chg, spy_chg):
     return "中立"
 
 
+# 自前のセンチメント指数のシグナル（買いの主ではなく参考の表示。順5）。自前の指数は F&G と別の算出で水準が違う（F&G が25以下の日でも自前は40台が多い）
+SENTIMENT_BUY_MAX = 20
+SENTIMENT_TP_PEAK = 70
+SENTIMENT_TP_DROP = 5
+SENTIMENT_SIGNAL_RULE_TEXT = (f"参考: 自前のセンチメント指数（F&Gとは別の算出で、水準が違う）が{SENTIMENT_BUY_MAX}以下なら BUY、"
+                              f"直近20営業日のピークが{SENTIMENT_TP_PEAK}以上で{SENTIMENT_TP_DROP}pt以上下がると TAKE PROFIT。買いの判断の主は BUY チェックリスト")
+
+
 def sentiment_signal(score, history, window_start):
     """MP-05（指示書㉓）: センチメントのシグナル（BUY / TAKE PROFIT / HOLD）。
     以前は画面の表示期間の「直近20エントリ」で判定しており、表示期間で結果が変わった。
@@ -1646,13 +1668,13 @@ def sentiment_signal(score, history, window_start):
         return None
     recent = [s for d, s in history if d >= window_start and s is not None] + [score]
     peak = max(recent)
-    if score <= 20:
-        sig, reason = "BUY", "スコア20以下"
-    elif len(recent) >= 3 and peak >= 70 and peak - score >= 5:
+    if score <= SENTIMENT_BUY_MAX:
+        sig, reason = "BUY", f"スコア{SENTIMENT_BUY_MAX}以下"
+    elif len(recent) >= 3 and peak >= SENTIMENT_TP_PEAK and peak - score >= SENTIMENT_TP_DROP:
         sig, reason = "TAKE PROFIT", f"直近20営業日のピーク{peak:.1f}から{peak - score:.1f}pt低下"
     else:
         sig, reason = "HOLD", "BUY・TAKE PROFITの条件に当たらない"
-    return {"signal": sig, "reason": reason, "window_start": window_start, "peak": peak, "n": len(recent)}
+    return {"signal": sig, "reason": reason, "window_start": window_start, "peak": peak, "n": len(recent), "rule_text": SENTIMENT_SIGNAL_RULE_TEXT}
 
 
 def signal_window_start(now_utc, n=20):
@@ -1930,6 +1952,7 @@ if __name__ == "__main__":
             "value": div_value,
             "zscore": div_zscore,
             "signal": tp_signal,
+            "rule_text": TP_SIGNAL_RULE_TEXT,
         },
     }
     print(f"[INFO] Tech Pulseスコア: {tp_score} ({tp_label}), 乖離={div_value}, Z={div_zscore}, シグナル={tp_signal or 'なし'}")

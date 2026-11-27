@@ -502,17 +502,20 @@
       <div id="futuresTable"></div>
       <div class="sub-h">今後7日の予定（米国東部時間の日付。経済指標は日付のみ）</div>
       <div id="calendarTable"></div>
-      <div class="sub-h">センチメントのシグナル</div>
+      <div class="sub-h" id="buyChecklistSec">📋 買いの判断（主）— BUY チェックリスト</div>
+      <div class="stage-note" id="buyRuleText" style="margin:0 0 6px">買いの判断の主はこのチェックリストです。下の2つ（自前の指数のシグナル・Tech Pulse）は参考の表示です。</div>
+      <div class="unified-card" id="buyChecklistCard" style="padding:18px 20px">
+    <div id="buyChecklistInner"><div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div></div>
+  </div>
+      <div class="sub-h">参考: センチメントのシグナル（自前の指数。買いの主ではない）</div>
       <div id="signalBadge"></div>
-      <div class="sub-h">同じシグナルが出た過去の日の、その後の実績</div>
+      <div class="sub-h">参考: Tech Pulse のシグナル</div>
+      <div id="tpSignalNote"></div>
+      <div class="sub-h">同じシグナルが出た過去の日の、その後の実績（自前の指数のシグナル）</div>
       <div id="pastOutcomes"></div>
       <div class="sub-h">📋 TAKE PROFIT チェックリスト — 極端な強欲（F&amp;G≥75）時に自動発動</div>
       <div class="unified-card" id="tpChecklistCard" style="padding:18px 20px">
     <div id="tpChecklistInner"><div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div></div>
-  </div>
-      <div class="sub-h" id="buyChecklistSec">📋 BUY チェックリスト — 極端な恐怖（F&amp;G≤25）時に自動発動</div>
-      <div class="unified-card" id="buyChecklistCard" style="padding:18px 20px">
-    <div id="buyChecklistInner"><div style="text-align:center;color:var(--mut);font-size:13px;padding:16px">データなし（次回Actions実行後に表示）</div></div>
   </div>
     </section>
     <section class="stage" id="history">
@@ -1033,7 +1036,9 @@ function renderSignal(){
     sig=s.score<=20?{signal:"BUY"}:(recent.length>=3&&peak>=70&&peak-s.score>=5)?{signal:"TAKE PROFIT"}:{signal:"HOLD"};
   }
   const cls=sig.signal==="BUY"?"signal-buy":sig.signal==="TAKE PROFIT"?"signal-sell":"signal-hold";
-  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="signal-badge ${cls}" id="signalBadgeText">${sig.signal}</div><span class="stage-note" style="margin:0">${escHtml(sig.reason||"")}${sig.window_start?`（判定期間: ${escHtml(sig.window_start)}以降の直近20営業日）`:""}</span></div>`;
+  const tpd=L?.tech_pulse?.divergence;const tpEl=document.getElementById("tpSignalNote");
+  if(tpEl)tpEl.innerHTML=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-family:var(--mono);font-size:13px;font-weight:700;color:${tpd?.signal?(tpd.signal.includes("反発")?"var(--grn)":"var(--red)"):"var(--mut)"}">${tpd?.signal?escHtml(tpd.signal):"シグナルなし"}</span><span class="stage-note" style="margin:0">${escHtml(tpd?.rule_text||"")}</span></div>`;
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="signal-badge ${cls}" id="signalBadgeText">${sig.signal}</div><span class="stage-note" style="margin:0">${escHtml(sig.reason||"")}${sig.rule_text?"。"+escHtml(sig.rule_text):""}${sig.window_start?`（判定期間: ${escHtml(sig.window_start)}以降の直近20営業日）`:""}</span></div>`;
 }
 
 // ── 段階5: セクター4象限（実装B） ──
@@ -1245,6 +1250,7 @@ function renderBuyChecklist(){
     return;
   }
   const {triggered,extreme,points,action,fg_score,checks}=bc;
+  const ruleEl=document.getElementById("buyRuleText");if(ruleEl&&bc.rule_text)ruleEl.textContent=bc.rule_text+"。下の2つ（自前の指数のシグナル・Tech Pulse）は参考の表示";
   const fgDisp=fg_score!=null?Math.round(fg_score):(fg!=null?Math.round(fg):null);
 
   // Extreme Fear 強調
