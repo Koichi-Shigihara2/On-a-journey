@@ -69,7 +69,7 @@ QUADRANT_JA = {"Strong": "強い", "Weakening": "弱まりつつある", "Weak":
 def rs_ratio_momentum(sector_weekly: List[float], spy_weekly: List[float], n: int = RATIO_WEEKS,
                       lag: int = MOMENTUM_LAG) -> List[Tuple[Optional[float], Optional[float]]]:
     """週次の終値（同じ週どうし）から、各週の(RS-Ratio, RS-Momentum)を返す（計算できない週はNone）。
-    RS = セクター÷SPY、RS-Ratio = RS ÷ RSのn週単純平均 × 100、RS-Momentum = RS-Ratio ÷ lag週前のRS-Ratio × 100。"""
+    RS = セクター÷基準（BENCHMARK＝RSP。引数名はspy_weeklyのまま）、RS-Ratio = RS ÷ RSのn週単純平均 × 100、RS-Momentum = RS-Ratio ÷ lag週前のRS-Ratio × 100。"""
     rs = [a / b for a, b in zip(sector_weekly, spy_weekly)]
     ratio: List[Optional[float]] = []
     for i in range(len(rs)):
@@ -84,6 +84,8 @@ def rs_ratio_momentum(sector_weekly: List[float], spy_weekly: List[float], n: in
     return out
 
 
+BENCHMARK = "RSP"               # 象限のRSの分母（[[MARKETPULSE-REVIEW-EPIC-1]] 2-b、2026-11-27にSPYから替えた。SPYは情報技術が約3割で、XLKが崩れると他業種が機械的に強く出るため）
+BENCHMARK_TEXT = "RSP（均等加重）"   # 画面・AIの文言（定義から作る）
 QUADRANT_BAND = 0.5    # 象限の境目（100）の幅。前の象限から、境目を0.5越えたときだけ切り替える（[[MARKETPULSE-REVIEW-EPIC-1]] 順4。試算: 11業種の切替204→139）
 
 
@@ -92,9 +94,9 @@ def sector_rotation(get_series: GetSeries, as_of: str, prev_quadrants: Optional[
     prev_quadrants: 前の日の象限 {ETF: 象限}（前のエントリの値）。あれば象限は境目の幅つき（common/step_rules.py）、無ければ今までの段の判定
     （初日・取り直し）。RS-Ratio・RS-Momentum の値そのものは変わらない"""
     days = (RATIO_WEEKS + MOMENTUM_LAG + TRAIL_WEEKS + 4) * 5 + 10
-    spy = _closes(get_series, "SPY", as_of, days)
+    spy = _closes(get_series, BENCHMARK, as_of, days)
     spy_w = weekly_last(spy)
-    res: Dict[str, Any] = {"as_of": as_of, "ratio_weeks": RATIO_WEEKS, "momentum_lag_weeks": MOMENTUM_LAG,
+    res: Dict[str, Any] = {"as_of": as_of, "benchmark": BENCHMARK, "ratio_weeks": RATIO_WEEKS, "momentum_lag_weeks": MOMENTUM_LAG,
                            "sectors": {}, "excluded": []}
     for s in SECTORS:
         c = _closes(get_series, s, as_of, days)
@@ -113,7 +115,7 @@ def sector_rotation(get_series: GetSeries, as_of: str, prev_quadrants: Optional[
         ds = sorted(c)
         prev = ds[-2] if len(ds) >= 2 else None
         prev5 = ds[-6] if len(ds) >= 6 else None      # 5営業日前（型E: 象限は相対の強さ。実際の騰落を1日・5日で並べて出す）
-        if prev_quadrants and prev_quadrants.get(s):
+        if prev_quadrants and prev_quadrants.get(s):   # 呼び出し側が基準の同じ前のエントリの象限だけを渡す（基準を替えた日は渡さない）
             from common.step_rules import quadrant_hysteresis
             quad = quadrant_hysteresis(prev_quadrants[s], last["ratio"], last["momentum"], QUADRANT_BAND)
         else:
@@ -290,9 +292,9 @@ def watch_list(repo_root: str, rotation: Dict[str, Any], get_attributes: Callabl
     return {"tickers": wt, "flowing": [r["ticker"] for r in flowing], "rows": flowing + others, "calculated": calc}
 
 
-# 象限の意味（画面・AIの説明が同じ文言を使う）。象限はSPYと比べた相対の強さで、絶対の騰落ではない
-RELATIVE_STRONG_TEXT = "SPYより相対的に強い"
-FLOWING_HEAD = "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄："
+# 象限の意味（画面・AIの説明が同じ文言を使う）。象限は基準（BENCHMARK）と比べた相対の強さで、絶対の騰落ではない
+RELATIVE_STRONG_TEXT = f"{BENCHMARK_TEXT}より相対的に強い"
+FLOWING_HEAD = f"{BENCHMARK_TEXT}より相対的に強いセクター（Strong・Improving）にいる監視銘柄："
 
 
 def moves_summary(rotation: Optional[Dict[str, Any]]) -> Optional[str]:

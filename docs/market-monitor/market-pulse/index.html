@@ -481,7 +481,7 @@
       <div class="stage-h"><span class="stage-no">5</span>株式のどこへ</div>
       <div class="stage-line" id="stageLine5">—</div>
       <div id="stage5Body"></div>
-      <div class="sub-h">セクター4象限（週次の位置: RS-Ratio 13週・RS-Momentum 4週、SPY比。線は直近8週の軌跡）</div>
+      <div class="sub-h">セクター4象限（週次の位置: RS-Ratio 13週・RS-Momentum 4週、RSP（均等加重）比。線は直近8週の軌跡）</div>
       <div class="quad-wrap"><canvas id="quadChart"></canvas></div>
       <div id="sectorTable"></div>
     </section>
@@ -491,7 +491,7 @@
       <div id="stage6Body"></div>
     </section>
     <section class="stage" id="stage7">
-      <div class="stage-h"><span class="stage-no">7</span>SPYより相対的に強いセクターにいる監視銘柄</div>
+      <div class="stage-h"><span class="stage-no">7</span>RSP（均等加重）より相対的に強いセクターにいる監視銘柄</div>
       <div class="stage-line" id="stageLine7">—</div>
       <div id="stage7Body"></div>
     </section>
@@ -927,11 +927,11 @@ function renderOscChart(){
   const yC={min:(hasScore||hasFG||isMulti)?oscMin:undefined,max:(hasScore||hasFG||isMulti)?oscMax:undefined,ticks:{color:"#64748b",font:{family:"Space Mono",size:12},callback:v=>{if(v===20)return"FEAR▼";if(v===50)return"50";if(v===80)return"GREED▲";return v%10===0?v.toFixed(0):""}},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}};
   // 判定の基準を変えた日（各エントリの basis が入った最初の日。common/step_rules.py の版）に縦線を引く（[[MARKETPULSE-REVIEW-EPIC-1]] 順4）。
   // 過去のエントリは作り直さないので、線の前後は旧基準・新基準
-  if(!Chart.registry.plugins.get("basisLine")){Chart.register({id:"basisLine",afterDatasetsDraw(chart){const i=chart.$basisIdx;if(i==null||i<=0||!chart.scales.x)return;const x=chart.scales.x.getPixelForValue(i);const{ctx,chartArea:{top,bottom,right}}=chart;ctx.save();ctx.strokeStyle="rgba(245,158,11,.85)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,bottom);ctx.stroke();ctx.fillStyle="rgba(245,158,11,.95)";ctx.font="10px Space Mono";ctx.fillText("判定の基準を変更",Math.min(x+4,right-96),top+11);ctx.restore()}})}
+  if(!Chart.registry.plugins.get("basisLine")){Chart.register({id:"basisLine",afterDatasetsDraw(chart){if(!chart.scales.x)return;const{ctx,chartArea:{top,bottom,right}}=chart;(chart.$basisLines||[]).forEach((ln,k)=>{const i=ln.i;if(i==null||i<=0)return;const x=chart.scales.x.getPixelForValue(i);ctx.save();ctx.strokeStyle="rgba(245,158,11,.85)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,bottom);ctx.stroke();ctx.fillStyle="rgba(245,158,11,.95)";ctx.font="10px Space Mono";ctx.fillText(ln.label,Math.min(x+4,right-Math.max(96,ln.label.length*11)),top+11+k*12);ctx.restore()})}})}
   if(oscChartInst)oscChartInst.destroy();
   oscChartInst=new Chart(document.getElementById("oscChart"),{type:"line",data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:"#111520",borderColor:"#1e2840",borderWidth:1,titleColor:"#64748b",bodyColor:"#e2e8f0",titleFont:{family:"Space Mono",size:12},bodyFont:{family:"Space Mono",size:13},callbacks:{label:ctx=>{const ds=ctx.dataset,raw=ds._rawData?.[ctx.dataIndex],m=ds._meta;if(m?.key==="score"){const lbl=od[ctx.dataIndex]?.sentiment?.label||"";return raw!=null?` Score: ${raw.toFixed(1)} (${lbl})`:" —"}if(m?.key==="fg"){return raw!=null?` CNN F&G: ${raw.toFixed(0)}`:" —"}return raw!=null?` ${m?.label||ds.label}: ${raw.toFixed(2)}`:" —"}}}},scales:{x:{ticks:{color:"#64748b",font:{family:"Space Mono",size:12},maxTicksLimit:12},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}},y:yC}},
     plugins:useZones?[{id:"zoneShading",beforeDraw(chart){const{ctx,chartArea:{left,right},scales:{y}}=chart;const y35=y.getPixelForValue(45),yB=y.getPixelForValue(0);ctx.fillStyle="rgba(244,63,94,.06)";ctx.fillRect(left,y35,right-left,yB-y35);const y65=y.getPixelForValue(55),yT=y.getPixelForValue(100);ctx.fillStyle="rgba(16,185,129,.06)";ctx.fillRect(left,yT,right-left,y65-yT);ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.strokeStyle="rgba(244,63,94,.3)";ctx.beginPath();ctx.moveTo(left,y35);ctx.lineTo(right,y35);ctx.stroke();ctx.strokeStyle="rgba(16,185,129,.3)";ctx.beginPath();ctx.moveTo(left,y65);ctx.lineTo(right,y65);ctx.stroke();ctx.setLineDash([])}}]:[]});
-  {const bi=od.findIndex(d=>d.basis);oscChartInst.$basisIdx=bi>0?bi:null;if(bi>0)oscChartInst.update("none")}
+  {const bi=od.findIndex(d=>d.basis?.step_rules),si=od.findIndex(d=>d.basis?.sector_benchmark);const ls=[];if(bi>0)ls.push({i:bi,label:"判定の基準を変更"});if(si>0)ls.push({i:si,label:"セクターの基準をRSPに変更"});oscChartInst.$basisLines=ls;if(ls.length)oscChartInst.update("none")}
   const nTxt=isMulti?' <span style="color:var(--mut);font-size:12px">(Score/F&G以外は正規化)</span>':'';
   document.getElementById("oscLegend").innerHTML=aList.map(m=>`<div class="osc-legend-item"><div class="osc-legend-dot" style="background:${m.color}"></div>${m.label}</div>`).join("")+(useZones?'<div class="osc-legend-item"><div class="osc-legend-dot" style="background:rgba(244,63,94,.25)"></div>Fear</div><div class="osc-legend-item"><div class="osc-legend-dot" style="background:rgba(16,185,129,.25)"></div>Greed</div>':'')+nTxt}
 
@@ -1020,7 +1020,7 @@ function renderStage8(){
       rows+=`<tr><td>${NAMES[key]}</td><td>${escHtml(sg.signal||"—")}</td><td>${HZ[o.horizon]||o.horizon}</td><td class="num">${o.n}</td><td class="num">${enough?Number(o.up_pct).toFixed(1)+"%":"—"}</td><td class="num">${o.base_up_pct!=null?Number(o.base_up_pct).toFixed(1)+"%":"—"}</td><td class="num">${enough?pctS(o.diff_pt,1)+"pt":"—"}</td><td>${escHtml(o.label)}</td><td>${enough?escHtml(o.guide)+"（z="+pctS(o.z,2)+"）":"—"}</td><td class="num">${enough?pctS(o.mean_pct,3)+"%":"—"}</td><td class="num">${enough&&o.p10_pct!=null?pctS(o.p10_pct,2)+"%":"—"}</td><td class="num">${o.n_indep!=null&&o.horizon>1?o.n_indep:"—"}</td></tr>`;
     }
   }
-  el.innerHTML=`<div style="overflow-x:auto"><table class="mp-table" id="pastOutcomesTable"><tr><th>シグナル</th><th>今日の区分</th><th>期間</th><th>件数</th><th>上昇割合</th><th>基準率</th><th>差</th><th>判定</th><th>目安</th><th>平均リターン</th><th title="結果の悪い方から10%目のリターン（下振れの目安）">下位10%</th><th title="期間が重ならない件数の目安。5・20営業日後は連続した日の窓が重なるため、件数ほどの独立な情報はない">重ならない件数</th></tr>${rows}</table></div><div class="stage-note">予測ではない。${escHtml(s8.history_from||"")}〜${escHtml(s8.as_of||"")}のS&amp;P500で、同じ区分の日が過去に何回あり、その後どうだったかを、条件のない全日の上昇割合（基準率）と比べる。差が偶然のばらつき（標準誤差）の2倍以上（|z|≥2）のときだけ「平常時より上昇が多い／少ない」とし、それ以外は「差なし」。件数20未満は件数不足。5・20営業日後は連続した日の窓が重なるので、zは「重ならない件数」で計算している（件数nのまま計算すると過大に出る）。見出しの結論は、有意になる割合が高い「段階1の区分のみ」の5営業日後。</div>`;
+  el.innerHTML=`<div style="overflow-x:auto"><table class="mp-table" id="pastOutcomesTable"><tr><th>シグナル</th><th>今日の区分</th><th>期間</th><th>件数</th><th>上昇割合</th><th>基準率</th><th>差</th><th>判定</th><th>目安</th><th>平均リターン</th><th title="結果の悪い方から10%目のリターン（下振れの目安）">下位10%</th><th title="期間が重ならない件数の目安。5・20営業日後は連続した日の窓が重なるため、件数ほどの独立な情報はない">重ならない件数</th></tr>${rows}</table></div><div class="stage-note">予測ではない。${escHtml(s8.history_from||"")}〜${escHtml(s8.as_of||"")}のS&amp;P500で、同じ区分の日が過去に何回あり、その後どうだったかを、条件のない全日の上昇割合（基準率）と比べる。差が偶然のばらつき（標準誤差）の2倍以上（|z|≥2）のときだけ「平常時より上昇が多い／少ない」とし、それ以外は「差なし」。重ならない件数20未満は件数不足。5・20営業日後は連続した日の窓が重なるので、zは「重ならない件数」で計算している（件数nのまま計算すると過大に出る）。見出しの結論は、有意になる割合が高い「段階1の区分のみ」の5営業日後。</div>`;
 }
 
 // ── 段階8: センチメントのシグナル（MP-05、日付で直近20営業日。表示期間によらない） ──
@@ -1050,6 +1050,7 @@ function renderSectors(){
   if(!r){tb.innerHTML='<div class="stage-note">記録なし</div>';if(quadChartInst){quadChartInst.destroy();quadChartInst=null}return}
   const secs=Object.entries(r.sectors||{}).sort((a,b)=>b[1].momentum-a[1].momentum);
   tb.innerHTML=`<table class="mp-table" id="sectorTableInner"><tr><th>セクター</th><th>週次の位置</th><th>RS-Ratio</th><th>RS-Momentum</th><th>1日の騰落（前営業日比）</th><th>5日の騰落</th></tr>${secs.map(([s,v])=>`<tr><td>${s} ${escHtml(v.name)}</td><td class="q-${v.quadrant}">${v.quadrant}（${QJA[v.quadrant]}）</td><td class="num">${Number(v.ratio).toFixed(2)}</td><td class="num">${Number(v.momentum).toFixed(2)}</td><td class="num ${v.change_pct>0?'up':v.change_pct<0?'down':'flat'}">${v.change_pct==null?'—':pctS(v.change_pct,2)+'%'}</td><td class="num ${v.change_5d_pct>0?'up':v.change_5d_pct<0?'down':'flat'}">${v.change_5d_pct==null?'—':pctS(v.change_5d_pct,2)+'%'}</td></tr>`).join('')}</table><div class="stage-note">位置（Strong等）はSPYと比べた相対の強さで、絶対の騰落ではありません。全体が下げる日でも、SPYより下げが小さい業種はStrongになります。右の2列が実際の騰落です。</div>${(r.excluded||[]).length?`<div class="stage-note">当日の終値が無く象限から外したセクター: ${escHtml(r.excluded.join('・'))}</div>`:''}<div class="stage-note">RS＝セクターETF÷SPY。RS-Ratio＝RS÷13週平均×100（100超＝平均より強い）、RS-Momentum＝RS-Ratio÷4週前×100（100超＝強さが増している）。週次の位置は「いまどこに資金が向いているか」の整理で、先行きの指標ではない（${escHtml(r.as_of)}時点）。</div>`;
+  {const sd=allData.find(d=>d.basis?.sector_benchmark)?.date;tb.insertAdjacentHTML("beforeend",`<div class="stage-note" id="sectorBasisNote">象限の基準: ${escHtml(r.benchmark||"SPY")}${r.benchmark==="RSP"?"（均等加重）":""}。${sd?escHtml(String(sd).slice(0,10))+"より前の記録はSPY基準（履歴は作り直していない）":""}</div>`)}
   const COLORS=["#3b82f6","#10b981","#f59e0b","#f43f5e","#a78bfa","#22d3ee","#f97316","#84cc16","#e879f9","#94a3b8","#facc15"];
   const ds=secs.map(([s,v],i)=>({label:s,data:v.trail.map(p=>({x:p.ratio,y:p.momentum})),showLine:true,borderColor:COLORS[i%COLORS.length],backgroundColor:COLORS[i%COLORS.length],pointRadius:v.trail.map((_,j)=>j===v.trail.length-1?5:1.5),borderWidth:1.2,tension:.2}));
   if(quadChartInst)quadChartInst.destroy();
@@ -1073,7 +1074,7 @@ function renderStage6(){
   <table class="mp-table" id="breakdownTable" style="max-width:560px"><tr><th></th><th>値</th><th>前日比</th><th>基準日</th></tr>${(bd||[]).map(r=>`<tr><td>${escHtml(r.name)}（${escHtml(r.symbol)}）</td><td class="num">${r.value==null?'—':Number(r.value).toLocaleString("ja-JP",{maximumFractionDigits:2})}</td><td class="num ${r.change_pct>0?'up':r.change_pct<0?'down':'flat'}">${r.change_pct==null?'—':f(r.change_pct)+'%'}</td><td>${escHtml(r.date||'—')}${provMark(r)}</td></tr>`).join('')}</table>`;
 }
 
-// ── 段階7: SPYより相対的に強いセクターにいる監視銘柄（実装B） ──
+// ── 段階7: RSP（均等加重）より相対的に強いセクターにいる監視銘柄（実装B） ──
 // 計算日の表示（TANUKI SCORE・HypeCoreはMarket Pulseより前の夜の計算結果。指示書㉗）
 function calcLabel(r){if(!r)return'<span class="calc-date">（計算日: —）</span>';return`<span class="calc-date">（計算日: ${escHtml(r[0]===r[1]?r[0]:r[0]+'〜'+r[1])}）</span>`}
 function renderStage7(){
@@ -1082,7 +1083,7 @@ function renderStage7(){
   if(!w){el.innerHTML='<div class="stage-note">記録なし</div>';return}
   const flow=new Set(w.flowing||[]);
   el.innerHTML=`<table class="mp-table" id="watchTable"><tr><th>銘柄</th><th>区分</th><th>セクター</th><th>週次の位置</th><th>TANUKI SCORE${calcLabel(w.calculated?.tanuki_score)}</th><th>HypeCoreのPhase${calcLabel(w.calculated?.hype_phase)}</th></tr>${(w.rows||[]).map(r=>`<tr class="${flow.has(r.ticker)?'flow':''}"><td>${escHtml(r.ticker)}</td><td>${[r.held?'保有':'',r.tail?'TAIL':''].filter(Boolean).join('・')}</td><td>${r.sector_etf?escHtml(r.sector_etf+' '+(r.sector_name||'')):'—'}</td><td class="${r.quadrant?'q-'+r.quadrant:''}">${r.quadrant?escHtml(r.quadrant+'（'+QJA[r.quadrant]+'）'):'—'}</td><td>${escHtml(r.tanuki_score||'—')}</td><td>${escHtml(r.hype_phase||'—')}</td></tr>`).join('')}</table>
-  <div class="stage-note">監視銘柄＝ポートフォリオの保有銘柄＋TANUKI TAILの監視銘柄。SPYより相対的に強いセクター（Strong・Improving）にいる銘柄を先に、所属セクターのRS-Momentumの高い順（同じセクター内はティッカー順）に並べる。並び順に銘柄の評価は使っていない。売買を勧めるものではない。</div>`;
+  <div class="stage-note">監視銘柄＝ポートフォリオの保有銘柄＋TANUKI TAILの監視銘柄。RSP（均等加重）より相対的に強いセクター（Strong・Improving）にいる銘柄を先に、所属セクターのRS-Momentumの高い順（同じセクター内はティッカー順）に並べる。並び順に銘柄の評価は使っていない。売買を勧めるものではない。</div>`;
 }
 
 // ── 実装C（指示書㉗）: 段階2のニュースの見出し、段階8の先物・予定 ──

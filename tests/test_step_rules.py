@@ -247,7 +247,7 @@ def test_entry_carries_the_basis_mark(tmp_path, monkeypatch):
     sd = {"S&P500": {"value": 7000.0, "change": 1.0, "change_percent": 0.1, "volume_ratio": 1.0, "date": "2026-11-25"}}
     cs.save_data_to_json_and_csv("r", sd, {"score": 50.0, "label": "NEUTRAL"})
     e = json.loads((tmp_path / "market_data.json").read_text(encoding="utf-8"))[-1]
-    assert e["basis"] == {"step_rules": SR.BASIS_ID}
+    assert e["basis"] == {"step_rules": SR.BASIS_ID, "sector_benchmark": "RSP"}
 
 
 def test_weekly_row_carries_basis_column():

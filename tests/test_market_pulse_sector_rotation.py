@@ -58,7 +58,7 @@ def _weekdays(start, n):
 class TestSectorRotation:
     def test_leader_is_strong_and_excluded_when_no_close(self):
         days = _weekdays(date(2026, 3, 2), 150)
-        data = {"SPY": {d: 100.0 for d in days}}
+        data = {"RSP": {d: 100.0 for d in days}}
         for i, s in enumerate(sr.SECTORS):
             # XLKだけが最近加速して上昇、他は横ばい
             data[s] = {d: 50.0 * (1.004 ** max(0, j - 100) if s == "XLK" else 1.0) for j, d in enumerate(days)}
@@ -71,7 +71,7 @@ class TestSectorRotation:
 
     def test_no_lookahead(self):
         days = _weekdays(date(2026, 3, 2), 150)
-        data = {"SPY": {d: 100.0 + j * 0.1 for j, d in enumerate(days)}}
+        data = {"RSP": {d: 100.0 + j * 0.1 for j, d in enumerate(days)}}
         for s in sr.SECTORS:
             data[s] = {d: 50.0 + j * 0.05 for j, d in enumerate(days)}
         a = sr.sector_rotation(_series_factory(data), days[120])
@@ -117,9 +117,9 @@ class TestWatchList:
         wl = sr.watch_list(str(root), rot, lambda t: attrs.get(t))
         assert wl["flowing"] == ["DDD", "AAA", "CCC"]      # Momentumの高い順（XLC→XLK）、同じセクター内はティッカー順
         assert [r["ticker"] for r in wl["rows"]] == ["DDD", "AAA", "CCC", "BBB"]
-        assert sr.stage7_line(wl) == "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄：DDD・AAA ほか1銘柄"
-        assert sr.stage7_line({"flowing": []}) == "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄：なし"
-        assert sr.stage7_line({"flowing": ["X", "Y"]}) == "SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄：X・Y"
+        assert sr.stage7_line(wl) == "RSP（均等加重）より相対的に強いセクター（Strong・Improving）にいる監視銘柄：DDD・AAA ほか1銘柄"
+        assert sr.stage7_line({"flowing": []}) == "RSP（均等加重）より相対的に強いセクター（Strong・Improving）にいる監視銘柄：なし"
+        assert sr.stage7_line({"flowing": ["X", "Y"]}) == "RSP（均等加重）より相対的に強いセクター（Strong・Improving）にいる監視銘柄：X・Y"
 
     def test_real_watch_tickers_is_union(self):
         repo = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
@@ -139,8 +139,8 @@ class TestStageIntegration:
 
     def test_stage5_appends_strong(self):
         ind = {"グロース対バリュー比": {"diff_percent": 0.58}}
-        assert sc.stage5(ind, {"by_quadrant": {"Strong": ["XLK", "XLC"]}})["line"] == "グロース優勢（IVW−IVE +0.58pt）／SPYより相対的に強い（Strong）: XLK・XLC"
-        assert sc.stage5(ind, {"by_quadrant": {"Strong": []}})["line"].endswith("／SPYより相対的に強い（Strong）: なし")
+        assert sc.stage5(ind, {"by_quadrant": {"Strong": ["XLK", "XLC"]}})["line"] == "グロース優勢（IVW−IVE +0.58pt）／RSP（均等加重）より相対的に強い（Strong）: XLK・XLC"
+        assert sc.stage5(ind, {"by_quadrant": {"Strong": []}})["line"].endswith("／RSP（均等加重）より相対的に強い（Strong）: なし")
         assert sc.stage5(ind)["line"] == "グロース優勢（IVW−IVE +0.58pt）"
 
     def test_stage5_shows_actual_moves_next_to_relative_strength(self):
@@ -150,7 +150,7 @@ class TestStageIntegration:
                "sectors": {"XLP": {"change_pct": -0.5, "change_5d_pct": -2.0}, "XLU": {"change_pct": -1.5, "change_5d_pct": -3.0},
                            "XLK": {"change_pct": 0.4, "change_5d_pct": -4.0}}}
         line = sc.stage5(ind, rot)["line"]
-        assert "SPYより相対的に強い（Strong）: XLP・XLU" in line
+        assert "RSP（均等加重）より相対的に強い（Strong）: XLP・XLU" in line
         assert "業種の実際の騰落: 1日 平均-0.53%（上昇1/3）・5日 平均-3.00%（上昇0/3）" in line
         assert sr.moves_summary({"sectors": {}}) is None and sr.moves_summary(None) is None
 
@@ -180,3 +180,25 @@ class TestCalcDates:
         assert wl["calculated"] == {"tanuki_score": ["2026-09-29", "2026-09-30"], "hype_phase": ["2026-09-28", "2026-09-28"]}
         row = {r["ticker"]: r for r in wl["rows"]}
         assert row["AAA"]["hype_phase"] == "期待剥落期" and row["BBB"]["hype_calculated_at"] is None
+
+
+class TestBenchmarkRsp:
+    """MARKETPULSE-REVIEW-EPIC-1 2-b: 象限の基準はRSP。基準を替えた日は前の象限（SPY基準）を境目の幅の状態に使わない"""
+
+    def test_benchmark_and_wording_from_constant(self):
+        assert sr.BENCHMARK == "RSP" and sr.BENCHMARK_TEXT == "RSP（均等加重）"
+        assert sr.RELATIVE_STRONG_TEXT == "RSP（均等加重）より相対的に強い"
+        assert sr.FLOWING_HEAD.startswith("RSP（均等加重）より")
+
+    def test_prev_quadrants_ignored_when_benchmark_differs(self, monkeypatch):
+        import collect_and_send as cs
+        seen = {}
+        monkeypatch.setattr(sr, "sector_rotation", lambda gs, as_of, prev_quadrants=None: seen.setdefault("p", prev_quadrants) or {"sectors": {}})
+        sd = {"S&P500": {"date": "2026-11-27"}}
+        old = {"sector_rotation": {"sectors": {"XLK": {"quadrant": "Strong"}}}}            # benchmark無し＝SPY
+        cs.compute_implb(sd, lambda *a: [], prev_entry=old)
+        assert seen["p"] is None
+        seen.clear()
+        new = {"sector_rotation": {"benchmark": "RSP", "sectors": {"XLK": {"quadrant": "Strong"}}}}
+        cs.compute_implb(sd, lambda *a: [], prev_entry=new)
+        assert seen["p"] == {"XLK": "Strong"}

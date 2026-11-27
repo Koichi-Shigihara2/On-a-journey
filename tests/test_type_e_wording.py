@@ -2,7 +2,7 @@
 
 画面・AIの説明の文言を、計算の定義（各指標の点数と寄与）から作る:
 - MACRO PULSE の週次AI解説: 8指標の点数と寄与（スコアの計算そのもの）を渡し、寄与0の指標を理由に挙げさせない
-- Market Pulse のAIの見解: センチメント指数の内訳（寄与pt。合計＝指数−50）を渡す。業種は「SPYより相対的に強い」
+- Market Pulse のAIの見解: センチメント指数の内訳（寄与pt。合計＝指数−50）を渡す。業種は「RSP（均等加重）より相対的に強い」
 - BUYチェックリスト②: 文言と判定が同じ閾値の定数から出る
 - 画面: 段階7・8の題名、セクター表の1日・5日の騰落、BUYチェックリスト②の文言
 """
@@ -129,7 +129,7 @@ def test_ai_facts_include_contributions_and_prompt_forbids_zero_reasons():
     facts = cs.build_ai_facts({"stages": {}}, {}, {"score": 34.9, "label": "FEAR", "sub_scores": {"vix_level": {"score": 24.0, "weight": 0.5, "raw": 28.0}}},
                               {}, {}, {})
     assert facts["センチメント指数の内訳（寄与ptの合計＝指数−50）"][0]["指標"] == "VIX水準"
-    assert "寄与ptが0の指標" in cs.AI_PROMPT and "SPYより相対的に強い" in cs.AI_PROMPT
+    assert "寄与ptが0の指標" in cs.AI_PROMPT and "RSP（均等加重）より相対的に強い" in cs.AI_PROMPT
 
 
 def test_buy_checklist_text_and_judgement_share_one_threshold():
@@ -144,6 +144,6 @@ def test_buy_checklist_text_and_judgement_share_one_threshold():
 def test_screen_wording():
     html = (ROOT / "docs" / "market-monitor" / "market-pulse" / "index.html").read_text(encoding="utf-8")
     assert "明日どうなるか" not in html and html.count("過去の似た日、その後どうなったか") >= 2
-    assert "資金が向かっているセクター" not in html and "SPYより相対的に強いセクター" in html
+    assert "資金が向かっているセクター" not in html and "RSP（均等加重）より相対的に強いセクター" in html
     assert "縮小に転じているか" not in html and "0.30%以上低いか" in html
     assert "5日の騰落" in html and "絶対の騰落ではありません" in html

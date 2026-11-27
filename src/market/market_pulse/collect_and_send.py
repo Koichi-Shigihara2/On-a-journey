@@ -1140,7 +1140,7 @@ AI_PROMPT = """あなたは市場の解説者だ。以下のJSONは、本シス�
 - 因果を断定しない（「〜が原因」「〜を受けて」は使わない）。同じ日に起きた事実として並べる
 - 将来の値動きを予測しない。売買を勧めない
 - センチメント指数の理由を述べるときは「センチメント指数の内訳」の寄与ptが0でない指標だけを、寄与の絶対値の大きい順に挙げる。寄与ptが0の指標・「使った値」がfalseの指標（値が取れず中立に固定）は、理由に挙げない
-- 業種の話は、段階5・7の結論の文言どおり「SPYより相対的に強い」と書く（「資金が向かう」とは書かない）。業種の実際の騰落は段階5の結論にある値だけを使う
+- 業種の話は、段階5・7の結論の文言どおり「RSP（均等加重）より相対的に強い」と書く（「資金が向かう」とは書かない）。業種の実際の騰落は段階5の結論にある値だけを使う
 - Markdown記法は使わない。プレーンテキスト
 
 出力形式:
@@ -1406,6 +1406,7 @@ HY_BUY_RULE_TEXT = f"HYスプレッドが90日の最大値より{HY_BUY_MARGIN:.
 # （[[MARKETPULSE-REVIEW-EPIC-1]] 順4。F&G の1日の動きは中央値2.3・90%点7.5で、25の前後を行き来して発動が入り切りしていた。
 # 外す値は30＝回復の後の買いを促さない程度。試算: 発動の切替11→9。入る値25は今のまま）
 from common.step_rules import BASIS_ID as STEP_RULES_BASIS_ID  # noqa: E402
+from sector_rotation import BENCHMARK as _SECTOR_BENCHMARK  # noqa: E402  セクター象限の基準（entryの basis.sector_benchmark。印の無い過去のエントリはSPY）
 BUY_TRIGGER_ENTER = 25
 BUY_TRIGGER_EXIT = 30
 BUY_EXTREME_FG = 10
@@ -1576,7 +1577,10 @@ def compute_implb(structured_data, get_series, prev_entry=None):
     if not as_of:
         return out
     try:
-        prev_q = {s: (v or {}).get("quadrant") for s, v in (((prev_entry or {}).get("sector_rotation") or {}).get("sectors") or {}).items()}
+        # 前のエントリの基準が今の基準と同じときだけ、境目の幅の状態にする。基準を替えた日（前が旧基準のSPY。`benchmark`の無い古いエントリもSPY）は
+        # 象限の意味が違うので前の象限を使わない（今までの段の判定）
+        _prev_rot = (prev_entry or {}).get("sector_rotation") or {}
+        prev_q = {s: (v or {}).get("quadrant") for s, v in (_prev_rot.get("sectors") or {}).items()} if _prev_rot.get("benchmark") == _sr.BENCHMARK else {}
         out["sector_rotation"] = _sr.sector_rotation(get_series, as_of, prev_quadrants=prev_q or None)
     except Exception as e:
         print(f"[WARN] セクター4象限の計算に失敗: {e}")
@@ -1761,7 +1765,7 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
         "buy_checklist": buy_checklist,
         "summary": report_text,
         # 判定の基準の版（common/step_rules.py）。画面のグラフに、基準を変えた日（この印が入った最初の日）の線を引く。印の無い過去のエントリは旧基準
-        "basis": {"step_rules": STEP_RULES_BASIS_ID},
+        "basis": {"step_rules": STEP_RULES_BASIS_ID, "sector_benchmark": _SECTOR_BENCHMARK},
     }
     if data_freshness is not None:
         new_entry["data_freshness"] = data_freshness
