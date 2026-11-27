@@ -196,6 +196,19 @@ class TestStage8:
         assert r["headline_signal"] == "stage1" and r["label"] == five["label"]
         assert r["line"].startswith("5営業日後: ") and "z=" in r["line"]
 
+    def test_downside_and_independent_count(self):
+        """順6: 下位10%と重ならない件数を出す。重ならない件数は件数n以下で、窓h営業日が重ならない数え方"""
+        closes, pattern = [100.0], [0.005, 0.005, -0.004, -0.004] * 60
+        for r in pattern:
+            closes.append(closes[-1] * (1 + r))
+        days, get = _series(closes, [14.0] * len(closes))
+        r = sc.stage8(get, days[-1])
+        for o in r["signals"]["stage1"]["outcomes"]:
+            if o["label"] != "件数不足":
+                assert "p10_pct" in o and o["n_indep"] <= o["n"]
+        assert sc._n_indep(["a", "a", "a", "a", "a", "a"], "a", 6, 5) == 2
+        assert sc._n_indep(["a", "a", "a"], "a", 3, 1) == 3
+
     def test_missing_as_of(self):
         assert sc.stage8(lambda *a: [], None)["line"] is None
 

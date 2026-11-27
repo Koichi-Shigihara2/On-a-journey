@@ -342,6 +342,17 @@ def s8_label(n: int, z: Optional[float]) -> str:
     return "平常時と差なし"
 
 
+def _n_indep(signals: List[Optional[str]], today: str, upto: int, h: int) -> int:
+    """窓（h営業日）が重ならない件数の目安（同じ区分の日を前から数え、h日以上空いたものだけ）。
+    5・20営業日後は連続した日の窓が重なるため、件数nほどの独立な情報はない（表示用。判定のzは変えない）"""
+    cnt, last = 0, -10 ** 9
+    for j in range(0, upto):
+        if signals[j] == today and j - last >= h:
+            cnt += 1
+            last = j
+    return cnt
+
+
 def _outcome(closes: List[float], signals: List[Optional[str]], today: str, h: int) -> dict:
     """結果が確定している日（j+h ≤ 最終日）だけで、同じシグナルの日と全日の上昇割合を比べる。"""
     last = len(closes) - 1
@@ -352,7 +363,7 @@ def _outcome(closes: List[float], signals: List[Optional[str]], today: str, h: i
         if signals[j] == today:
             same.append(r)
     n = len(same)
-    out = {"horizon": h, "n": n, "base_n": len(base)}
+    out = {"horizon": h, "n": n, "base_n": len(base), "n_indep": _n_indep(signals, today, last - h + 1, h)}
     if not base:
         out.update({"label": "件数不足"})
         return out
@@ -367,6 +378,7 @@ def _outcome(closes: List[float], signals: List[Optional[str]], today: str, h: i
     z = diff / se if se else 0.0
     out.update({"up_pct": round(p * 100, 1), "diff_pt": round(diff, 1), "z": round(z, 2),
                 "mean_pct": round(sum(same) / n, 3), "median_pct": round(median(same), 3),
+                "p10_pct": round(sorted(same)[int(n * 0.1)], 3),
                 "label": s8_label(n, z),
                 "guide": "偶然では出にくい差" if abs(z) >= S8_Z else "偶然でも出る範囲の差"})
     return out
