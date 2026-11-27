@@ -61,12 +61,17 @@
 48. **MARKETPULSE-REVIEW-EPIC-1 順1（型L: 日付・鮮度）の、次の定時の後の確認**（実装は2026-11-27 kaihatsu。method_changeなし・判定に効かない）
    - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後（11-27 の米国は短縮日で、その分のDailyが11-28朝に動く）。MACRO PULSE の `05_liquidity.csv` の新しい列は次の MACRO PULSE の実行の後
    - 期限: 2026-12-01
-   - 確認の手順: ①`market_data.json` の最新エントリの `data_quality` に `expected_by_kind`（us_close・jpx・fred_daily）があり、`as_of` に「日経平均」「HYスプレッド」が入っている。`freshness` は新しくない要素だけ（日経が期待する日以降なら空）②`buy_checklist.checks.hy_spread.as_of` に日付がある ③画面（Market Pulse）のカードに日付、BUYチェックリストのHYスプレッドに日付が出る ④`daily/^N225.json` に 11-25（と 11-26）の行が入っている（`daily_guard` の取り直し。11-26 の感謝祭の分は 11-27 の実行で入る見込み）⑤`05_liquidity.csv` の最新の行に `sp500_asof`・`hy_spread_asof` が入り、System Health の [Q] が ✅（古い値なら⚠️の理由が日付つきで出る）⑥理論株価・判定・stageが前日と同じ ⑦**日本の行の取り直しだけの回**（`daily_guard` の `mode=jpx_only`。実行の Summary に `mode=jpx_only`・コミットの件名に「日本の行の取り直しだけ: ^N225」）が出ていれば、その回は**取り消し（cancelled）で終わり、直後に Market Pulse・Stonks Silo・TANUKI が起動していない**（`gh run list`で確認）。1日の jpx_only の回は、^N225の終値がYahooに入る21:30 UTC以降のcron〈21:47・22:17・22:47・23:17・01:47・02:17〉で、入った時点で止まる（最大6回。休場日は外部の起動が無くcronだけ）
+   - 確認の手順: ①`market_data.json` の最新エントリの `data_quality` に `expected_by_kind`（us_close・jpx・fred_daily）があり、`as_of` に「日経平均」「HYスプレッド」が入っている。`freshness` は新しくない要素だけ（日経が期待する日以降なら空）②`buy_checklist.checks.hy_spread.as_of` に日付がある ③画面（Market Pulse）のカードに日付、BUYチェックリストのHYスプレッドに日付が出る ④`daily/^N225.json` に 11-25（と 11-26）の行が入っている（`daily_guard` の取り直し。11-26 の感謝祭の分は 11-27 の実行で入る見込み）⑤`05_liquidity.csv` の最新の行に `sp500_asof`・`hy_spread_asof` が入り、System Health の [Q] が ✅（古い値なら⚠️の理由が日付つきで出る）⑥理論株価・判定・stageが前日と同じ ⑦**日本の行の取り直しだけの回**（`daily_guard` の `mode=jpx_only`。実行の Summary に `mode=jpx_only`・コミットの件名に「日本の行の取り直しだけ: ^N225」）が出ていれば、その回は**取り消し（cancelled）で終わり、直後に Market Pulse・Stonks Silo・TANUKI が起動していない**（`gh run list`で確認。実装の commit は `771196c82d`）。1日の jpx_only の回は、^N225の終値がYahooに入る21:30 UTC以降のcron〈21:47・22:17・22:47・23:17・01:47・02:17〉で、入った時点で止まる（最大6回。休場日は外部の起動が無くcronだけ）
 
 49. **MARKETPULSE-REVIEW-EPIC-1 順2（型E: 説明と計算のずれ）の、次の定時の後の確認**（実装は2026-11-27 kaihatsu。表示とAIの入力だけ・理論株価・判定に効かない）
    - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後。MACRO PULSE の週次AI解説は次の週次の実行の後
    - 期限: 2026-12-01
    - 確認の手順: ①`market_data.json` の最新エントリの `ai_facts` に「センチメント指数の内訳（寄与ptの合計＝指数−50）」があり、合計が`sentiment.score − 50`と±0.1で合う ②`stage_conclusions` の段階5の文言に「SPYより相対的に強い（Strong）」と「業種の実際の騰落: 1日…・5日…」、段階7が「SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄」、`sector_rotation.sectors.*.change_5d_pct` がある ③AIの見解（`summary`）が寄与0・「使った値=false」の指標を理由にしていない ④画面: 段階8の題名が「過去の似た日、その後どうなったか」、セクター表に1日・5日の列、BUYチェックリスト②の文言が「90日の最大値より0.30%以上低いか」⑤`05_weekly_analysis.csv` の次の行の `factor_analysis` が、寄与0の指標（点数が1週前と同じ）を理由にしていない（実行ログに「寄与0の指標を理由に挙げた」の警告が出ていれば言い直しの結果も見る）
+
+50. **MARKETPULSE-REVIEW-EPIC-1 順3（型S: market_data.json の分割）の、明朝の定時の後の確認と、旧キーの読みを外す**（実装は2026-11-27 kaihatsu。`comments_history` を持たない形。Market Pulse の判定・出力は変わらない）
+   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
+   - 期限: 2026-12-01
+   - 確認の手順: ①`market_data.json` の最新のエントリに `comments_history` が無く、ほかのキー（`summary`・`stage_conclusions`・`data_quality` 等）は前日と同じ形で、ファイルが 7.3MB 前後（1日約50KB増）②画面（Market Pulse）の「過去のAIコメント」が最新のエントリで直近11件ぶん出る（前のエントリの `summary` から作る）③`scripts/migrate_market_data_comments_history.py --check` が「旧キーあり 0・食い違い 0」。合格したら、移行のスクリプト（`scripts/migrate_market_data_comments_history.py` と `tests/test_market_data_comments_history.py` の移行の検査）は役目を終えるので削除してよい（`COMMENTS_HISTORY_FROM` は残す。旧エントリの表示を変えないため）。**旧キーの読みは画面に入れていない**（同じ push で旧キーを消したため。書き手のないキーを画面が読むと出力の一覧の検査 INV-5 が NG になる）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

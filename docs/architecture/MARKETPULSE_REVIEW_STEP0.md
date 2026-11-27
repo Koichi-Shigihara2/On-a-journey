@@ -106,3 +106,52 @@
 - AIの入力: MACRO PULSE の週次AI解説に8指標の点数と寄与（`score_contributions`。合計＝スコアの変化）を渡し、寄与0の指標を理由に挙げさせない（挙げたら1回だけ言い直させる）。Market Pulse の見解にセンチメント指数の内訳（寄与pt。合計＝指数−50）を渡す
 - 触っていない: FED-POLICY-PAGE-1 の部分（金利見通しの表示）。理論株価・判定に効かない。確認は `CLAUDE_CODE_START.md` 手順49
 
+## 8. 順3（型S: market_data.json の分割）の結果（2026-11-27）
+
+### 8-1. 読み手（`market_data.json` を読むファイルと、読むキー）
+
+| 読み手 | 読み方 | 読むキー |
+|---|---|---|
+| `docs/market-monitor/market-pulse/index.html`（画面） | 全エントリ（履歴）を1回で読む（`.キー` の使われ方をコードから数えた） | 履歴で読む: `date`・`judgment`・`weather`・`sentiment`・`fear_greed`・`tech_pulse`・`indicators`・`asset_flow`・`credit`・`stage_conclusions`・`data_quality`・`summary`・`haiku`・`take_profit_checklist`・`buy_checklist`・`data_freshness`・`semis_m7`・`commodity_fx`。**最新のエントリだけ**: `sector_rotation`（`trail` を含む）・`watch_list`・`headlines`・`calendar`・`futures`。**画面は読まない**: `ai_facts`（0.16MB）・`hindenburg`（画面の計算には `breadth` を使う）。旧キー `comments_history` は読まない |
+| `docs/value-monitor/tanuki_score/index.html` | 全体を読み最新のエントリだけ使う | `fear_greed.score` |
+| `src/value/tanuki_valuation/pipeline.py::_load_live_fg` | 全体を読み最新のエントリだけ使う | `fear_greed.score` |
+| `src/portfolio/snapshot.py` | 全体を読み最新のエントリだけ使う | `indicators.ドル円.value`・`indicators.S&P500.value` |
+| `src/market/market_pulse/collect_and_send.py`（書き手） | 全体を読み、追記して書く（書き手は1か所） | 前のエントリ: `indicators`・`asset_flow`（取得失敗の引き継ぎ）、`tech_pulse`・`sentiment`・乖離の履歴（直近90日）。**`comments_history` は読まない** |
+| `common/system_health.py` | [D] はファイルの最終コミット日、[Q]（順1）は最新のエントリ | `data_quality.as_of`・`expected_close_date`・`data_freshness.checked_at` |
+| `browser_checks/market_pulse_elements.py`・`check_dependency_map.py` | 最新のエントリ | 画面の全要素の突き合わせ（`sentiment.sub_scores`・`sector_rotation.trail` を含む）、`fear_greed.score`・`sentiment.breadth` |
+| `scripts/analysis/market_pulse_redesign.py` | 設計書作成時の commit のファイル（git show） | 変更の影響なし |
+| rcc（`report_consistency_check.py`） | 読まない | — |
+| テスト | `tests/test_collect_and_send_market_data_switch.py`・`test_market_data_comments_history.py`・`test_value_freshness.py` ほか | 書き手の出力・移行・鮮度 |
+
+**`comments_history` を読むのは画面だけ**（`buildCommentsHistory`）。Python・System Health・rcc・ブラウザの検査は読まない。
+
+### 8-2. やったこと
+
+- **別のファイルに移すのではなく、持たないことにした**: `comments_history` は「そのエントリの `summary` ＋ 直前の最大11エントリの `summary`（新しい順）」の複製で、**保存済みの130エントリすべてで、前のエントリの `summary` から作った履歴と1件ずつ一致した**。別のファイルに移すと同じ `summary`（0.7MB）をもう1か所に持つことになるので、画面が前のエントリから作る（`commentsHistoryOf`）。履歴のキーは各エントリの `date`（実行の日時。順1の鮮度の部品が見るのは値の日付で、この履歴は見ない）
+- 書き手（`collect_and_send.py`）は旧キーを書かない。旧エントリの旧キーは `scripts/migrate_market_data_comments_history.py` が、保存済みの履歴と作った履歴が1件でも違えば何も消さずに止まる形で消す（130エントリ・13.2MB → 7.2MB。ほかのキーは変わらない）
+- 画面は前のエントリから作る。旧キーの読みは入れていない（同じ push で旧キーを消すので読む場面が無く、書き手のないキーを画面が読むと出力の一覧の検査 INV-5 が NG になる）。**履歴を持っていた最初のエントリ（2026-06-24）より前は、これまでどおり履歴なし**（表示を変えないため。前のエントリが有るのに履歴を出さない67エントリがある）
+
+### 8-3. 前後の確認（Playwright、HEAD の画面＋HEAD のデータ 対 新しい画面＋旧キーを消したデータ）
+
+| 見るもの | 結果 |
+|---|---|
+| 全197エントリの「過去のAIコメント」の表示（`buildCommentsHistory`） | **197/197 同じ**（履歴あり130・なし67） |
+| 詳細の表示・6枚のカード・段階0の表・段階の結論の行 | **同じ** |
+| ページの読み込み（画面の最初の描画まで、5回の中央値、手元のサーバー） | **921〜1003ms → 611〜657ms**（2回の測定）（ファイル 13.2MB → 7.2MB。回線では転送の差がさらに出る） |
+| エラー | 前後とも0 |
+| Market Pulse の判定・出力 | 変わらない（書き手が旧キーを足さないだけ。ほかのキーは `new == old − comments_history`） |
+
+### 8-4. ほかに分けたほうがよい大きな部分（案。今回は実装しない）
+
+旧キーを消した後の中身は 4.7MB（ファイル 7.2MB。書き込みの `indent=2` の空白が約2.5MB）:
+
+| 部分 | 大きさ | 画面の読み方 | 案 |
+|---|---|---|---|
+| `sector_rotation`（うち `trail` 1.05MB＝毎日8週分の軌跡） | 27%（1.28MB） | **最新のエントリだけ**を読む | 古いエントリでは `trail` を持たない（最新だけ）。象限の履歴が要るなら週次の値だけ。1.05MBの減 |
+| `headlines` | 15%（0.68MB） | **最新のエントリだけ**を読む（別に日ごとの積み足し `headlines/{date_et}.json` がある） | 古いエントリでは持たない |
+| `summary` | 15%（0.73MB） | 履歴で読む（履歴の表示の元） | 残す |
+| 書き込みの形 | 空白 約2.5MB | — | `indent=2` をやめる（差分は読みにくくなる。gitの履歴の差分に影響） |
+| 画面が読まないキー | `ai_facts` 3%（0.16MB） | 読み手なし（AIの入力の記録。再現・点検用） | 残す理由を決める（`ai_facts` は AI の見解の根拠を後から確かめる記録） |
+| 最新用のファイル | — | tanuki_score・pipeline・snapshot・System Health・検査は**最新のエントリだけ**のために 7.2MB を読む | `latest.json`（最新のエントリだけ、数十KB）を同じ書き手が書き、これらの読み手が読む。画面の履歴は今のまま |
+
+これらは読み手の変更（`trail`・`headlines` の履歴を読む所が無いことの確認、`latest.json` への切り替え）を伴うので、決めてもらってから進める。
