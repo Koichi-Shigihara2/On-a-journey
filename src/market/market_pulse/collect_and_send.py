@@ -1737,9 +1737,15 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
             new_entry[_k] = implc[_k]
     all_data.append(new_entry)
 
+    # 型S（[[MARKETPULSE-REVIEW-EPIC-1]] 順3）: 最新以外のエントリの sector_rotation.trail（毎日8週分の軌跡。日足から作り直せる）は
+    # 履歴に複製しない。最新のエントリだけの latest.json も同じここで書く（最新だけを読む所はそちらを読む。common/market_pulse_data.py）
+    from common.market_pulse_data import strip_old_trails
+    strip_old_trails(all_data)
     with open(JSON_PATH, 'w', encoding='utf-8') as f:
         json.dump(all_data, f, ensure_ascii=False, indent=2)
-    print(f"[INFO] JSON保存完了: {JSON_PATH} (全{len(all_data)}件)")
+    with open(os.path.join(DATA_DIR, "latest.json"), 'w', encoding='utf-8') as f:
+        json.dump(new_entry, f, ensure_ascii=False, indent=2)
+    print(f"[INFO] JSON保存完了: {JSON_PATH} (全{len(all_data)}件)・latest.json")
 
     # CSV
     row = {"date": date_str, "judgment": judgment}

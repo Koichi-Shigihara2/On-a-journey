@@ -814,6 +814,10 @@ _MARKET_PULSE.update(
     NON_PRODUCTION_FILES=[],
 
     ANNOTATIONS={
+        "docs/market-monitor/market-pulse/data/latest.json":
+            "market_data.json の最新のエントリだけ（同じ書き手 save_data_to_json_and_csv が、履歴と一緒に毎回書く）。最新だけを読む所"
+            "（TANUKI SCORE の画面・TANUKI のパイプライン・ポートフォリオのスナップショット・System Health・検査）が、履歴ぜんぶ（5MB超）の"
+            "代わりに読む。最新以外のエントリの sector_rotation.trail は履歴に複製しない（日足から作り直せる）。common/market_pulse_data.py",
         "docs/market-monitor/market-pulse/data/market_data.json":
             "1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。"
             "**AIの出力（Grok）**: summary・haiku（comments_history は2026-11-27に書くのをやめた。画面が前のエントリの summary から作る）（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。"
