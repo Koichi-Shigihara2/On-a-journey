@@ -311,3 +311,10 @@
 
 **2-b（セクター4象限の基準）の確認:** 順4で入ったのは境目の幅（象限0.5）だけ。**RSP基準への見直しは残っている**（`sector_rotation.py` のRSは今もセクター÷SPY、文言は順2で「SPYより相対的に強い」と実態に合わせた）。基準を替えると象限の履歴・watch_list・ai_facts・段階5・7の文言が変わる→小さい直しではなく**決めてほしいこと**（BACKLOG 2-b）
 
+## 13. 2-b（セクター4象限の基準をRSPに）と件数不足の判定（2026-11-27、Koichi決定）
+
+- **決定**: 象限の基準をSPYからRSP（均等加重）に替える。履歴は作り直さず、切り替えた日から新基準。画面のグラフに線を引く（順4と同じ形）。段階8の件数不足も `n_indep`（重ならない件数）で判定する（zと同じ）
+- **実装**: `sector_rotation.BENCHMARK="RSP"`・`BENCHMARK_TEXT`。文言（`RELATIVE_STRONG_TEXT`・`FLOWING_HEAD`＝段階5・7、AIのプロンプト、画面の見出し・注記）は定数から作る。出力 `sector_rotation.benchmark`、各エントリの `basis.sector_benchmark`（印の無い過去のエントリはSPY）。**基準を替えた日は前のエントリ（SPY基準）の象限を境目の幅の状態に使わない**（`compute_implb` が前の `benchmark` を見て、違えば渡さない＝今までの段の判定）。画面は線を2本（判定の基準／セクターの基準）に拡張し、セクター表の下に基準の注記。RSPの日足は `common/market_data/daily/RSP.json` に既にあり、新しい取得は足していない（ワークフローも増やしていない）
+- **前後**: 11/20 を再計算 → SPY: Strong 9・Improving 0・Weakening 1・Weak 1。RSP: **Strong 5（XLRE・XLP・XLU・XLY・XLF）・Improving 2（XLI・XLC）・Weakening 1（XLV）・Weak 3（XLB・XLE・XLK）**＝BACKLOGの試算と同じ
+- **効かない所**: TANUKI・HypeCore・pipeline・snapshot は `market_data` の `fear_greed`・価格しか読まない（`sector_rotation`・`watch_list`・象限を読まない。pipeline の `quadrant` はHypeCoreのmatrixで別物）。段階8・センチメントにも効かない。効くのは象限・watch_list・ai_facts・段階5・7・AIの要約・画面の4象限
+- **件数不足**: `_outcome` が `n_indep < 20` で件数不足にする。今の日（小動き）は5営業日後 n_indep=203・20営業日後=66で変わらない。絞った区分（段階1×VIX）の20営業日後は重ならない件数が10〜36なので「件数不足」が増える

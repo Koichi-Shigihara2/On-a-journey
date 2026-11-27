@@ -86,7 +86,11 @@
    - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
    - 期限: 2026-12-01
    - 確認の手順: ①最新エントリの `stage_conclusions["8"].signals.*.outcomes[*]` に `p10_pct`・`n_indep` がある（件数不足の項目は`p10_pct`なし）②画面の段階8の表に「下位10%」「重ならない件数」の列があり、値が①と同じ（翌営業日の重ならない件数は「—」）③画面の段階3のバッジが「株（当日−1%超の下落）」「クレジット（当日のHYG/LQD比）」④`label`・`line` が前日の規則と同じ（zを変えていない）⑤理論株価・判定が前日と同じ
-   - 合格したら: ⑥`z`が重ならない件数で計算されている（`diff_pt`と`base_up_pct`と`n_indep`から検算して同じ）⑦手順48〜53がすべて合格し、2-b（セクターの基準をRSPに替えるか）がKoichiの決定で済んだら、[[MARKETPULSE-REVIEW-EPIC-1]]を BACKLOG_DONE.md へ移設（2-bが「替えない」でも移設。替える場合は2-bの実装と確認の手順を足してから移設）
+   - 合格したら: ⑥`z`が重ならない件数で計算されている（`diff_pt`と`base_up_pct`と`n_indep`から検算して同じ）⑦手順48〜54がすべて合格したら、[[MARKETPULSE-REVIEW-EPIC-1]]を BACKLOG_DONE.md へ移設
+54. **MARKETPULSE-REVIEW-EPIC-1 2-b（セクター象限の基準をRSPに）と段階8の件数不足（重ならない件数）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。TANUKI・HypeCore・理論株価・判定は読まない）
+   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
+   - 期限: 2026-12-01
+   - 確認の手順: ①最新エントリの `sector_rotation.benchmark` が `RSP`、`basis.sector_benchmark` が `RSP` ②画面のセクター表の下に「象限の基準: RSP（均等加重）。（その日）より前の記録はSPY基準」、段階5・7と4象限の見出しが「RSP（均等加重）より相対的に強い」、AIの見解がSPYと書いていない ③切り替えの日の象限は前のエントリの象限に引きずられていない（今までの段の判定：`ratio`・`momentum` が境目の100の側と `quadrant` が一致）、翌日以降は境目の幅つき ④グラフ（センチメント推移）に「セクターの基準をRSPに変更」の線 ⑤段階8: `outcomes[*].label` が `n_indep<20` のとき「件数不足」、`line` が「重ならない件数」 ⑥理論株価・判定が前日と同じ
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
