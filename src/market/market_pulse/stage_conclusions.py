@@ -11,6 +11,7 @@ common/market_data/daily/の終値だけを入力にする純粋な計算で、�
 from __future__ import annotations
 
 import math
+from datetime import datetime, timezone
 from statistics import median
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -37,6 +38,8 @@ S8_HISTORY_DAYS = 1600   # 2021-01〜の約5.5年分（daily/の全期間）
 DQ_INDICATORS = {
     "S&P500": (1, 3, 8), "NASDAQ": (1,), "VIX指数": (1, 2, 8), "米10年債": (1, 2), "ドル円": (1, 2),
     "WTI原油": (1, 2), "金（GOLD）": (1,), "S&P500グロース(IVW)": (5,), "S&P500バリュー(IVE)": (5,),
+    # 型L（[[MARKETPULSE-REVIEW-EPIC-1]] 順1）: 日経は段階の判定に使わず表示だけ。期待する日は common/freshness.py（kind=jpx）
+    "日経平均": (),
 }
 DQ_ASSET_FLOW = {"ultra_short": (4,), "gold": (4,), "long_bond": (4,), "ig_bond": (4,), "hy_bond": (4,), "equity": (4,)}
 
@@ -226,8 +229,13 @@ WEATHER_REASON = {
 #  段階0 data_quality
 # ─────────────────────────────────────────────────────────
 
-def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expected_close: Optional[str]) -> dict:
-    """設計書6章。期待する終値日と要素ごとのas_ofを比べる（FRED系列は判定から外す）。"""
+def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expected_close: Optional[str],
+                 now_utc: Optional[datetime] = None, extras: Optional[Dict[str, Optional[str]]] = None) -> dict:
+    """設計書6章。期待する日と要素ごとのas_ofを比べる。期待する日は要素の種類ごと（common/freshness.py。米国の終値・日経・FRED日次）。
+    extras: {要素名: 基準日}（ind・af に無い入力。HYスプレッド等）。基準日が None の入力は「日付なし」として old に入れる。
+    出力の freshness: {要素: {expected, status(stale|unknown), lag_days, kind}}（新しくない要素だけ）、expected_by_kind: {kind: 期待する日}。
+    画面の値ごとの日付と「古い」の印・System Health が読む"""
+    from common import freshness as _fr
     as_of: Dict[str, Optional[str]] = {}
     stages: Dict[str, Tuple[int, ...]] = {}
     fallback = set()
@@ -260,13 +268,23 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
                 provisional.add(name)
     as_of["breadth"] = (breadth or {}).get("date")
     stages["breadth"] = (3,)
+    for k, d in (extras or {}).items():
+        as_of[k] = d
+        stages[k] = ()
+    now_utc = now_utc or datetime.now(timezone.utc)
+    assessed = _fr.assess(as_of, now_utc, expected_close)
+    fresh = {k: {"expected": v["expected"], "status": v["status"], "lag_days": v["lag_days"], "kind": v["kind"]}
+             for k, v in assessed.items() if v["status"] != "fresh"}      # 画面が小さくなるよう、新しくない要素だけを残す
+    expected_by_kind = {kd: _fr.expected_as_of(kd, now_utc, expected_close) for kd in _fr.KINDS}
     out = {"expected_close_date": expected_close, "as_of": as_of, "status": "unknown",
            "old_elements": [], "old_stages": [], "provisional_elements": sorted(provisional),
-           "expected_provisional_elements": dict(sorted(expected_prov.items()))}
+           "expected_provisional_elements": dict(sorted(expected_prov.items())), "freshness": fresh,
+           "expected_by_kind": expected_by_kind}
     if not expected_close or as_of.get("S&P500") is None:
         return out   # S&P500の基準日が無い（取得失敗、または基準日を記録する前の2026-06-07以前のエントリ）は判定不能
     spx = as_of.get("S&P500")
-    old = sorted(k for k, d in as_of.items() if d is None or d < expected_close or k in fallback or k in provisional)
+    old = sorted(k for k, d in as_of.items()
+                 if d is None or assessed.get(k, {}).get("status") == "stale" or k in fallback or k in provisional)
     out["old_elements"] = old
     out["old_stages"] = sorted({s for k in old for s in stages[k]})
     if spx < expected_close or "S&P500" in fallback:
@@ -410,12 +428,13 @@ IMPLC_NAMES = {"headlines": "ニュースの見出し", "calendar": "予定", "f
 
 def build_stage_conclusions(ind: dict, af: Optional[dict], breadth: Optional[dict],
                             expected_close: Optional[str], get_series=None, implb: Optional[dict] = None,
-                            implc: Optional[dict] = None) -> Dict[str, Any]:
+                            implc: Optional[dict] = None, now_utc: Optional[datetime] = None,
+                            extras: Optional[Dict[str, Optional[str]]] = None) -> Dict[str, Any]:
     """implb: 実装Bの計算結果 {"semis_m7": ..., "sector_rotation": ..., "watch_list": ...}（sector_rotation.py）。
     implc: 実装Cの取得結果 {"headlines": ..., "calendar": ..., "futures": ...}。取得に失敗した取得元（failed）は推測で埋めず、
     data_qualityのunavailableに列挙し、その要素を使う段階を「一部取得できず」にする（全体の判定はpartial）。"""
     implb = implb or {}
-    dq = data_quality(ind, af, breadth, expected_close)
+    dq = data_quality(ind, af, breadth, expected_close, now_utc=now_utc, extras=extras)
     unavailable = []
     for key, v in (implc or {}).items():
         if not isinstance(v, dict):

@@ -153,6 +153,7 @@
     .is-stale-value{opacity:.7}
     .stale-mark{color:var(--amb);font-size:11px;margin-left:2px;letter-spacing:0;cursor:help}
     .metric-prov{font-size:11px;margin-top:2px}.metric-prov .stale-mark{margin-left:0}
+    .metric-date{font-size:10px;margin-top:2px;color:var(--mut,#8b95a7);letter-spacing:0}.metric-date.is-old{color:var(--amb)}.metric-date .stale-mark{margin-left:3px}
 
     /* CHART */
     .chart-card{background:var(--sur);border:1px solid var(--bdr);padding:14px}
@@ -708,6 +709,13 @@ function renderTimeline(){
       </div>
     </div>`}).join("")}
 
+// 型L（[[MARKETPULSE-REVIEW-EPIC-1]] 順1）: 値ごとの日付と「古い」の印。古いかどうかは data_quality（common/freshness.py の判定）の結果をそのまま読む
+function fmtMD(s){return s&&s.length>=10?s.slice(5,7)+"/"+s.slice(8,10):""}
+function dqOldInfo(d,key){const dq=d?.data_quality||{};const f=(dq.freshness||{})[key];const old=(dq.old_elements||[]).includes(key)||(f&&f.status==="stale");
+  const kindLabel={jpx:"日本の取引日（Yahooの日足の終値は翌日以降に入る）",fred_daily:"FRED（1営業日遅れで公表）",us_close:"米国の終値"}[f?.kind]||"";
+  const tip=f&&f.expected?`期待する基準日 ${f.expected}${kindLabel?"（"+kindLabel+"）":""}`:"期待する日より古い値";return{old,tip}}
+function dateLineHTML(d,key,date){if(!date)return'';const o=dqOldInfo(d,key);
+  return`<div class="metric-date${o.old?' is-old':''}">${fmtMD(date)}${o.old?`<span class="stale-mark" data-info-text="${escHtml(o.tip)}">古い</span>`:''}</div>`}
 // ── METRICS 6 CARDS ──
 function renderMetrics(){
   const d=allData[allData.length-1];
@@ -724,7 +732,7 @@ function renderMetrics(){
     const val=ind.value>=1000?ind.value.toLocaleString("ja-JP",{maximumFractionDigits:0}):ind.value.toFixed(2);
     const isStale=!!ind.is_fallback;
     const staleMark=isStale?`<span class="stale-mark" data-info-text="前回値を表示中（最新データ取得失敗。${ind.date||''}時点の値）">※</span>`:'';
-    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}${rollMark}</div>${ind.provisional?`<div class="metric-prov">${provMark(ind)}</div>`:''}</div>`}).join("")+semisCardsHTML(d)}
+    return`<div class="metric-card"><div class="metric-label" style="color:${cd.color}">${cd.short}</div><div class="metric-value${isStale?' is-stale-value':''}">${val}${staleMark}</div><div class="metric-chg ${chg.cls}">${chg.text}${rollMark}</div>${ind.provisional?`<div class="metric-prov">${provMark(ind)}</div>`:''}${dateLineHTML(d,cd.key,ind.date)}</div>`}).join("")+semisCardsHTML(d)}
 // 暫定の値（日足の確定前に保存された行）の表示。夜の実行の時点で構造上必ず暫定になる値は種類つき（先物は「暫定（清算前）」、
 // 為替・ドル指数は「暫定（日中）」）、それ以外の暫定（本来は確定しているはずの値。data_qualityはpartial）は「暫定」
 function provLabel(x){return x?.provisional?(x.provisional_kind?`暫定（${x.provisional_kind}）`:"暫定"):""}
@@ -1127,7 +1135,7 @@ function renderStage0(){
   if(!dq){el.innerHTML='<div class="stage-note">記録なし</div>';return}
   const ST={complete:"すべて最新",partial:"一部の値が前営業日または暫定",stale:"S&P500が前営業日",unknown:"判定不能"};
   const expProv=dq.expected_provisional_elements||{};
-  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isProv=(dq.provisional_elements||[]).includes(k);const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isProv?"暫定":isOld?"古い":expProv[k]?`暫定（${escHtml(expProv[k])}）`:"最新"}</td></tr>`}).join('');
+  const rows=Object.entries(dq.as_of||{}).map(([k,v])=>{const isProv=(dq.provisional_elements||[]).includes(k);const isOld=(dq.old_elements||[]).includes(k);return`<tr class="${isOld?'old':''}"><td>${escHtml(k)}</td><td>${escHtml(v||"—")}</td><td>${isProv?"暫定":isOld?("古い"+((dq.freshness||{})[k]?.expected?`（期待 ${escHtml(dq.freshness[k].expected)}）`:"")):expProv[k]?`暫定（${escHtml(expProv[k])}）`:"最新"}</td></tr>`}).join('');
   const fr=L.data_freshness;
   el.innerHTML=`<div class="stage-note">期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: <b>${escHtml(dq.expected_close_date||"—")}</b>　判定: <b id="dqStatus">${escHtml(dq.status)}</b>（${ST[dq.status]||""}）${fr?.checked_at?`　実行: ${escHtml(fr.checked_at)}`:""}</div><details${dq.status!=="complete"?" open":""}><summary class="stage-note" style="cursor:pointer">要素ごとの基準日（${Object.keys(dq.as_of||{}).length}項目）</summary><div style="overflow-x:auto"><table class="mp-table" id="dqTable"><tr><th>要素</th><th>基準日</th><th></th></tr>${rows}</table></div></details><div class="stage-note">FREDの系列（短期国債DGS3MO・VXN・HYスプレッド）は公表ラグがあるため判定から外す。先物の清算前の値・為替とドル指数の日の区切り前の値は、夜の実行の時点では必ず暫定になるため判定から外す（表では「暫定（清算前）」「暫定（日中）」）。</div>`;
 }
@@ -1277,7 +1285,8 @@ function renderBuyChecklist(){
       render(c){
         if(c.current==null)return'データ取得不可';
         const diff=c.max_90d!=null?round2(c.current-c.max_90d):null;
-        return`現在: ${c.current}% | 90日最高値: ${c.max_90d??'—'}% | 差: ${diff!=null?(diff>=0?'+':'')+diff+'%':'—'}（閾値: -0.30%）`;
+        const o=dqOldInfo(allData[allData.length-1],'HYスプレッド');const dt=c.as_of?`（${fmtMD(c.as_of)}${o.old?' 古い':''}）`:'（日付なし）';
+        return`現在: ${c.current}%${dt} | 90日最高値: ${c.max_90d??'—'}% | 差: ${diff!=null?(diff>=0?'+':'')+diff+'%':'—'}（閾値: -0.30%）`;
       },
       matched(c){return c.is_contracting===true}
     },

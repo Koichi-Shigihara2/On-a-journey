@@ -1132,6 +1132,70 @@ def check_p_external_change() -> tuple[str, bool, str]:
     return r["label"], r["ok"], r["detail"]
 
 
+# ── Q. 値の日付・鮮度（Market Pulse・MACRO PULSE。common/freshness.py の判定を読む） ───────────
+_MP_DATA = os.path.join(_DOCS_ROOT, "market-monitor", "market-pulse", "data", "market_data.json")
+_MACRO_LIQUIDITY = os.path.join(_DOCS_ROOT, "market-monitor", "macro-pulse", "data", "05_liquidity.csv")
+
+
+def _check_q(mp_path: Optional[str] = None, liq_path: Optional[str] = None) -> dict:
+    """[[MARKETPULSE-REVIEW-EPIC-1]] 順1（型L、2026-11-27）。画面と同じ部品（common/freshness.py）で、値の日付が「期待する日」より
+    古いものを数える。Market Pulse: 最新のエントリの data_quality.as_of を、そのエントリの実行時刻〈data_freshness.checked_at〉と
+    期待する終値日で判定し直す（日経はYahooの確定の遅れ、HYスプレッドはFREDの1営業日遅れを見込む）。日付の無い入力は「日付なし」。
+    MACRO PULSE: 05_liquidity.csv の最新の行の sp500_asof・hy_spread_asof（列が無い・空の間は問題にしない）"""
+    from datetime import timedelta as _td, timezone as _tz
+    from common import freshness as fr
+    from common.market_data.calendar_universe import nyse_latest_closed_day
+    problems, parts = [], []
+    try:
+        with open(mp_path or _MP_DATA, encoding="utf-8") as f:
+            entries = json.load(f)
+        last = entries[-1]
+        dq = last.get("data_quality") or {}
+        checked = (last.get("data_freshness") or {}).get("checked_at")
+        now = datetime.strptime(checked, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=_tz.utc) if checked else None
+        exp = dq.get("expected_close_date")
+        if now is None or not exp or not dq.get("as_of"):
+            parts.append("MarketPulse: 判定に必要な日付なし")
+        else:
+            res = fr.assess(dq["as_of"], now, exp)
+            stale = [k for k, v in res.items() if v["status"] == "stale"]
+            nodate = [k for k, v in res.items() if v["status"] == "unknown"]
+            if stale:
+                problems.append("MarketPulse古い: " + "・".join(f"{k}({res[k]['as_of']}<{res[k]['expected']})" for k in stale))
+            if nodate:
+                problems.append("MarketPulse日付なし: " + "・".join(nodate))
+            parts.append(f"MarketPulse {len(res)}要素中 古い{len(stale)}・日付なし{len(nodate)}")
+    except Exception as e:  # noqa: BLE001
+        problems.append(f"MarketPulse読めない: {type(e).__name__}")
+    try:
+        if not os.path.exists(liq_path or _MACRO_LIQUIDITY):
+            raise FileNotFoundError
+        import pandas as _pd
+        rows = _pd.read_csv(liq_path or _MACRO_LIQUIDITY, dtype=str, encoding="utf-8").fillna("").to_dict("records")
+        if rows and "sp500_asof" in rows[0]:
+            row = [r for r in rows if r.get("sp500_asof") or r.get("hy_spread_asof")]
+            if not row:
+                parts.append("MacroPulse: 日付の列は有るが値はまだ無い（次の実行から）")
+            else:
+                r = row[-1]
+                now = datetime.fromisoformat(r["date"]).replace(tzinfo=_tz.utc) + _td(days=1)
+                us_exp = nyse_latest_closed_day(now, lookback_days=10)
+                res = fr.assess({"S&P500（FRED）": r.get("sp500_asof") or None, "HYスプレッド": r.get("hy_spread_asof") or None}, now, us_exp)
+                stale = [k for k, v in res.items() if v["status"] == "stale"]
+                if stale:
+                    problems.append("MacroPulse古い: " + "・".join(f"{k}({res[k]['as_of']}<{res[k]['expected']})" for k in stale))
+                parts.append(f"MacroPulse {r['date']}の行 古い{len(stale)}")
+        else:
+            parts.append("MacroPulse: 日付の列なし（次の実行から）")
+    except FileNotFoundError:
+        parts.append("MacroPulse: 05_liquidity.csv なし")
+    except Exception as e:  # noqa: BLE001
+        problems.append(f"MacroPulse読めない: {type(e).__name__}")
+    if problems:
+        return {"label": "⚠️  " + " / ".join(problems), "ok": False, "detail": " / ".join(problems), "severity": 1, "critical": False}
+    return {"label": "✅ " + " / ".join(parts), "ok": True, "detail": "", "severity": 0, "critical": False}
+
+
 # ── Discord 1行サマリー ───────────────────────────────────────────────
 def discord_notify_label(sent: bool) -> str:
     """post_discord()の戻り値（bool）を「送信完了／未設定／送信失敗」の3状態で
@@ -1153,7 +1217,7 @@ def build_one_line(run_date: str, results: dict) -> str:
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
         "F": "Tail", "G": "Hype", "H": "Config", "I": "EPS", "J": "CronRuns",
         "K": "TickerAudit", "L": "MacroData", "M": "SecFresh", "N": "Headlines", "O": "Intraday",
-        "P": "ExtChange",
+        "P": "ExtChange", "Q": "Fresh",
     }
     for key, label in labels.items():
         r = results.get(key, {})
@@ -1232,6 +1296,8 @@ def main() -> int:
     label_o, ok_o, det_o = o["label"], o["ok"], o["detail"]
     p = _check_p()
     label_p, ok_p, det_p = p["label"], p["ok"], p["detail"]
+    q = _check_q()
+    label_q, ok_q, det_q = q["label"], q["ok"], q["detail"]
 
     results = {
         "A": {"ok": ok_a, "short": det_a.split("件")[0] + "件" if "件" in det_a else det_a[:10]},
@@ -1256,10 +1322,12 @@ def main() -> int:
         "O": {"ok": ok_o, "short": det_o},
         # P（外の変化・ばらつき、[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]）も切らない（何が古いかが通知から読めるように）
         "P": {"ok": ok_p, "short": det_p},
+        # Q（値の日付・鮮度、[[MARKETPULSE-REVIEW-EPIC-1]] 順1）も切らない（何が古いかが通知から読めるように）
+        "Q": {"ok": ok_q, "short": det_q},
     }
     labels = {"A": label_a, "B": label_b, "C": label_c, "D": label_d, "E": label_e, "F": label_f, "G": label_g,
               "H": label_h, "I": label_i, "J": label_j, "K": label_k, "L": label_l, "M": label_m,
-              "N": label_n, "O": label_o, "P": label_p}
+              "N": label_n, "O": label_o, "P": label_p, "Q": label_q}
     for key, r in results.items():
         r["severity"] = _item_severity(labels[key], r["ok"])
     # Jは自身の判定（⚪初回待ちを含む）の絵文字をそのまま使う
@@ -1286,6 +1354,7 @@ def main() -> int:
         print(f"[N] Headlines:     {label_n}")
         print(f"[O] Intraday:      {label_o}")
         print(f"[P] ExternalChange: {label_p}")
+        print(f"[Q] Freshness:     {label_q}")
         print(f"Overall: {_overall_text(severity, n_problem)}\n")
 
     # Discord 通知

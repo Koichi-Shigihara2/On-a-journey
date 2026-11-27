@@ -502,7 +502,9 @@ def fetch_hy_spread_from_fred():
     try:
         start = (datetime.now() - timedelta(days=120)).strftime('%Y-%m-%d')
         records = _mdata_get_series("BAMLH0A0HYM2", start=start)
-        hy_values = [float(r["value"]) for r in records if r.get("value") is not None]
+        valid = [r for r in records if r.get("value") is not None]
+        hy_values = [float(r["value"]) for r in valid]
+        hy_as_of = valid[-1].get("as_of") if valid else None     # 型L: 値の日付を保存する（FREDの1営業日遅れが見える）
         if len(hy_values) < 10:
             print("[WARN] HYスプレッドデータが不足しています。")
             return None
@@ -515,6 +517,7 @@ def fetch_hy_spread_from_fred():
         print(f"[INFO] HYスプレッド: {current:.2f}%, min_90d={min_90d:.2f}%, max_90d={max_90d:.2f}%, expanding={is_expanding}, contracting={is_contracting}")
         return {
             "current": round(current, 2),
+            "as_of": hy_as_of,
             "min_90d": round(min_90d, 2),
             "max_90d": round(max_90d, 2),
             "is_expanding": is_expanding,
@@ -1890,6 +1893,14 @@ if __name__ == "__main__":
     buy_checklist = calc_buy_checklist(
         fg_cnn_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active
     )
+    # 型L: HYスプレッドの値の日付を、BUY・TAKE PROFITの両チェックリストに残す（common/freshness.py が鮮度を判定する）
+    hy_as_of = (hy_spread_data or {}).get("as_of")
+    if isinstance(buy_checklist.get("checks", {}).get("hy_spread"), dict):
+        buy_checklist["checks"]["hy_spread"]["as_of"] = hy_as_of
+    _tp_checks = tp_checklist.get("checks")
+    for _c in (_tp_checks if isinstance(_tp_checks, list) else []):
+        if isinstance(_c, dict) and _c.get("key") == "hy_spread":
+            _c["as_of"] = hy_as_of
     print(f"[INFO] BUY: triggered={buy_checklist['triggered']}, extreme={buy_checklist['extreme']}, points={buy_checklist['points']}, action={buy_checklist['action']}")
 
     asset_flow_data = collect_asset_flow()
@@ -1921,7 +1932,8 @@ if __name__ == "__main__":
         print(f"[WARN] 5分足の保存に失敗: {type(e).__name__}: {e}")
     stage_result = build_stage_conclusions(
         structured_data, asset_flow_data, sentiment_data.get("breadth"), data_freshness.get("expected_close_date"),
-        get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days), implb=implb, implc=implc)
+        get_series=lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days), implb=implb, implc=implc,
+        now_utc=_now_utc, extras={"HYスプレッド": hy_as_of})
     print(f"[INFO] 天気: {stage_result['weather']['label']} / data_quality: {stage_result['data_quality']['status']}")
     for _k, _v in stage_result["stages"].items():
         print(f"  段階{_k}: {_v.get('line')}")

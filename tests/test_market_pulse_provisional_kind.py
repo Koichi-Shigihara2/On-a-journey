@@ -5,6 +5,8 @@
 - 区別は銘柄ごとの日足の区切り（calendar_universe.bar_final_at）から判定し、銘柄の一覧を持たない
 """
 import os
+
+_NOW_29 = __import__('datetime').datetime(2026, 9, 30, 2, 0, tzinfo=__import__('datetime').timezone.utc)   # 型L: 日経の期待する日の計算に使う「いま」
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -75,7 +77,7 @@ class TestDataQuality:
         ind = _ind()
         ind["WTI原油"] = {"change_percent": -1.0, "date": "2026-09-29", "provisional": True, "provisional_kind": "清算前"}
         ind["ドル円"] = {"change_percent": 0.1, "date": "2026-09-29", "provisional": True, "provisional_kind": "日中"}
-        dq = sc.data_quality(ind, _af(), {"date": "2026-09-29"}, "2026-09-29")
+        dq = sc.data_quality(ind, _af(), {"date": "2026-09-29"}, "2026-09-29", now_utc=_NOW_29)
         assert dq["status"] == "complete"
         assert dq["provisional_elements"] == [] and dq["old_elements"] == []
         assert dq["expected_provisional_elements"] == {"WTI原油": "清算前", "ドル円": "日中"}
@@ -85,7 +87,7 @@ class TestDataQuality:
         ind = _ind()
         ind["S&P500グロース(IVW)"] = {"change_percent": 0.5, "date": "2026-09-29", "provisional": True}
         ind["WTI原油"] = {"change_percent": -1.0, "date": "2026-09-29", "provisional": True, "provisional_kind": "清算前"}
-        dq = sc.data_quality(ind, _af(), {"date": "2026-09-29"}, "2026-09-29")
+        dq = sc.data_quality(ind, _af(), {"date": "2026-09-29"}, "2026-09-29", now_utc=_NOW_29)
         assert dq["status"] == "partial"
         assert dq["provisional_elements"] == ["S&P500グロース(IVW)"] and dq["old_elements"] == ["S&P500グロース(IVW)"]
         assert dq["expected_provisional_elements"] == {"WTI原油": "清算前"}

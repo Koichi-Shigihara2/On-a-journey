@@ -58,6 +58,11 @@
    - 期限: 2026-11-30（②の公開はこの確認の後。11-28 朝に合格したら 11-28 中に公開できる）
    - 確認の手順: ①`latest.json`と`stonks-silo/data/results.json`に`method_change`の印が付かない（`method_change_applied`に`STONKS-DEFICIT-REALITY-EPIC-1-1`）②runwayが公開の直後の値と同じ（SOUN 19.27か月・IONQ 17.47か月〔総合 PROMISING 70.7〕・ASTS 35.34・AVAV 155.48・CRWV 2.46・JOBY 33.62・RKLB 169.81、TANUKIの`computed_runway_months`はCOHR 15.82・AMZN 29.23）③SOFIの`computed_runway_basis`が`financial_excluded`のまま（runwayなし・fundaは変わらない）④RCAT・CPRTが`annual_fallback`のまま ⑤理論株価・判定が前日と同じ。合格したら`[[STONKS-DEFICIT-REALITY-EPIC-1]]`の①を済にする（②③④は残す）
 
+48. **MARKETPULSE-REVIEW-EPIC-1 順1（型L: 日付・鮮度）の、次の定時の後の確認**（実装は2026-11-27 kaihatsu。method_changeなし・判定に効かない）
+   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後（11-27 の米国は短縮日で、その分のDailyが11-28朝に動く）。MACRO PULSE の `05_liquidity.csv` の新しい列は次の MACRO PULSE の実行の後
+   - 期限: 2026-12-01
+   - 確認の手順: ①`market_data.json` の最新エントリの `data_quality` に `expected_by_kind`（us_close・jpx・fred_daily）があり、`as_of` に「日経平均」「HYスプレッド」が入っている。`freshness` は新しくない要素だけ（日経が期待する日以降なら空）②`buy_checklist.checks.hy_spread.as_of` に日付がある ③画面（Market Pulse）のカードに日付、BUYチェックリストのHYスプレッドに日付が出る ④`daily/^N225.json` に 11-25（と 11-26）の行が入っている（`daily_guard` の取り直し。11-26 の感謝祭の分は 11-27 の実行で入る見込み）⑤`05_liquidity.csv` の最新の行に `sp500_asof`・`hy_spread_asof` が入り、System Health の [Q] が ✅（古い値なら⚠️の理由が日付つきで出る）⑥理論株価・判定・stageが前日と同じ
+
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |

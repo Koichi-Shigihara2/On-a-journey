@@ -2220,6 +2220,10 @@ LIQUIDITY_COLUMNS = [
     # M-5 STEP 4: M2の位置は名目の水準の順位（2023年以降の行の中）ではなく、前年比の1959年以降（前年比は1960-01〜）の分布の中の位置
     "m2_yoy_pct",             # M2（M2SL）の最新の観測月の前年比（%）
     "m2_yoy_pctile",          # その前年比が、1960-01以降の各月の前年比の何パーセンタイルか（以下の割合、0〜100の整数）
+    # 型L（[[MARKETPULSE-REVIEW-EPIC-1]] 順1、2026-11-27）: その行の値が何日の観測か。FRED系列は1営業日遅れで公表されるので、
+    # 行の日付より前になる（鮮度の判定は common/freshness.py。取れなかった・前の値を引き継いだ日は空＝「日付なし」）
+    "sp500_asof",             # sp500 の観測日（FRED SP500）
+    "hy_spread_asof",         # hy_spread の観測日（FRED BAMLH0A0HYM2）。carry-forwardした日は空
 ]
 
 _WEEKLY_LIQ_SERIES = ("WALCL", "WTREGEN", "WDTGAL", "RRPONTSYD", "WRBWFRBL", "SP500")
@@ -2365,7 +2369,7 @@ def _liquidity_alerts(wk: dict) -> tuple[list, str]:
     return alerts, easing_check
 
 
-def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> None:
+def update_liquidity_csv(target_date: date, sp500_val: float | None = None, sp500_asof: str = "") -> None:
     """流動性指標を FRED から取得して 05_liquidity.csv に追記・更新する。
     RRP / reserve_balance は Billions → Millions に変換して保存する。
 
@@ -2389,7 +2393,8 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
     # FRBバランスシート (WALCL): 週次, Millions USD
     fed_val, _ = fred_latest("WALCL")
     # HYスプレッド (BAMLH0A0HYM2): 日次, %
-    hy_val,  _ = fred_latest("BAMLH0A0HYM2")
+    hy_val,  _hy_d = fred_latest("BAMLH0A0HYM2")
+    hy_fetched = hy_val is not None      # carry-forward する前に、この日に取れた値かを残す（観測日の記録に使う）
     # TGA (WTREGEN): 週次, Millions USD — 代替: WDTGAL
     # （旧代替先"FTSD"はFRED上に系列が実在せず常に取得失敗する無効な
     # 系列コードだったと判明（[[MACRODATA-FETCH-FAILURE-VISIBILITY-
@@ -2499,6 +2504,8 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
         "easing_check":          _easing_check,
         "m2_yoy_pct":            _fmt_pct(m2_yoy),
         "m2_yoy_pctile":         "" if m2_yoy_pctile is None else str(m2_yoy_pctile),
+        "sp500_asof":            (sp500_asof or "") if sp500_val is not None else "",
+        "hy_spread_asof":        _hy_d.isoformat() if (_hy_d is not None and hy_fetched) else "",
     }
     if _alerts:
         logger.info(f"[Stealth L3] alerts={_alerts}")
@@ -2506,7 +2513,7 @@ def update_liquidity_csv(target_date: date, sp500_val: float | None = None) -> N
     update_cols = ["m2", "hy_spread", "fed_balance", "tga", "rrp", "net_liquidity",
                    "reserve_balance", "stealth_signal",
                    "stealth_absorb_weeks", "net_liq_decline_weeks", "stealth_alert",
-                   "sp500", "h41_date", "net_liq_wow_pct", "sp500_5d_pct"]
+                   "sp500", "h41_date", "net_liq_wow_pct", "sp500_5d_pct", "sp500_asof", "hy_spread_asof"]
     if date_str in df["date"].values:
         idx = df.index[df["date"] == date_str][0]
         for col in update_cols:
@@ -2662,7 +2669,7 @@ def run(target_date: date, test_mode: bool = False, do_recalc: bool = False,
     # 流動性モニター更新（スコア計算には影響しない参考情報）
     # [[HOLLOW-RALLY-DEAD-1]]: sp500_t0は本関数冒頭で既にget_sp500()
     # 取得済みのため、update_liquidity_csv()内で再取得せずそのまま渡す
-    update_liquidity_csv(target_date, sp500_t0)
+    update_liquidity_csv(target_date, sp500_t0, sp500_t0_asof)
 
     logger.info("=== Run complete ===")
 

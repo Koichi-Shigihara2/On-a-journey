@@ -4,6 +4,10 @@
 変わらない）を確認する。判定ルールは docs/architecture/MARKET_PULSE_REDESIGN.md。
 """
 import os
+
+_NOW_25 = __import__('datetime').datetime(2026, 9, 26, 2, 0, tzinfo=__import__('datetime').timezone.utc)   # 型L: 日経の期待する日の計算に使う「いま」
+
+_NOW_29 = __import__('datetime').datetime(2026, 9, 30, 2, 0, tzinfo=__import__('datetime').timezone.utc)
 import sys
 from datetime import date, datetime, timedelta, timezone
 
@@ -109,25 +113,25 @@ class TestDataQuality:
         return ind, af, {"date": other}
 
     def test_complete(self):
-        dq = sc.data_quality(*self._entry(), "2026-09-25")
+        dq = sc.data_quality(*self._entry(), "2026-09-25", now_utc=_NOW_25)
         assert dq["status"] == "complete" and dq["old_elements"] == []
         assert sc.stage0(dq)["line"] == "2026-09-25の終値"
 
     def test_partial_lists_stages(self):
         ind, af, b = self._entry()
         af["gold"]["date"] = "2026-09-24"
-        dq = sc.data_quality(ind, af, b, "2026-09-25")
+        dq = sc.data_quality(ind, af, b, "2026-09-25", now_utc=_NOW_25)
         assert dq["status"] == "partial" and dq["old_elements"] == ["asset_flow.gold"] and dq["old_stages"] == [4]
 
     def test_stale_when_spx_old_or_fallback(self):
-        assert sc.data_quality(*self._entry(spx_date="2026-09-24"), "2026-09-25")["status"] == "stale"
-        assert sc.data_quality(*self._entry(fallback=True), "2026-09-25")["status"] == "stale"
+        assert sc.data_quality(*self._entry(spx_date="2026-09-24"), "2026-09-25", now_utc=_NOW_25)["status"] == "stale"
+        assert sc.data_quality(*self._entry(fallback=True), "2026-09-25", now_utc=_NOW_25)["status"] == "stale"
 
     def test_unknown_without_expected_or_spx_date(self):
-        assert sc.data_quality(*self._entry(), None)["status"] == "unknown"
+        assert sc.data_quality(*self._entry(), None, now_utc=_NOW_25)["status"] == "unknown"
         ind, af, b = self._entry()
         ind["S&P500"] = None
-        assert sc.data_quality(ind, af, b, "2026-09-25")["status"] == "unknown"
+        assert sc.data_quality(ind, af, b, "2026-09-25", now_utc=_NOW_25)["status"] == "unknown"
 
 
 def _series(closes, vix, start=date(2021, 1, 4)):
@@ -277,7 +281,7 @@ class TestProvisionalDataQuality:
         ind = {k: {"change_percent": 0.1, "date": "2026-09-29"} for k in sc.DQ_INDICATORS}
         ind["ドル円"] = {"change_percent": -0.05, "date": "2026-09-30", "provisional": True}
         af = {k: {"change_pct": 0.1, "date": "2026-09-29"} for k in sc.DQ_ASSET_FLOW}
-        dq = sc.data_quality(ind, af, {"date": "2026-09-29"}, "2026-09-29")
+        dq = sc.data_quality(ind, af, {"date": "2026-09-29"}, "2026-09-29", now_utc=_NOW_29)
         assert dq["status"] == "partial" and dq["provisional_elements"] == ["ドル円"] and dq["old_stages"] == [1, 2]
         assert sc.stage0(dq)["line"] == "2026-09-29の終値（一部の値が前営業日または暫定）"
 

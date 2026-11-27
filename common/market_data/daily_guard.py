@@ -6,6 +6,10 @@ Market_Data_Daily_Update.ymlは20:47〜23:17 UTCの間に30分おきに起動す
       calendar_universe.py〈pandas_market_calendarsのXNYS〉で自動判定。休場日も何もしない）
   (2) その日の終値が既にdaily/にそろっていれば、何もせず終了する
       （直近10日に行がある銘柄のうち、その日の終値つきの行を持つ銘柄が95%以上）
+  (3) 例外（2026-11-27、[[MARKETPULSE-REVIEW-EPIC-1]] 順1）: ^N225 は区切りが違い(2)の数に入れないが、Yahooの日足の終値が引けの約39時間後に
+      なって入る（common/freshness.py の JPX_CONFIRM_LAG）。米国の終値がそろっていても、期待する日本の取引日の行が未保存なら取り直す
+      （NYSEの休場日も。以前は米国の休場〈感謝祭等〉と(2)で取り直しが止まり、日経の行が翌営業日以降まで入らなかった）。
+      取り直しは期待する日から JPX_RETRY_DAYS 日以内だけ（Yahooに足が無い日で毎回起動し続けない）
 
 使い方: python common/market_data/daily_guard.py [--now 2026-09-29T20:30:00Z]
 出力（標準出力）: run=true|false / reason=... / expected_date=YYYY-MM-DD
@@ -16,6 +20,7 @@ import math
 import os
 import sys
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 from zoneinfo import ZoneInfo
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -26,6 +31,7 @@ from common.market_data.calendar_universe import NYSE_CALENDAR_NAME, exchange_sc
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "daily")
 CLOSE_WAIT = timedelta(minutes=20)
 COMPLETE_RATIO = 0.95
+JPX_RETRY_DAYS = 4
 
 
 def _valid_close(r):
@@ -54,17 +60,43 @@ def completeness(day: str, base: str = BASE) -> tuple:
     return have, active
 
 
+def jpx_pending(now: datetime, base: str = BASE) -> Optional[str]:
+    """^N225 の、期待する日本の取引日（common/freshness.py）の行が未保存ならその日付。保存済み・Yahooに足が無い印（_no_yahoo_bar）・
+    ^N225.json が無い・期待する日から JPX_RETRY_DAYS 日を過ぎた場合は None"""
+    from common import freshness
+    exp = freshness.jpx_expected_date(now)
+    path = os.path.join(base, "^N225.json")
+    if not exp or not os.path.exists(path):
+        return None
+    if (now.date() - datetime.strptime(exp, "%Y-%m-%d").date()).days > JPX_RETRY_DAYS:
+        return None
+    try:
+        recs = json.load(open(path, encoding="utf-8")).get("records", [])
+    except Exception:
+        return None
+    for r in recs[-10:]:
+        if r.get("date") == exp and (_valid_close(r) or r.get("_no_yahoo_bar")):
+            return None
+    return exp
+
+
 def decide(now: datetime, base: str = BASE) -> dict:
     ny_day = now.astimezone(ZoneInfo("America/New_York")).date()
     sched = exchange_schedule(NYSE_CALENDAR_NAME, ny_day, ny_day)
     day = ny_day.isoformat()
     if sched.empty:
+        pend = jpx_pending(now, base)
+        if pend:
+            return {"run": "true", "reason": f"NYSE休場日（{day}）だが、^N225の{pend}の足が未保存", "expected_date": day}
         return {"run": "false", "reason": f"NYSE休場日（{day}）", "expected_date": day}
     close = sched["market_close"].iloc[0].to_pydatetime()
     if now < close + CLOSE_WAIT:
         return {"run": "false", "reason": f"引け（{close:%H:%M} UTC）から20分経っていない", "expected_date": day}
     have, active = completeness(day, base)
     if active and have / active >= COMPLETE_RATIO:
+        pend = jpx_pending(now, base)
+        if pend:
+            return {"run": "true", "reason": f"{day}の終値はそろっているが、^N225の{pend}の足が未保存（{have}/{active}銘柄）", "expected_date": day}
         return {"run": "false", "reason": f"{day}の終値はそろっている（{have}/{active}銘柄）", "expected_date": day}
     return {"run": "true", "reason": f"{day}の終値が未取得（{have}/{active}銘柄）", "expected_date": day}
 

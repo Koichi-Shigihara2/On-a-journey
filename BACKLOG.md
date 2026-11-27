@@ -2741,6 +2741,8 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **発見:** 2026-11-22 チャット（Koichi依頼。2026-11-20終値の画面を全項目点検）
 **着手条件:** 月曜の確認の行列（手順34〜37・39 → Dailyの取り消しの原因 → 手順33 → [[TANUKI-SHARES-SINGLE-SOURCE-1]]の公開）の完了後。順番は [[UNIVERSE-REBALANCE-2026Q4-1]] の削除 → [[STONKS-DEFICIT-REALITY-EPIC-1]] の① の後ろ
 **進め方:** 着手時に、子項目ごとに他の画面・サブシステムへの影響を最初に洗い出してから設計する（個別の継ぎはぎにしない）
+**STEP 0と決定（2026-11-27）:** `docs/architecture/MARKETPULSE_REVIEW_STEP0.md`。9項目を型L（日付・鮮度）・型P（段・閾値の切り替わり）・型E（説明と計算のずれ）・型S（サイズ）にまとめ、共通の根治策を先に。決定: (a) 順は L→E→S→P→2-c→2-a (b) 1-aは①（日付の表示・鮮度の監視）だけ・取得の回は足さない (c) 「買い」の主はBUYチェックリスト（F&G）、自前の指数・Tech Pulseは参考表示（順5で実装） (d) 履歴は作り直さず、切り替えた日から新基準にし、画面のグラフに基準の変更の線を引く (e) [[HYPECORE-MARKET-WIDE-DRAWDOWN-1]]はEPICの外（計算方法の変更の手順で別に） (f) MACRO PULSEの分け方は11-22のKoichi決定（景気後退の予測に特化・政策金利は[[FED-POLICY-PAGE-1]]へ）
+**順1（型L）実装済み（2026-11-27）:** `common/freshness.py`（値の日付と鮮度の判定の1か所。kind＝us_close・jpx・fred_daily）。Market Pulseの`data_quality`が日経・HYスプレッドを含め同じ部品で判定（`freshness`・`expected_by_kind`）、画面は値ごとの日付と「古い」の印・HYスプレッドの日付、System Health [Q]、MACRO PULSEの`05_liquidity.csv`に`sp500_asof`・`hy_spread_asof`。1-aの原因: ^N225はYahooの日足の終値が引けの約39時間後になって入る（定時06:28 JSTの取得では前日の足に終値が無い）構造上の遅れで、さらに米国の休場日・米国の終値がそろった日は`daily_guard`が起動を止め取り直しが無かった→期待する日本の取引日の行が未保存なら起動する。理論株価・判定・funda・stage・TANUKI・HypeCoreへの影響なし。確認は手順48。次は順2（型E）
 **関連:** [[MARKETPULSE-DAILY-ENTRY-GAP-1]]（3-bのエントリの日付のずれ・欠けた日）、[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]]、[[FEAR-REGIME-CANDIDATE-SCREEN-1]]（2-c）。完了済みの [[MARKETPULSE-MINOR-INCONSISTENCIES-1]]・[[MARKETPULSE-HYG-LQD-DATE-MIX-1]]（BACKLOG_DONE）とは、3-bのクレジット判定・HYGとLQDの扱いが近いため、着手時に完了の内容と突き合わせて重複を避ける
 
 #### 優先度1：数字や判定が誤っているもの
@@ -2842,6 +2844,7 @@ NH-NL、TAKE PROFIT（未発動の日は画面で隠す）、Tech Pulseの計算
 **発見:** 2026-11-22 チャット（F&G 9.6の極端な相場で、画面の数字を実際の終値・外部の情報と突き合わせた）
 **着手条件:** 上の行列の後
 **関連:** [[BANK-ACL-MACRO-SIGNAL-1]]
+**日付・鮮度の部分（2026-11-27）:** [[MARKETPULSE-REVIEW-EPIC-1]]の順1で実装済み（`common/freshness.py`。`05_liquidity.csv`に`sp500_asof`・`hy_spread_asof`を記録、System Health [Q]が判定）。S&P500はFREDのSP500系列が1営業日遅れで公表されるため、値は変えず日付を残して鮮度で見る。局面の判定の揺れ（同じ声明でBALANCEDとTIGHTENING）は[[FED-POLICY-PAGE-1]]の影響範囲に残る
 
 #### 内容
 - `05_liquidity.csv` の S&P500 が1日遅れ：11/20 の行が 7,175.83（＝11/19終値）、11/19 の行が 7,323.63（＝11/18終値）。`sp500_5d_pct` も1日古い。土曜（11/21）の行が11/20の行の複製

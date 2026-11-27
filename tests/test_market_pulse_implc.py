@@ -5,6 +5,8 @@
 ニュースがAIの入力に入らないことを確認する。
 """
 import json
+
+_NOW_29 = __import__('datetime').datetime(2026, 9, 30, 2, 0, tzinfo=__import__('datetime').timezone.utc)   # 型L: 日経の期待する日の計算に使う「いま」
 import os
 import sys
 from datetime import date, datetime, time, timedelta, timezone
@@ -526,8 +528,8 @@ class TestDataQualityAndAI:
 
     def test_unavailable_makes_partial_other_stages_unaffected(self):
         ind, af = self._base()
-        ok = sc.build_stage_conclusions(ind, af, {"date": "2026-09-29"}, "2026-09-29")
-        r = sc.build_stage_conclusions(ind, af, {"date": "2026-09-29"}, "2026-09-29",
+        ok = sc.build_stage_conclusions(ind, af, {"date": "2026-09-29"}, "2026-09-29", now_utc=_NOW_29)
+        r = sc.build_stage_conclusions(ind, af, {"date": "2026-09-29"}, "2026-09-29", now_utc=_NOW_29,
                                        implc={"headlines": {"failed": ["CNBC Markets"]}, "futures": {"failed": []},
                                               "calendar": {"failed": ["経済指標（FRED）"]}})
         dq = r["data_quality"]
