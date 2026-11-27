@@ -204,7 +204,7 @@ def stage5(ind: dict, rotation: Optional[dict] = None) -> dict:
     strong = ((rotation or {}).get("by_quadrant") or {}).get("Strong")
     if line is not None and rotation is not None:
         from sector_rotation import RELATIVE_STRONG_TEXT, moves_summary
-        # 型E: 象限はSPYと比べた相対の強さ（絶対の騰落ではない）。実際の1日・5日の騰落を並べて出す
+        # 型E: 象限は基準（RSP）と比べた相対の強さ（絶対の騰落ではない）。実際の1日・5日の騰落を並べて出す
         line += f"／{RELATIVE_STRONG_TEXT}（Strong）: " + ("・".join(strong) if strong else "なし")
         mv = moves_summary(rotation)
         if mv:
@@ -369,7 +369,7 @@ def _outcome(closes: List[float], signals: List[Optional[str]], today: str, h: i
         return out
     b = sum(1 for r in base if r > 0) / len(base)
     out["base_up_pct"] = round(b * 100, 1)
-    if n < S8_MIN_N:
+    if out["n_indep"] < S8_MIN_N:   # 件数不足も重ならない件数で判定する（zと同じ。順6 2026-11-27）
         out["label"] = "件数不足"
         return out
     p = sum(1 for r in same if r > 0) / n
@@ -380,7 +380,7 @@ def _outcome(closes: List[float], signals: List[Optional[str]], today: str, h: i
     out.update({"up_pct": round(p * 100, 1), "diff_pt": round(diff, 1), "z": round(z, 2),
                 "mean_pct": round(sum(same) / n, 3), "median_pct": round(median(same), 3),
                 "p10_pct": round(sorted(same)[int(n * 0.1)], 3),
-                "label": s8_label(n, z),
+                "label": s8_label(out["n_indep"], z),
                 "guide": "偶然では出にくい差" if abs(z) >= S8_Z else "偶然でも出る範囲の差"})
     return out
 
@@ -410,7 +410,7 @@ def stage8(get_series, as_of: Optional[str]) -> dict:
     if five is None:
         res.update({"label": None, "line": None})
     elif five["label"] == "件数不足":
-        res.update({"label": "件数不足", "line": f"5営業日後: 件数不足（{five['n']}件）"})
+        res.update({"label": "件数不足", "line": f"5営業日後: 件数不足（重ならない件数{five['n_indep']}件）"})
     else:
         res.update({"label": five["label"],
                     "line": f"5営業日後: {five['label']}（{five['n']}件、{five['diff_pt']:+.1f}pt、z={five['z']:+.2f}）"})
@@ -432,7 +432,7 @@ def stage6(semis: Optional[dict]) -> dict:
 
 
 def stage7(wl: Optional[dict]) -> dict:
-    """段階7（設計書1章）: SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄（上位2銘柄の名前と残りの件数）。"""
+    """段階7（設計書1章）: RSP（均等加重）より相対的に強いセクター（Strong・Improving）にいる監視銘柄（上位2銘柄の名前と残りの件数）。"""
     from sector_rotation import stage7_line
     if not wl:
         return {"label": None, "line": None}
