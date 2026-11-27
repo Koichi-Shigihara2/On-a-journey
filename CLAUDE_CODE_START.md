@@ -73,6 +73,11 @@
    - 期限: 2026-12-01
    - 確認の手順: ①`market_data.json` の最新のエントリに `comments_history` が無く、ほかのキー（`summary`・`stage_conclusions`・`data_quality` 等）は前日と同じ形で、ファイルが 7.3MB 前後（1日約50KB増）②画面（Market Pulse）の「過去のAIコメント」が最新のエントリで直近11件ぶん出る（前のエントリの `summary` から作る）③`scripts/migrate_market_data_comments_history.py --check` が「旧キーあり 0・食い違い 0」。合格したら、移行のスクリプト（`scripts/migrate_market_data_comments_history.py` と `tests/test_market_data_comments_history.py` の移行の検査）は役目を終えるので削除してよい（`COMMENTS_HISTORY_FROM` は残す。旧エントリの表示を変えないため）。⑤**latest.json と trail**: `docs/market-monitor/market-pulse/data/latest.json` が最新のエントリと同じ（`market_data.json` の最後のエントリと等しい）で、最新以外のエントリの `sector_rotation.sectors.*.trail` が増えていない（新しい回で前の最新の trail が消えている）。TANUKI SCORE の画面が表示され「最終更新」が最新の回の時刻、`snapshot.py`（TANUKI_Score_Update）が成功。System Health [Q] が latest.json を読んで✅。**旧キーの読みは画面に入れていない**（同じ push で旧キーを消したため。書き手のないキーを画面が読むと出力の一覧の検査 INV-5 が NG になる）
 
+51. **MARKETPULSE-REVIEW-EPIC-1 順4（型P: 段・閾値の切り替わり）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。理論株価・判定に効かない。TANUKI・HypeCore は局面・ゾーン・象限・発動を読まない）
+   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後。MACRO PULSE の週次（スコア・局面）は次の週次の実行の後
+   - 期限: 2026-12-01
+   - 確認の手順: ①`market_data.json` の最新のエントリに `basis.step_rules`（`STEP-RULES-1`）があり、`buy_checklist` に `trigger_held` がある。前日のF&Gが25以下で発動し当日26〜30なら `triggered=true`・`trigger_held=true`（31以上なら外れる）②`sector_rotation.sectors.*.quadrant` が前日の象限と、境目（100）を0.5以内で越えた分だけ違わない（前日 Strong で RS-Ratio が99.5〜100なら Strong のまま）③画面（Market Pulse）の時系列に、`basis` が入った最初の日（11-28）の縦線「判定の基準を変更」④MACRO: 次の週次の行に `basis=STEP-RULES-1`、`score` は小数の点数を丸めた整数、`phase` は前の週の phase から2pt越えたときだけ変わる（前の週が拡張で今週スコア30・31なら拡張のまま、32以上で踊り場）。画面のスコア推移に縦線 ⑤`05_main.py` の `SIGNAL_STEPS` と画面の写しが一致（テストが検査）⑥理論株価・判定が前日と同じ
+
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |
