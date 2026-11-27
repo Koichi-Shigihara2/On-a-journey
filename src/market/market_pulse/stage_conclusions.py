@@ -374,7 +374,8 @@ def _outcome(closes: List[float], signals: List[Optional[str]], today: str, h: i
         return out
     p = sum(1 for r in same if r > 0) / n
     diff = (p - b) * 100
-    se = math.sqrt(b * (1 - b) / n) * 100
+    # 5・20営業日後は連続した日の窓が重なり件数nは独立でないので、標準誤差は重ならない件数で計算する（順6、2026-11-27）
+    se = math.sqrt(b * (1 - b) / max(1, out["n_indep"])) * 100
     z = diff / se if se else 0.0
     out.update({"up_pct": round(p * 100, 1), "diff_pt": round(diff, 1), "z": round(z, 2),
                 "mean_pct": round(sum(same) / n, 3), "median_pct": round(median(same), 3),

@@ -209,6 +209,26 @@ class TestStage8:
         assert sc._n_indep(["a", "a", "a", "a", "a", "a"], "a", 6, 5) == 2
         assert sc._n_indep(["a", "a", "a"], "a", 3, 1) == 3
 
+    def test_z_uses_independent_count(self):
+        """順6(a): zの標準誤差は重ならない件数で計算する（件数nでは窓の重なりで過大になる）"""
+        import math
+        closes, pattern = [100.0], [0.005, 0.005, -0.004, -0.004] * 60
+        for r in pattern:
+            closes.append(closes[-1] * (1 + r))
+        days, get = _series(closes, [14.0] * len(closes))
+        r = sc.stage8(get, days[-1])
+        done = 0
+        for o in r["signals"]["stage1"]["outcomes"]:
+            if o["label"] == "件数不足":
+                continue
+            bb = o["base_up_pct"] / 100
+            se = math.sqrt(bb * (1 - bb) / o["n_indep"]) * 100
+            if se == 0:
+                continue
+            assert o["z"] == pytest.approx(o["diff_pt"] / se, abs=0.15)
+            done += 1
+        assert done >= 1
+
     def test_missing_as_of(self):
         assert sc.stage8(lambda *a: [], None)["line"] is None
 
