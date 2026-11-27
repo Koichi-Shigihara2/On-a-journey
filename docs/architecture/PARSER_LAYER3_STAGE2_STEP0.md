@@ -216,3 +216,43 @@ parser の四半期ファイルの pl・cf・shares・other を読むコード�
 - 登録の分割なし15・符号の反転4・定義2のうち、AVAV・VRT・SOUN・CELH・ASTS は原本を確かめていない（実装の前に原本で確認する）
 - EPS ANALYZER との比較は `shares_by_end` との2%の差で、各期の差の理由（組み替え・未登録の分割・選び方の違い）は RCAT・NVDA 以外は調べていない
 - STONKS は外部取得が要るため回していない（読み手の確認で0）
+
+
+---
+
+# §2c 段2（2a＋2b）の実装と公開の手順（2026-11-27 決定・実装、ブランチ `parser-layer3-stage2a`・未公開）
+
+**決定（§2b-6 の(a)〜(h)）**: (a) 298セルすべてを Layer3 の `val` に置き換える (b) 基準の意味を文書に書く（下） (c) 一部だけ調整済み40・登録の分割なし15（計55セル）に印 (d) ASTS の2セルは0に置き換えず欠け＋印 (e) 原本の確認は公開の前の宿題にしない（印で残す） (f) method_change は登録しない (g) 2a と 2b を **1回の公開**にする (h) EPS ANALYZER の `diluted_shares_used` のずれ（38期）は今回は触らない（FINDINGS。束ねの候補）。
+
+**基準の意味**（`quarterly_bs.py` の docstring にも書いた）: 四半期のファイル（`quarterly_*.json`）の値は**今の時点の見方**＝Layer3 の `val`（その期を最後に申告した値）。分割の調整は最新の申告が再掲した分だけ反映される（再掲の無い期は分割前のまま）。現在の基準が要る読み手は `split_adjust.shares_by_end`（`val` ＋ `split_history.yaml` の換算）を通す。このファイルに換算を入れない。**倍率の履歴は別**で、その月末までに申告された値（`first_val`・as-of、`common/multiples.py`）。
+
+## 実装（ブランチ `parser-layer3-stage2a`、kaihatsu の `9f362db984` に rebase 済み）
+
+| commit | 内容 |
+|---|---|
+| 段2a のコード・データ | CF・PL（EPS除く）・RPO（681セル・47銘柄）。非負の項目が正→負は欠け＋印（HON の SBC 2セル）、`val_suspect` は置き換えて印（5セル） |
+| 段2b のコード | `REPLACED_FIELDS` を **`pl` のすべて＋`shares`**（2行）。`replace_record(record, store, splits)`: EPS・株数は、登録の分割（`split_history.yaml` の、期末より後の分割の積）と比が合えば印なし、合わなければ `split_basis_partial`、登録の分割が無くて比が1.5倍超なら `recast_no_registered_split`。Layer3 の `val` が0で parser が0でないEPS・株数（ASTS 型）は0に置き換えず**欠け（None）＋`layer3_zero_parser_nonzero`** |
+| 段2b のデータ | 298セル・35銘柄に当てた（印: `split_basis_partial` 40・`recast_no_registered_split` 15・`layer3_zero_parser_nonzero` 2） |
+| テスト | `tests/test_quarterly_bs.py`: 段2b の置き換え・分割の印3種・ASTS 型・印は EPS・株数だけ・置き換え済みのファイルが AAPL・NVDA で Layer3 の `val` と一致 |
+
+## 試算（2a＋2b を合わせて）
+
+- 置き換え **979セル**（2a 681＋2b 298。277ファイル・54銘柄。CF 151・PL 642〈EPS 145 を含む〉・株数 153・RPO 33 で §1 の表と一致）。印の内訳: `split_basis_partial` 40・`recast_no_registered_split` 15・`layer3_zero_parser_nonzero` 2・`val_suspect` 5・`nonneg_layer3_negative` 2
+- `tools/sim/sim.py chain`（前＝kaihatsu、後＝このブランチ）: **TANUKI 82銘柄の理論株価・判定・funda・乖離率ほか全項目の変化0**（`latest.json`・`history.json`・`tickers.json` は日時の欄だけ）、**HypeCore stage の変化0**（`poc.json` は `generated_at` だけ）、保有9銘柄 ±0.0%
+- テスト: pytest 全件・rcc NG 0（WARN-59 が SOUN の1件解消）。出力の一覧（`--layer sec`）は変わらない見込み（INV で確認）
+
+## 公開の手順（12-01〈月〉の依頼文で。②の2回目の確認〈11-29 日曜の連鎖〉の後）
+
+1. **前提の確認**: 11-29（日）の SEC_Data_Update → HypeCore → TANUKI の連鎖が済み、②の2回目の確認が合格している。合格していなければ公開しない
+2. **kaihatsu を最新にしてブランチを rebase**（`git fetch`・`git pull` の後、`git rebase kaihatsu`）。**11-29 の日曜の SEC_Data_Update が `quarterly_*.json` を作り直す**（今の kaihatsu のコードは bs・D&A だけ置き換える）ので、ブランチの**データの commit〈2a・2b の2つ〉はおそらく衝突する**。衝突したらデータの2 commit は捨て、**コードの2 commit だけを残して `python common/sec_data/quarterly_bs.py` で当て直す**（同じ関数。SEC は呼ばない。何度当てても同じ結果）
+3. **当て直しの結果を確かめる**: kaihatsu との差が、置き換えるセル979 ＋ 11-29 に増えた四半期の分（`parse_and_save` は bs・D&A だけ置き換えているので、その期の CF・PL・EPS・株数が増分）であること。印は `split_basis_partial` 40・`recast_no_registered_split` 15・`layer3_zero_parser_nonzero` 2 が残る（`PARSER_LAYER3_STAGE2B_cells.csv` と突き合わせる）。`tests/test_quarterly_bs.py::test_committed_eps_and_shares_match_layer3_val` が通る
+4. **ゲート**: pytest（全件）・rcc（NG 0。WARN は 181 から SOUN の WARN-59 の分が減る）・`--layer sec` の CHECK-INV（作り直しの要否）
+5. **sim で最後の確認**: `tools/sim/sim.py chain` の前後で理論株価・判定・stage の変化0（11-29 のデータで作り直す）。0でなければ公開しない
+6. **push（kaihatsu）**。method_change は登録しない。ID は `PARSER-LAYER3-SINGLE-SOURCE-1-2`（段2。2a＋2b）
+7. **公開の後の確認**（`CLAUDE_CODE_START.md` に手順を足す。次の日曜 12-06 の SEC_Data_Update の後）: 新しい四半期のファイルで、CF・PL・EPS・株数・RPO が Layer3 の `val` と一致し（`replace_from_layer3` が `splits` を渡して印を付ける）、既に置き換えた期が parser の値に戻っていないこと。TANUKI の理論株価・判定の変化0
+8. **移設**: 手順7の確認の合格後、段2は PARSER-LAYER3-SINGLE-SOURCE-1 の記録に「済」と書く（本件は段3〈年次〉以降が残るので閉じない）
+
+## 残し・範囲外
+
+- EPS ANALYZER の `diluted_shares_used` と `shares_by_end` の38期のずれは、今回は触らない（FINDINGS 2026-11-27。束ねの候補）
+- 印の付いた55セル・ASTS 2セルは、読み手が無いので画面に出ない。原本の確認（AVAV・VRT・SOUN・CELH・ASTS）は、読み手ができるとき（または年次の段）に行う
