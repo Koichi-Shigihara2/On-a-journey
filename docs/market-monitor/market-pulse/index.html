@@ -922,9 +922,13 @@ function renderOscChart(){
   const oscMin=allOscVals.length?Math.max(0,Math.floor(Math.min(...allOscVals)/5)*5-15):0;
   const oscMax=allOscVals.length?Math.min(100,Math.ceil(Math.max(...allOscVals)/5)*5+15):100;
   const yC={min:(hasScore||hasFG||isMulti)?oscMin:undefined,max:(hasScore||hasFG||isMulti)?oscMax:undefined,ticks:{color:"#64748b",font:{family:"Space Mono",size:12},callback:v=>{if(v===20)return"FEAR▼";if(v===50)return"50";if(v===80)return"GREED▲";return v%10===0?v.toFixed(0):""}},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}};
+  // 判定の基準を変えた日（各エントリの basis が入った最初の日。common/step_rules.py の版）に縦線を引く（[[MARKETPULSE-REVIEW-EPIC-1]] 順4）。
+  // 過去のエントリは作り直さないので、線の前後は旧基準・新基準
+  if(!Chart.registry.plugins.get("basisLine")){Chart.register({id:"basisLine",afterDatasetsDraw(chart){const i=chart.$basisIdx;if(i==null||i<=0||!chart.scales.x)return;const x=chart.scales.x.getPixelForValue(i);const{ctx,chartArea:{top,bottom,right}}=chart;ctx.save();ctx.strokeStyle="rgba(245,158,11,.85)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,bottom);ctx.stroke();ctx.fillStyle="rgba(245,158,11,.95)";ctx.font="10px Space Mono";ctx.fillText("判定の基準を変更",Math.min(x+4,right-96),top+11);ctx.restore()}})}
   if(oscChartInst)oscChartInst.destroy();
   oscChartInst=new Chart(document.getElementById("oscChart"),{type:"line",data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:"#111520",borderColor:"#1e2840",borderWidth:1,titleColor:"#64748b",bodyColor:"#e2e8f0",titleFont:{family:"Space Mono",size:12},bodyFont:{family:"Space Mono",size:13},callbacks:{label:ctx=>{const ds=ctx.dataset,raw=ds._rawData?.[ctx.dataIndex],m=ds._meta;if(m?.key==="score"){const lbl=od[ctx.dataIndex]?.sentiment?.label||"";return raw!=null?` Score: ${raw.toFixed(1)} (${lbl})`:" —"}if(m?.key==="fg"){return raw!=null?` CNN F&G: ${raw.toFixed(0)}`:" —"}return raw!=null?` ${m?.label||ds.label}: ${raw.toFixed(2)}`:" —"}}}},scales:{x:{ticks:{color:"#64748b",font:{family:"Space Mono",size:12},maxTicksLimit:12},grid:{color:"rgba(30,40,64,.5)"},border:{color:"#1e2840"}},y:yC}},
     plugins:useZones?[{id:"zoneShading",beforeDraw(chart){const{ctx,chartArea:{left,right},scales:{y}}=chart;const y35=y.getPixelForValue(45),yB=y.getPixelForValue(0);ctx.fillStyle="rgba(244,63,94,.06)";ctx.fillRect(left,y35,right-left,yB-y35);const y65=y.getPixelForValue(55),yT=y.getPixelForValue(100);ctx.fillStyle="rgba(16,185,129,.06)";ctx.fillRect(left,yT,right-left,y65-yT);ctx.setLineDash([4,4]);ctx.lineWidth=1;ctx.strokeStyle="rgba(244,63,94,.3)";ctx.beginPath();ctx.moveTo(left,y35);ctx.lineTo(right,y35);ctx.stroke();ctx.strokeStyle="rgba(16,185,129,.3)";ctx.beginPath();ctx.moveTo(left,y65);ctx.lineTo(right,y65);ctx.stroke();ctx.setLineDash([])}}]:[]});
+  {const bi=od.findIndex(d=>d.basis);oscChartInst.$basisIdx=bi>0?bi:null;if(bi>0)oscChartInst.update("none")}
   const nTxt=isMulti?' <span style="color:var(--mut);font-size:12px">(Score/F&G以外は正規化)</span>':'';
   document.getElementById("oscLegend").innerHTML=aList.map(m=>`<div class="osc-legend-item"><div class="osc-legend-dot" style="background:${m.color}"></div>${m.label}</div>`).join("")+(useZones?'<div class="osc-legend-item"><div class="osc-legend-dot" style="background:rgba(244,63,94,.25)"></div>Fear</div><div class="osc-legend-item"><div class="osc-legend-dot" style="background:rgba(16,185,129,.25)"></div>Greed</div>':'')+nTxt}
 
@@ -1271,7 +1275,7 @@ function renderBuyChecklist(){
   let banner=`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;background:${bannerBg};border:1px solid ${bannerColor};margin-bottom:14px;flex-wrap:wrap">`;
   banner+=`<span style="font-family:var(--mono);font-size:15px;font-weight:700;color:${bannerColor}">${bannerIcon} ${escHtml(action)}</span>`;
   banner+=`<span style="font-family:var(--mono);font-size:12px;color:var(--mut);margin-left:auto">買いポイント: <strong style="color:${bannerColor};font-size:15px">${points}</strong> / 3</span>`;
-  banner+=`<span style="font-family:var(--mono);font-size:11px;color:var(--mut)">F&amp;G ${fgDisp??'—'}</span>`;
+  banner+=`<span style="font-family:var(--mono);font-size:11px;color:var(--mut)">F&amp;G ${fgDisp??'—'}${bc.trigger_held?'（25で入り30で外れる。前の日からの継続）':''}</span>`;
   banner+=`</div>`;
 
   // チェック項目

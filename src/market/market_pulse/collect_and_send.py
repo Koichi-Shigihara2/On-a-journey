@@ -1394,11 +1394,22 @@ HY_BUY_MARGIN = 0.30
 HY_BUY_RULE_TEXT = f"HYスプレッドが90日の最大値より{HY_BUY_MARGIN:.2f}%以上低いか（現在値と90日最大値の差。直近の方向は見ない）"
 
 
-def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active):
-    """BUYチェックリスト（F&G<=25で発動）
+# BUYチェックリストの発動: F&G ≤ BUY_TRIGGER_ENTER で入り、前の日が発動なら F&G ≤ BUY_TRIGGER_EXIT の間は発動のまま
+# （[[MARKETPULSE-REVIEW-EPIC-1]] 順4。F&G の1日の動きは中央値2.3・90%点7.5で、25の前後を行き来して発動が入り切りしていた。
+# 外す値は30＝回復の後の買いを促さない程度。試算: 発動の切替11→9。入る値25は今のまま）
+from common.step_rules import BASIS_ID as STEP_RULES_BASIS_ID  # noqa: E402
+BUY_TRIGGER_ENTER = 25
+BUY_TRIGGER_EXIT = 30
+
+
+def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active, prev_triggered=None):
+    """BUYチェックリスト（F&G<=25で発動。前の日が発動なら30以下の間は継続）
     3チェック項目、1点ずつ採点: 2点以上→BUY
+    prev_triggered: 前の日（前のエントリ）の発動。無ければその日の段の判定
     """
-    triggered = fg_score is not None and fg_score <= 25
+    from common.step_rules import hysteresis_gate
+    triggered = fg_score is not None and hysteresis_gate(prev_triggered, fg_score, BUY_TRIGGER_ENTER, BUY_TRIGGER_EXIT)
+    trigger_held = bool(triggered and fg_score > BUY_TRIGGER_ENTER)       # 25を超えているが前の日からの継続
     extreme = fg_score is not None and fg_score <= 10
 
     checks = {}
@@ -1441,6 +1452,7 @@ def calc_buy_checklist(fg_score, above_ma200, ma200_slope, hy_current, hy_max_90
 
     return {
         "triggered": triggered,
+        "trigger_held": trigger_held,
         "extreme": extreme,
         "points": points,
         "action": action,
@@ -1531,7 +1543,16 @@ def calc_credit(structured_data, asset_flow_data):
     return credit_data
 
 
-def compute_implb(structured_data, get_series):
+def _previous_entry(recent_entries, today):
+    """前の日のエントリ: 新しい順の直近エントリ（_load_recent_entries）のうち、today（JSTの日付 'YYYY-MM-DD'）より前の最初のもの。
+    同じ日の取り直しでは、その日の前の回ではなく前の日を状態にする（境目の幅の状態は日ごとに1回進める）"""
+    for e in recent_entries or []:
+        if str(e.get("date", ""))[:10] < today:
+            return e
+    return None
+
+
+def compute_implb(structured_data, get_series, prev_entry=None):
     """実装B（指示書㉖）の計算。S&P500の終値日を基準日にし、daily/のその日以前の終値だけを使う。
     失敗した要素は入れない（段階5〜7はその要素なしで結論を出し、他の段階には影響しない）。"""
     import sector_rotation as _sr
@@ -1541,7 +1562,8 @@ def compute_implb(structured_data, get_series):
     if not as_of:
         return out
     try:
-        out["sector_rotation"] = _sr.sector_rotation(get_series, as_of)
+        prev_q = {s: (v or {}).get("quadrant") for s, v in (((prev_entry or {}).get("sector_rotation") or {}).get("sectors") or {}).items()}
+        out["sector_rotation"] = _sr.sector_rotation(get_series, as_of, prev_quadrants=prev_q or None)
     except Exception as e:
         print(f"[WARN] セクター4象限の計算に失敗: {e}")
     try:
@@ -1716,6 +1738,8 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
         "take_profit_checklist": take_profit_checklist,
         "buy_checklist": buy_checklist,
         "summary": report_text,
+        # 判定の基準の版（common/step_rules.py）。画面のグラフに、基準を変えた日（この印が入った最初の日）の線を引く。印の無い過去のエントリは旧基準
+        "basis": {"step_rules": STEP_RULES_BASIS_ID},
     }
     if data_freshness is not None:
         new_entry["data_freshness"] = data_freshness
@@ -1926,8 +1950,10 @@ if __name__ == "__main__":
 
     hy_current = (hy_spread_data or {}).get("current")
     hy_max_90d = (hy_spread_data or {}).get("max_90d")
+    _prev_entry = _previous_entry(_recent_entries, datetime.now(JST).strftime("%Y-%m-%d"))
+    _prev_trig = ((_prev_entry or {}).get("buy_checklist") or {}).get("triggered")
     buy_checklist = calc_buy_checklist(
-        fg_cnn_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active
+        fg_cnn_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active, prev_triggered=_prev_trig
     )
     # 型L: HYスプレッドの値の日付を、BUY・TAKE PROFITの両チェックリストに残す（common/value_freshness.py が鮮度を判定する）
     hy_as_of = (hy_spread_data or {}).get("as_of")
@@ -1955,7 +1981,7 @@ if __name__ == "__main__":
     from stage_conclusions import build_stage_conclusions
     from common.market_data.reader import get_price_series_as_of as _md_series_as_of
     # 実装B（指示書㉖）: 段階5のセクター4象限・段階6の半導体とM7・商品と為替の内訳・段階7の監視銘柄
-    implb = compute_implb(structured_data, lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days))
+    implb = compute_implb(structured_data, lambda sym, as_of, days: _md_series_as_of(sym, as_of, days=days), prev_entry=_prev_entry)
     # 実装C（指示書㉗）: 段階2のニュースの見出し、段階8の予定・先物とドル円の最新値（AIの入力には入れない）
     implc = compute_implc(implb)
     # 5分足の日ごとの保存（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②）。直近10取引日のうち無い日・足りない日だけ取り直す。

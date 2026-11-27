@@ -84,8 +84,13 @@ def rs_ratio_momentum(sector_weekly: List[float], spy_weekly: List[float], n: in
     return out
 
 
-def sector_rotation(get_series: GetSeries, as_of: str) -> Dict[str, Any]:
-    """段階5のセクター4象限（3章）。as_of（S&P500の終値日）以前の終値だけを使う。"""
+QUADRANT_BAND = 0.5    # 象限の境目（100）の幅。前の象限から、境目を0.5越えたときだけ切り替える（[[MARKETPULSE-REVIEW-EPIC-1]] 順4。試算: 11業種の切替204→139）
+
+
+def sector_rotation(get_series: GetSeries, as_of: str, prev_quadrants: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    """段階5のセクター4象限（3章）。as_of（S&P500の終値日）以前の終値だけを使う。
+    prev_quadrants: 前の日の象限 {ETF: 象限}（前のエントリの値）。あれば象限は境目の幅つき（common/step_rules.py）、無ければ今までの段の判定
+    （初日・取り直し）。RS-Ratio・RS-Momentum の値そのものは変わらない"""
     days = (RATIO_WEEKS + MOMENTUM_LAG + TRAIL_WEEKS + 4) * 5 + 10
     spy = _closes(get_series, "SPY", as_of, days)
     spy_w = weekly_last(spy)
@@ -108,8 +113,13 @@ def sector_rotation(get_series: GetSeries, as_of: str) -> Dict[str, Any]:
         ds = sorted(c)
         prev = ds[-2] if len(ds) >= 2 else None
         prev5 = ds[-6] if len(ds) >= 6 else None      # 5営業日前（型E: 象限は相対の強さ。実際の騰落を1日・5日で並べて出す）
+        if prev_quadrants and prev_quadrants.get(s):
+            from common.step_rules import quadrant_hysteresis
+            quad = quadrant_hysteresis(prev_quadrants[s], last["ratio"], last["momentum"], QUADRANT_BAND)
+        else:
+            quad = quadrant(last["ratio"], last["momentum"])
         res["sectors"][s] = {"name": SECTOR_JA[s], "ratio": last["ratio"], "momentum": last["momentum"],
-                             "quadrant": quadrant(last["ratio"], last["momentum"]), "trail": trail,
+                             "quadrant": quad, "trail": trail,
                              "change_pct": round((c[as_of] / c[prev] - 1) * 100, 2) if prev else None,
                              "change_5d_pct": round((c[as_of] / c[prev5] - 1) * 100, 2) if prev5 else None}
     by_q: Dict[str, List[str]] = {q: [] for q in ("Strong", "Improving", "Weakening", "Weak")}
