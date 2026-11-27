@@ -13,19 +13,19 @@
     "intangible_assets_excl_goodwill": 16287537
   },
   "pl": {
-    "revenue": 65073323,
-    "gross_profit": 28249369,
-    "net_income": 3960344,
+    "revenue": 65073000,
+    "gross_profit": 28249000,
+    "net_income": 780000,
     "eps_diluted": 0.05,
     "eps_basic": 0.05,
-    "research_and_development": 232000,
-    "selling_and_marketing": 15530988,
-    "operating_income": 3598849
+    "research_and_development": 200000,
+    "selling_and_marketing": 15531000,
+    "operating_income": 418000
   },
   "cf": {
-    "operating_cash_flow": -17011463,
+    "operating_cash_flow": -17012000,
     "depreciation_and_amortization": 300000,
-    "stock_based_compensation": 4022259
+    "stock_based_compensation": 7202000
   },
   "shares": {
     "shares_diluted": 77238389,
@@ -35,5 +35,9 @@
   "bs_tag_sources": {
     "goodwill": "Goodwill",
     "intangible_assets_excl_goodwill": "IntangibleAssetsNetExcludingGoodwill"
+  },
+  "replace_marks": {
+    "net_income": "val_suspect:neighbor_outlier",
+    "operating_income": "val_suspect:neighbor_outlier"
   }
 }
