@@ -816,7 +816,7 @@ _MARKET_PULSE.update(
     ANNOTATIONS={
         "docs/market-monitor/market-pulse/data/market_data.json":
             "1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。"
-            "**AIの出力（Grok）**: summary・comments_history の summary・haiku（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。"
+            "**AIの出力（Grok）**: summary・haiku（comments_history は2026-11-27に書くのをやめた。画面が前のエントリの summary から作る）（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。"
             "2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・"
             "sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures",
         "docs/market-monitor/market-pulse/data/market_data.csv":

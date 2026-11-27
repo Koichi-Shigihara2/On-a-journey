@@ -1700,14 +1700,10 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
     today = date_str[:10]
     all_data = [d for d in all_data if d.get("date", "")[:10] != today]
 
-    # AIコメント履歴: 当日分 + 直近最大11件の過去分（新しい順、max12件）
-    hist_prev = [
-        {"date": prev.get("date", ""), "summary": prev.get("summary", "")}
-        for prev in reversed(all_data[-11:])
-        if prev.get("summary")
-    ]
-    comments_history = [{"date": date_str, "summary": report_text}] + hist_prev
-
+    # AIコメント履歴（comments_history）は2026-11-27に書くのをやめた（[[MARKETPULSE-REVIEW-EPIC-1]] 順3・型S）。各エントリが
+    # 「当日分＋直近11件の過去分」を丸ごと複製していて、ファイルの56%（6.0MB）を占めた。中身は各エントリの summary と同じなので、
+    # 画面が前のエントリの summary から作る（130エントリすべてで保存済みの履歴と一致を確認）。旧エントリのキーは
+    # scripts/migrate_market_data_comments_history.py で消す。画面は移行の間だけ旧キーも読む（手順50で旧キーの読みを外す）
     new_entry = {
         "date": date_str,
         "judgment": judgment,
@@ -1720,7 +1716,6 @@ def save_data_to_json_and_csv(report_text, structured_data, sentiment_data, fear
         "take_profit_checklist": take_profit_checklist,
         "buy_checklist": buy_checklist,
         "summary": report_text,
-        "comments_history": comments_history
     }
     if data_freshness is not None:
         new_entry["data_freshness"] = data_freshness
