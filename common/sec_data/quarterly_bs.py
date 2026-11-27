@@ -1,9 +1,13 @@
-"""parser の四半期の貸借対照表（quarterly_{FYQ}.json の bs）を Layer3 の val から作る1か所（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1）。
+"""parser の四半期（quarterly_{FYQ}.json）を Layer3 の val から作る1か所（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1・段2a）。
+段2a（2026-11-27〜）: bs に加え cf（buyback・OCF・SBC・D&A）・pl（EPS除く）・other.rpo も置き換える。EPS・株数は段2b（分割の調整後に意味が変わるため別段）。
 
 parser（SECParser）が company_facts から別の規則で取っていた四半期のBSの値のうち、同じ期・同じ項目の Layer3
 （build_ticker_store）の val と違うものを、Layer3 の val（守り〈val_guard〉の後）で置き換える。parser にだけある値・
 Layer3 にだけある値（0の補いなど）は触らない（0で埋めない）。符号だけが違う値も触らない。
-年次・PL・株数は置き換えない。CF は D&A だけ（REPLACED_FIELDS）。
+年次・EPS・株数は置き換えない（REPLACED_FIELDS）。
+段2aの守り: (1) 非負の項目（売上・費用・R&D・S&M・SG&A・SBC）は、parser が正で Layer3 の val が負になる置き換えをしない。値は欠け（None）にして
+record["replace_marks"][項目]="nonneg_layer3_negative" の印を付ける（HONの継続事業の組み替えで累計の差が負になる型）。(2) Layer3 の val が
+val_suspect（隣の期から外れる印、val_guard の (iii)）のセルは置き換えて record["replace_marks"][項目]="val_suspect:…" の印を残す（原本の再表示・訂正のことが多い）。
 
 parser の四半期のファイルには期末日が無いので、その期の値と一致する Layer3 のエントリの期末日の多数決で決める
 （tools/sim/parser_l3/parser_vs_l3.py の段0の比較と同じ規則。parser のラベル f"{fy}{fp}" は10-Qの前年同期の比較値と
@@ -51,7 +55,15 @@ PARSER_TO_LAYER3: Dict[Tuple[str, str], str] = {
 }
 # 置き換える項目: bs の全部と、cf の D&A（parser の四半期の D&A が部分のタグ〈減価償却だけ・償却だけ〉の値になる期がある。
 # Layer3 は部分の足し算・再タグの突き合わせで直した値を持つ。SEC-RETAG-RECONCILE-1、2026-11-24）
-REPLACED_FIELDS = {k for k in PARSER_TO_LAYER3 if k[0] == "bs"} | {("cf", "depreciation_and_amortization")}
+REPLACED_FIELDS = (
+    {k for k in PARSER_TO_LAYER3 if k[0] in ("bs", "cf")}
+    | {k for k in PARSER_TO_LAYER3 if k[0] == "pl" and not k[1].startswith("eps_")}
+    | {("other", "rpo")}
+)
+# 正から負への置き換えをしない項目（負になるのは組み替え・累計の差の誤り）
+NONNEG_FIELDS = {("pl", "revenue"), ("pl", "cost_of_revenue"), ("pl", "research_and_development"),
+                 ("pl", "selling_and_marketing"), ("pl", "selling_general_and_administrative"),
+                 ("cf", "stock_based_compensation")}
 MIN_VOTES = 4
 MIN_VOTE_SHARE = 0.35
 
@@ -102,9 +114,9 @@ def resolve_period_end(record: Dict[str, Any], store: Dict[str, Any]) -> Optiona
 
 
 def replace_record(record: Dict[str, Any], store: Dict[str, Any]) -> List[Tuple[str, Any, Any]]:
-    """record['bs'] の値を Layer3 の val で置き換える（その場で）。戻り値: [(項目, 前, 後)]"""
-    bs = record.get("bs")
-    if not bs:
+    """record の REPLACED_FIELDS の値を Layer3 の val で置き換える（その場で）。戻り値: [(項目, 前, 後)]。
+    非負の項目が正→負になる場合は後を None（欠け）にして replace_marks に残す"""
+    if not record.get("bs") and not record.get("pl") and not record.get("cf"):
         return []
     end = resolve_period_end(record, store)
     if not end:
@@ -121,8 +133,18 @@ def replace_record(record: Dict[str, Any], store: Dict[str, Any]) -> List[Tuple[
             continue
         v3 = cand[-1]["val"]
         if v3 != target[f] and not _near(v3, target[f]):
+            marks = record.setdefault("replace_marks", {})
+            if (sec, f) in NONNEG_FIELDS and target[f] > 0 and v3 < 0:
+                changed.append((f, target[f], None))
+                target[f] = None
+                marks[f] = "nonneg_layer3_negative"
+                continue
             changed.append((f, target[f], v3))
             target[f] = v3
+            if cand[-1].get("val_suspect"):
+                marks[f] = f"val_suspect:{cand[-1]['val_suspect']}"
+            if not marks:
+                record.pop("replace_marks", None)
     return changed
 
 

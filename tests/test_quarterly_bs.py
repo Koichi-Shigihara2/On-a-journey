@@ -94,3 +94,88 @@ def test_quarterly_bs_has_one_writer():
     assert p.index("quarterly_bs.replace_from_layer3(") < p.index("self.save_parsed_data(ticker, parsed)")
     assert "save_parsed_data(" not in _src("common/sec_data/update.py")        # 保存の入口は parse_and_save だけ
     assert "parse_and_save(" in _src("common/sec_data/update.py")
+
+
+# ───────── 段2a: cf・pl（EPS除く）・rpo ─────────
+def _flow_store(per_field, suspect=None):
+    fields = {}
+    for f, pts in per_field.items():
+        ents = [{"end": e, "val": v, "is_ytd": False, "is_annual": False, "form": "10-Q"} for e, v in pts]
+        if suspect and f in suspect:
+            ents[-1]["val_suspect"] = suspect[f]
+        fields[f] = {"category": "flow", "entries": ents}
+    return {"fields": fields}
+
+
+FLOW = {
+    "revenue": [("2026-06-30", 800.0), ("2026-09-30", 900.0)],
+    "net_income": [("2026-06-30", 50.0), ("2026-09-30", 60.0)],
+    "operating_cash_flow": [("2026-06-30", 70.0), ("2026-09-30", 80.0)],
+    "stock_based_compensation": [("2026-06-30", 10.0), ("2026-09-30", 12.0)],
+    "gross_profit": [("2026-06-30", 300.0), ("2026-09-30", 330.0)],
+    "eps_diluted": [("2026-09-30", 0.5)],
+    "rpo": [("2026-09-30", 1000.0)],
+}
+
+
+def _flow_record(**kw):
+    rec = {"period": "2026Q3",
+           "bs": {"cash_and_equivalents": 120.0, "total_assets": 950.0, "current_assets": 330.0, "current_liabilities": 210.0},
+           "pl": {"revenue": 900.0, "net_income": 60.0, "gross_profit": 330.0, "eps_diluted": 0.5},
+           "cf": {"operating_cash_flow": 80.0, "stock_based_compensation": 12.0}, "other": {"rpo": 1000.0}}
+    for k, v in kw.items():
+        sec = "pl" if k in rec["pl"] else ("cf" if k in rec["cf"] else "other")
+        rec[sec][k] = v
+    return rec
+
+
+def _stage2_store(**kw):
+    st = _store({**BASE, "cash_and_equivalents": [("2026-06-30", 100.0), ("2026-09-30", 120.0)]})
+    st["fields"].update(_flow_store(FLOW, **kw)["fields"])
+    return st
+
+
+def test_stage2a_flow_cells_are_replaced_by_layer3_val():
+    rec = _flow_record(revenue=905.0, operating_cash_flow=2397.0, net_income=61.0, rpo=1100.0)
+    changed = {c[0]: c for c in QB.replace_record(rec, _stage2_store())}
+    assert rec["pl"]["revenue"] == 900.0 and rec["cf"]["operating_cash_flow"] == 80.0
+    assert rec["pl"]["net_income"] == 60.0 and rec["other"]["rpo"] == 1000.0
+    assert set(changed) == {"revenue", "operating_cash_flow", "net_income", "rpo"}
+
+
+def test_stage2a_eps_and_shares_are_not_replaced():
+    """EPS・株数は段2b（分割の調整後に意味が変わる）。置き換えない"""
+    rec = _flow_record(eps_diluted=5.0)
+    assert QB.replace_record(rec, _stage2_store()) == [] and rec["pl"]["eps_diluted"] == 5.0
+    assert ("pl", "eps_diluted") not in QB.REPLACED_FIELDS and ("shares", "shares_diluted") not in QB.REPLACED_FIELDS
+
+
+def test_stage2a_nonneg_field_positive_to_negative_becomes_missing_with_mark():
+    """HON型: SBC が正の parser に Layer3 が負（累計の差の誤り）→ 置き換えず欠け（None）にして印"""
+    st = _stage2_store()
+    st["fields"]["stock_based_compensation"]["entries"][-1]["val"] = -22.0
+    rec = _flow_record(stock_based_compensation=5.0)       # parser の SBC は 5.0、Layer3 は -22.0
+    changed = QB.replace_record(rec, st)
+    assert ("stock_based_compensation", 5.0, None) in changed
+    assert rec["cf"]["stock_based_compensation"] is None
+    assert rec["replace_marks"] == {"stock_based_compensation": "nonneg_layer3_negative"}
+    assert QB.replace_record(rec, st) == []                  # 2回目は何も変わらない
+
+
+def test_stage2a_sign_flip_of_signed_field_is_replaced():
+    """純益・OCF など負がありうる項目の反転（殻の会社・再表示）は置き換える"""
+    rec = _flow_record(net_income=-5.0)
+    assert ("net_income", -5.0, 60.0) in QB.replace_record(rec, _stage2_store())
+
+
+def test_stage2a_val_suspect_cell_is_replaced_and_marked():
+    rec = _flow_record(net_income=61.0)
+    QB.replace_record(rec, _stage2_store(suspect={"net_income": "neighbor_outlier"}))
+    assert rec["pl"]["net_income"] == 60.0
+    assert rec["replace_marks"] == {"net_income": "val_suspect:neighbor_outlier"}
+
+
+def test_stage2a_no_marks_key_when_nothing_marked():
+    rec = _flow_record(revenue=905.0)
+    QB.replace_record(rec, _stage2_store())
+    assert "replace_marks" not in rec
