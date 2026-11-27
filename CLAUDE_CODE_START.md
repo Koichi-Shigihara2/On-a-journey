@@ -82,6 +82,10 @@
    - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
    - 期限: 2026-12-01
    - 確認の手順: ①`market_data.json` の最新エントリに `buy_checklist.rule_text`・`sentiment.signal.rule_text`・`tech_pulse.divergence.rule_text` がある ②画面の段階8の見出しが「買いの判断（主）— BUY チェックリスト」→「参考: センチメントのシグナル」→「参考: Tech Pulse のシグナル」の順で、文言の数字（25・30・20・30など）が定数と同じ ③`buy_checklist.triggered`・`points`・`sentiment.signal.signal` が前日の判定の規則と同じ（閾値を変えていない） ④理論株価・判定が前日と同じ
+53. **MARKETPULSE-REVIEW-EPIC-1 順5(b)の文言と順6（2-a: 段階8の下位10%・重ならない件数）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。判定・ラベル・理論株価は変えていない）
+   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
+   - 期限: 2026-12-01
+   - 確認の手順: ①最新エントリの `stage_conclusions["8"].signals.*.outcomes[*]` に `p10_pct`・`n_indep` がある（件数不足の項目は`p10_pct`なし）②画面の段階8の表に「下位10%」「重ならない件数」の列があり、値が①と同じ（翌営業日の重ならない件数は「—」）③画面の段階3のバッジが「株（当日−1%超の下落）」「クレジット（当日のHYG/LQD比）」④`label`・`line` が前日の規則と同じ（zを変えていない）⑤理論株価・判定が前日と同じ
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
