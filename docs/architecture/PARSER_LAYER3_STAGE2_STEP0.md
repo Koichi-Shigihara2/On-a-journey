@@ -111,3 +111,108 @@ parser の四半期ファイルの pl・cf・shares・other を読むコード�
 - 「定義の違い」70セルのうち、HON・HEI・NVDA・CAT などの期の値の食い違いの理由（累計と単独の混在・組み替え）は、符号が反転する19セルと印つき5セル以外は原本で確かめていない（実装の前に、段1の `movers.csv` と同じ形で列挙する）
 - AMZN の RPO 21セル（parser の丸めた値と Layer3 の申告の行の値）は、parser がどのタグを採っているかを確かめていない（RPO は別段の案があるので、2a に含めるか確認）
 - STONKS は外部取得が要るため回していない（読み手の確認で0）
+
+
+---
+
+# §2b 段2b（四半期の EPS・株数、298セル）の STEP 0（2026-11-27、読み取りと手元の試算のみ。コード・データは変えていない）
+
+依頼: 段2a と同じ形で、EPS・株数の置き換えのセル数・理論株価・判定・funda・stage の変化を出し、株数・EPS の基準を TANUKI-SHARES（`shares_base`）・DILUTION（`share_count_change`）・POINT-IN-TIME（as-of・分割の換算）と照らし合わせる。**置き換えは本番の `quarterly_bs.py` を広げる前提で試算した**（段1の教訓）。
+表: `PARSER_LAYER3_STAGE2B_cells.csv`（298セルの全件。区分・分割の調整の内訳つき。§1 の `PARSER_LAYER3_STAGE2_cells.csv` の EPS・株数の行に `detail`・`split_history_factor_after_end` を足したもの）。
+
+**試算の方法**（再現）: 作業用の worktree に段2a の `quarterly_bs.py`（`24bbb38d91`）を当て、既存の `quarterly_*.json` に置き換えを当てて**状態A（2a、681セル）**を作った。次に `REPLACED_FIELDS` の条件を **`pl` のすべて（EPS 含む）＋ `shares`** に広げる2行の変更だけを足して当て直し、**状態B（2a＋2b）**を作った。A と B の差が2bのセルで、**298セル・104ファイル・35銘柄、§1 の表（`PARSER_LAYER3_STAGE2_cells.csv`）の EPS・株数298行とキーまで完全に一致**した（片方だけにあるセルは0）。つまり試算で動かした関数は本番に入れる関数そのもの。理論株価・判定は `tools/sim/sim.py chain`（TANUKI → HypeCore → TANUKI、前＝今の kaihatsu、後＝状態B）で全銘柄を回した。
+
+## 2b-1. 結論（先に）
+
+1. **置き換えるセルは298（104ファイル・35銘柄）**: eps_basic 71・eps_diluted 74・shares_basic 75・shares_diluted 78。内訳は **分割の調整201**（登録の全分割と一致146・一部の分割だけ調整済み40・登録の分割なし〈SPAC の組み替え・再表示〉15）・**丸め63**・**改訂32**・**定義の違い2**（ASTS）。`val_guard` の当たり0・`val_suspect` 0。符号が反転するのは EPS の4セル（CELH 2021Q3 の基本・希薄化後、VRT 2020Q2 の基本・希薄化後）。
+2. **理論株価・判定・funda・HypeCore の stage の変化は0**（TANUKI 82銘柄、保有9銘柄とも ±0.0%。`latest.json`・`history.json`・`tickers.json`・HypeCore `poc.json` の差は日時の欄だけ）。四半期の parser の EPS・株数を読む評価は無い（§3）。
+3. **基準: 2b のあと、parser の四半期の EPS・株数4項目は、期末日が決まる全期（1,471期）で Layer3 の `val` と一致する**（2b の前は298セルが不一致＝2b のセルそのもの）。TANUKI が使う株数（`shares_by_end` ＝ Layer3 の `val` ＋ `split_history.yaml` の換算）との比べ（`shares_diluted`、比べられる1,468期）では、2b の前は160期が2%超ずれ（うち parser が Layer3 とも違う値だったのが38期）、**2b のあとは122期で、すべて「parser ＝ Layer3 の val、`shares_by_end` が split_history の換算を上に足した分」**（設計どおり。parser のファイルに換算を入れない）。
+4. **同じ株数を別の基準で持つ箇所は、parser の外に残る**（§2b-4）: EPS ANALYZER の `diluted_shares_used`（`companyfacts` から自前で選ぶ）は、`shares_by_end` と比べられる2,160期のうち38期（1.8%）で2%超ずれる（RCAT 13・NVDA 5・GOOGL 4・TSLA 4・ESTC 3 ほか）。本件の範囲外（FINDINGS）。
+5. **method_change は要らない**（出力0）。rcc の WARN-59（株数の単位誤りの疑い）が SOUN 2022Q1 の `shares_basic` 4,161,000 で出ていたのが解消する（WARN 181 → 178のうち1件。残り2件は作業用の worktree が古い版で出る docs の差で、2b と無関係）。
+6. 決めてほしいこと: §2b-6（推奨つき）。
+
+## 2b-2. セルの数
+
+| 項目 | 置き換える | 分割の調整 | 丸め | 改訂 | 定義の違い |
+|---|---|---|---|---|---|
+| pl.eps_basic | 71 | 56 | 1 | 14 | 0 |
+| pl.eps_diluted | 74 | 56 | 1 | 15 | 2 |
+| shares.shares_basic | 75 | 45 | 30 | 0 | 0 |
+| shares.shares_diluted | 78 | 44 | 31 | 3 | 0 |
+| **合計** | **298** | **201** | **63** | **32** | **2** |
+
+分割の調整201の内訳は、**登録の全分割と一致する146**（AAPL・AMZN・BKNG・CELH・CPRT・CSGP・GOOGL・HON・KLAC・LRCX・NOW・NVDA・TSLA・WMT の分割の前の期。Layer3 の `val` が、その期より後に登録された分割をすべて反映した値）と、**一部の分割だけ調整済みの40**（CPRT 16・NVDA 12・TSLA 8・CELH 4。たとえば NVDA 2020Q2 の株数は parser 626M → Layer3 2,504M で×4だけ。登録の分割は 4:1〈2021〉と 10:1〈2024〉で、10:1は後の申告が再掲していない期なので反映されない＝Layer3 の `val` は**最新の申告の基準**であって、現在の基準ではない）。
+
+**登録の分割なし15**（`split_history.yaml` に分割が無いのに比が1.5倍超）: SPAC 合併の組み替え・再表示と、parser 側の誤りの混在。VRT 4（2020Q2・Q3 の EPS。**VRT 2020Q2 は符号も反転**）・SOUN 3（2022Q1 の EPS 2・株数1。合併の交換比率で組み替え。SOUN の `shares_basic` 4,161,000 → 69,604,188 が WARN-59 の原因）・AVAV 2（2026Q3 の EPS −3.15 → −4.9。**分割ではない。原本で確認する**）・BROS 2（2021Q3 の EPS）・DOCN 2（2023Q1 の EPS。原因は未確認〈再表示・組み替え〉）・COHR 2（2020Q3 の EPS 70.0 → 0.07、60.0 → 0.06。**`first_val` も70・60＝原本の申告の誤記が後の申告で直った**。Layer3 の `val` が正）。
+
+**定義の違い2**: ASTS 2020Q2・Q3 の `eps_diluted`（parser −17,600,000 と +17,600,000＝**株数の値が EPS の欄に入った誤り**）。Layer3 の `val` は **0**（`first_val` も0）。0 で埋めない決定(c)があるので、決めてほしいこと(d)。
+
+**符号の反転4**（EPS）: CELH 2021Q3 の基本 0.04 → −0.13・希薄化後 0.03 → −0.13（SPAC でない。CELH は再表示で純益が負になった期）、VRT 2020Q2 の基本・希薄化後 0.08 → −0.17（SPAC 合併前の殻の会社の値）。2a と同じ区分（殻の会社・再表示）で、置き換える側が正に見える（原本で確認する）。EPS と株数は非負の項目の規則（§2）の対象ではない（EPS は負が普通）。
+
+## 2b-3. 全銘柄の試算
+
+| 見るもの | 結果 |
+|---|---|
+| TANUKI 理論株価・判定 | 変化 **0**（82銘柄。`sim.py compare`） |
+| 保有9銘柄（ADBE・APP・CELH・CRWV・NVDA・PLTR・SOFI・SOUN・TSLA） | すべて ±0.0%・判定の変化0 |
+| TANUKI の `latest.json`・`history.json`・`tickers.json`（funda・乖離率・components ほか全項目） | 差は `calculation_date`・`date`・`updated_at` だけ（全項目の差分で確認） |
+| HypeCore stage | 変化 **0**（82銘柄の `poc.json` の差は `generated_at` だけ） |
+| STONKS・調整後 EPS・TAIL | 読み手の確認で0（Layer3・`companyfacts` を直接読み、parser の四半期の EPS・株数は読まない。§3 のとおり） |
+| `ttm/`・`normalized/` | 0（parser から作られていない） |
+| rcc | NG 0のまま。**WARN-59 が1件解消**（SOUN 2022Q1 の `shares_basic`） |
+| 保存されるデータ | `quarterly_*.json` が104本（35銘柄、298セル）。2a の681セルと重なるファイルがある（2a＋2bで 979セル・277本） |
+
+## 2b-4. 株数・EPS の基準の照合（TANUKI-SHARES・DILUTION・POINT-IN-TIME）
+
+株数（希薄化後の加重平均）を持つ箇所と、その基準:
+
+| 箇所 | 基準 | 2b のあと |
+|---|---|---|
+| Layer3 `shares_diluted` の `val` | その期を**最後に**申告した値（その申告が分割後の基準なら調整後、再掲しなければ分割前のまま） | 基準の正。parser の四半期はこれと**同じ値**になる（本件） |
+| Layer3 `first_val`・`first_filed` | その期を**最初に**申告した値と日（as-of） | 変わらない。POINT-IN-TIME の履歴（`multiples.py` の過去の月末の株数）が読む。parser の四半期は読まない |
+| `split_adjust.shares_by_end` | `val` に `split_history.yaml` の換算を足して**現在の基準**にした値（`as_of` を渡すとその日までの申告の値と、その日の時点の分割だけで換算） | 変わらない。TANUKI-SHARES（`shares_base` の Wd）・DILUTION（`share_count_change`）・`multiples.py` が通る1か所。parser の四半期の値との差122期は、ここの換算の分（設計どおり） |
+| `shares_base.base_shares`（TANUKI-SHARES） | `shares_by_end` の最新の期 ＋ 表紙の株数の補正 | 変わらない（parser の四半期を読まない） |
+| `dilution.share_count_change`（DILUTION） | `shares_by_end` の系列（補正前の Wd）の年率 | 変わらない |
+| `multiples.py` の `shares_wd`・`shares_end` | 現在の行は `shares_base`、過去の月末は `shares_by_end(as_of=月末)` | 変わらない |
+| **parser の四半期の `shares`・`pl.eps_*`** | 申告の値（今は parser が `companyfacts` から独自に選ぶ） | **Layer3 の `val`（最新の申告の基準）に置き換わる**（本件）。換算は持たない |
+| **EPS ANALYZER の `diluted_shares_used`** | `companyfacts` から自前で選び、`apply_split_adjustments`（`unadjusted_indices` 共用）で換算 | **別の経路のまま**（2,160期のうち38期が `shares_by_end` と2%超ずれる。RCAT 13・NVDA 5〈2.5倍〉・GOOGL 4・TSLA 4・ESTC 3・FROG 2・AMD・CRM・DOCN・LITE・LYFT・SITM・VRT 各1）。TANUKI の `select_max_eps_shares` が読む `ttm.json` の `diluted_shares` の元で、`EPS-SHARES-BASIS-MISMATCH-1` の「同じ期末の値どうし」の対策の外側。FINDINGS |
+
+**同じ株数を別の基準で持つ箇所が残るか**: parser の中では**残らない**（2b で四半期の株数・EPS を Layer3 の `val` 1つにする）。parser の外には、(1) 意図した2つ（`first_val` の as-of と、`val`＋換算の現在の基準）と、(2) EPS ANALYZER の自前の選び方（上の表の最後の行）がある。(2) は2b では直らない。
+
+**EPS には換算の部品が無い**: `shares_by_end` は株数だけで、EPS を split_history で換算する関数は無い（EPS は純益÷株数なので、TANUKI は純益と株数から作る）。parser の四半期の EPS を Layer3 の `val`（最新の申告の基準。分割の調整201のうち一部の分割だけ調整済みの40は、EPS も同じく部分調整）にしても、読み手が無いので影響は0。
+
+## 2b-5. 分割の前後で意味が変わるセルの扱いの案
+
+分割の調整201セルは、parser が「申告のまま」（分割前）、Layer3 の `val` が「最新の申告の基準」（分割後の再掲があれば調整後）。意味が変わるので、案を3つ出す:
+
+- **案1（推奨）: Layer3 の `val` に置き換える（換算は入れない）**。parser の四半期の株数・EPS の意味を「Layer3 の `val`＝最新の申告の基準」とそろえる。完全な現在の基準が要る読み手は `shares_by_end` を通す（今のまま）。登録の全分割と一致する146セルは `val` が結果的に現在の基準。一部の分割だけ調整済み40・登録の分割なし15の**55セル**には `replace_marks`（`split_basis_partial`・`recast`）の印を付け、基準が「現在」でないことを残す
+- 案2: 置き換えない（201セル）。parser の四半期の EPS・株数は「申告のまま」のまま、置き換えるのは丸め63・改訂32・定義2の97セルだけ。意味は変わらないが、parser と Layer3 が一部で別の基準のままになり、「parser を Layer3 から作る」目的に半分届かない（同じ期の `val` が2つある状態が残る）
+- 案3: `shares_by_end` の換算後の値にそろえる（株数のみ。EPS は換算の関数が無いので別途）。parser のファイルに split_history の換算が入り、換算の規則が parser と `split_adjust.py` の二重になる（`common/sec_data/split_adjust.py` のとおり換算は1か所に置く方針と合わない）。**推奨しない**
+
+## 2b-6. 決めてほしいこと
+
+- **(a)** 2b の範囲: 298セルのすべてを Layer3 の `val` に置き換える案1でよいか（推奨）。案2（97セルだけ）にするか
+- **(b)** 基準の意味を文書に書く: 「parser の四半期の株数・EPS は Layer3 の `val`（最新の申告の基準）。現在の基準が要る読み手は `shares_by_end`」（`quarterly_bs.py` の docstring と `SYSTEM_MAP`）。parser に split_history の換算を埋め込まない
+- **(c)** 一部の分割だけ調整済み40・登録の分割なし15の55セルに `replace_marks` の印を付けてよいか（推奨: 付ける。読み手がいない今は表示に出ない）
+- **(d)** ASTS 2020Q2・Q3 の `eps_diluted`（parser が株数の値を入れた誤り、Layer3 の `val` は0）: 0 に置き換えず**欠け（None）にして印**を付けるか（推奨）。それとも Layer3 の 0 に置き換えるか（0 埋めの決定(c)に反する）。原本で確かめてから
+- **(e)** 符号が反転するEPS 4セル（CELH 2021Q3・VRT 2020Q2）と、AVAV 2026Q3（−3.15 → −4.9）は、2a と同じく原本で確認した上で置き換えるでよいか（COHR 2020Q3 の EPS 70・60 は、`first_val` も70・60で、原本の誤記を後の申告が0.07・0.06に直した値。置き換える）
+- **(f)** method_change を登録しない（出力0）でよいか
+- **(g)** 実装の順: 段2a のブランチ（`parser-layer3-stage2a`、kaihatsu へ未公開）に2bを足し、**2a と2b を1回の公開にする**か（推奨: 1回。試算はどちらも0で、重なるファイルがある）、2a を先に公開するか。段2a のブランチは古い kaihatsu から分かれているので、公開の前に kaihatsu へ取り込む（`quarterly_bs.py` とテストの変更は今の kaihatsu に当たることを確認済み）
+- **(h)** EPS ANALYZER の `diluted_shares_used` と `shares_by_end` の38期のずれは、本件の範囲外として FINDINGS にし、別の項目にするか
+
+## 2b-7. 実装の中身（決まったあと。本番に入れる変更）
+
+| 場所 | 内容 |
+|---|---|
+| `common/sec_data/quarterly_bs.py` | `REPLACED_FIELDS` を **`pl` のすべて＋`shares`**に広げる2行（試算と同じ）。docstring の「EPS・株数は段2b」を直す。(c)(d) の印は `replace_marks` に足す（ASTS は欠け〈None〉＋印）。`replace_record` の入口の条件は2aのまま |
+| テスト | `tests/test_quarterly_bs.py` に、EPS・株数が Layer3 の `val` に置き換わる・丸めは置き換わる・ASTS 型（Layer3 が0で parser が非ゼロ）は欠け＋印・一部の分割だけ調整済みの印・parser の四半期の `shares_diluted` が Layer3 の `val` と一致する（全期）を追加 |
+| 既存データへの当て方 | `python common/sec_data/quarterly_bs.py`（SEC は呼ばない）。**実装後に、この STEP 0 の試算の出力（298セル・104本）と一致することを確かめる**（`PARSER_LAYER3_STAGE2B_cells.csv` と突き合わせる）。完了の条件 |
+| 出力の一覧 | `build_output_inventory.py --layer sec` を作り直すか確認（キーの読み手は変わらない見込み。INV で確かめる） |
+| method_change | **登録しない**。公開の後の確認は、次の日曜の `SEC_Data_Update` の後に `quarterly_*.json` の新しい四半期だけが増え、既に置き換えた期が戻っていないこと |
+
+## 2b-8. 限界
+
+- 「期末日が決まる1,471期」は、Layer3 の保持期間（四半期7年）の中で多数決が決まった期。外の1,210期は置き換えない（`shares_by_end` との比較にも入らない）
+- 登録の分割なし15・符号の反転4・定義2のうち、AVAV・VRT・SOUN・CELH・ASTS は原本を確かめていない（実装の前に原本で確認する）
+- EPS ANALYZER との比較は `shares_by_end` との2%の差で、各期の差の理由（組み替え・未登録の分割・選び方の違い）は RCAT・NVDA 以外は調べていない
+- STONKS は外部取得が要るため回していない（読み手の確認で0）
