@@ -50,7 +50,7 @@ PREV = {**NOW, "hy": 3.48, "cbcc2": 1306}       # HYが3.5%を超え（40点→�
 def test_contributions_sum_to_the_raw_score_change_and_flag_zero():
     cur, prev = _score(NOW), _score(PREV)
     rows = main05.score_contributions(cur, prev)
-    assert round(sum(r["contribution"] for r in rows), 1) == round(cur["raw"] - prev["raw"], 1)
+    assert abs(sum(r["contribution"] for r in rows) - (cur["raw"] - prev["raw"])) < 0.06      # 各寄与を小数2桁に丸めた分だけ違う
     by = {r["key"]: r for r in rows}
     assert by["hy"]["contribution"] > 0 and by["cbcc2"]["contribution"] > 0
     # 値が動いても点数が同じ指標（philly・claims）は寄与0
@@ -86,7 +86,7 @@ def test_weekly_prompt_has_points_and_contributions_and_retries_once_on_zero_men
         date(2026, 11, 27), _score(NOW), [], 3, 2, {"regime": "BALANCED"}, {}, contributions=rows)
     p = prompts[0]
     assert "8指標の点数と寄与" in p and "寄与0）" in p and "寄与0の指標（PHILLY、CLAIMS）" in p.replace("(", "（").replace(")", "）") or "寄与0の指標" in p
-    assert re.search(r"HY: 点数 40（1週前 \d+）.*寄与 \+", p)
+    assert re.search(r"HY: 点数 [\d.]+（1週前 [\d.]+）.*寄与 \+", p)
     assert len(prompts) == 2 and "修正指示" in prompts[1] and "フィラデルフィア" in prompts[1]       # 言い直しは1回
     assert out["factor_analysis"] == "HYスプレッドと住宅着工許可が主因"
 

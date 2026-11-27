@@ -132,6 +132,7 @@ WEEKLY_ANALYSIS_COLUMNS = [
     "score_change_1w", "score_change_1m",
     "surprise_alerts",
     "model", "updated_at",
+    "basis",   # 判定の基準の版（STEP_RULES_BASIS。空＝旧基準）。画面のグラフに、基準を変えた日の線を引く
 ]
 
 # ─────────────────────────────────────────────────────────────────
@@ -1513,39 +1514,39 @@ SCORE_MIN_WEIGHT = 50
 # tiers は悪い段から順に判定し、どれにも当たらなければ else。cmp: "<"＝値が小さいほど悪い指標、">"・">="＝大きいほど悪い指標。
 # trend: 直近3点の向き（trend3）が dir と同じなら score に add を足し、signal を置き換える
 SIGNAL_STEPS = {
-    "yc": {"tiers": [{"cmp": "<", "x": -0.5, "score": 90, "signal": "bear"},
-                     {"cmp": "<", "x": 0, "score": 70, "signal": "caution"},
-                     {"cmp": "<", "x": 0.5, "score": 40, "signal": "neutral"}],
+    "yc": {"tiers": [{"cmp": "<", "x": -0.5, "w": 0.09, "score": 90, "signal": "bear"},
+                     {"cmp": "<", "x": 0, "w": 0.13, "score": 70, "signal": "caution"},
+                     {"cmp": "<", "x": 0.5, "w": 0.11, "score": 40, "signal": "neutral"}],
            "else": {"score": 15, "signal": "bull"}},
-    "hy": {"tiers": [{"cmp": ">", "x": 6, "score": 90, "signal": "bear"},
-                     {"cmp": ">", "x": 4.5, "score": 70, "signal": "caution"},
-                     {"cmp": ">", "x": 3.5, "score": 40, "signal": "neutral"}],
+    "hy": {"tiers": [{"cmp": ">", "x": 6, "w": 0.1, "score": 90, "signal": "bear"},
+                     {"cmp": ">", "x": 4.5, "w": 0.15, "score": 70, "signal": "caution"},
+                     {"cmp": ">", "x": 3.5, "w": 0.12, "score": 40, "signal": "neutral"}],
            "else": {"score": 15, "signal": "bull"}},
-    "cbcc2": {"tiers": [{"cmp": "<", "x": 1100, "score": 85, "signal": "bear"},
-                        {"cmp": "<", "x": 1300, "score": 60, "signal": "caution"},
-                        {"cmp": "<", "x": 1500, "score": 35, "signal": "neutral"}],
+    "cbcc2": {"tiers": [{"cmp": "<", "x": 1100, "w": 21, "score": 85, "signal": "bear"},
+                        {"cmp": "<", "x": 1300, "w": 21, "score": 60, "signal": "caution"},
+                        {"cmp": "<", "x": 1500, "w": 17, "score": 35, "signal": "neutral"}],
               "else": {"score": 15, "signal": "bull"}},
-    "philly": {"tiers": [{"cmp": "<", "x": -10, "score": 88, "signal": "bear"},
-                         {"cmp": "<", "x": 0, "score": 65, "signal": "caution",
+    "philly": {"tiers": [{"cmp": "<", "x": -10, "w": 4.9, "score": 88, "signal": "bear"},
+                         {"cmp": "<", "x": 0, "w": 5.4, "score": 65, "signal": "caution",
                           "trend": {"dir": -1, "add": 10, "signal": "bear"}},
-                         {"cmp": "<", "x": 5, "score": 35, "signal": "neutral"}],
+                         {"cmp": "<", "x": 5, "w": 4.0, "score": 35, "signal": "neutral"}],
                "else": {"score": 12, "signal": "bull"}},
     # M-5 STEP 6: 中立と拡張の境目は 0（CFNAI は 0 が長期のトレンド成長〈シカゴ連銀〉。以前は −0.35）。
     # −0.7 はシカゴ連銀の「拡張の後に −0.70 を下回ると後退が始まった可能性が高まる」の目安
-    "cfnai": {"tiers": [{"cmp": "<", "x": -0.7, "score": 82, "signal": "bear"},
-                        {"cmp": "<", "x": 0, "score": 50, "signal": "neutral"}],
+    "cfnai": {"tiers": [{"cmp": "<", "x": -0.7, "w": 0.04, "score": 82, "signal": "bear"},
+                        {"cmp": "<", "x": 0, "w": 0.04, "score": 50, "signal": "neutral"}],
               "else": {"score": 18, "signal": "bull"}},
-    "claims": {"tiers": [{"cmp": ">", "x": 300000, "score": 85, "signal": "bear"},
-                         {"cmp": ">", "x": 250000, "score": 60, "signal": "caution",
+    "claims": {"tiers": [{"cmp": ">", "x": 300000, "w": 4100, "score": 85, "signal": "bear"},
+                         {"cmp": ">", "x": 250000, "w": 4100, "score": 60, "signal": "caution",
                           "trend": {"dir": 1, "add": 10, "signal": "bear"}},
-                         {"cmp": ">", "x": 215000, "score": 35, "signal": "neutral"}],
+                         {"cmp": ">", "x": 215000, "w": 3300, "score": 35, "signal": "neutral"}],
                "else": {"score": 15, "signal": "bull"}},
-    "cbcc": {"tiers": [{"cmp": "<", "x": 60, "score": 82, "signal": "bear"},
-                       {"cmp": "<", "x": 75, "score": 72, "signal": "bear"},
-                       {"cmp": "<", "x": 90, "score": 60, "signal": "caution"}],
+    "cbcc": {"tiers": [{"cmp": "<", "x": 60, "w": 1.6, "score": 82, "signal": "bear"},
+                       {"cmp": "<", "x": 75, "w": 1.9, "score": 72, "signal": "bear"},
+                       {"cmp": "<", "x": 90, "w": 4.7, "score": 60, "signal": "caution"}],
              "else": {"score": 30, "signal": "neutral"}},
-    "sahm": {"tiers": [{"cmp": ">=", "x": 0.5, "score": 88, "signal": "bear"},
-                       {"cmp": ">=", "x": 0.3, "score": 50, "signal": "caution"}],
+    "sahm": {"tiers": [{"cmp": ">=", "x": 0.5, "w": 0.06, "score": 88, "signal": "bear"},
+                       {"cmp": ">=", "x": 0.3, "w": 0.06, "score": 50, "signal": "caution"}],
              "else": {"score": 12, "signal": "bull"}},
 }
 
@@ -1563,12 +1564,30 @@ def _step_signal(key: str, val: float, trend_dir: int = 0) -> tuple:
     return d["else"]["score"], d["else"]["signal"]
 
 
-def _step_score(key: str, val: float, trend_dir: int = 0) -> int:
-    return _step_signal(key, val, trend_dir)[0]
+def _step_score(key: str, val: float, trend_dir: int = 0) -> float:
+    """点数。境目の幅（SIGNAL_STEPS の各段の "w"）の中は直線補間（common/step_rules.py::ramp_score、L=3。
+    [[MARKETPULSE-REVIEW-EPIC-1]] 順4）。段の名前（signal）は今までどおり段で決める（_step_signal）。幅の外は今までの段の点数と同じ"""
+    from common.step_rules import ramp_score
+    return ramp_score(SIGNAL_STEPS[key], val, trend_dir)
 
 
-def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
-    """events.csv から target_date 時点のスコアと各指標の値を計算する"""
+# 局面の境目（スコア）と、境目の幅（ヒステリシス。前の公開の局面から、境目を2pt越えたときだけ切り替える。
+# MACRO の局面だけは、遅れを避けるため2pt〈試算は1〜3ptを比べた。3ptだと切り替えが1〜2日遅れる〉）
+PHASE_BOUNDS = (30, 52, 70)
+PHASE_LABELS = ("拡張", "踊り場", "後退入口", "後退")
+PHASE_BAND = 2.0
+from common.step_rules import BASIS_ID as STEP_RULES_BASIS   # 週次の行に書く「判定の基準」の版（画面のグラフに、基準を変えた日の線を引く）
+
+
+def phase_of_score(score: float, prev_phase=None) -> str:
+    """局面。prev_phase（前の公開の局面）があれば境目の幅つき（common/step_rules.py::hysteresis）、無ければその日の段の判定"""
+    from common.step_rules import hysteresis
+    return hysteresis(prev_phase, score, PHASE_BOUNDS, PHASE_LABELS, PHASE_BAND)
+
+
+def _compute_current_score(events: pd.DataFrame, target_date: date, prev_phase=None) -> dict:
+    """events.csv から target_date 時点のスコアと各指標の値を計算する。prev_phase: 前の公開の局面（局面の境目の幅に使う。
+    無ければ、その日の段の判定＝初日・7日前や30日前の比較用の計算）"""
     target_ms = _to_ms(datetime.combine(target_date, datetime.max.time()))
     known_cutoff_utc = _known_cutoff_utc(target_date)
 
@@ -1670,14 +1689,7 @@ def _compute_current_score(events: pd.DataFrame, target_date: date) -> dict:
     raw_score = sum(si['score'] * si['weight'] for si in score_inputs) / total_w
     score = round(raw_score)
 
-    if score < 30:
-        phase = '拡張'
-    elif score < 52:
-        phase = '踊り場'
-    elif score < 70:
-        phase = '後退入口'
-    else:
-        phase = '後退'
+    phase = phase_of_score(score, prev_phase)
 
     return {
         'score': score,
@@ -1950,6 +1962,13 @@ def run_weekly_analysis(target_date: date):
 
     # 現在のスコアと指標状態を計算
     score_data = _compute_current_score(events, target_date)
+    if score_data['score'] is not None:
+        # 局面の境目の幅（ヒステリシス）: 前の公開の局面は、前の週次の行（target_dateの13日前以降）の phase。無ければその日の段の判定
+        _wa_prev = load_weekly_analysis()
+        _prev_rows = _wa_prev[(_wa_prev["analysis_date"] < target_date.strftime("%Y-%m-%d"))
+                              & (_wa_prev["analysis_date"] >= (target_date - timedelta(days=13)).strftime("%Y-%m-%d"))].sort_values("analysis_date")
+        _prev_phase = _prev_rows.iloc[-1]["phase"] if not _prev_rows.empty and _prev_rows.iloc[-1]["phase"] in PHASE_LABELS else None
+        score_data['phase'] = phase_of_score(score_data['score'], _prev_phase)
     if score_data['score'] is None:
         # M-3 STEP 3・M-5 STEP 1: 使える指標の重みが足りない。データ不足のスコアで週次スナップショットを書かない
         logger.warning("No usable indicator data (score=None). Skipping weekly analysis.")
@@ -2040,6 +2059,7 @@ def run_weekly_analysis(target_date: date):
         "surprise_alerts": _sanitize(_surprises_str),
         "model":         analysis.get("_used_model", "grok-unknown"),
         "updated_at":    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "basis":         STEP_RULES_BASIS,
     }
     if _surprises:
         logger.info(f"[surprise] {len(_surprises)} alerts detected: {_surprises}")

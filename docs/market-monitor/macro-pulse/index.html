@@ -769,6 +769,7 @@ let DATA = [];
 // loadWeeklyAnalysis()が読み込み次第セットする。未読込時はnull
 // （computeCurrentScore()はその間ライブ計算値にフォールバックする）。
 let WEEKLY_SNAPSHOT = null;
+let BASIS_START = null;   // 判定の基準を変えた日（週次の行の basis が入った最初の日）。スコア推移のグラフの縦線
 let RAW  = [];
 let CHARTS = {};
 
@@ -1190,18 +1191,21 @@ const SIGNAL_STEPS = {
         {
           "cmp": "<",
           "x": -0.5,
+          "w": 0.09,
           "score": 90,
           "signal": "bear"
         },
         {
           "cmp": "<",
           "x": 0,
+          "w": 0.13,
           "score": 70,
           "signal": "caution"
         },
         {
           "cmp": "<",
           "x": 0.5,
+          "w": 0.11,
           "score": 40,
           "signal": "neutral"
         }
@@ -1216,18 +1220,21 @@ const SIGNAL_STEPS = {
         {
           "cmp": ">",
           "x": 6,
+          "w": 0.1,
           "score": 90,
           "signal": "bear"
         },
         {
           "cmp": ">",
           "x": 4.5,
+          "w": 0.15,
           "score": 70,
           "signal": "caution"
         },
         {
           "cmp": ">",
           "x": 3.5,
+          "w": 0.12,
           "score": 40,
           "signal": "neutral"
         }
@@ -1242,18 +1249,21 @@ const SIGNAL_STEPS = {
         {
           "cmp": "<",
           "x": 1100,
+          "w": 21,
           "score": 85,
           "signal": "bear"
         },
         {
           "cmp": "<",
           "x": 1300,
+          "w": 21,
           "score": 60,
           "signal": "caution"
         },
         {
           "cmp": "<",
           "x": 1500,
+          "w": 17,
           "score": 35,
           "signal": "neutral"
         }
@@ -1268,12 +1278,14 @@ const SIGNAL_STEPS = {
         {
           "cmp": "<",
           "x": -10,
+          "w": 4.9,
           "score": 88,
           "signal": "bear"
         },
         {
           "cmp": "<",
           "x": 0,
+          "w": 5.4,
           "score": 65,
           "signal": "caution",
           "trend": {
@@ -1285,6 +1297,7 @@ const SIGNAL_STEPS = {
         {
           "cmp": "<",
           "x": 5,
+          "w": 4.0,
           "score": 35,
           "signal": "neutral"
         }
@@ -1299,12 +1312,14 @@ const SIGNAL_STEPS = {
         {
           "cmp": "<",
           "x": -0.7,
+          "w": 0.04,
           "score": 82,
           "signal": "bear"
         },
         {
           "cmp": "<",
           "x": 0,
+          "w": 0.04,
           "score": 50,
           "signal": "neutral"
         }
@@ -1319,12 +1334,14 @@ const SIGNAL_STEPS = {
         {
           "cmp": ">",
           "x": 300000,
+          "w": 4100,
           "score": 85,
           "signal": "bear"
         },
         {
           "cmp": ">",
           "x": 250000,
+          "w": 4100,
           "score": 60,
           "signal": "caution",
           "trend": {
@@ -1336,6 +1353,7 @@ const SIGNAL_STEPS = {
         {
           "cmp": ">",
           "x": 215000,
+          "w": 3300,
           "score": 35,
           "signal": "neutral"
         }
@@ -1350,18 +1368,21 @@ const SIGNAL_STEPS = {
         {
           "cmp": "<",
           "x": 60,
+          "w": 1.6,
           "score": 82,
           "signal": "bear"
         },
         {
           "cmp": "<",
           "x": 75,
+          "w": 1.9,
           "score": 72,
           "signal": "bear"
         },
         {
           "cmp": "<",
           "x": 90,
+          "w": 4.7,
           "score": 60,
           "signal": "caution"
         }
@@ -1376,12 +1397,14 @@ const SIGNAL_STEPS = {
         {
           "cmp": ">=",
           "x": 0.5,
+          "w": 0.06,
           "score": 88,
           "signal": "bear"
         },
         {
           "cmp": ">=",
           "x": 0.3,
+          "w": 0.06,
           "score": 50,
           "signal": "caution"
         }
@@ -1407,16 +1430,44 @@ const THRESH_BASIS = {
   "Sahm Rule": "0.5: サーム・ルールの定義（Claudia Sahm。FRED SAHMCURRENT）。0.3は公的な根拠なし（M-4 調査）",
 };
 
+function hardScore(key, val, trend) {
+  const d = SIGNAL_STEPS[key];
+  for (const t of d.tiers) {
+    const hit = t.cmp === '<' ? val < t.x : t.cmp === '>' ? val > t.x : val >= t.x;
+    if (hit) return (t.trend && trend === t.trend.dir) ? t.score + t.trend.add : t.score;
+  }
+  return d.else.score;
+}
+// 点数は、境目の幅（各段の "w"）の中を直線補間する（common/step_rules.py::ramp_score と同じ式。[[MARKETPULSE-REVIEW-EPIC-1]] 順4、L=3）。
+// トレンドの加点は値の段で決めて二値のまま足す。幅の外は今までの段の点数と同じ
+function rampScore(key, val, trend) {
+  const d = SIGNAL_STEPS[key], ts = d.tiers;
+  const regs = ts.map(t => t.score).concat([d.else.score]);
+  const lt = ts[0].cmp === '<';
+  let y = null;
+  for (let i = 0; i < ts.length; i++) {
+    const w = ts[i].w || 0, x = ts[i].x, lo = x - w / 2, hi = x + w / 2;
+    if (lt) {
+      if (val < lo) { y = regs[i]; break; }
+      if (val < hi && w > 0) { y = regs[i] + (regs[i + 1] - regs[i]) * (val - lo) / (hi - lo); break; }
+    } else {
+      if (val > hi) { y = regs[i]; break; }
+      if (val > lo && w > 0) { y = regs[i] + (regs[i + 1] - regs[i]) * (hi - val) / (hi - lo); break; }
+    }
+  }
+  if (y === null) y = regs[regs.length - 1];
+  return y + (hardScore(key, val, trend) - hardScore(key, val, 0));
+}
 function stepSignal(key, val, trend) {
   const d = SIGNAL_STEPS[key];
   for (const t of d.tiers) {
     const hit = t.cmp === '<' ? val < t.x : t.cmp === '>' ? val > t.x : val >= t.x;
     if (hit) {
-      if (t.trend && trend === t.trend.dir) return {score: t.score + t.trend.add, signal: t.trend.signal};
-      return {score: t.score, signal: t.signal};
+      if (t.trend && trend === t.trend.dir) return {score: rampScore(key, val, trend), signal: t.trend.signal};
+      return {score: rampScore(key, val, trend), signal: t.signal};
     }
   }
-  return {score: d.else.score, signal: d.else.signal};
+  return {score: rampScore(key, val, trend), signal: d.else.signal};
 }
 
 // ヘルスバーの目盛り（SIGNAL_STEPS から作る）: bear＝後退シグナルの段の境目、mid＝注意の段の境目（注意の段が無い指標は bear と bull の中間）、
@@ -1538,12 +1589,16 @@ function renderPhaseGauge() {
   if(!result)return;
   const { score, signals, weightTotal } = result;
 
+  // 局面は、週次の保存（05_weekly_analysis.csv の phase。前の公開の局面から境目を2pt越えたときだけ切り替える
+  // 〈common/step_rules.py::hysteresis、[[MARKETPULSE-REVIEW-EPIC-1]] 順4〉）があればそれを正とする。無い間は点数の段
+  const PH={'拡張':['phase-expand','景気は拡大局面','var(--grn)'],'踊り場':['phase-plateau','拡張と後退の境界付近','var(--acc)'],
+            '後退入口':['phase-edge','後退局面への移行シグナル','var(--amb)'],'後退':['phase-recession','景気後退の可能性が高い','var(--red)']};
   let phase,phaseClass,phaseSub,trackColor;
   if(score===null){phase='データ不足';phaseClass='';phaseSub=`データ不足（使える指標の重み ${weightTotal}%）`;trackColor='transparent';}
-  else if(score<30){phase='拡張';phaseClass='phase-expand';phaseSub='景気は拡大局面';trackColor='var(--grn)';}
-  else if(score<52){phase='踊り場';phaseClass='phase-plateau';phaseSub='拡張と後退の境界付近';trackColor='var(--acc)';}
-  else if(score<70){phase='後退入口';phaseClass='phase-edge';phaseSub='後退局面への移行シグナル';trackColor='var(--amb)';}
-  else{phase='後退';phaseClass='phase-recession';phaseSub='景気後退の可能性が高い';trackColor='var(--red)';}
+  else{
+    phase=(WEEKLY_SNAPSHOT&&WEEKLY_SNAPSHOT.phase&&PH[WEEKLY_SNAPSHOT.phase]&&WEEKLY_SNAPSHOT.score===score)?WEEKLY_SNAPSHOT.phase:phaseLabel(score);
+    [phaseClass,phaseSub,trackColor]=PH[phase];
+  }
 
   const bearCount=signals.filter(s=>s.signal==='bear'&&s.val!=='—').length;
   const cautionCount=signals.filter(s=>s.signal==='caution'&&s.val!=='—').length;
@@ -2162,6 +2217,8 @@ function renderScoreHistory() {
         markLine:{
           silent:true, symbol:'none',
           data:[
+            ...(BASIS_START ? [{xAxis: BASIS_START, lineStyle:{color:'rgba(245,158,11,0.8)',type:'solid',width:1},
+              label:{formatter:'判定の基準を変更', color:'rgba(245,158,11,0.9)', fontSize:9, position:'insideEndTop', fontFamily:"'Space Mono',monospace"}}] : []),
             {yAxis:30, lineStyle:{color:'rgba(16,185,129,0.4)',type:'dashed',width:1},
              label:{formatter:'30', color:'rgba(16,185,129,0.6)', fontSize:8, fontFamily:"'Space Mono',monospace"}},
             {yAxis:52, lineStyle:{color:'rgba(59,130,246,0.4)',type:'dashed',width:1},
@@ -2602,7 +2659,10 @@ function renderWeeklyAnalysis(rows) {
   const snapScoreRaw = parseInt(latestRow.score);
   if(!isNaN(snapScoreRaw)){
     WEEKLY_SNAPSHOT = { score: snapScoreRaw, phase: latestRow.phase || '', analysis_date: latestRow.analysis_date || '' };
-    if(DATA.length) renderPhaseGauge();
+    // 判定の基準を変えた日（basis の版が入った最初の週次の行）。スコア推移のグラフに縦線を引く
+    const firstBasis = [...rows].filter(r=>r.basis).sort((a,b)=>(a.analysis_date||'').localeCompare(b.analysis_date||''))[0];
+    BASIS_START = firstBasis ? firstBasis.analysis_date : null;
+    if(DATA.length){ renderPhaseGauge(); if(BASIS_START && typeof renderScoreHistory==='function') renderScoreHistory(); }
   }
 
   const surpriseRaw = latestRow.surprise_alerts || '';
