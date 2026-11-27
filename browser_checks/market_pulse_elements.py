@@ -209,7 +209,9 @@ def expected_past_outcomes(L: dict) -> list:
                          js_fixed(o["base_up_pct"], 1) + "%" if o.get("base_up_pct") is not None else "—",
                          sgn(o["diff_pt"], 1) + "pt" if ok else "—", o["label"],
                          f"{o['guide']}（z={sgn(o['z'], 2)}）" if ok else "—",
-                         sgn(o["mean_pct"], 3) + "%" if ok else "—"])
+                         sgn(o["mean_pct"], 3) + "%" if ok else "—",
+                         sgn(o["p10_pct"], 2) + "%" if ok and o.get("p10_pct") is not None else "—",
+                         str(o["n_indep"]) if o.get("n_indep") is not None and o["horizon"] > 1 else "—"])
     return rows
 
 
@@ -613,7 +615,7 @@ def run_market_pulse_element_checks(page, results: list, cls, now: Optional[date
         conf = js_round((34 - ro) / 34 * 100) if zone == "on" else js_round((1 - abs(ro - 50) / 17) * 100) if zone == "caution" else js_round((ro - 66) / 34 * 100)
         conf = max(0, min(100, conf))
         cl = "高" if conf >= 70 else "中" if conf >= 40 else "低"
-        exp = [f"株 {cr.get('stock')}", f"債券 {cr.get('bond')}", f"クレジット {cr.get('credit')}",
+        exp = [f"株（当日−1%超の下落） {cr.get('stock')}", f"債券 {cr.get('bond')}", f"クレジット（当日のHYG/LQD比） {cr.get('credit')}",
                {"on": "RISK ON", "caution": "RISK CAUTION", "off": "RISK OFF"}[zone], f"{ro}", f"確信度 {cl} {conf}%"]
         act = dom["stage3Credit"] or ""
         miss = [x for x in exp if x not in act]
