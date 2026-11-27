@@ -38,7 +38,7 @@ S8_HISTORY_DAYS = 1600   # 2021-01〜の約5.5年分（daily/の全期間）
 DQ_INDICATORS = {
     "S&P500": (1, 3, 8), "NASDAQ": (1,), "VIX指数": (1, 2, 8), "米10年債": (1, 2), "ドル円": (1, 2),
     "WTI原油": (1, 2), "金（GOLD）": (1,), "S&P500グロース(IVW)": (5,), "S&P500バリュー(IVE)": (5,),
-    # 型L（[[MARKETPULSE-REVIEW-EPIC-1]] 順1）: 日経は段階の判定に使わず表示だけ。期待する日は common/freshness.py（kind=jpx）
+    # 型L（[[MARKETPULSE-REVIEW-EPIC-1]] 順1）: 日経は段階の判定に使わず表示だけ。期待する日は common/value_freshness.py（kind=jpx）
     "日経平均": (),
 }
 DQ_ASSET_FLOW = {"ultra_short": (4,), "gold": (4,), "long_bond": (4,), "ig_bond": (4,), "hy_bond": (4,), "equity": (4,)}
@@ -231,11 +231,11 @@ WEATHER_REASON = {
 
 def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expected_close: Optional[str],
                  now_utc: Optional[datetime] = None, extras: Optional[Dict[str, Optional[str]]] = None) -> dict:
-    """設計書6章。期待する日と要素ごとのas_ofを比べる。期待する日は要素の種類ごと（common/freshness.py。米国の終値・日経・FRED日次）。
+    """設計書6章。期待する日と要素ごとのas_ofを比べる。期待する日は要素の種類ごと（common/value_freshness.py。米国の終値・日経・FRED日次）。
     extras: {要素名: 基準日}（ind・af に無い入力。HYスプレッド等）。基準日が None の入力は「日付なし」として old に入れる。
     出力の freshness: {要素: {expected, status(stale|unknown), lag_days, kind}}（新しくない要素だけ）、expected_by_kind: {kind: 期待する日}。
     画面の値ごとの日付と「古い」の印・System Health が読む"""
-    from common import freshness as _fr
+    from common import value_freshness as _fr
     as_of: Dict[str, Optional[str]] = {}
     stages: Dict[str, Tuple[int, ...]] = {}
     fallback = set()

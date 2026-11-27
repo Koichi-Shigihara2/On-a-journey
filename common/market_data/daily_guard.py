@@ -7,7 +7,7 @@ Market_Data_Daily_Update.ymlは20:47〜23:17 UTCの間に30分おきに起動す
   (2) その日の終値が既にdaily/にそろっていれば、何もせず終了する
       （直近10日に行がある銘柄のうち、その日の終値つきの行を持つ銘柄が95%以上）
   (3) 例外（2026-11-27、[[MARKETPULSE-REVIEW-EPIC-1]] 順1）: ^N225 は区切りが違い(2)の数に入れないが、Yahooの日足の終値が引けの約39時間後に
-      なって入る（common/freshness.py の JPX_CONFIRM_LAG）。米国の終値がそろっていても、期待する日本の取引日の行が未保存なら取り直す
+      なって入る（common/value_freshness.py の JPX_CONFIRM_LAG）。米国の終値がそろっていても、期待する日本の取引日の行が未保存なら取り直す
       （NYSEの休場日も。以前は米国の休場〈感謝祭等〉と(2)で取り直しが止まり、日経の行が翌営業日以降まで入らなかった）。
       取り直しは期待する日から JPX_RETRY_DAYS 日以内だけ（Yahooに足が無い日で毎回起動し続けない）
 
@@ -61,9 +61,9 @@ def completeness(day: str, base: str = BASE) -> tuple:
 
 
 def jpx_pending(now: datetime, base: str = BASE) -> Optional[str]:
-    """^N225 の、期待する日本の取引日（common/freshness.py）の行が未保存ならその日付。保存済み・Yahooに足が無い印（_no_yahoo_bar）・
+    """^N225 の、期待する日本の取引日（common/value_freshness.py）の行が未保存ならその日付。保存済み・Yahooに足が無い印（_no_yahoo_bar）・
     ^N225.json が無い・期待する日から JPX_RETRY_DAYS 日を過ぎた場合は None"""
-    from common import freshness
+    from common import value_freshness as freshness
     exp = freshness.jpx_expected_date(now)
     path = os.path.join(base, "^N225.json")
     if not exp or not os.path.exists(path):

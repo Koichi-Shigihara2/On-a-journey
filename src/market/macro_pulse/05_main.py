@@ -2221,7 +2221,7 @@ LIQUIDITY_COLUMNS = [
     "m2_yoy_pct",             # M2（M2SL）の最新の観測月の前年比（%）
     "m2_yoy_pctile",          # その前年比が、1960-01以降の各月の前年比の何パーセンタイルか（以下の割合、0〜100の整数）
     # 型L（[[MARKETPULSE-REVIEW-EPIC-1]] 順1、2026-11-27）: その行の値が何日の観測か。FRED系列は1営業日遅れで公表されるので、
-    # 行の日付より前になる（鮮度の判定は common/freshness.py。取れなかった・前の値を引き継いだ日は空＝「日付なし」）
+    # 行の日付より前になる（鮮度の判定は common/value_freshness.py。取れなかった・前の値を引き継いだ日は空＝「日付なし」）
     "sp500_asof",             # sp500 の観測日（FRED SP500）
     "hy_spread_asof",         # hy_spread の観測日（FRED BAMLH0A0HYM2）。carry-forwardした日は空
 ]

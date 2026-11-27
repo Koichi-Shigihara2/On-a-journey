@@ -95,7 +95,7 @@
 
 **順1（型L）の結果**:
 - **^N225 の原因**（確かめた）: ①Yahooの ^N225 の日足は、引け（15:30 JST）の約15時間後〈定時の取得 06:28 JST〉にも終値が無く、約39時間後には入る（実測: 11-24・11-25 の足が定時の取得で「終値が無い（未確定のため保存せず、次回取り直す）」→ 11-24 は翌日の定時の取得〈38.9時間後〉で保存、11-25 は 11-27 09:44 JST に終値あり）。構造上の遅れで、保存の条件の誤りではない。②ただし「次回取り直す」は、米国の休場日（11-26 感謝祭）と、米国の終値がそろった日には `daily_guard` が起動を止め、取り直しが無かった（`completeness` が ^N225 を数えない）。→ **`daily_guard` に、期待する日本の取引日の行が未保存なら起動する条件を足した**（期待する日から4日以内。Yahooに足が無い日で起動し続けない）
-- **部品**: `common/freshness.py`（kind: us_close・jpx〈Yahooの確定の遅れ39時間を見込む〉・fred_daily〈FREDの1営業日遅れ〉）。`judge()` が fresh・stale・unknown（日付なし）を返す1か所。Market Pulse の `data_quality`（日経・HYスプレッドを含む。新しくない要素だけを `freshness` に、期待する日を `expected_by_kind` に）・画面・System Health [Q]・MACRO PULSE の `05_liquidity.csv`（`sp500_asof`・`hy_spread_asof`）が同じ部品を読む。BUYチェックリスト・TAKE PROFIT の HYスプレッドに `as_of` を保存
+- **部品**: `common/value_freshness.py`（kind: us_close・jpx〈Yahooの確定の遅れ39時間を見込む〉・fred_daily〈FREDの1営業日遅れ〉）。`judge()` が fresh・stale・unknown（日付なし）を返す1か所。Market Pulse の `data_quality`（日経・HYスプレッドを含む。新しくない要素だけを `freshness` に、期待する日を `expected_by_kind` に）・画面・System Health [Q]・MACRO PULSE の `05_liquidity.csv`（`sp500_asof`・`hy_spread_asof`）が同じ部品を読む。BUYチェックリスト・TAKE PROFIT の HYスプレッドに `as_of` を保存
 - **画面**（Playwright で確認）: 6枚のカードに値の日付（MM/DD）、古い値に「古い」の印とツールチップ（期待する基準日と種類）、段階0の表に日経・HYスプレッドの行（期待する日つき）、BUYチェックリストのHYスプレッドに日付
 - **効かないこと**: 理論株価・判定・funda・HypeCore の stage・TANUKI（全銘柄の前後比較は不要〈TANUKI・HypeCore のコードを変えていない〉。Market Pulse の判定〈天気・段階1〜8・センチメント〉は入力を変えていない）。変わるのは `data_quality` の判定の仕方だけ（日経の遅れを見込み、HYスプレッド・日経が古ければ partial になる）
 - 確認は `CLAUDE_CODE_START.md` 手順48

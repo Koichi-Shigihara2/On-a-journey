@@ -1893,7 +1893,7 @@ if __name__ == "__main__":
     buy_checklist = calc_buy_checklist(
         fg_cnn_score, above_ma200, ma200_slope, hy_current, hy_max_90d, hindenburg_active
     )
-    # 型L: HYスプレッドの値の日付を、BUY・TAKE PROFITの両チェックリストに残す（common/freshness.py が鮮度を判定する）
+    # 型L: HYスプレッドの値の日付を、BUY・TAKE PROFITの両チェックリストに残す（common/value_freshness.py が鮮度を判定する）
     hy_as_of = (hy_spread_data or {}).get("as_of")
     if isinstance(buy_checklist.get("checks", {}).get("hy_spread"), dict):
         buy_checklist["checks"]["hy_spread"]["as_of"] = hy_as_of

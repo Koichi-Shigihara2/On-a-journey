@@ -1,6 +1,6 @@
 """[[MARKETPULSE-REVIEW-EPIC-1]] 順1（型L: 値の日付・鮮度）の回帰テスト。
 
-- common/freshness.py: 入力の種類ごとの「期待する日」と、古い／日付なしの判定の1か所
+- common/value_freshness.py: 入力の種類ごとの「期待する日」と、古い／日付なしの判定の1か所
 - stage_conclusions.data_quality: 日経・HYスプレッドを含め、同じ部品で判定する（日経は構造上の遅れを見込む）
 - daily_guard: 米国の終値がそろっていても・NYSEの休場日でも、^N225 の期待する日の行が未保存なら取り直す
 - System Health [Q]: 画面と同じ部品で判定し直す
@@ -10,7 +10,7 @@ import os
 import sys
 from datetime import datetime, timezone
 
-from common import freshness as fr
+from common import value_freshness as fr
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "market", "market_pulse"))
 import stage_conclusions as sc  # noqa: E402

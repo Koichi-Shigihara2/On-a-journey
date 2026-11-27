@@ -1132,18 +1132,18 @@ def check_p_external_change() -> tuple[str, bool, str]:
     return r["label"], r["ok"], r["detail"]
 
 
-# ── Q. 値の日付・鮮度（Market Pulse・MACRO PULSE。common/freshness.py の判定を読む） ───────────
+# ── Q. 値の日付・鮮度（Market Pulse・MACRO PULSE。common/value_freshness.py の判定を読む） ───────────
 _MP_DATA = os.path.join(_DOCS_ROOT, "market-monitor", "market-pulse", "data", "market_data.json")
 _MACRO_LIQUIDITY = os.path.join(_DOCS_ROOT, "market-monitor", "macro-pulse", "data", "05_liquidity.csv")
 
 
 def _check_q(mp_path: Optional[str] = None, liq_path: Optional[str] = None) -> dict:
-    """[[MARKETPULSE-REVIEW-EPIC-1]] 順1（型L、2026-11-27）。画面と同じ部品（common/freshness.py）で、値の日付が「期待する日」より
+    """[[MARKETPULSE-REVIEW-EPIC-1]] 順1（型L、2026-11-27）。画面と同じ部品（common/value_freshness.py）で、値の日付が「期待する日」より
     古いものを数える。Market Pulse: 最新のエントリの data_quality.as_of を、そのエントリの実行時刻〈data_freshness.checked_at〉と
     期待する終値日で判定し直す（日経はYahooの確定の遅れ、HYスプレッドはFREDの1営業日遅れを見込む）。日付の無い入力は「日付なし」。
     MACRO PULSE: 05_liquidity.csv の最新の行の sp500_asof・hy_spread_asof（列が無い・空の間は問題にしない）"""
     from datetime import timedelta as _td, timezone as _tz
-    from common import freshness as fr
+    from common import value_freshness as vfresh
     from common.market_data.calendar_universe import nyse_latest_closed_day
     problems, parts = [], []
     try:
@@ -1157,7 +1157,7 @@ def _check_q(mp_path: Optional[str] = None, liq_path: Optional[str] = None) -> d
         if now is None or not exp or not dq.get("as_of"):
             parts.append("MarketPulse: 判定に必要な日付なし")
         else:
-            res = fr.assess(dq["as_of"], now, exp)
+            res = vfresh.assess(dq["as_of"], now, exp)
             stale = [k for k, v in res.items() if v["status"] == "stale"]
             nodate = [k for k, v in res.items() if v["status"] == "unknown"]
             if stale:
@@ -1180,7 +1180,7 @@ def _check_q(mp_path: Optional[str] = None, liq_path: Optional[str] = None) -> d
                 r = row[-1]
                 now = datetime.fromisoformat(r["date"]).replace(tzinfo=_tz.utc) + _td(days=1)
                 us_exp = nyse_latest_closed_day(now, lookback_days=10)
-                res = fr.assess({"S&P500（FRED）": r.get("sp500_asof") or None, "HYスプレッド": r.get("hy_spread_asof") or None}, now, us_exp)
+                res = vfresh.assess({"S&P500（FRED）": r.get("sp500_asof") or None, "HYスプレッド": r.get("hy_spread_asof") or None}, now, us_exp)
                 stale = [k for k, v in res.items() if v["status"] == "stale"]
                 if stale:
                     problems.append("MacroPulse古い: " + "・".join(f"{k}({res[k]['as_of']}<{res[k]['expected']})" for k in stale))
