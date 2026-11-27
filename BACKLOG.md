@@ -2556,6 +2556,7 @@ Layer3の保持期間（[[LAYER3-RETENTION-PERIOD-1]]）・日足の履歴（[[M
 **着手条件:** なし（登録のみ。次の作業の順は`PROJECT_STATUS.md`）
 **段1の確認（2026-11-23）:** 公開（2026-11-16、`-1-1`）後の確認に合格（11-17朝・11-23の日曜の連鎖で96銘柄とも印0件・`quarterly_*.json`のbsは新しい四半期の分だけ増え・CAKE 41.25／KOは26.17で不変〈CONTINUITYの後の値〉）。段2以降が残るので本件は閉じない
 **段2のSTEP 0（2026-11-27、`docs/architecture/PARSER_LAYER3_STAGE2_STEP0.md`・`PARSER_LAYER3_STAGE2_cells.csv`・`PARSER_LAYER3_STAGE2_readers.csv`）:** 四半期のCF・PL・株数・RPOをLayer3の`val`で置き換えるセルは979（277ファイル・54銘柄。改訂640・分割の調整後など201・丸め63・定義の違い70・印つき5）。理論株価・判定・funda・HypeCore stageの変化0（TANUKI 82銘柄・保有9とも±0.0%）、読み手はparserの四半期のpl・cf・株数を読むものがほぼ無い（`get_quarterly`は呼び出し元0、rcc CHECK-59だけ）。`val_guard`・SEC-RETAGは段2でそのまま使える（当たり0・再タグ由来0）。試算は本番の`quarterly_bs.py`の`REPLACED_FIELDS`を広げて当てたもの（試算＝本番）。段を2a（CF＋PL〈EPS除く〉＋RPO 681セル）・2b（EPS・株数 298セル）に分ける案、method_changeは不要。決めてほしいこと(a)〜(f)あり。**実装は許可されていない**
+**段2aの実装（2026-11-27、ブランチ`parser-layer3-stage2a`、origin に控え・kaihatsuへ未公開）:** `quarterly_bs.py`の`REPLACED_FIELDS`をCF・PL（EPS除く）・RPOに広げた（681セル・47銘柄）。HONのSBC 2セルは欠け＋`replace_marks`、印つき5セルは再表示（10-Q/A等）を確認して置き換え＋印。試算は理論株価・判定・funda・stage・保有とも変化0（STEP 0と同じ）。method_changeは登録しない。公開は②の後の日（次回の依頼文で）。2b（EPS・株数）は後
 **発見:** FINDINGS 2026-11-04の3行（束ね: `docs/architecture/BUNDLING_2026-11-11.md`）。**登録だけで、実装は許可されていない**
 
 #### 内容
@@ -2851,6 +2852,60 @@ NH-NL、TAKE PROFIT（未発動の日は画面で隠す）、Tech Pulseの計算
 
 #### 投資判断への影響
 あり（S&P500の水準・FRBの局面の読み違い）
+
+#### 規模の見込み
+小〜中
+
+---
+
+### [FED-POLICY-PAGE-1] 政策金利の専用ページを新設し、MACRO PULSE の金利見通しの表示を移す
+**型・処置:** 型A（表示の題と中身のずれ）＋新機能・段階的
+**優先度:** 中
+**分類:** MACRO PULSE / 新ページ（政策金利）・`05_fed_context.csv`・`05_events.csv`・`fomc_calendar.py`・流動性の判定（stealthLayer1）
+**登録日:** 2026-11-27
+**着手条件:** [[MARKETPULSE-REVIEW-EPIC-1]]・画面の要望④と一緒
+**関連:** [[MACROPULSE-DATA-LAG-AND-REGIME-DRIFT-1]]（同じ10/28の声明が BALANCED と TIGHTENING に分かれた）・[[MACROPULSE-RECESSION-SCORE-STEPS-1]]
+**登録だけで、実装は許可されていない**
+
+#### MACRO PULSE の今の表示の問題
+- 「1Y EXPECTED FF」に DGS1 をそのまま使っており、題と中身がずれる（1年先の金利ではなく、今後1年の平均＋国債の上乗せ）
+- ベーシス（FF 金利と国債の差）が未補正で、利上げの回数を約1回多く見積もる可能性
+- 「−2.98回」の小数2桁は過剰な精度
+- 取れないときの値 `ff_current=3.625` が手書き（今の政策金利は 3.75-4.00%）
+- 変数名が `zq_*` のまま（ZQ 先物は廃止済み）
+- Grok の局面の判定に DGS1・`cuts_implied` を入れていて、同じ10/28の声明が BALANCED と TIGHTENING に分かれた原因の可能性
+
+#### 方針（Koichi 決定 2026-11-22）
+- MACRO PULSE は景気後退の予測に特化し、政策金利は専用ページへ切り出す。**新ページが作る側、MACRO PULSE は読む側**
+- 新ページの中身: 市場の織り込み（会合ごとの確率・期待金利の経路・最初の変更の時期）、FRB の見通し（ドットチャート・声明の文言の変化）、織り込みを動かす材料（CPI・PCE・雇用・指標の予定）。独自の予想はしない
+- 目的: 金利の織り込みと実際の経路のずれで買い（シナリオを崩す一番の要因は織り込み以上の利上げ）、利下げの織り込みの出尽くしと、それが景気後退によるものかで売り（サテライトの銘柄が対象。コアはテーゼの崩壊のときだけ）
+- 新ページの完成時に、サテライトの TAIL の `exit_condition` へ「利下げ局面での売り」を加えるかを検討する（CRWV は当面売らない）
+
+#### 難所・影響・負荷
+- 会合ごとの確率の取得元: CME FedWatch は無料 API なし。候補は Kalshi の公開データ、yfinance の FF 金利先物。**過去に ZQ 先物をやめた理由を先に確かめる**
+- 影響の範囲（着手時に洗い出す）: `05_fed_context.csv` の regime を読む流動性の判定（stealthLayer1）、`05_events.csv` の regime・`cuts_implied`、`fomc_calendar.py` と声明の AI 分析
+- 負荷: ワークフローと System Health の監視が1つ増える。最初は読み取りの調査（取得元・データの流れ）から
+
+#### 規模の見込み
+中〜大
+
+---
+
+### [MACROPULSE-RECESSION-SCORE-STEPS-1] 景気後退リスクの複合スコアの段の切り替わり・AI の説明のずれ・ミシガンの手入力の仕組みが動いていない
+**型・処置:** 型A（判定の急変・説明と計算のずれ）＋仕組みの片付け
+**優先度:** 中
+**分類:** MACRO PULSE / `05_main.py` の `_compute_current_score`・`SIGNAL_STEPS`、`index.html` の `computeCurrentScore`、`05_weekly_analysis.csv`、`05_indicator_schedule.csv`
+**登録日:** 2026-11-27
+**着手条件:** [[MARKETPULSE-REVIEW-EPIC-1]]・画面の要望④と一緒
+**関連:** [[MACRO-PULSE-THRESHOLD-PERCENTILE-1]]（BACKLOG_DONE。境目の位置をパーセンタイルで決める案は2026-10-04に不採用。今回は切り替わりの急さの問題）
+**登録だけで、実装は許可されていない**
+
+#### 内容
+- **段の切り替わり**: 境目すれすれの動きで局面が入れ替わる。11/14→11/21 で 27→33（拡張→踊り場、境目30）。主因は HY スプレッドが 3.5% を0.02超えたこと（+3.75）と、住宅着工許可が 1,300 を5千件下回ったこと（+2.5）。境目の幅（ヒステリシス）か直線補間を検討する
+- **AI の説明が計算と合わない**（`05_weekly_analysis.csv`）: 寄与0のフィラデルフィア連銀・失業保険申請を理由に挙げる。AI に各指標の点数と寄与を渡していない
+- **ミシガン大学の消費者信頼感の速報値の手入力の仕組みが動いていない**: `05_indicator_schedule.csv` の101行がすべて `input_method=FRED` で、manual の行が0。手入力を促す Discord 通知が一度も出ていない。そのためミシガンは常に約1か月遅れの確定値（FRED の注記: データ元の要請で1か月遅れ）
+- 勧め: 遅れを受け入れ、画面に「確定値・約1か月遅れ」と出し、使われていない手入力の仕組みと古い説明（`05_main.py` の「手入力: ISM」）を片付ける。公式サイトからの自動取得は、利用条件の確認が前提
+- 8指標すべての取り込みの遅れ（`known_at` と発表日の差）も点検する
 
 #### 規模の見込み
 小〜中
