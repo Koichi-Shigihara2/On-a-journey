@@ -71,7 +71,7 @@
 50. **MARKETPULSE-REVIEW-EPIC-1 順3（型S: market_data.json の分割）の、明朝の定時の後の確認と、旧キーの読みを外す**（実装は2026-11-27 kaihatsu。`comments_history` を持たない形。Market Pulse の判定・出力は変わらない）
    - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
    - 期限: 2026-12-01
-   - 確認の手順: ①`market_data.json` の最新のエントリに `comments_history` が無く、ほかのキー（`summary`・`stage_conclusions`・`data_quality` 等）は前日と同じ形で、ファイルが 7.3MB 前後（1日約50KB増）②画面（Market Pulse）の「過去のAIコメント」が最新のエントリで直近11件ぶん出る（前のエントリの `summary` から作る）③`scripts/migrate_market_data_comments_history.py --check` が「旧キーあり 0・食い違い 0」。合格したら、移行のスクリプト（`scripts/migrate_market_data_comments_history.py` と `tests/test_market_data_comments_history.py` の移行の検査）は役目を終えるので削除してよい（`COMMENTS_HISTORY_FROM` は残す。旧エントリの表示を変えないため）。**旧キーの読みは画面に入れていない**（同じ push で旧キーを消したため。書き手のないキーを画面が読むと出力の一覧の検査 INV-5 が NG になる）
+   - 確認の手順: ①`market_data.json` の最新のエントリに `comments_history` が無く、ほかのキー（`summary`・`stage_conclusions`・`data_quality` 等）は前日と同じ形で、ファイルが 7.3MB 前後（1日約50KB増）②画面（Market Pulse）の「過去のAIコメント」が最新のエントリで直近11件ぶん出る（前のエントリの `summary` から作る）③`scripts/migrate_market_data_comments_history.py --check` が「旧キーあり 0・食い違い 0」。合格したら、移行のスクリプト（`scripts/migrate_market_data_comments_history.py` と `tests/test_market_data_comments_history.py` の移行の検査）は役目を終えるので削除してよい（`COMMENTS_HISTORY_FROM` は残す。旧エントリの表示を変えないため）。⑤**latest.json と trail**: `docs/market-monitor/market-pulse/data/latest.json` が最新のエントリと同じ（`market_data.json` の最後のエントリと等しい）で、最新以外のエントリの `sector_rotation.sectors.*.trail` が増えていない（新しい回で前の最新の trail が消えている）。TANUKI SCORE の画面が表示され「最終更新」が最新の回の時刻、`snapshot.py`（TANUKI_Score_Update）が成功。System Health [Q] が latest.json を読んで✅。**旧キーの読みは画面に入れていない**（同じ push で旧キーを消したため。書き手のないキーを画面が読むと出力の一覧の検査 INV-5 が NG になる）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

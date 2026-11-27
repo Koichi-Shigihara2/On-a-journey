@@ -155,3 +155,10 @@
 | 最新用のファイル | — | tanuki_score・pipeline・snapshot・System Health・検査は**最新のエントリだけ**のために 7.2MB を読む | `latest.json`（最新のエントリだけ、数十KB）を同じ書き手が書き、これらの読み手が読む。画面の履歴は今のまま |
 
 これらは読み手の変更（`trail`・`headlines` の履歴を読む所が無いことの確認、`latest.json` への切り替え）を伴うので、決めてもらってから進める。
+
+### 8-5. 順3の残り: latest.json と古いエントリの trail（2026-11-27）
+
+- **latest.json**（最新のエントリだけ、76KB）: 同じ書き手（`save_data_to_json_and_csv`）が履歴と一緒に毎回書く。最新だけを読む所を移した: TANUKI SCORE の画面（`fear_greed`・`indicators`・`credit`）・`pipeline._load_live_fg`・`snapshot.py`・System Health [Q]・`check_dependency_map.py`。共通の読み口は `common/market_pulse_data.py::load_latest`（latest.json が無ければ market_data.json の最後のエントリ）。画面（Market Pulse）と `market_pulse_elements.py` は履歴を読むので market_data.json のまま。TANUKI SCORE の画面は 442ms → 248ms（5回の中央値）・ページの文字は同じ・エラー0
+- **`sector_rotation.trail`（1.05MB）は消した**: 最新以外のエントリの trail は、日足から `sector_rotation(as_of)` で作り直した trail と**197エントリ・1,595セクターすべてで一致**した（消す前の検査。移し替えのスクリプトは1件でも違えば、そのエントリの trail を残す）。象限・RS-Ratio・Momentum・騰落（1日・5日）は残る。読み手は、画面と検査が最新のエントリだけから読むだけで、MARKETPULSE-MOVE-POSTMORTEM-EPIC-1 の実装済みの部分（1/8 予定・2/8 CNBC・3/8 見出しの保存・4/8 5分足）は過去の日の trail を読まない。残り（6/8〜8/8 の材料・Grok・別ページ）は、過去の日のセクターを使うなら象限と騰落（残してある）か日足から作り直す。書き手は以後、書くたびに最新以外の trail を消す。market_data.json 7.2MB → 5.1MB
+- **`headlines`（0.68MB）は残した**: 過去のエントリの `headlines` を読む所は無い（画面は最新のエントリだけ）が、**消すと情報が無くなる**。日ごとの積み足し（`headlines/{date_et}.json`、2026-10-28〜）と照らすと、エントリの記事1,344件のうち840件は積み足しにもあるが、`title_ja`（Grok の訳）・`market`（関連の判定）・`region` は積み足しに無い、または違う（訳170件・題名66件・時刻142件が違う）。10-07〜10-27 のエントリ（15）は積み足しが無く、記事はエントリにしか残っていない。消すのは、訳・判定を積み足しに持たせてから
+- `indent=2` はそのまま
