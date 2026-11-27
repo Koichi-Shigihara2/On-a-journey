@@ -16,8 +16,8 @@
     "revenue": 65073000,
     "gross_profit": 28249000,
     "net_income": 780000,
-    "eps_diluted": 0.05,
-    "eps_basic": 0.05,
+    "eps_diluted": 0.01,
+    "eps_basic": 0.01,
     "research_and_development": 200000,
     "selling_and_marketing": 15531000,
     "operating_income": 418000
@@ -28,8 +28,8 @@
     "stock_based_compensation": 7202000
   },
   "shares": {
-    "shares_diluted": 77238389,
-    "shares_basic": 73158836
+    "shares_diluted": 77238000,
+    "shares_basic": 73159000
   },
   "other": {},
   "bs_tag_sources": {
@@ -38,6 +38,8 @@
   },
   "replace_marks": {
     "net_income": "val_suspect:neighbor_outlier",
-    "operating_income": "val_suspect:neighbor_outlier"
+    "operating_income": "val_suspect:neighbor_outlier",
+    "eps_basic": "split_basis_partial",
+    "eps_diluted": "split_basis_partial"
   }
 }
