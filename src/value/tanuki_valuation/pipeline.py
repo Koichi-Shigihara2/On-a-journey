@@ -570,17 +570,15 @@ class TanukiValuationPipeline:
         if hasattr(self, "_live_fg_cache"):
             return self._live_fg_cache
         fg = 50
-        mkt_path = os.path.join(
-            self.repo_root, "docs", "market-monitor", "market-pulse", "data", "market_data.json"
-        )
-        if os.path.exists(mkt_path):
-            try:
-                with open(mkt_path, encoding="utf-8") as f:
-                    data = json.load(f)
-                if data:
-                    fg = data[-1].get("fear_greed", {}).get("score", 50)
-            except Exception:
-                pass
+        # 最新のエントリだけ（latest.json。無ければ market_data.json の最後。履歴の7MB超は読まない。common/market_pulse_data.py）
+        mkt_dir = os.path.join(self.repo_root, "docs", "market-monitor", "market-pulse", "data")
+        try:
+            from common.market_pulse_data import load_latest
+            entry = load_latest(mkt_dir)
+            if entry:
+                fg = (entry.get("fear_greed") or {}).get("score", 50)
+        except Exception:
+            pass
         self._live_fg_cache = fg
         return fg
 

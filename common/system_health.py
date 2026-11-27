@@ -1133,7 +1133,7 @@ def check_p_external_change() -> tuple[str, bool, str]:
 
 
 # ── Q. 値の日付・鮮度（Market Pulse・MACRO PULSE。common/value_freshness.py の判定を読む） ───────────
-_MP_DATA = os.path.join(_DOCS_ROOT, "market-monitor", "market-pulse", "data", "market_data.json")
+_MP_DATA = os.path.join(_DOCS_ROOT, "market-monitor", "market-pulse", "data", "latest.json")   # 最新のエントリだけ（履歴は読まない）
 _MACRO_LIQUIDITY = os.path.join(_DOCS_ROOT, "market-monitor", "macro-pulse", "data", "05_liquidity.csv")
 
 
@@ -1148,8 +1148,8 @@ def _check_q(mp_path: Optional[str] = None, liq_path: Optional[str] = None) -> d
     problems, parts = [], []
     try:
         with open(mp_path or _MP_DATA, encoding="utf-8") as f:
-            entries = json.load(f)
-        last = entries[-1]
+            loaded = json.load(f)
+        last = loaded[-1] if isinstance(loaded, list) else loaded      # latest.json は1エントリ（dict）。履歴（配列）も読める
         dq = last.get("data_quality") or {}
         checked = (last.get("data_freshness") or {}).get("checked_at")
         now = datetime.strptime(checked, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=_tz.utc) if checked else None

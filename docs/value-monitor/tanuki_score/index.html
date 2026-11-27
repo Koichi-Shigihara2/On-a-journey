@@ -236,7 +236,8 @@ const TS     = '?t=' + Date.now();
 const T_BASE = '../tanuki_valuation/';
 const H_BASE = '../hypecore/data/';
 const E_PATH = '../adjusted_eps_analyzer/data/summary.json';
-const M_PATH = '../../market-monitor/market-pulse/data/market_data.json';
+const M_PATH = '../../market-monitor/market-pulse/data/latest.json';          // 最新のエントリだけ（履歴の7MB超は読まない）
+const M_PATH_HISTORY = '../../market-monitor/market-pulse/data/market_data.json';   // latest.json が無いとき（作る前の環境）の代わり
 const S_PATH = '../stonks-silo/data/results.json';
 const R_PATH = '../../common/sec_data/rotce/_summary.json';  // [[ROTCE-PTBV-1]] 参考表示
 const SC_PATH = '../../common/sector_class.json';  // 業種のマスターの区分（景気循環株）[[SECTOR-MASTER-ADOPT-1]] 段5
@@ -401,7 +402,11 @@ function renderDetailTable() {
   let mkt = null;
   try {
     const r = await fetch(M_PATH + TS);
-    if (r.ok) { const arr = await r.json(); mkt = arr[arr.length - 1]; }
+    if (r.ok) { mkt = await r.json(); }
+    else {
+      const r2 = await fetch(M_PATH_HISTORY + TS);
+      if (r2.ok) { const arr = await r2.json(); mkt = arr[arr.length - 1]; }
+    }
   } catch (_) {}
 
   const fg      = mkt?.fear_greed?.score             ?? 50;

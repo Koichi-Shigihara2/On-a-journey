@@ -3,9 +3,13 @@
 ポートフォリオ日次スナップショット生成
 毎日JST 22:30実行
 """
-import json, os
+import json, os, sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+
+# python src/portfolio/snapshot.py で動かすと sys.path[0] が src/portfolio になり common が読めない。先頭でリポジトリの根を足す
+# （[[MACRODATA-FRED-IMPORT-PATH-1]] と同じ。tests/test_workflow_script_imports.py が検査する）
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 JST = timezone(timedelta(hours=9))
 
@@ -31,11 +35,9 @@ def main():
         pf = json.load(f)
 
     # market_data.jsonからUSD/JPYと現在株価を取得
-    mp_path = Path("docs/market-monitor/market-pulse/data/market_data.json")
-    with open(mp_path, encoding="utf-8") as f:
-        mp = json.load(f)
-
-    last_mp = mp[-1]
+    # 最新のエントリだけ（latest.json。無ければ market_data.json の最後。common/market_pulse_data.py）
+    from common.market_pulse_data import load_latest
+    last_mp = load_latest(str(Path("docs/market-monitor/market-pulse/data").resolve())) or {}
     usdjpy = _nested_get(last_mp, "indicators", "ドル円", "value") or 150.0
     sp500  = _nested_get(last_mp, "indicators", "S&P500", "value")
     date_str = datetime.now(JST).strftime("%Y-%m-%d")

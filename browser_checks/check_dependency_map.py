@@ -141,24 +141,20 @@ def expected_fear_greed_score() -> Optional[float]:
     （Market Pulseにおける唯一のCNN F&G取得経路、
     collect_and_send.py::fetch_cnn_fear_greed() が生成）。
     """
-    if not os.path.exists(MARKET_DATA_JSON):
+    sys.path.insert(0, REPO_ROOT)
+    from common.market_pulse_data import load_latest      # 最新のエントリだけ（latest.json。無ければ market_data.json の最後）
+    entry = load_latest(os.path.dirname(MARKET_DATA_JSON))
+    if not entry:
         return None
-    with open(MARKET_DATA_JSON, encoding="utf-8") as f:
-        data = json.load(f)
-    if not data:
-        return None
-    return data[-1].get("fear_greed", {}).get("score")
+    return (entry.get("fear_greed") or {}).get("score")
 
 
 def expected_breadth_summary() -> dict:
     """market_data.json 最新エントリの sentiment.breadth を返す。"""
-    if not os.path.exists(MARKET_DATA_JSON):
-        return {}
-    with open(MARKET_DATA_JSON, encoding="utf-8") as f:
-        data = json.load(f)
-    if not data:
-        return {}
-    return data[-1].get("sentiment", {}).get("breadth") or {}
+    sys.path.insert(0, REPO_ROOT)
+    from common.market_pulse_data import load_latest
+    entry = load_latest(os.path.dirname(MARKET_DATA_JSON))
+    return ((entry or {}).get("sentiment") or {}).get("breadth") or {}
 
 
 def expected_hindenburg_active() -> tuple[Optional[bool], dict]:
@@ -170,12 +166,15 @@ def expected_hindenburg_active() -> tuple[Optional[bool], dict]:
     ブレッス基準日の行）とdaily/の^GSPCから4条件を再計算する。記録の無い旧エントリ（2026-09-26以前）は
     旧定義（新高値・新安値の2.2%条件のみ）で再計算する。
     """
-    if not os.path.exists(BREADTH_DATA_JSON) or not os.path.exists(MARKET_DATA_JSON):
+    if not os.path.exists(BREADTH_DATA_JSON):
+        return None, {}
+    sys.path.insert(0, REPO_ROOT)
+    from common.market_pulse_data import load_latest
+    entry = load_latest(os.path.dirname(MARKET_DATA_JSON))
+    if not entry:
         return None, {}
     with open(BREADTH_DATA_JSON, encoding="utf-8") as f:
         data = json.load(f)
-    with open(MARKET_DATA_JSON, encoding="utf-8") as f:
-        entry = json.load(f)[-1]
     if not data:
         return None, {}
     bdate = ((entry.get("sentiment") or {}).get("breadth") or {}).get("date")
