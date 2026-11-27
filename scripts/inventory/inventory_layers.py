@@ -151,6 +151,13 @@ IO_HELPER_BY_CALLER = False   # パスを引数で受けて読み書きする汎
 # Pythonの書き手の無いファイルも出力に加えるフォルダ（Portfolio の段階から）。そのフォルダの git にあるファイルのうち、どの出力の型にも当たらないものを
 # 出力にし、書き手はワークフローの cp（あれば）、無ければ「書き手なし（人の手で書く）」とする
 EXTRA_OUTPUT_DIRS: Tuple[str, ...] = ()
+# 段階のフォルダの中で、別の段階が扱うサブフォルダ（common 直下の段階が common/sec_data 等を重ねて数えない。[[OUTPUT-INVENTORY-COMMON-LAYER-1]]）
+LAYER_EXCLUDE: Tuple[str, ...] = ()
+# 共通の部品が作る値（ファイルを書かず、関数の返り値が別の出力のキーに入る部品。common直下の段階から）。人が決める表（部品・出る先・キー・
+# 出る先の名前の語）で、読み手は grep で出す。kind=values: 出る先の名前の語と各キーの名前の両方が出てくる本番のファイル。kind=functions: 部品を import するファイル
+PART_OUTPUTS: List[dict] = []
+# 手で動かすスクリプトの出力先が引数（--output）で、ワークフローが動かさないもの（ファイル → 1文）。書き手のパスを決めきれない書き込みに数えず、別の表に出す
+MANUAL_CLI_WRITERS: Dict[str, str] = {}
 # 本番外のコードの候補ごとの注記（実行の記録〈commit〉等、ファイル → 1文）。空でなければ表に欄を足す（MACRO PULSE の段階から）
 NONPROD_NOTES: Dict[str, str] = {}
 # 段階ごとの印（解決の厳しさ・キーの全ファイルの走査・画面の区画・ワークフローの Step Summary・本番外のコードの走査・CSV の列・
@@ -159,7 +166,7 @@ NONPROD_NOTES: Dict[str, str] = {}
 # IO_HELPER_BY_CALLER だけは段階ごと（市場データ層・マクロデータ層）: SEC層に広げると self._load_json(path) 形の呼び出しを
 # 読み手にできず、SECReader 経由の本当の読み手が消えるため
 
-_SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
+_SEC = dict(LAYER=LAYER, LAYER_DIRS=LAYER_DIRS, LAYER_EXCLUDE=LAYER_EXCLUDE, PART_OUTPUTS=PART_OUTPUTS, MANUAL_CLI_WRITERS=MANUAL_CLI_WRITERS, OUT_JSON=OUT_JSON, OUT_MD=OUT_MD, DECISION_PREFIXES=DECISION_PREFIXES,
             NON_PRODUCTION_DIRS=NON_PRODUCTION_DIRS, RULES=RULES, ANNOTATIONS=ANNOTATIONS, DECISION_DEFAULT=DECISION_DEFAULT,
             DECISIONS=DECISIONS, DELETED=DELETED, OUTSIDE_HINT=OUTSIDE_HINT, OUTSIDE_PREFIXES=OUTSIDE_PREFIXES,
             READ_PREFIXES=READ_PREFIXES, READ_HINT=READ_HINT, NAME_SHORT=NAME_SHORT, TITLE=TITLE, DECISION_NOTE=DECISION_NOTE,
@@ -889,10 +896,97 @@ _MARKET_PULSE.update(
     # 02_market_rss.txt（人の手で書くRSSの一覧、.py でない入力）も出力に加え、読み手を出す
 EXTRA_OUTPUT_DIRS=("src/market/market_pulse",),
 )
+_COMMON = dict(_SEC)
+_COMMON.update(
+    LAYER="common（直下）",
+    LAYER_DIRS=("common",),
+    LAYER_EXCLUDE=("common/sec_data", "common/market_data", "common/macro_data"),
+    OUT_JSON=f"{OUT_DIR}/common_layer.json", OUT_MD=f"{OUT_DIR}/common_layer.md",
+    NON_PRODUCTION_DIRS=[], NON_PRODUCTION_FILES=[],
+    OUTSIDE_HINT="common", OUTSIDE_PREFIXES=("common/", "docs/common/", "config/"),
+    READ_PREFIXES=("common", "docs/common", "config"),
+    READ_HINT="common", NAME_SHORT="common直下", TITLE="common直下の出力の一覧（段階1）",
+    KNOWN_DUPLICATE_RULES=[], RULES=[], DELETED=[], DECISIONS={},
+    DECISION_DEFAULT="残す（2026-11-27）",
+    DECISION_NOTE="段階1の判断（2026-11-27、[[OUTPUT-INVENTORY-COMMON-LAYER-1]]）。common直下の出力8と、ファイルを書かない部品10を一覧にした。"
+                  "読み手0件の出力は無い。読み手のいないキー（誰も読まないキー54・部品のキー4）は、消さず『残す』とその理由を下に書いた"
+                  "（消すのは読み手が0と確かめてから。キーを書く側のテストが検証する値・根拠の記録・公開前の定義v2の入力なので、消すと後で作り直せない）",
+    ANNOTATIONS={
+        "config/sector_master.json": "業種のマスター（銘柄ごとの業種・区分と、業種の名前の規則の写し）。書き手は sector_master.py（yfinance の sector・industry を主、SEC の SIC を控え）。"
+                                     "読み手は tickers の区分を使う各所（TANUKI・EPS ANALYZER・STONKS SILO・定義v2・収益の段階・System Health）。rules の写しは人が読む控えで、正は sector_master.py の定数",
+        "docs/common/sector_class.json": "景気循環株・金融・区分なしの区分（銘柄→区分）。sector_master.py が config/sector_master.json から公開用に書き、TANUKI SCORE の画面が読む",
+        "docs/common/profitability.json": "収益の段階（黒字・黒字化目前・赤字）・黒字化の見込み・構造的赤字・赤字の質の点数（TTM の営業利益から。profitability.py）。"
+                                          "定義v2・STONKS SILO・画面が読む。回帰の傾き・点・R² 等は根拠の記録",
+        "docs/common/multiples/{T}.json": "倍率の履歴（月末ごと、2021-01〜）。PER・EV/売上・EV/粗利・5年平均の利益の倍率・P/TBV を根拠つきで持つ（multiples.py）。"
+                                         "株数は shares_base.py のとおり。TANUKI の分母・時価総額・STONKS SILO・HypeCore・定義v2が読む",
+        "config/split_price_ledger.json": "株価の系列の分割の調整と split_history.yaml の比の食い違い（HON型）の台帳。multiples.py が書き、その分割の日より前の月の倍率を判定不能にする",
+        "docs/common/stage_v2/{T}.json": "HypeCore の stage の定義v2の並行計算（stage_v2.py。公開前の並行運用。読み手は multiples の部品側の1件で、切り替えは STAGE-V2-ROLLOUT-1）",
+        "config/monitor_tickers.yaml": "監視銘柄の一覧（人の入力。register_ticker.py の登録で足す）。市場データの取得・SEC・EPS ANALYZER・System Health が読む",
+        "Discord（DISCORD_WEB_HOOK）": "System Health の通知（毎日の実行の結果）",
+    },
+    UNREAD_KEY_NOTES={
+        **{k: "残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。"
+              "これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）"
+           for k in ("attributes_fetched_at", "cyclical_industries_stage_a", "cyclical_keywords", "damodaran_by_industry", "eps_category_by_industry",
+                     "eps_category_by_sector", "etf_by_sector", "financial_excluded_industries", "financial_sectors", "financial_sic_range",
+                     "mega_tech_industries", "mega_tech_industry_prefixes", "mega_tech_min_market_cap", "unclassified_industries",
+                     "unclassified_industry_prefixes")},
+        **{k: "残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）"
+           for k in ("basis_ends", "breakeven_method", "breakeven_min_r2", "breakeven_points", "breakeven_start", "fcf_points", "fiscal_year_end",
+                     "margins", "near_horizon_quarters", "slope_per_quarter", "stage_reason", "time_basis", "ttm_operating_income")},
+        **{k: "残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）"
+           for k in ("current_definition_label", "current_definition_stage", "g_f", "g_m", "l_industry", "l_own", "multiple_type")},
+        **{k: "残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）"
+           for k in ("ev_gross_profit", "forward_pe_snapshot", "forward_pe_snapshot_date", "net_income_5y_years", "p_tbv", "pe_5y_avg_earnings",
+                     "previous_cover_date", "previous_cover_shares", "shares_end", "tce_end")},
+        **{k: "残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）"
+           for k in ("daily_close", "daily_date", "expected_factor", "observed_factor", "price_factor", "price_factor_reason", "recorded_price")},
+        "etf": "残す: 業種→ETF の写し（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ。tests/test_sector_master.py が一致を検査する）",
+        "rules": "残す: 業種の名前の規則の写し（上の rules と同じ。layer3_builder・share_unit_fix は別の意味の同名のキー）",
+    },
+    IO_HELPER_BY_CALLER=True,   # sector_master._load_json・multiples._load 等、パスを引数で受ける読み書きの関数が多い。Falseだと読み手が別の出力に付く
+    EXTRA_OUTPUT_DIRS=(),
+    MANUAL_CLI_WRITERS={
+        "common/screening/dcf_validity_checker.py": "手で動かす検査（--output で指定したJSON。省略すると標準出力だけ）。ワークフローは動かさない。check_c_data_jump() は report_consistency_check.py（CHECK-21）が import する",
+        "common/screening/report_txt_parser.py": "手で動かす報告書のパーサー（--output で指定したJSON。省略すると標準出力だけ）。ワークフローは動かさない",
+    },
+    PART_OUTPUTS=[
+        {"part": "common/earnings_pending.py", "kind": "values", "sink": "earnings_pending", "where": "TANUKI の latest.json の `earnings_pending`（pipeline.py が build の返り値を入れる）",
+         "what": "決算の発表後でLayer3に未反映の印（表示だけ）", "keys": ["status", "earnings_date", "earnings_source", "layer3_period_end", "announced_period_end_est", "label", "note"],
+         "notes": {"earnings_source": "残す（2026-11-27）: 予定日の出どころ（Yahoo／8-K Item 2.02）。部品のテストが検証する。8-Kを使い始めたら確かめに要る。画面・コードの読み手は無い"}},
+        {"part": "common/guidance_gap.py", "kind": "values", "sink": "guidance_gap", "where": "TANUKI の latest.json の `guidance_gap`",
+         "what": "TANUKIの成長率とアナリストの売上予想の伸びの差・EPS予想の改定（表示だけ）",
+         "keys": ["status", "growth_gap_pt", "tanuki_growth", "analyst_revenue_growth", "analyst_count", "revisions_up_30d", "revisions_down_30d", "reason", "estimates_fetched_at"],
+         "notes": {"estimates_fetched_at": "残す（2026-11-27）: 予想を取った日（古さの確かめ用）。画面・コードの読み手は無い"}},
+        {"part": "common/reverse_growth.py", "kind": "values", "sink": "upside_context", "where": "TANUKI の latest.json の `upside_context`（context）と `valuation.reverse_growth`（solve）",
+         "what": "市場が織り込んだ成長率の逆算（表示だけ）",
+         "keys": ["upside_percent_beta", "reverse_g", "tanuki_growth", "analyst_revenue_growth", "gap_tanuki_pt", "gap_analyst_pt", "status", "reason"]},
+        {"part": "common/handset_growth.py", "kind": "values", "sink": "handset_growth_age", "where": "TANUKI の latest.json の `handset_growth_age`",
+         "what": "手書きの成長率の設定の古さの印（表示だけ）", "keys": ["status", "updated", "age_days", "label"],
+         "notes": {"updated": "残す（2026-11-27）: 設定の最後の更新日。label の元で、部品のテストが検証する。画面・コードの読み手は無い",
+                   "age_days": "残す（2026-11-27）: 経過日数（STALE_DAYS超で印）。label の元で、部品のテストが検証する。画面・コードの読み手は無い"}},
+        {"part": "common/shares_base.py", "kind": "values", "sink": "shares_basis", "where": "docs/common/multiples/{T}.json の `current` の行（multiples.py 経由。TANUKI・STONKS SILO・HypeCore が同じ値を読む）",
+         "what": "理論株価の分母・時価総額の株数（加重平均の希薄化後株数＋発行の分）と、その基準・表紙の株数との差",
+         "keys": ["shares_wd", "shares_basis", "shares_issued", "shares_note", "cover_shares", "cover_date", "outstanding_gap_pct"]},
+        {"part": "common/dilution.py", "kind": "values", "sink": "share_count_change", "where": "TANUKI の latest.json の `share_count_change`（DILUTION。株数の年率の変化）",
+         "what": "株数の変化（約3年前との年率）。分割は split_history.yaml で調整", "keys": ["cagr_pct", "shares_now", "shares_start", "split_suspect", "basis"]},
+        {"part": "common/value_freshness.py", "kind": "functions", "what": "値の日付と鮮度の判定（Market Pulse の data_quality・画面・System Health・MACRO PULSE の05_liquidity.csv の asof）。ファイルを書かない"},
+        {"part": "common/step_rules.py", "kind": "functions", "what": "段・閾値の切り替わり（補間・境目の幅）の部品。Market Pulse・MACRO PULSE が呼ぶ。ファイルを書かない"},
+        {"part": "common/market_pulse_data.py", "kind": "functions", "what": "market_data.json の最新のエントリだけ（latest.json）を読む部品。latest.json は Market Pulse の段階の一覧に出力として入っている（書き手 collect_and_send.py）"},
+        {"part": "common/fetch_failure.py", "kind": "functions", "what": "取得の失敗の重大度の表（System Health の [L][M][O]）と、失敗が続いた日数（failed_since）の記録。ファイルは書かない（failed_since は各書き手が自分のファイルに残す）"},
+        {"part": "common/external_watch.py", "kind": "functions", "what": "外の変化・ばらつきの検知を集める（System Health の [P]）。台帳 config/external_change_acknowledged.json は人の入力"},
+        {"part": "common/external_api.py", "kind": "functions", "what": "外部API（Grok・SEC・FRED）の呼び出し口（2026-10-24、EXTERNAL-API-CLIENT-UNIFY-1）。ファイルは書かない"},
+        {"part": "common/reference_check.py", "kind": "functions", "what": "文書・ワークフローの名前の参照の検査（rcc CHECK-68）。ファイルは書かない"},
+        {"part": "common/stonks_target.py", "kind": "functions", "what": "STONKS SILO の対象の銘柄を決める部品。ファイルは書かない"},
+        {"part": "common/yfinance_utils.py", "kind": "functions", "what": "yfinance の呼び出しの共通の部品。ファイルは書かない"},
+        {"part": "common/system_health.py", "kind": "functions", "what": "System Health の判定と Discord への通知（Discord は一覧の出力に入っている）。ファイルは書かない"},
+        {"part": "common/method_change.py", "kind": "functions", "what": "計算方法の変更の印（method_change.json の scope と各出力の method_change_applied）。ファイルは config/method_change.json（人の入力）"},
+    ],
+)
 LAYERS: Dict[str, dict] = {"sec": _SEC, "tanuki": _TANUKI, "hypecore": _HYPECORE, "eps": _EPS, "stonks": _STONKS, "market_data": _MARKET,
                            "tail": _TAIL, "portfolio": _PORTFOLIO, "macro_data": _MACRO_DATA, "macro_pulse": _MACRO_PULSE,
-                           "market_pulse": _MARKET_PULSE}
+                           "market_pulse": _MARKET_PULSE, "common": _COMMON}
 
 
 # CHECK-INV を当てる段階（段階3が済んだもの）。どの段階も同じ設定なので、呼び出しの索引は1回だけ作る
-CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio")
+CHECK_LAYERS = ("sec", "tanuki", "hypecore", "eps", "stonks", "market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio", "common")

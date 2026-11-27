@@ -408,8 +408,8 @@ def test_market_data_layer_settings():
     md = inv.LAYERS["market_data"]
     assert md["LAYER_DIRS"] == ("common/market_data",)
     assert md["IO_HELPER_BY_CALLER"] and not md["SCREEN_PAGES"]
-    assert inv.CHECK_LAYERS[-6:] == ("market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio")
-    assert [k for k in inv.LAYERS if inv.LAYERS[k]["IO_HELPER_BY_CALLER"]] == ["market_data", "macro_data"]
+    assert inv.CHECK_LAYERS[-7:] == ("market_data", "macro_data", "macro_pulse", "tail", "market_pulse", "portfolio", "common")
+    assert [k for k in inv.LAYERS if inv.LAYERS[k]["IO_HELPER_BY_CALLER"]] == ["market_data", "macro_data", "common"]
     for flag in ("RESOLVE_STRICT", "FULL_SCAN", "SCREEN_SECTIONS", "WORKFLOW_SUMMARY", "NONPROD_SCAN", "DATA_UNREAD_KEYS", "CSV_COLUMNS", "JS_ID_HELPERS"):
         assert not any(flag in inv.LAYERS[k] for k in inv.LAYERS) and not hasattr(inv, flag)
     assert md["KNOWN_DUPLICATE_RULES"] == []   # 2026-10-23 [[MARKET-CALENDAR-UNIVERSE-UNIFY-1]] で取引日・暫定の足・S&P500を1か所に
@@ -461,7 +461,7 @@ def test_tail_layer_settings():
     assert tl["LAYER_DIRS"] == ("src/tail",)
     assert not tl["IO_HELPER_BY_CALLER"]
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
-    assert inv.CHECK_LAYERS[-3] == "tail"
+    assert "tail" in inv.CHECK_LAYERS[-5:]
     assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year"]  # grok_call は external_api.py の1か所に（R-E2）
 
 
@@ -505,7 +505,7 @@ def test_portfolio_layer_settings():
     Pythonの書き手の無いファイル（portfolio.json・cp の写し）も出力に加える。CHECK-INV の最後の段階。"""
     pf = inv.LAYERS["portfolio"]
     assert pf["SCREEN_PAGES"] == ("docs/portfolio/index.html",) and pf["EXTRA_OUTPUT_DIRS"] == ("docs/portfolio/data",)
-    assert inv.CHECK_LAYERS[-1] == "portfolio"
+    assert "portfolio" in inv.CHECK_LAYERS[-2:]
     assert [k for k in inv.CHECK_LAYERS if inv.LAYERS[k]["EXTRA_OUTPUT_DIRS"]] == ["macro_data", "market_pulse", "portfolio"]
 
 
@@ -546,7 +546,7 @@ def test_market_pulse_layer_settings():
     mp = inv.LAYERS["market_pulse"]
     assert mp["LAYER_DIRS"] == ("src/market/market_pulse",) and mp["SCREEN_PAGES"] == ("docs/market-monitor/market-pulse",)
     assert mp["EXTRA_OUTPUT_DIRS"] == ("src/market/market_pulse",) and not mp["IO_HELPER_BY_CALLER"]
-    assert inv.CHECK_LAYERS[-2] == "market_pulse"
+    assert "market_pulse" in inv.CHECK_LAYERS[-3:]
     assert mp["KNOWN_DUPLICATE_RULES"] == []  # fred_api・grok_endpoint は external_api.py の1か所に（R-E2）
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]
     # 段階2（2026-10-23）: 手で動かすスクリプト4つを消し、誰も読まないキー48と、消したスクリプトだけが読んでいた true・false は理由を書いて残す
@@ -687,3 +687,40 @@ def test_json_keys_covers_all_items_of_long_list():
     assert "only_in_middle" in inv.json_parents(rows)
     for n in (150, 300, 301):          # 件数が増えても結果が変わらない
         assert inv.json_keys(rows[:n] + [{"date": "x"}] * 5) == inv.json_keys(rows)
+
+
+def test_common_layer_settings():
+    """common直下の段階（[[OUTPUT-INVENTORY-COMMON-LAYER-1]]、2026-11-27）: common/ の直下で、別の段階が扱う3つのサブフォルダは含めない。
+    ファイルを書かない共通の部品（part_outputs）の呼ぶ所・キーの読み手を grep で出す。"""
+    c = inv.LAYERS["common"]
+    assert c["LAYER_DIRS"] == ("common",)
+    assert set(c["LAYER_EXCLUDE"]) == {"common/sec_data", "common/market_data", "common/macro_data"}
+    assert "common" in inv.CHECK_LAYERS
+    parts = {p["part"] for p in c["PART_OUTPUTS"]}
+    for need in ("common/value_freshness.py", "common/step_rules.py", "common/market_pulse_data.py", "common/earnings_pending.py",
+                 "common/guidance_gap.py", "common/reverse_growth.py", "common/handset_growth.py", "common/shares_base.py"):
+        assert need in parts
+    inv.set_layer("common")
+    try:
+        assert inv.in_layer("common/step_rules.py") and inv.in_layer("common/registration/register_ticker.py")
+        assert not inv.in_layer("common/sec_data/parser.py") and not inv.in_layer("common/market_data/fetcher.py")
+    finally:
+        inv.set_layer("sec")
+
+
+def test_part_outputs_unread_key_warns_only_when_new():
+    """部品のキーを読む所が無いキー: 判断（note）が書いてあれば WARN にしない。新しくできた読み手なしのキーは WARN-INV-7、部品が無ければ NG"""
+    inv.set_layer("common")
+    try:
+        saved = {"outputs": [], "part_outputs": [{"part": "common/x.py", "keys": [{"key": "a", "readers": [], "note": ""}]}]}
+        now = {"outputs": [], "part_outputs": [{"part": "common/x.py", "exists": True, "callers": ["src/y.py"], "sink": "s",
+                                                 "keys": [{"key": "a", "readers": [], "note": ""}, {"key": "b", "readers": [], "note": ""},
+                                                          {"key": "c", "readers": [], "note": "残す"}]}]}
+        ng, warn = inv.check_inventory(saved, now, tag="t")
+        w7 = [w for w in warn if "WARN-INV-7" in w]
+        assert len(w7) == 1 and "の b（" in w7[0] and not [x for x in ng if "NG-INV-7" in x]
+        now["part_outputs"][0]["exists"] = False
+        ng, _ = inv.check_inventory(saved, now, tag="t")
+        assert any("NG-INV-7" in x for x in ng)
+    finally:
+        inv.set_layer("sec")

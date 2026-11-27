@@ -142,6 +142,34 @@ def render_md(inv: dict) -> str:
         if not o["readers"] and not o["readers_compute"]:
             L.append("- 読み手なし")
         L.append("")
+    if inv.get("manual_cli_writes"):
+        L.append("## 手で動かすスクリプトの出力（出力先が引数）")
+        L.append("")
+        for m in inv["manual_cli_writes"]:
+            L.append(f"- `{m['file']}:{m['func']}`（行 {m['line']}）: {md_escape(m['note'])}")
+        L.append("")
+    if inv.get("part_outputs"):
+        L.append("## 共通の部品が作る値（ファイルを書かない部品）")
+        L.append("")
+        L.append("部品の関数の返り値が別の出力（TANUKI の latest.json 等）のキーに入る。出力のファイルは書き手のほうの段階の一覧にある。"
+                 "ここでは部品ごとに、呼ぶ所（import しているファイル）と、キーを読む所（出る先の名前の語とキーの名前の両方が出てくる本番のファイル。推定）を grep で出す。"
+                 "読み手が0のキーは「誰も読まない」で、消すか残すかを下の判断に書く（消すのは0と確かめてから）")
+        L.append("")
+        for p_ in inv["part_outputs"]:
+            L.append(f"### `{p_['part']}`")
+            L.append(f"- {md_escape(p_['what'])}")
+            if p_["kind"] == "values":
+                L.append(f"- 出る先: {md_escape(p_['where'])}")
+            L.append("- 呼ぶ所: " + ("、".join(f"`{c}`" for c in p_["callers"]) if p_["callers"] else "**なし**"))
+            if p_["kind"] == "values":
+                L.append("")
+                L.append("| キー | 画面 | コード | 判断 |")
+                L.append("|---|---|---|---|")
+                for k in p_["keys"]:
+                    scr = "<br>".join(f"`{s[5:] if s.startswith('docs/') else s}`" for s in k["screens"]) or "—"
+                    cod = "<br>".join(f"`{s}`" for s in k["code"]) or "—"
+                    L.append(f"| `{k['key']}`{'（**読み手なし**）' if not k['readers'] else ''} | {scr} | {cod} | {md_escape(k.get('note') or '') or '—'} |")
+            L.append("")
     if inv.get("data_keys"):
         L.append("## 誰も読まないキー")
         L.append("")

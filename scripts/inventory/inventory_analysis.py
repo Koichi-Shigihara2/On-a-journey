@@ -28,7 +28,7 @@ def set_layer(name: str) -> None:
 
 
 def in_layer(path: str) -> bool:
-    return any(path.startswith(d + "/") for d in LAYER_DIRS)
+    return any(path.startswith(d + "/") for d in LAYER_DIRS) and not any(path.startswith(x + "/") for x in LAYER_EXCLUDE)
 
 
 def strip_layer(path: str) -> str:
@@ -1176,6 +1176,34 @@ def prepare(force: bool = False) -> Tuple[List[str], List[str], Dict[str, str]]:
     return files, py_files, texts
 
 
+def part_outputs(texts: Dict[str, str], py_files: List[str]) -> List[dict]:
+    """共通の部品が作る値の書き手（呼ぶ所）と読み手を grep で出す（[[OUTPUT-INVENTORY-COMMON-LAYER-1]]）。
+    values: 出る先の名前の語（sink）と各キーの名前の両方が出てくる本番のファイル（部品自身・テスト・本番外を除く）を読み手にする。
+            キー単独だと status・label・basis のような普通の名前が当たりすぎるため、sink の語とそろった場合だけ数える（推定）
+    functions: 部品を import しているファイル（書き手＝呼ぶ所と同じ。読み手は呼ぶ側が部品の返り値を使う）"""
+    prod = [f for f in texts if not is_test(f) and not any(f.startswith(d + "/") for d in NON_PRODUCTION_DIRS)]
+    out = []
+    for p in PART_OUTPUTS:
+        stem = posixpath.splitext(posixpath.basename(p["part"]))[0]
+        imp = re.compile(r"(?:from\s+common\s+import\s+[^\n]*\b" + re.escape(stem) + r"\b|from\s+common\.\s*" + re.escape(stem) + r"\b|import\s+common\." + re.escape(stem) + r"\b)")
+        callers = sorted(f for f in prod if f != p["part"] and f.endswith(".py") and imp.search(texts[f]))
+        callers += sorted(f for f in prod if f.startswith(".github/workflows/") and p["part"] in texts[f])   # ワークフローが直接動かす部品（System Health 等）
+        row = {"part": p["part"], "kind": p["kind"], "what": p["what"], "callers": callers, "exists": p["part"] in texts}
+        if p["kind"] == "values":
+            sink = p["sink"]
+            row.update(sink=sink, where=p["where"])
+            sink_files = [f for f in prod if f != p["part"] and sink in texts[f]]
+            keys = []
+            for k in p["keys"]:
+                kre = re.compile(r"[\"']" + re.escape(k) + r"[\"']|\." + re.escape(k) + r"\b|\b" + re.escape(k) + r"\s*:")
+                rd = sorted(f for f in sink_files if kre.search(texts[f]))
+                keys.append({"key": k, "readers": rd, "screens": [f for f in rd if f.startswith("docs/")],
+                             "code": [f for f in rd if not f.startswith("docs/")], "note": (p.get("notes") or {}).get(k, "")})
+            row["keys"] = keys
+        out.append(row)
+    return out
+
+
 def build() -> dict:
     files, py_files, texts = prepare()
     texts = dict(texts)   # 段階ごとに足すページの文字列で、共有の辞書を汚さない
@@ -1184,6 +1212,7 @@ def build() -> dict:
     # 1. 書き手
     outputs: Dict[str, dict] = {}
     unresolved_writes = []
+    manual_writes = []
     for rel in layer_py:
         mod = MODULES.get(rel)
         if mod is None:
@@ -1191,6 +1220,9 @@ def build() -> dict:
         writes, _ = io_sites(mod)
         for w in writes:
             # パスがプレースホルダーだけ（{path} 等、呼び出し元の変数そのまま）のものも決めきれない書き込みとする
+            if rel in MANUAL_CLI_WRITERS and UNRESOLVED in w["path"]:
+                manual_writes.append({"file": rel, "line": w["line"], "func": w["func"], "note": MANUAL_CLI_WRITERS[rel]})
+                continue
             if UNRESOLVED in w["path"] or (w["kind"] == "ファイル" and not w["path"].startswith("${") and not PH_RE.sub("", w["path"]).strip("/.")):
                 unresolved_writes.append({"file": rel, "line": w["line"], "func": w["func"], "path": w["path"]})
                 continue
@@ -1595,7 +1627,7 @@ def build() -> dict:
         return out
     pairs = [(d, rel) for d in NON_PRODUCTION_DIRS for rel in sorted(git_ls_files(f"{d}/*.py", f"{d}/**/*.py"))]
     # 段階のフォルダの .py をすべて見て、名前を挙げたものと、どこからも呼ばれないものを候補にする
-    layer_files = git_ls_files(*[f"{d}/*.py" for d in LAYER_DIRS], *[f"{d}/**/*.py" for d in LAYER_DIRS])
+    layer_files = [f for f in git_ls_files(*[f"{d}/*.py" for d in LAYER_DIRS], *[f"{d}/**/*.py" for d in LAYER_DIRS]) if in_layer(f)]
     pairs += [(posixpath.dirname(rel), rel) for rel in sorted(set(NON_PRODUCTION_FILES) | set(layer_files))]
     for d, rel in pairs:
         if is_test(rel) or "/tests/" in rel:
@@ -1735,6 +1767,10 @@ def build() -> dict:
     if PAGE_CHECKS:
         result["page_checks"] = page_checks(tracked, texts, py_files)
     result["workflow_outputs"] = workflow_outputs(outputs, tracked, texts, layer_py)
+    if manual_writes:
+        result["manual_cli_writes"] = manual_writes
+    if PART_OUTPUTS:
+        result["part_outputs"] = part_outputs(texts, py_files)
     if not SCREEN_PAGES:   # 画面の無い層だけ（画面のある層は画面の項目の表で誰も読まないキーを出す）
         result["data_keys"] = data_unread_keys(outputs, texts, tracked)
     return result
@@ -2550,6 +2586,18 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
         for u in now["screen"].get("unread_keys", []):
             if u["key"] not in known_ur:
                 warn.append(f"  [WARN-INV-6 {tg}誰も読まないキー] {u['key']}（{'、'.join(u['sources'][:2])}）。読み手を作るか、書くのをやめる")
+    # CHECK-INV-7（common直下の段階）: 共通の部品のファイルが無い・部品が作るキーを読む所が無いキーが新しくできたら
+    if now.get("part_outputs") is not None:
+        known_po = {(p["part"], k["key"]) for p in (saved.get("part_outputs") or []) for k in p.get("keys", []) if not k["readers"]}
+        known_po |= {(p["part"], k["key"]) for p in now["part_outputs"] for k in p.get("keys", []) if k.get("note")}   # 判断（残す・消す）が書いてあるキー
+        for p in now["part_outputs"]:
+            if not p.get("exists"):
+                ng.append(f"  [NG-INV-7 {tg}共通の部品のファイルが無い] {p['part']}。一覧の PART_OUTPUTS を直す")
+            elif not p.get("callers"):
+                ng.append(f"  [NG-INV-7 {tg}共通の部品を呼ぶ所が無い] {p['part']}。呼ぶ所を作るか、部品を消す")
+            for k in p.get("keys", []):
+                if not k["readers"] and (p["part"], k["key"]) not in known_po:
+                    warn.append(f"  [WARN-INV-7 {tg}部品のキーを読む所が無い] {p['part']} の {k['key']}（{p.get('sink')}）。読み手を作るか、キーをやめる")
     # 画面の無い層（data_keys、市場データ層から）: 誰も読まないキーが新しくできたら WARN（INV-6 と同じ）
     if now.get("data_keys") is not None:
         known_dk = {u["key"] for u in (saved.get("data_keys") or {}).get("unread_keys", [])}
