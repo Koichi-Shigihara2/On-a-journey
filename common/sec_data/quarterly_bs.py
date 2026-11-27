@@ -1,10 +1,13 @@
 """parser の四半期（quarterly_{FYQ}.json）を Layer3 の val から作る1か所（[[PARSER-LAYER3-SINGLE-SOURCE-1]] 段1・段2a）。
-段2a（2026-11-27〜）: bs に加え cf（buyback・OCF・SBC・D&A）・pl（EPS除く）・other.rpo も置き換える。EPS・株数は段2b（分割の調整後に意味が変わるため別段）。
+段2a（2026-11-27〜）: bs に加え cf（buyback・OCF・SBC・D&A）・pl・other.rpo も置き換える。段2b: EPS・株数も置き換える（plのすべて＋shares）。
+基準の意味（段2bの決定、2026-11-27）: 四半期のファイルの値は「今の時点の見方」＝Layer3 の val（その期を最後に申告した値）。分割の調整は、最新の申告が再掲した分だけ
+反映される（再掲の無い期は分割前のまま）ので、現在の基準が要る読み手は split_adjust.shares_by_end（val ＋ split_history.yaml の換算）を通す。
+このファイルに分割の換算を入れない（二重になる）。倍率の履歴は別で、その月末までに申告された値（first_val・as-of、common/multiples.py）。
 
 parser（SECParser）が company_facts から別の規則で取っていた四半期のBSの値のうち、同じ期・同じ項目の Layer3
 （build_ticker_store）の val と違うものを、Layer3 の val（守り〈val_guard〉の後）で置き換える。parser にだけある値・
 Layer3 にだけある値（0の補いなど）は触らない（0で埋めない）。符号だけが違う値も触らない。
-年次・EPS・株数は置き換えない（REPLACED_FIELDS）。
+年次は置き換えない（REPLACED_FIELDS）。
 段2aの守り: (1) 非負の項目（売上・費用・R&D・S&M・SG&A・SBC）は、parser が正で Layer3 の val が負になる置き換えをしない。値は欠け（None）にして
 record["replace_marks"][項目]="nonneg_layer3_negative" の印を付ける（HONの継続事業の組み替えで累計の差が負になる型）。(2) Layer3 の val が
 val_suspect（隣の期から外れる印、val_guard の (iii)）のセルは置き換えて record["replace_marks"][項目]="val_suspect:…" の印を残す（原本の再表示・訂正のことが多い）。
@@ -56,10 +59,17 @@ PARSER_TO_LAYER3: Dict[Tuple[str, str], str] = {
 # 置き換える項目: bs の全部と、cf の D&A（parser の四半期の D&A が部分のタグ〈減価償却だけ・償却だけ〉の値になる期がある。
 # Layer3 は部分の足し算・再タグの突き合わせで直した値を持つ。SEC-RETAG-RECONCILE-1、2026-11-24）
 REPLACED_FIELDS = (
-    {k for k in PARSER_TO_LAYER3 if k[0] in ("bs", "cf")}
-    | {k for k in PARSER_TO_LAYER3 if k[0] == "pl" and not k[1].startswith("eps_")}
+    {k for k in PARSER_TO_LAYER3 if k[0] in ("bs", "cf", "pl", "shares")}
     | {("other", "rpo")}
 )
+# 分割の調整・組み替えで意味が変わる項目（EPS・株数）。parser と Layer3 の比が SPLIT_LIKE_RATIO 倍超のときだけ印を考える
+SPLIT_FIELDS = {("pl", "eps_basic"), ("pl", "eps_diluted"), ("shares", "shares_basic"), ("shares", "shares_diluted")}
+SPLIT_LIKE_RATIO = 1.5
+# 段2bの印（replace_marks）: 一部の分割だけ調整済み（登録の分割のうち、Layer3 の val が反映したのは一部）／登録の分割が無いのに比が大きい（SPAC の
+# 組み替え・再表示・parser の誤り）／Layer3 の val が0で parser が0でない値（ASTS 型。0 で埋めず欠けにする）
+MARK_SPLIT_PARTIAL = "split_basis_partial"
+MARK_RECAST = "recast_no_registered_split"
+MARK_LAYER3_ZERO = "layer3_zero_parser_nonzero"
 # 正から負への置き換えをしない項目（負になるのは組み替え・累計の差の誤り）
 NONNEG_FIELDS = {("pl", "revenue"), ("pl", "cost_of_revenue"), ("pl", "research_and_development"),
                  ("pl", "selling_and_marketing"), ("pl", "selling_general_and_administrative"),
@@ -113,9 +123,29 @@ def resolve_period_end(record: Dict[str, Any], store: Dict[str, Any]) -> Optiona
     return votes.most_common(1)[0][0]
 
 
-def replace_record(record: Dict[str, Any], store: Dict[str, Any]) -> List[Tuple[str, Any, Any]]:
+def _split_mark(sec: str, f: str, before: float, after: float, end: str, splits: Optional[List[Dict[str, Any]]]) -> Optional[str]:
+    """EPS・株数の置き換えの印。比が大きい（分割の調整・組み替え）とき: 登録の分割（end より後の分割の積）と比が合えば印なし、
+    登録の分割があって合わなければ split_basis_partial、登録の分割が無ければ recast_no_registered_split。比が小さければ印なし"""
+    if (sec, f) not in SPLIT_FIELDS or not before or not after:
+        return None
+    ratio = abs(before / after)
+    if ratio <= SPLIT_LIKE_RATIO and ratio >= 1 / SPLIT_LIKE_RATIO:
+        return None
+    exp = 1.0
+    for s in splits or []:
+        if str(s.get("date")) > end:
+            exp *= float(s["ratio"])
+    if exp == 1.0:
+        return MARK_RECAST
+    signed = (after / before) if sec == "shares" else (before / after)   # 株数は後÷前、EPS は前÷後 が、その期より後の分割の積になる
+    return None if abs(signed / exp - 1) < 0.1 else MARK_SPLIT_PARTIAL
+
+
+def replace_record(record: Dict[str, Any], store: Dict[str, Any],
+                   splits: Optional[List[Dict[str, Any]]] = None) -> List[Tuple[str, Any, Any]]:
     """record の REPLACED_FIELDS の値を Layer3 の val で置き換える（その場で）。戻り値: [(項目, 前, 後)]。
-    非負の項目が正→負になる場合は後を None（欠け）にして replace_marks に残す"""
+    非負の項目が正→負になる場合は後を None（欠け）にして replace_marks に残す。EPS・株数は、Layer3 の val が0で parser が0でない値のとき
+    0 に置き換えず欠け（None）にして印を付ける。splits（その銘柄の config/split_history.yaml の分割）を渡すと、EPS・株数の分割の印を付ける"""
     if not record.get("bs") and not record.get("pl") and not record.get("cf"):
         return []
     end = resolve_period_end(record, store)
@@ -139,10 +169,20 @@ def replace_record(record: Dict[str, Any], store: Dict[str, Any]) -> List[Tuple[
                 target[f] = None
                 marks[f] = "nonneg_layer3_negative"
                 continue
-            changed.append((f, target[f], v3))
+            if (sec, f) in SPLIT_FIELDS and v3 == 0 and target[f] != 0:
+                changed.append((f, target[f], None))
+                target[f] = None
+                marks[f] = MARK_LAYER3_ZERO
+                continue
+            before = target[f]
+            changed.append((f, before, v3))
             target[f] = v3
             if cand[-1].get("val_suspect"):
                 marks[f] = f"val_suspect:{cand[-1]['val_suspect']}"
+            else:
+                m = _split_mark(sec, f, before, v3, end, splits)
+                if m:
+                    marks[f] = m
             if not marks:
                 record.pop("replace_marks", None)
     return changed
@@ -161,6 +201,11 @@ def _build_store(ticker: str) -> Optional[Dict[str, Any]]:
         logging.disable(logging.NOTSET)
 
 
+def _splits(ticker: str) -> List[Dict[str, Any]]:
+    from common.sec_data.split_adjust import load_split_history
+    return load_split_history().get(ticker, [])
+
+
 def replace_from_layer3(ticker: str, parsed: Dict[str, Any], store: Optional[Dict[str, Any]] = None) -> int:
     """parse_company_facts の戻り（parsed['quarterly']）の bs を Layer3 の val で置き換える。置き換えたセルの数"""
     quarterly = (parsed or {}).get("quarterly") or {}
@@ -169,10 +214,11 @@ def replace_from_layer3(ticker: str, parsed: Dict[str, Any], store: Optional[Dic
     store = store if store is not None else _build_store(ticker)
     if not store:
         return 0
+    splits = _splits(ticker)
     n = 0
     for period, rec in quarterly.items():
         rec.setdefault("period", period)
-        n += len(replace_record(rec, store))
+        n += len(replace_record(rec, store, splits))
     return n
 
 
@@ -185,11 +231,12 @@ def regenerate(tickers: Optional[List[str]] = None, data_dir: str = DATA_DIR) ->
         store = _build_store(t)
         if not store or not paths:
             continue
+        splits = _splits(t)
         n = 0
         for p in paths:
             with open(p, encoding="utf-8") as f:
                 rec = json.load(f)
-            ch = replace_record(rec, store)
+            ch = replace_record(rec, store, splits)
             if ch:
                 with open(p, "w", encoding="utf-8") as f:
                     json.dump(rec, f, ensure_ascii=False, indent=2)

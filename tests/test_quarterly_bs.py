@@ -143,11 +143,12 @@ def test_stage2a_flow_cells_are_replaced_by_layer3_val():
     assert set(changed) == {"revenue", "operating_cash_flow", "net_income", "rpo"}
 
 
-def test_stage2a_eps_and_shares_are_not_replaced():
-    """EPS・株数は段2b（分割の調整後に意味が変わる）。置き換えない"""
-    rec = _flow_record(eps_diluted=5.0)
-    assert QB.replace_record(rec, _stage2_store()) == [] and rec["pl"]["eps_diluted"] == 5.0
-    assert ("pl", "eps_diluted") not in QB.REPLACED_FIELDS and ("shares", "shares_diluted") not in QB.REPLACED_FIELDS
+def test_stage2b_eps_and_shares_are_replaced():
+    """段2b（2026-11-27）: EPS・株数も Layer3 の val に置き換える。分割の換算はこのファイルに入れない（val のまま）"""
+    assert ("pl", "eps_diluted") in QB.REPLACED_FIELDS and ("pl", "eps_basic") in QB.REPLACED_FIELDS
+    assert ("shares", "shares_diluted") in QB.REPLACED_FIELDS and ("shares", "shares_basic") in QB.REPLACED_FIELDS
+    rec = _flow_record(eps_diluted=0.51)                                   # 丸めの違い（比は1.5倍以内）→ 置き換わり、印なし
+    assert ("eps_diluted", 0.51, 0.5) in QB.replace_record(rec, _stage2_store()) and "replace_marks" not in rec
 
 
 def test_stage2a_nonneg_field_positive_to_negative_becomes_missing_with_mark():
@@ -179,3 +180,82 @@ def test_stage2a_no_marks_key_when_nothing_marked():
     rec = _flow_record(revenue=905.0)
     QB.replace_record(rec, _stage2_store())
     assert "replace_marks" not in rec
+
+
+# ───────── 段2b: EPS・株数（分割の印・ASTS 型） ─────────
+def _eps_store(eps=0.5, shares=100.0):
+    st = _stage2_store()
+    st["fields"]["eps_basic"] = _flow_store({"eps_basic": [("2026-09-30", eps)]})["fields"]["eps_basic"]
+    st["fields"]["shares_diluted"] = _flow_store({"shares_diluted": [("2026-09-30", shares)]})["fields"]["shares_diluted"]
+    return st
+
+
+def _share_record(eps_basic=None, shares_diluted=None):
+    rec = _flow_record()
+    if eps_basic is not None:
+        rec["pl"]["eps_basic"] = eps_basic
+    if shares_diluted is not None:
+        rec["shares"] = {"shares_diluted": shares_diluted}
+    return rec
+
+
+SPLIT_4_AFTER = [{"date": "2027-01-01", "ratio": 4}]
+
+
+def test_stage2b_split_fully_reflected_has_no_mark():
+    """登録の分割（4:1）をすべて反映した値（parser は分割前、Layer3 の val は 1/4 の EPS・4倍の株数）→ 置き換えて印なし"""
+    rec = _share_record(eps_basic=2.0, shares_diluted=25.0)
+    QB.replace_record(rec, _eps_store(eps=0.5, shares=100.0), SPLIT_4_AFTER)
+    assert rec["pl"]["eps_basic"] == 0.5 and rec["shares"]["shares_diluted"] == 100.0 and "replace_marks" not in rec
+
+
+def test_stage2b_partial_split_is_marked():
+    """登録の分割のうち一部しか反映していない（4:1 のうち 2倍だけ）→ 置き換えて split_basis_partial の印"""
+    rec = _share_record(eps_basic=1.0, shares_diluted=50.0)
+    QB.replace_record(rec, _eps_store(eps=0.5, shares=100.0), SPLIT_4_AFTER)
+    assert rec["pl"]["eps_basic"] == 0.5 and rec["shares"]["shares_diluted"] == 100.0
+    assert rec["replace_marks"] == {"eps_basic": QB.MARK_SPLIT_PARTIAL, "shares_diluted": QB.MARK_SPLIT_PARTIAL}
+
+
+def test_stage2b_large_ratio_without_registered_split_is_marked_recast():
+    """登録の分割が無いのに比が大きい（SPAC の組み替え・再表示）→ 置き換えて recast の印"""
+    rec = _share_record(eps_basic=0.02)
+    QB.replace_record(rec, _eps_store(eps=-0.36), [])
+    assert rec["pl"]["eps_basic"] == -0.36 and rec["replace_marks"] == {"eps_basic": QB.MARK_RECAST}
+
+
+def test_stage2b_layer3_zero_with_parser_nonzero_becomes_missing_with_mark():
+    """ASTS 型: parser の eps に株数が入っている（−17,600,000）・Layer3 の val は0 → 0 で埋めず欠け（None）にして印"""
+    rec = _share_record(eps_basic=-17600000.0)
+    changed = QB.replace_record(rec, _eps_store(eps=0.0), [])
+    assert ("eps_basic", -17600000.0, None) in changed and rec["pl"]["eps_basic"] is None
+    assert rec["replace_marks"] == {"eps_basic": QB.MARK_LAYER3_ZERO}
+    assert QB.replace_record(rec, _eps_store(eps=0.0), []) == []        # 2回目は何も変わらない
+
+
+def test_stage2b_marks_are_not_added_to_non_split_fields():
+    """売上・OCF などは、比が大きくても分割の印を付けない（EPS・株数だけ）"""
+    rec = _flow_record(revenue=9000.0)
+    QB.replace_record(rec, _stage2_store(), SPLIT_4_AFTER)
+    assert "replace_marks" not in rec
+
+
+def test_committed_eps_and_shares_match_layer3_val():
+    """置き換え済みのファイルは、期末日が決まる期の EPS・株数が Layer3 の val と一致する（段2b、AAPL・NVDA）"""
+    import glob, json
+    for t in ("AAPL", "NVDA"):
+        store = QB._build_store(t)
+        assert store, t
+        n = 0
+        for p in sorted(glob.glob(os.path.join(QB.DATA_DIR, t, "quarterly_*.json"))):
+            rec = json.load(open(p, encoding="utf-8"))
+            end = QB.resolve_period_end(rec, store)
+            if not end:
+                continue
+            for (sec, f), lf in QB.PARSER_TO_LAYER3.items():
+                if (sec, f) in QB.SPLIT_FIELDS and (rec.get(sec) or {}).get(f) is not None:
+                    cand = [e["val"] for e in QB._entries(store, lf) if e["end"] == end]
+                    if cand:
+                        assert QB._near(rec[sec][f], cand[-1]), (t, p, f)
+                        n += 1
+        assert n > 20
