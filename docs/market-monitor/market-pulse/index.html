@@ -806,8 +806,18 @@ function renderDetail(){
   document.getElementById("detailInner").innerHTML=`<div class="detail-header"><span class="detail-phase-badge ${pc}">${phaseLabel(wj)}</span><span class="detail-title-text">${fmtDateFull(d.date)}</span></div>${conclusionsListHTML(d)}${creditHTML(d)}<div class="ai-h" style="margin-top:6px">AIの見解</div><div class="detail-body">${d.summary??"詳細なし"}</div>${d.haiku?`<div class="haiku-box">${escHtml(d.haiku)}</div>`:""}`
 }
 
+// 型S（[[MARKETPULSE-REVIEW-EPIC-1]] 順3）: AIコメントの履歴は、そのエントリの summary ＋ 直前の最大11エントリの summary（新しい順）。
+// 以前は各エントリが丸ごと複製して持っていた（comments_history、ファイルの56%）。旧キーは同じ push で消したので読まない
+// （書き手のないキーを画面が読むと、出力の一覧の検査 INV-5 が NG になる）
+const COMMENTS_HISTORY_FROM="2026-06-24";   // 履歴を持っていた最初のエントリの日（それより前のエントリは、これまでどおり履歴なし＝表示を変えない）
+function commentsHistoryOf(d){
+  if((d.date||"").slice(0,10)<COMMENTS_HISTORY_FROM)return[];
+  const i=allData.indexOf(d);if(i<0)return[];
+  const prev=allData.slice(Math.max(0,i-11),i).reverse().filter(e=>e.summary).map(e=>({date:e.date||"",summary:e.summary}));
+  return[{date:d.date,summary:d.summary},...prev];
+}
 function buildCommentsHistory(d){
-  const hist=d.comments_history;
+  const hist=commentsHistoryOf(d);
   if(!hist||hist.length<=1)return'';
   const prev=hist.slice(1).filter(e=>e.summary);
   if(!prev.length)return'';
