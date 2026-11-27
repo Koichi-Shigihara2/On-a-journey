@@ -78,6 +78,11 @@
    - 期限: 2026-12-01
    - 確認の手順: ①`market_data.json` の最新のエントリに `basis.step_rules`（`STEP-RULES-1`）があり、`buy_checklist` に `trigger_held` がある。前日のF&Gが25以下で発動し当日26〜30なら `triggered=true`・`trigger_held=true`（31以上なら外れる）②`sector_rotation.sectors.*.quadrant` が前日の象限と、境目（100）を0.5以内で越えた分だけ違わない（前日 Strong で RS-Ratio が99.5〜100なら Strong のまま）③画面（Market Pulse）の時系列に、`basis` が入った最初の日（11-28）の縦線「判定の基準を変更」④MACRO: 次の週次の行に `basis=STEP-RULES-1`、`score` は小数の点数を丸めた整数、`phase` は前の週の phase から2pt越えたときだけ変わる（前の週が拡張で今週スコア30・31なら拡張のまま、32以上で踊り場）。画面のスコア推移に縦線 ⑤`05_main.py` の `SIGNAL_STEPS` と画面の写しが一致（テストが検査）⑥理論株価・判定が前日と同じ
 
+52. **MARKETPULSE-REVIEW-EPIC-1 順5（2-c: 買いの主を BUY チェックリストに）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。判定の出力・理論株価は変えていない）
+   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
+   - 期限: 2026-12-01
+   - 確認の手順: ①`market_data.json` の最新エントリに `buy_checklist.rule_text`・`sentiment.signal.rule_text`・`tech_pulse.divergence.rule_text` がある ②画面の段階8の見出しが「買いの判断（主）— BUY チェックリスト」→「参考: センチメントのシグナル」→「参考: Tech Pulse のシグナル」の順で、文言の数字（25・30・20・30など）が定数と同じ ③`buy_checklist.triggered`・`points`・`sentiment.signal.signal` が前日の判定の規則と同じ（閾値を変えていない） ④理論株価・判定が前日と同じ
+
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |
