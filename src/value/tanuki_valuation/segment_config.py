@@ -212,7 +212,7 @@ def calculate_growth_option_total_pv(ticker: str) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     print("=== Segment Growth（JSON読み込み版）===")
-    tickers = ["NVDA", "TSLA", "PLTR", "MSFT", "AMZN", "AMD", "SOFI", "RKLB", "APP", "CELH", "SOUN", "ONDS"]
+    tickers = ["NVDA", "TSLA", "PLTR", "MSFT", "AMZN", "AMD", "SOFI", "RKLB", "APP", "CELH", "SOUN"]
     for ticker in tickers:
         result = get_segment_growth(ticker)
         if result:

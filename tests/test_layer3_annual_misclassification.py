@@ -36,11 +36,11 @@ def _entry(end, start, val, accn, fp="FY", period_days=181, is_annual=True, form
 
 
 class TestFrozensetMembership:
-    def test_dell_and_spir_are_in_fix_set(self):
-        """2026-08-30対応: DELL・SPIRが対象tickerに追加されていること"""
+    def test_dell_is_in_fix_set_and_deleted_tickers_are_not(self):
+        """DELLが対象ticker。BBAI・SPIRは2026-11-23に登録を抹消したので入っていない（UNIVERSE-REBALANCE-2026Q4-1）"""
         assert "DELL" in _ANNUAL_MISCLASSIFICATION_FIX_TICKERS
-        assert "SPIR" in _ANNUAL_MISCLASSIFICATION_FIX_TICKERS
-        assert "BBAI" in _ANNUAL_MISCLASSIFICATION_FIX_TICKERS
+        assert "SPIR" not in _ANNUAL_MISCLASSIFICATION_FIX_TICKERS
+        assert "BBAI" not in _ANNUAL_MISCLASSIFICATION_FIX_TICKERS
 
     def test_rmbs_asts_vrt_now_meta_not_added(self):
         """単一end日パターン（別種の症状）・自然解消した銘柄は対象外のまま
@@ -95,7 +95,8 @@ class TestSpirRevenueReclassification:
         ]
 
     def test_spir_duplicate_end_dates_excluded(self):
-        result = _reclassify_misannotated_fy_entries(self._spir_entries(), "SPIR")
+        """SPIR型（同一accn・同一startで複数end日が競合）の入力を、今の対象ticker（DELL）で確かめる"""
+        result = _reclassify_misannotated_fy_entries(self._spir_entries(), "DELL")
         assert result == []
 
 
@@ -125,7 +126,7 @@ class TestSingleEndDatePatternNotCaught:
         ]
         # 2020-12-31の365日エントリはこの関数のフィルタ条件
         # （130<period_days<=300）の対象外のため無条件で通過する
-        result = _reclassify_misannotated_fy_entries(entries, "BBAI")
+        result = _reclassify_misannotated_fy_entries(entries, "DELL")
         # 単一end日（2020-09-30）の重複がないため、この関数単体では
         # 除外されない（別種の検知ロジックが必要という既知の限界）
         assert len(result) == 2

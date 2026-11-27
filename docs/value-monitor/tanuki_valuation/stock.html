@@ -944,8 +944,8 @@ function render(d) {
   // （共有configファイル化は今回のスコープ外）。TERのみ業界平均比ではなく
   // 自社実績比での警告のため文言を分岐させる。Classificationには影響しない。
   const GROWTH_STRUCTURAL_MISMATCH_TICKERS = new Set([
-    'AMD', 'NVDA', 'ONDS', 'ASTS', 'BKNG', 'BROS', 'ELF', 'KULR',
-    'LLY', 'TER', 'XOM', 'ALAB', 'IONQ', 'RCAT',
+    'AMD', 'NVDA', 'ASTS', 'BKNG', 'BROS', 'ELF',
+    'LLY', 'TER', 'ALAB', 'IONQ', 'RCAT',
   ]);
   const growthStructuralMismatch = GROWTH_STRUCTURAL_MISMATCH_TICKERS.has(ticker);
 
@@ -958,10 +958,6 @@ function render(d) {
     KO: {
       2024: 'IRS移転価格税務訴訟（2007-2009年度分）の追徴課税$6.0Bを一括納付（2024年9月、控訴審係属中で還付可能性あり）',
       2025: '2020年fairlife買収の偶発対価（業績連動マイルストーン）$6.1Bを最終決済（2025年3月）',
-    },
-    SPIR: {
-      ni_ocf_divergence: '2025年4月完了の海事(maritime)事業売却に伴う非現金の売却益$154.3M（投資CF区分計上のためOCF算定上はNIから控除）が主因',
-      revenue_decline: '同じ海事事業売却による連結売上ベースの恒久的縮小',
     },
   };
   const fcfTransientItem = FCF_TRANSIENT_ITEM_EXPLANATIONS[ticker];
@@ -1155,7 +1151,7 @@ function render(d) {
         ⚠️ <strong>FCF/OCF乖離に注意（銘柄固有の一過性項目）</strong><br>
         <span style="font-size:12px">${ticker === 'KO'
           ? Object.keys(fcfTransientItem).sort().map(y => `${y}年: ${fcfTransientItem[y]}`).join('<br>') + '<br>（両年度の一過性項目を除いた正常化OCFはNIの成長トレンドと整合。分類判定には使用しません）'
-          : `NI/OCF乖離（一過性）: ${fcfTransientItem.ni_ocf_divergence}<br>減収（構造的変化・継続）: ${fcfTransientItem.revenue_decline}<br>（前者は一過性の会計事象、後者は今後も継続する事業規模の縮小として区別。分類判定には使用しません）`}
+          : ''}
         </span>
       </div>` : ''}
       ${validationOverall === 'FAIL' ? `

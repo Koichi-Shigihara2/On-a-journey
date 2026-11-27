@@ -284,7 +284,6 @@ TICKER_RESTRICTIONS: dict[str, dict] = {
     # VZ・LOARの capex_concept は残す（試算で確かめた）: cf_linesは2021年以降の申告だけで、parserの四半期は埋めないため、
     # やめるとVZの2020年以前の年・全四半期のファイルのCapEx・FCFが消える。LOARはQ4がTTMの逆算（年次−最新の申告の
     # 9か月）になり、今のLayer3の逆算と2024Q4で違う（2.787M→2.465M、TTM 2025-06-30のFCF 79.78M→80.10M）。段5cで
-    "VZ": {"capex_concept": "PaymentsToAcquireOtherProductiveAssets"},
     "LOAR": {"capex_concept": "PaymentsForProceedsFromProductiveAssets"},
 }
 

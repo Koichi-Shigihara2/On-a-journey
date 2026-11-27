@@ -144,7 +144,8 @@ YTD_RESTATE_MIN_RATIO = 0.20
 #     等のtrailing window（直近3〜6年）には現時点で影響しないことを
 #     確認済み。この3銘柄は別種の検知ロジックが必要なため今回は対象外
 #     のまま両エントリに残す。
-_ANNUAL_MISCLASSIFICATION_FIX_TICKERS = frozenset({"BBAI", "DELL", "SPIR"})
+# BBAI・SPIRは2026-11-23に登録を抹消（[[UNIVERSE-REBALANCE-2026Q4-1]]）。残るのはDELLだけ
+_ANNUAL_MISCLASSIFICATION_FIX_TICKERS = frozenset({"DELL"})
 
 
 def _reclassify_misannotated_fy_entries(entries: list, ticker: str) -> list:

@@ -82,8 +82,8 @@ except Exception:
 # での警告のため、注記文言はTER専用に分岐させる（他13件と機械的に共通化
 # しない）。Classification（BUY/WATCH等）には一切影響しない、注記表示のみ。
 GROWTH_STRUCTURAL_MISMATCH_TICKERS = {
-    "AMD", "NVDA", "ONDS", "ASTS", "BKNG", "BROS", "ELF", "KULR",
-    "LLY", "TER", "XOM", "ALAB", "IONQ", "RCAT",
+    "AMD", "NVDA", "ASTS", "BKNG", "BROS", "ELF",
+    "LLY", "TER", "ALAB", "IONQ", "RCAT",
 }
 
 # FCF-CONVRATE②派生（KO-SPIR-CF-CAUSE-UNCONFIRMED-1）: FCF_CYCLICAL_VOLATILITY_TICKERSと
@@ -92,8 +92,7 @@ GROWTH_STRUCTURAL_MISMATCH_TICKERS = {
 # 確定した銘柄向け。ティッカーごとに理由・金額・出所が異なる具体的な説明文を持つため、
 # 単純なSetではなくティッカー→説明（dict）で保持する。
 # KOのみ複数年度（2024年・2025年）にまたがる別々の一過性項目が存在するため、
-# 年度キー付きのネスト辞書とする。SPIRは「NI/OCF乖離＝一過性」「減収＝構造的変化」の
-# 2つの性質が異なる理由を区別して保持する（カテゴリキー）。
+# 年度キー付きのネスト辞書とする（SPIRは2026-11-23に登録を抹消）。
 # 将来3件目以降を追加する場合も、閾値による自動判定ではなく個別の原因分析
 # （10-K MD&A等の一次情報確認）を経てから手動追加すること。
 FCF_TRANSIENT_ITEM_EXPLANATIONS = {
@@ -102,11 +101,6 @@ FCF_TRANSIENT_ITEM_EXPLANATIONS = {
               "（2024年9月、控訴審係属中で還付可能性あり。10-K FY2024 Note 12参照）",
         2025: "2020年fairlife買収の偶発対価（業績連動マイルストーン）$6.1Bを最終決済"
               "（2025年3月。10-K FY2025 Note 17/18参照）",
-    },
-    "SPIR": {
-        "ni_ocf_divergence": "2025年4月完了の海事(maritime)事業売却に伴う非現金の売却益"
-                              "$154.3M（投資CF区分計上のためOCF算定上はNIから控除）が主因",
-        "revenue_decline": "同じ海事事業売却による連結売上ベースの恒久的縮小",
     },
 }
 
@@ -2177,12 +2171,6 @@ class TanukiValuationPipeline:
                     L.append(f"   [{_yr}年: {_transient[_yr]}]")
                 L.append("   [両年度の一過性項目を除いた正常化OCFは$12.8B(2024)/$13.5B(2025)相当で")
                 L.append("    NIの成長トレンドと整合。分類判定には使用しません。詳細はBACKLOG_DONE.md")
-                L.append("    [[KO-SPIR-CF-CAUSE-UNCONFIRMED-1]]参照。]")
-            elif ticker == "SPIR":
-                L.append(f"⚠️ NI/OCF乖離に注意（一過性）: {_transient['ni_ocf_divergence']}")
-                L.append(f"⚠️ 減収に注意（構造的変化・継続）: {_transient['revenue_decline']}")
-                L.append("   [前者は一過性の会計事象、後者は今後も継続する事業規模の縮小として")
-                L.append("    区別してください。分類判定には使用しません。詳細はBACKLOG_DONE.md")
                 L.append("    [[KO-SPIR-CF-CAUSE-UNCONFIRMED-1]]参照。]")
         # REPORT-6: DCF再現性ブロック（上から足すとIVになる完全構造）
         _dcf_comps_r6 = valuation.get("dcf_components", {})

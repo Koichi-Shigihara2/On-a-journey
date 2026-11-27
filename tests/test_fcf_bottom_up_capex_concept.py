@@ -41,7 +41,7 @@ class TestLyftCapexConceptOverride:
         10-Kの値をfact_overrides.jsonに。VZ・LOARはCF計算書のCapExの行が候補外のタグで、銘柄別のcapex_concept
         （全体の候補に足すとFCX・VZの過去の値が変わる）"""
         assert "capex_concept" not in TICKER_RESTRICTIONS.get("LYFT", {})
-        assert TICKER_RESTRICTIONS["VZ"]["capex_concept"] == "PaymentsToAcquireOtherProductiveAssets"
+        assert "VZ" not in TICKER_RESTRICTIONS   # 2026-11-23に登録を抹消（UNIVERSE-REBALANCE-2026Q4-1）
         assert TICKER_RESTRICTIONS["LOAR"]["capex_concept"] == "PaymentsForProceedsFromProductiveAssets"
         for tag in ("PaymentsToAcquireOtherProductiveAssets", "PaymentsForProceedsFromProductiveAssets"):
             assert tag not in TAG_CANDIDATES["CAPITAL_EXPENDITURE"]

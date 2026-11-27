@@ -29,7 +29,7 @@ CapExの規則（ここの1か所。段5b・段5c、2026-11-04）:
   - Layer3: cf_lines の値を正とする（段5c。段5bは欠けの補いだけ）。値が違う期はLayer3の最初の申告の値・申告の履歴を
     同じ差だけずらして残し、無い期（Q4を除く）は足し、Q4の逆算を作り直す（fill_layer3_capex()）
   - parserの年次: その年の10-Kの行を正とし、行が無ければ0（印）。記録の無い年（2021年より前の申告等）はそのまま
-  - VZ・LOARの quarterly.py の capex_concept は残す（やめると2021年より前の年次・四半期のCapExが消える。cf_linesは
+  - LOARの quarterly.py の capex_concept は残す（VZは2026-11-23に登録を抹消）（やめると2021年より前の年次・四半期のCapExが消える。cf_linesは
     2021年以降の申告だけ）
 """
 from __future__ import annotations
