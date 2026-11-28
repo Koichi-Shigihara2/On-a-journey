@@ -14,6 +14,10 @@
   6. STONKS の対象は operating_state_history（月末ごとの TTM 営業利益の符号）を stage_v2 の持続の条件で通した結果
      （common/stonks_target.py）。この部品は月末ごとの符号を出すだけで、持続の閾値は持たない
   7. 粗利率は粗利のフィールドが無ければ 売上−売上原価 から導出する（STONKS の gross_margin_derived と同じ）
+  8. 黒字化の予測の回帰は、営業利益に含まれる現金を伴わない評価損益・減損（条件付き対価の公正価値の変動・のれん／無形資産／
+     長期性資産の減損。許可リスト config/noncash_operating_items.json、Layer3 の同名の項目）を足し戻した営業利益で行う
+     （[[STONKS-DEFICIT-REALITY-EPIC-1]] ②、2026-11-27、method_change ID STONKS-DEFICIT-REALITY-EPIC-1-2）。収益の段階の「黒字／赤字」
+     の判定は報告された営業利益のまま（符号を変えない）。除いた量・種類は noncash_adjustment に残す
 
 時点: 財務は Layer3（common/sec_data/layer3_builder.py::build_ticker_store、ファイルに保存しない）の値を、その期の値が最初に
 申告された書類の提出日（first_filed）で、時点（as_of）までに使えたものだけ・その時点の値（first_val）で使う（定義v2 §3）。
@@ -41,6 +45,7 @@ if _REPO not in sys.path:
     sys.path.insert(0, _REPO)
 
 OUTPUT_PATH = os.path.join(_REPO, "docs", "common", "profitability.json")
+NONCASH_CONFIG_PATH = os.path.join(_REPO, "config", "noncash_operating_items.json")
 SCHEMA_VERSION = "1.0"
 
 QUARTER_DAYS = (60, 125)          # 1四半期の長さ（52・53週の16週の第4四半期〈112日〉を含む）
@@ -294,27 +299,148 @@ def _same_quarter_points(series: Dict[str, float], latest: str, n: int) -> List[
     return out
 
 
+# ── 現金を伴わない評価損益・減損の足し戻し（[[STONKS-DEFICIT-REALITY-EPIC-1]] ②） ──────────────────
+NONCASH_APPLIED, NONCASH_NONE, NONCASH_CANDIDATE = "applied", "none", "candidate"
+
+
+def load_noncash_config(path: Optional[str] = None) -> Dict[str, Any]:
+    """許可リストの設定（config/noncash_operating_items.json）。無ければ空（足し戻さない）"""
+    try:
+        with open(path or NONCASH_CONFIG_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {"items": []}
+
+
+def noncash_addback_quarters(fields: Dict[str, Any], cfg: Dict[str, Any], as_of: str) -> Tuple[Dict[str, float], Dict[str, Dict[str, float]]]:
+    """許可リストの項目ごとの1四半期の値（その時点で最初に申告された値 first_val）を、期末ごとに合計して返す。
+    (期末→営業利益に足す額, 種類→期末→額)。符号 sign をかけた値（正＝営業利益を押し下げる費用・損失を足し戻す）"""
+    ent = lambda f: (fields.get(f) or {}).get("entries") or []
+    total: Dict[str, float] = {}
+    by_kind: Dict[str, Dict[str, float]] = {}
+    for it in cfg.get("items") or []:
+        pts = quarterly_points(ent(it["field"]), as_of)
+        sign = float(it.get("sign", 1))
+        for e, v in pts.items():
+            total[e] = total.get(e, 0.0) + sign * v
+            k = by_kind.setdefault(it.get("kind") or it["field"], {})
+            k[e] = k.get(e, 0.0) + sign * v
+    return total, by_kind
+
+
+def _quarter_values_from_facts(units: List[Dict[str, Any]]) -> Dict[str, float]:
+    """候補の印だけに使う簡易な1四半期の値（3か月の値があればそれ、無ければ累計の差）。許可リストの足し戻しには使わない"""
+    best: Dict[Tuple[str, str], Tuple[float, str, int]] = {}
+    for f in units:
+        if f.get("form") not in ("10-Q", "10-K", "10-Q/A", "10-K/A") or "start" not in f or "end" not in f:
+            continue
+        k = (f["start"], f["end"])
+        d = (_d(f["end"]) - _d(f["start"])).days
+        if k not in best or f["filed"] > best[k][1]:
+            best[k] = (f["val"], f["filed"], d)
+    q = {e: v for (s, e), (v, _fl, d) in best.items() if 80 <= d <= 100}
+    by: Dict[str, List[Tuple[str, int, float]]] = {}
+    for (s, e), (v, _fl, d) in best.items():
+        by.setdefault(s, []).append((e, d, v))
+    for lst in by.values():
+        lst.sort()
+        pe, pv = None, 0.0
+        for e, d, v in lst:
+            if pe is not None and e not in q and 80 <= (_d(e) - _d(pe)).days <= 100:
+                q[e] = v - pv
+            pe, pv = e, v
+    return q
+
+
+def noncash_candidates(company_facts: Optional[Dict[str, Any]], allow_tags: set, cfg: Dict[str, Any],
+                       ttm_oi: Optional[float], ttm_rev: Optional[float], as_of: str) -> List[Dict[str, Any]]:
+    """許可リストに無いが、名前が評価損益・減損・条件付き対価らしく、直近4四半期の合計が TTM の営業利益（または売上の2%）の
+    10%以上のタグ（印の候補。営業利益に入るかはタグだけでは決まらない〈営業外のことも多い〉ので、自動では除かない）"""
+    import re
+    c = cfg.get("candidate") or {}
+    if not company_facts or not c.get("name_pattern"):
+        return []
+    pat = re.compile(c["name_pattern"], re.I)
+    ref = max(abs(ttm_oi or 0.0), abs(ttm_rev or 0.0) * float(c.get("min_share_of_ttm_revenue", 0.02)))
+    base = max(ref * float(c.get("min_share_of_ttm_operating_income", 0.1)), float(c.get("min_abs_usd", 5e6)))
+    out: List[Dict[str, Any]] = []
+    for tax, tags in ((company_facts.get("facts") or {}).items()):
+        for name, node in tags.items():
+            if name in allow_tags or not pat.search(name):
+                continue
+            units = (node.get("units") or {}).get("USD")
+            if not units:
+                continue
+            qv = {e: v for e, v in _quarter_values_from_facts(units).items() if e <= as_of}
+            if not qv:
+                continue
+            last = sorted(qv)[-4:]
+            if (_d(as_of) - _d(last[-1])).days > 200:
+                continue
+            s = sum(qv[e] for e in last)
+            if abs(s) >= base:
+                out.append({"tag": name, "ttm_sum": round(s, 0)})
+    return sorted(out, key=lambda x: -abs(x["ttm_sum"]))
+
+
+def noncash_adjustment_view(entry: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """出力 noncash_adjustment の読み方（STONKS・report.txt 用）。{"status", "ttm_addback", "share", "by_kind", "candidates"}"""
+    na = (entry or {}).get("noncash_adjustment") or {}
+    return {"status": na.get("status") or NONCASH_NONE, "ttm_addback": na.get("ttm_addback"), "share": na.get("share_of_ttm_operating_income"),
+            "by_kind": na.get("by_kind") or {}, "candidates": na.get("candidates") or []}
+
+
 # ── 1銘柄の計算 ───────────────────────────────────────────────────────
-def compute(ticker: str, as_of: str, store: Dict[str, Any], sector_entry: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-    """1銘柄・1時点。store は build_ticker_store() の戻り値（テストでは作った値）"""
+def compute(ticker: str, as_of: str, store: Dict[str, Any], sector_entry: Optional[Dict[str, Any]] = None,
+            company_facts: Optional[Dict[str, Any]] = None, noncash_cfg: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """1銘柄・1時点。store は build_ticker_store() の戻り値（テストでは作った値）。
+    company_facts は評価損益らしい許可リスト外のタグ（candidate）の印にだけ使う（渡さなければ候補は探さない）"""
     from common.sec_data.fcf import free_cash_flow, ttm_capex
     fields = (store or {}).get("fields") or {}
     ent = lambda f: (fields.get(f) or {}).get("entries") or []
 
     q_oi = quarterly_points(ent("operating_income"), as_of)
     q_rev = quarterly_points(ent("revenue"), as_of)
-    oi_ttm, rev_ttm = ttm_series(q_oi), ttm_series(q_rev)
+    oi_ttm, rev_ttm = ttm_series(q_oi), ttm_series(q_rev)          # 報告された営業利益（収益の段階の黒字／赤字の判定はこれ）
+    # 黒字化の予測の回帰は、現金を伴わない評価損益・減損を足し戻した営業利益で行う（許可リスト。種類・量は noncash_adjustment に残す）
+    cfg = noncash_cfg if noncash_cfg is not None else load_noncash_config()
+    addback, addback_kind = noncash_addback_quarters(fields, cfg, as_of)
+    q_oi_adj = {e: v + addback.get(e, 0.0) for e, v in q_oi.items()}
+    oi_ttm_adj = ttm_series(q_oi_adj)
     ends = sorted(set(oi_ttm) & set(rev_ttm))
-    margins = [(e, oi_ttm[e] / rev_ttm[e]) for e in ends if rev_ttm[e] and rev_ttm[e] > 0]
+    margins = [(e, oi_ttm_adj[e] / rev_ttm[e]) for e in ends if e in oi_ttm_adj and rev_ttm[e] and rev_ttm[e] > 0]
 
     res: Dict[str, Any] = {"as_of": as_of, "ttm_end": None, "ttm_operating_income": None, "ttm_revenue": None,
                            "operating_margin": None, "revenue_stage": None, "revenue_stage_label": None,
-                           "stage_reason": "", "breakeven": None}
+                           "stage_reason": "", "breakeven": None, "ttm_operating_income_adjusted": None,
+                           "noncash_adjustment": None}
     sector_entry = sector_entry or {}
     if ends:
         last = ends[-1]
         res.update(ttm_end=last, ttm_operating_income=oi_ttm[last], ttm_revenue=rev_ttm[last],
                    operating_margin=round(oi_ttm[last] / rev_ttm[last], 4) if rev_ttm[last] else None)
+        if last in oi_ttm_adj:
+            res["ttm_operating_income_adjusted"] = oi_ttm_adj[last]
+        # 印: applied（直近TTMの営業利益の min_share_applied 以上を除いた）／candidate（許可リスト外の候補だけ）／none
+        last4 = sorted(q_oi)[-4:]
+        kinds = {k: sum(v.get(e, 0.0) for e in last4) for k, v in addback_kind.items()}
+        kinds = {k: round(v, 0) for k, v in kinds.items() if v}
+        tot = sum(addback.get(e, 0.0) for e in last4)
+        base = abs(oi_ttm[last]) if oi_ttm[last] else 0.0
+        share = (abs(tot) / base) if base else None
+        allow = set()
+        try:
+            from common.sec_data.layer3_builder import load_concept_definitions
+            fd = load_concept_definitions().get("fields", {})
+            for it in cfg.get("items") or []:
+                allow |= set((fd.get(it["field"]) or {}).get("candidates") or [])
+        except Exception:
+            pass
+        cands = noncash_candidates(company_facts, allow, cfg, oi_ttm[last], rev_ttm.get(last), as_of)
+        status = (NONCASH_APPLIED if tot and (share is None or share >= float(cfg.get("min_share_applied", 0.02)))
+                  else NONCASH_CANDIDATE if cands else NONCASH_NONE)
+        res["noncash_adjustment"] = {"status": status, "ttm_addback": round(tot, 0), "share_of_ttm_operating_income": round(share, 4) if share is not None else None,
+                                     "by_kind": kinds, "candidates": cands}
     if sector_entry.get("unclassified"):
         stage, why = STAGE_UNCLASSIFIED, f"業種のマスター: {sector_entry['unclassified']}"
     elif (sector_entry.get("financial") or {}).get("value"):
@@ -428,8 +554,17 @@ def _default_store(ticker: str) -> Optional[Dict[str, Any]]:
         logging.disable(logging.NOTSET)
 
 
+def _default_facts(ticker: str) -> Optional[Dict[str, Any]]:
+    from common.sec_data.layer3_builder import load_company_facts
+    try:
+        return load_company_facts(ticker)
+    except Exception:
+        return None
+
+
 def build(tickers: Optional[List[str]] = None, as_of: Optional[str] = None, path: str = OUTPUT_PATH,
           store_fn: Callable[[str], Optional[Dict[str, Any]]] = _default_store,
+          facts_fn: Callable[[str], Optional[Dict[str, Any]]] = _default_facts,
           sector_master_path: Optional[str] = None, lookup_path: Optional[str] = None,
           now: Optional[str] = None) -> Dict[str, Any]:
     """作り直して返す（書かない）。tickers を渡すとその銘柄だけ作り直し、ほかは前回のまま"""
@@ -446,7 +581,7 @@ def build(tickers: Optional[List[str]] = None, as_of: Optional[str] = None, path
         entries = {t: e for t, e in prev.items() if t in set(registered)}
     for t in targets:
         store = store_fn(t)
-        entries[t] = compute(t, as_of, store or {}, master.get(t))
+        entries[t] = compute(t, as_of, store or {}, master.get(t), company_facts=facts_fn(t))
     return {
         "_schema_version": SCHEMA_VERSION,
         "_description": "収益の段階・黒字化の見込み・構造的赤字・赤字の質の点数（common/profitability.py が機械で作る）。"
@@ -456,7 +591,9 @@ def build(tickers: Optional[List[str]] = None, as_of: Optional[str] = None, path
                   "breakeven_points": BREAKEVEN_POINTS, "near_horizon_quarters": NEAR_HORIZON_QUARTERS,
                   "breakeven_start": "最新の実際のTTMの営業利益率", "breakeven_min_r2": MIN_R2,
                   "structural_deficit": "TTMのFCFの毎年同じ期末の5点の平均と直近2点の平均（is_structural_deficit）",
-                  "time_basis": "Layer3 の first_filed がその時点以前の値（first_val）"},
+                  "time_basis": "Layer3 の first_filed がその時点以前の値（first_val）",
+                  "noncash_adjustment": "黒字化の予測の回帰は、営業利益に含まれる現金を伴わない評価損益・減損（config/noncash_operating_items.json の許可リスト）を足し戻した営業利益。"
+                                        "収益の段階の黒字／赤字は報告された営業利益のまま。印は applied／none／candidate"},
         "tickers": {t: entries[t] for t in sorted(entries)},
     }
 

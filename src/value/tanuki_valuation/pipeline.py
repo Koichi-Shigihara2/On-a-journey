@@ -2967,6 +2967,16 @@ class TanukiValuationPipeline:
                             "LOW_FIT": "見込み不明（営業利益率が直線に乗らない）", "TOO_FAR": "2年より先",
                             "UNCLASSIFIED": "区分なし", "NO_ENTRY": "N/A (not in profitability.json)"}
             L.append(f"Breakeven_Estimate: {_be_reason_m.get(_bv['reason'], _bv['reason'])}")
+        # 黒字化の予測の回帰から除いた、現金を伴わない評価損益・減損（[[STONKS-DEFICIT-REALITY-EPIC-1]] ②。applied／candidate だけ出す）
+        from common.profitability import noncash_adjustment_view
+        _nv = noncash_adjustment_view(load_entry(ticker))
+        if _nv["status"] == "applied":
+            _kinds = "・".join(f"{k} {v/1e6:+,.1f}M" for k, v in _nv["by_kind"].items())
+            L.append(f"Breakeven_Noncash: 営業利益から現金を伴わない評価損益・減損を除いて回帰（直近TTMで{(_nv['ttm_addback'] or 0)/1e6:+,.1f}M足し戻し、"
+                     f"TTM営業利益の{(_nv['share'] or 0)*100:.0f}%。{_kinds}）")
+        elif _nv["status"] == "candidate":
+            _tags = "・".join(f"{c['tag']} {c['ttm_sum']/1e6:+,.1f}M" for c in _nv["candidates"][:3])
+            L.append(f"Breakeven_Noncash: 許可リスト外の評価損益らしいタグあり（除いていない）: {_tags}")
         L.append("Definition:")
         L.append("")
         L.append("Short_Interest: % of float sold short")

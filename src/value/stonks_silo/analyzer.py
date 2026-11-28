@@ -27,7 +27,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 from common.sec_data.reader import get_runway_cash  # noqa: E402
-from common.profitability import deficit_quality_verdict, breakeven_view, load_entry  # noqa: E402
+from common.profitability import deficit_quality_verdict, breakeven_view, load_entry, noncash_adjustment_view  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -132,6 +132,9 @@ class ProfitabilityPath:
     verdict_reason: str = ""
     score: Optional[float] = None             # 0-100
     path_score_basis: str = ""                # ③の点数の根拠（表示用、_path_score_from_breakeven()）
+    # 黒字化の予測の回帰から除いた、営業利益に含まれる現金を伴わない評価損益・減損（common/profitability.py の noncash_adjustment。
+    # status＝applied／none／candidate。[[STONKS-DEFICIT-REALITY-EPIC-1]] ②、2026-11-27）
+    noncash_adjustment: Optional[dict] = None
 
     # 非連続成長フラグ
     discontinuous_growth: bool = False
@@ -686,6 +689,7 @@ class StonksAnalyzer:
             ocf_yoy_change=ocf_yoy,
             ocf_acceleration=ocf_accel,
             ocf_trend=ocf_trend,
+            noncash_adjustment=noncash_adjustment_view(load_entry(ticker) if ticker else None),
             op_breakeven_year=op_be,
             op_breakeven_reason=op_reason,
             ocf_breakeven_year=ocf_be,

@@ -73,6 +73,8 @@ Q4_IMPLIED_FIELDS = frozenset({
     # [[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 資本の使い方。どれも期間で足せるフロー。
     # 性質上負にならない項目（Layer2 の non_negative 欄）は、逆算したQ4が負なら欠け（下の NON_NEGATIVE の規則）
     "DividendsPaid", "DividendsPerShare", "EquityIssuance", "OptionExercise", "StockIssuedAcquisitions",
+    # [[STONKS-DEFICIT-REALITY-EPIC-1]] ②（2026-11-27）: 黒字化の予測で営業利益へ足し戻す評価損益・減損（年次−Q1−Q2−Q3 でQ4を作る。負も実際にある）
+    "ContingentConsiderationChange", "GoodwillImpairment", "IntangibleImpairment", "LongLivedImpairment",
 })
 
 # [[LAYER3-Q4-IMPLIED-NOT-MIGRATED-1]]対応: layer3_builder.py（Layer3、
@@ -106,6 +108,10 @@ _SNAKE_TO_PASCAL = {
     "equity_issuance_proceeds": "EquityIssuance",
     "option_exercise_proceeds": "OptionExercise",
     "stock_issued_acquisitions": "StockIssuedAcquisitions",
+    "contingent_consideration_change": "ContingentConsiderationChange",
+    "goodwill_impairment": "GoodwillImpairment",
+    "intangible_impairment": "IntangibleImpairment",
+    "longlived_impairment": "LongLivedImpairment",
 }
 
 
