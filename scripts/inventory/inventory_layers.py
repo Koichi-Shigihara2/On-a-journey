@@ -494,8 +494,10 @@ _MARKET.update(
     READ_HINT="market_data", NAME_SHORT="市場データ層",
     KNOWN_DUPLICATE_RULES=[], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
-        **{k: "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）"
+        **{k: "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
            for k in ("up_7d", "down_7d")},
+        **{k: "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+           for k in ("ago_7d", "ago_30d", "ago_60d", "ago_90d", "period_ends", "fiscal", "most_recent_quarter", "next_fiscal_year_end", "last_fiscal_year_end")},
         "_validation_warnings": "残す（確認用）: 取得時の検証の印（保存はするが印を付ける）。common/system_health.py の [R] が直近90日の行を数えて読み、直近7日に出来高0が普通でない銘柄の印が出ると ⚠️ にする。人（Claude Code）が、⚠️ が出たとき該当の日足の行を開いて確かめる",
         "_contract_roll": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）",
         "reason_label": "残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む",

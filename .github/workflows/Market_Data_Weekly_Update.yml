@@ -53,6 +53,12 @@ jobs:
         continue-on-error: true
         run: python common/market_data/split_reconcile.py --apply
 
+      - name: Append EPS estimate history
+        # 属性の取得（estimates の eps_revisions・eps_trend・期末日）の後に、週1の履歴を1行積む（追記だけ。common/market_data/estimates_history/）。
+        # 目的は「見通しの悪化の確認（遅れて追う印）」。先に効くかの評価は次の決算シーズン（2027年2月ごろ）の後。[[EPS-REVISION-OUTLOOK-MARK-1]]
+        continue-on-error: true
+        run: python common/market_data/estimates_history.py
+
       - name: Append valuation snapshots
         # forward_pe・trailing_pe・price_to_sales・ev_to_ebitda を取得の日付つきで積む（追記だけ。common/market_data/valuation_history/）。
         # フォワードPERは過去の値が取れないため、週1回の値を今から保存する（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4、2026-11-05）
@@ -89,6 +95,7 @@ jobs:
           git add common/market_data/daily/ || true
           # [SKIP] の記録は、1度も出ていなければ無い。git add は存在しないパスが1つでもあると全部を追加せず終わるので、必ず単独の行にする
           git add common/market_data/_split_reconcile_skips.json || true
+          git add common/market_data/estimates_history/ || true
           git add common/market_data/_sp500_constituents_cache.json || true
           git add config/sector_master.json docs/common/sector_class.json || true
           git add docs/common/profitability.json || true

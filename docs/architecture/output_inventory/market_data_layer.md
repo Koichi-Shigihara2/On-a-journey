@@ -9,7 +9,7 @@
 
 **件数**: 出力 9（ファイル 9・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 2／2件以上 7／規則の二重 0（検出式 3種のうち。市場データ層のファイルを含むもの 0）
 
-**誰も読まないキー**: **14**（この段階のJSONのキーで今の書き手のコードにある 100 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 1 は数えない）
+**誰も読まないキー**: **23**（この段階のJSONのキーで今の書き手のコードにある 113 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 1 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋1件（10.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 4件／解決できた読み込み 21件＋ファイル名で当たった行 37件（7.9%）→ 当たらない
 
@@ -76,7 +76,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `earnings_history`(2)・`events`(2)・`recommendations_history`(2)・`symbol`(2)
 - Python・保存済みファイル: `common/market_data/reader.py` 行 296・297・317・318・341・342（経由 `common/market_data/reader.py::_load_json`）
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 417・454・513・545・1084（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
-- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 107
+- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 116
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 330・338・347・358・367・378・389・397・400・411・423・433 ほか2（経由 `common/market_data/reader.py::get_analyst_events`、`common/market_data/reader.py::get_earnings_history`、`common/market_data/reader.py::get_recommendations_history`）
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 424
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
@@ -106,7 +106,7 @@
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 104・176・288（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 802（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 397・460・995・1080・1141・1182・3397・3420・3981（経由 `common/market_data/reader.py::get_attributes`）
-- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 106
+- ワークフロー・保存済みファイル: `.github/workflows/Market_Data_Weekly_Update.yml` 行 115
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 42・66・71・78・87・95・99・104・111（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_beta_fetcher.py` 行 59・67・71（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `common/market_data/reader.py::get_attributes`）
@@ -218,11 +218,20 @@
 この段階の出力のJSON（全ファイル、入れ子8段まで）のキーのうち、テストを除くコード（.py・.js・.html。書き手のファイルを含む）に読みの形（`.key`・`['key']`〈代入でない〉・`.get('key')`）で出てこないもの。銘柄名・日付など小文字を含まないキーは除く。Pythonで`for k in d`・`d.items()`のように回して読むものは拾えないので、消す前にキーの名前でgrepする
 
 - `_contract_roll`（`common/market_data/daily/{T}.json`）: 残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）
+- `ago_30d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
+- `ago_60d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
+- `ago_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
+- `ago_90d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
 - `current_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
-- `down_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）
+- `down_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
 - `eps_actual`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `eps_difference`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `eps_estimate`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
+- `fiscal`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
+- `last_fiscal_year_end`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
+- `most_recent_quarter`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
+- `next_fiscal_year_end`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
+- `period_ends`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
 - `prev`（`common/market_data/daily/{T}.json`）: 残す（監査用）: 足の訂正の前の値（_corrections の prev）。訂正が正しいかを、人（Claude Code）が日足の訂正の前後を比べて確かめる。テストも参照する
 - `price_target_action`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `price_to_sales`（`common/market_data/attributes/{T}.json`、`common/market_data/valuation_history/{T}.json`）: 残す（記録）: 作り直せない。valuation_history が4つの倍率（先行PER・実績PER・PSR・EV/EBITDA）を同じ形で月ごとに溜めた履歴（Yahooは直近の値しか返さない）
@@ -230,7 +239,7 @@
 - `reason_label`（`common/market_data/daily/{T}.json`）: 残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む
 - `strong_buy`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `strong_sell`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
-- `up_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）
+- `up_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 
@@ -243,7 +252,7 @@
 段階の.pyを動かすワークフローの中で、`$GITHUB_STEP_SUMMARY`に書く段。`.get()`で読むキーが、この段階のJSON（全ファイル）にあるか。
 
 - `.github/workflows/Market_Data_Daily_Update.yml`（行 135・136・137・138・140・142）: `entries`（ある）
-- `.github/workflows/Market_Data_Weekly_Update.yml`（行 104・105・108・109）: 
+- `.github/workflows/Market_Data_Weekly_Update.yml`（行 113・114・117・118）: 
 - `.github/workflows/TANUKI_VALUATION_Update.yml`（行 104・105・106・107・112）: `intrinsic_value_per_share`（**無い**）・`overall`（**無い**）・`validation`（**無い**）
 
 ## FINDINGS 2026-10-15 の読み手0件の6種（F3）
@@ -272,16 +281,16 @@
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（7ファイル・2,924行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（7ファイル・2,983行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
 | `calendar_universe.py` | 390 | — | `common/sec_data/report_consistency_check.py`<br>`common/system_health.py`<br>`common/value_freshness.py`<br>`src/market/macro_pulse/05_main.py`<br>ほか7 | `common/market_data/daily_guard.py`<br>`common/market_data/fetcher.py`<br>`common/market_data/reader.py` | 5件 |
 | `daily_guard.py` | 121 | `.github/workflows/Market_Data_Daily_Update.yml` | — | `common/market_data/calendar_universe.py` | 4件 |
-| `fetcher.py` | 1,573 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/registration/register_ticker.py`<br>`common/sec_data/report_consistency_check.py` | `common/market_data/__init__.py`<br>`common/market_data/calendar_universe.py`<br>`common/market_data/futures_roll.py`<br>`common/market_data/reader.py`<br>ほか1 | 10件 |
+| `fetcher.py` | 1,632 | `.github/workflows/Market_Data_Daily_Update.yml`<br>`.github/workflows/Market_Data_Weekly_Update.yml` | `common/macro_data/fetcher.py`<br>`common/registration/register_ticker.py`<br>`common/sec_data/report_consistency_check.py` | `common/market_data/__init__.py`<br>`common/market_data/calendar_universe.py`<br>`common/market_data/futures_roll.py`<br>`common/market_data/reader.py`<br>ほか1 | 10件 |
 | `futures_roll.py` | 127 | `.github/workflows/Market_Data_Daily_Update.yml` | `common/external_watch.py` | — | 1件 |
 | `reader.py` | 379 | — | `browser_checks/check_dependency_map.py`<br>`browser_checks/market_pulse_elements.py`<br>`common/earnings_pending.py`<br>`common/guidance_gap.py`<br>ほか12 | `common/market_data/__init__.py` | 8件 |
-| `split_reconcile.py` | 264 | `.github/workflows/Market_Data_Weekly_Update.yml` | — | — | 1件 |
+| `split_reconcile.py` | 264 | `.github/workflows/Market_Data_Weekly_Update.yml` | — | — | 2件 |
 | `valuation_history.py` | 70 | `.github/workflows/Market_Data_Weekly_Update.yml` | — | — | 1件 |
 
 ## 止める条件の内訳
@@ -290,4 +299,4 @@
 - `unresolved_write_sites`: 1件
   - `common/market_data/split_reconcile.py:234` record_skips → `<?>/_split_reconcile_skips.json`
 - `python_read_sites_unresolved_in_files_mentioning_sec_data`: 1件
-  - `common/market_data/fetcher.py:1537` <module> → `<?>`
+  - `common/market_data/fetcher.py:1596` <module> → `<?>`

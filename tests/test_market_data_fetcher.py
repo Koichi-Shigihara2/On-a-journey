@@ -590,7 +590,7 @@ class TestFetchWeeklyAttributesNextQuarterEps:
 
         # 保存: 対象の銘柄にだけ estimates が付く
         self._patch(monkeypatch, earnings_dates=None)
-        monkeypatch.setattr(fetcher, "_fetch_estimates", lambda t: {"revenue_growth": {"+1y": 0.082}})
+        monkeypatch.setattr(fetcher, "_fetch_estimates", lambda t, info=None: {"revenue_growth": {"+1y": 0.082}})
         fetcher.fetch_weekly_attributes(["XYZ"], base_dir=base, estimates_symbols=["XYZ"])
         saved = json.load(open(os.path.join(base, "attributes", "XYZ.json"), encoding="utf-8"))
         assert saved["estimates"]["revenue_growth"] == {"+1y": 0.082} and saved["estimates"]["fetched_at"]

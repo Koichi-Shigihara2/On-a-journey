@@ -1039,7 +1039,47 @@ def repair_missing_trading_days(symbols: List[str], base_dir: Optional[str] = No
 
 # ── 週次準静的属性層 ──────────────────────────────────────
 
-def _fetch_estimates(t: Any) -> Dict[str, Any]:
+EPS_PERIODS = ("0q", "+1q", "0y", "+1y")      # yfinance の予想の期間: 当四半期・次の四半期・今年度・来年度
+
+
+def _add_months_end(d: Any, months: int) -> Any:
+    """d に months か月を足した日。d が月末なら足した月の月末、そうでなければ同じ日（その月に無ければ月末）。
+    週ベースの会計期の期末（月末でない日）は近似になる"""
+    import calendar as _cal
+    y = d.year + (d.month - 1 + months) // 12
+    m = (d.month - 1 + months) % 12 + 1
+    last = _cal.monthrange(y, m)[1]
+    was_last = d.day == _cal.monthrange(d.year, d.month)[1]
+    return d.replace(year=y, month=m, day=last if was_last else min(d.day, last))
+
+
+def _period_ends(info: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    """予想の4期間の期末日（導出）と、その元。0y は次の決算年度末（nextFiscalYearEnd。無ければ lastFiscalYearEnd + 12か月）、+1y は +12か月、
+    0q は直近の発表済み四半期末（mostRecentQuarter）+ 3か月、+1q は +6か月。**決算を発表すると 0q・+1q の期末日が1四半期進む**ので、
+    変化を比べるときは同じ期末日の間だけで計算する（期末日が替わった回は『切り替わり』）。元の値も fiscal に残す（[[EPS-REVISION-OUTLOOK-MARK-1]]）"""
+    from datetime import datetime as _dt, timezone as _tz
+    info = info or {}
+
+    def _d(key: str) -> Optional[Any]:
+        v = info.get(key)
+        try:
+            return _dt.fromtimestamp(float(v), _tz.utc).date() if v else None
+        except (TypeError, ValueError, OverflowError, OSError):
+            return None
+    mrq, nfye, lfye = _d("mostRecentQuarter"), _d("nextFiscalYearEnd"), _d("lastFiscalYearEnd")
+    ends: Dict[str, Any] = {}
+    if mrq:
+        ends["0q"] = _add_months_end(mrq, 3).isoformat()
+        ends["+1q"] = _add_months_end(mrq, 6).isoformat()
+    y0 = nfye or (_add_months_end(lfye, 12) if lfye else None)
+    if y0:
+        ends["0y"] = y0.isoformat()
+        ends["+1y"] = _add_months_end(y0, 12).isoformat()
+    fiscal = {k: v.isoformat() for k, v in (("most_recent_quarter", mrq), ("next_fiscal_year_end", nfye), ("last_fiscal_year_end", lfye)) if v}
+    return {"period_ends": ends, "fiscal": fiscal}
+
+
+def _fetch_estimates(t: Any, info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """アナリストの予想（売上の伸び・EPSの改定の件数）。[[TANUKI-GUIDANCE-REVISION-BLIND-1]] 案1（2026-11-25）。
 
     yfinanceの revenue_estimate（今年度 0y・来年度 +1y の売上予想の成長率・アナリスト数）と
@@ -1079,7 +1119,7 @@ def _fetch_estimates(t: Any) -> Dict[str, Any]:
         rv = t.eps_revisions
         if rv is not None and not rv.empty:
             r: Dict[str, Any] = {}
-            for per in ("0y", "+1y"):
+            for per in EPS_PERIODS:
                 if per in rv.index:
                     row = rv.loc[per]
                     vals = {k: _num(row.get(c)) for k, c in
@@ -1091,6 +1131,25 @@ def _fetch_estimates(t: Any) -> Dict[str, Any]:
                 out["eps_revisions"] = r
     except Exception as e:
         print(f"   eps_revisions取得失敗（空のまま）: {e}")
+    # 予想 EPS の現在・7・30・60・90日前（改定の幅）。4期間。[[EPS-REVISION-OUTLOOK-MARK-1]]（2026-11-28）
+    try:
+        tr = t.eps_trend
+        if tr is not None and not tr.empty:
+            trend: Dict[str, Any] = {}
+            for per in EPS_PERIODS:
+                if per in tr.index:
+                    row = tr.loc[per]
+                    vals = {k: _num(row.get(c)) for k, c in
+                            (("current", "current"), ("ago_7d", "7daysAgo"), ("ago_30d", "30daysAgo"),
+                             ("ago_60d", "60daysAgo"), ("ago_90d", "90daysAgo"))}
+                    if any(v is not None for v in vals.values()):
+                        trend[per] = vals
+            if trend:
+                out["eps_trend"] = trend
+    except Exception as e:
+        print(f"   eps_trend取得失敗（空のまま）: {e}")
+    if out.get("eps_revisions") or out.get("eps_trend"):
+        out.update(_period_ends(info))
     return out
 
 
@@ -1267,7 +1326,7 @@ def fetch_weekly_attributes(symbols: List[str], base_dir: Optional[str] = None,
         # アナリストの予想（監視銘柄だけ。週1回。[[TANUKI-GUIDANCE-REVISION-BLIND-1]] 案1、表示専用）
         estimates: Dict[str, Any] = {}
         if symbol in _est_set:
-            estimates = _fetch_estimates(t)
+            estimates = _fetch_estimates(t, info)
             if estimates:
                 estimates["fetched_at"] = _now_iso()
 

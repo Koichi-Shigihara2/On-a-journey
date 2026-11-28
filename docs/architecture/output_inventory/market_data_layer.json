@@ -10,7 +10,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "<module>",
-     "line": 1568
+     "line": 1627
     }
    ],
    "writers_outside_layer": [],
@@ -290,7 +290,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_analyst_events",
-     "line": 1463
+     "line": 1522
     }
    ],
    "writers_outside_layer": [],
@@ -321,7 +321,7 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Weekly_Update.yml",
-     "line": 107,
+     "line": 116,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -582,7 +582,7 @@
     {
      "file": "common/market_data/fetcher.py",
      "func": "fetch_weekly_attributes",
-     "line": 1318
+     "line": 1377
     }
    ],
    "writers_outside_layer": [],
@@ -749,7 +749,7 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Weekly_Update.yml",
-     "line": 106,
+     "line": 115,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2470,7 +2470,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1539,
+     "line": 1598,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::mark_and_repair_provisional_rows",
@@ -2478,7 +2478,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1546,
+     "line": 1605,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::find_missing_trading_days",
@@ -2486,7 +2486,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1554,
+     "line": 1613,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::repair_close_missing_records",
@@ -2494,7 +2494,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1562,
+     "line": 1621,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::backfill_daily_prices",
@@ -2502,7 +2502,7 @@
     },
     {
      "file": "common/market_data/fetcher.py",
-     "line": 1565,
+     "line": 1624,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::fetch_daily_prices",
@@ -5196,7 +5196,7 @@
    "dir": "common/market_data",
    "file": "common/market_data/fetcher.py",
    "decision": "残す（2026-10-22）",
-   "lines": 1573,
+   "lines": 1632,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml",
     ".github/workflows/Market_Data_Weekly_Update.yml"
@@ -5291,7 +5291,8 @@
    "code": [],
    "same_dir": [],
    "tests": [
-    "tests/test_split_reconcile.py"
+    "tests/test_split_reconcile.py",
+    "tests/test_weekly_workflow_git_add.py"
    ]
   },
   {
@@ -5390,7 +5391,7 @@
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/market_data/fetcher.py",
-    "line": 1537,
+    "line": 1596,
     "func": "<module>",
     "path": "<?>"
    }
@@ -5448,10 +5449,10 @@
   {
    "workflow": ".github/workflows/Market_Data_Weekly_Update.yml",
    "lines": [
-    104,
-    105,
-    108,
-    109
+    113,
+    114,
+    117,
+    118
    ],
    "keys": []
   },
@@ -5490,6 +5491,34 @@
     "note": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）"
    },
    {
+    "key": "ago_30d",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "ago_60d",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "ago_7d",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "ago_90d",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
     "key": "current_price_target",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
@@ -5501,7 +5530,7 @@
     "sources": [
      "common/market_data/attributes/{T}.json"
     ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）"
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
    },
    {
     "key": "eps_actual",
@@ -5523,6 +5552,41 @@
      "common/market_data/analyst_history/{T}.json"
     ],
     "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
+   },
+   {
+    "key": "fiscal",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "last_fiscal_year_end",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "most_recent_quarter",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "next_fiscal_year_end",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "period_ends",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
    },
    {
     "key": "prev",
@@ -5579,10 +5643,10 @@
     "sources": [
      "common/market_data/attributes/{T}.json"
     ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）"
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
    }
   ],
-  "written_key_count": 100,
+  "written_key_count": 113,
   "stale_keys": [
    {
     "key": "next_quarter_eps_date",
