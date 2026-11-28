@@ -2215,6 +2215,11 @@ class TanukiValuationPipeline:
                     f"Maturity_Profile: Phase1={_mp_p1['years']}yr@{(_mp_p1.get('growth') or 0)*100:.1f}%, "
                     f"Phase2={_mp_p2['years']}yr@{(_mp_p2.get('growth') or 0)*100:.1f}%"
                 )
+        # 上限（PHASE1_YEARS_MAX）が効いた銘柄だけ、上限をかける前の年数を出す（[[TANUKI-UPSIDE-MAGNITUDE-INFLATED-1]]）
+        _p1_unc = (valuation.get("components") or {}).get("moat_phase1_years_uncapped")
+        _p1_cap = (valuation.get("components") or {}).get("moat_phase1_years")
+        if _p1_unc is not None and _p1_cap is not None and _p1_unc > _p1_cap:
+            L.append(f"Moat_Phase1_Years: phase1 年数 {_p1_unc} → {_p1_cap}（上限）")
         # [[DCF-1b]]（2026-09-25）: 3段階DCFのPhase1は初年度g→Phase2のgへ
         # 線形逓減する。実際に使った各年の成長率（dcf_components.
         # phase1_growth_path）を明示する（Maturity_Profile行のPhase1年数・
@@ -2952,7 +2957,10 @@ class TanukiValuationPipeline:
         if _rb in ("ttm", "annual_fallback", "financial_excluded"):
             _rb_txt = {"ttm": "直近4四半期（営業CF−設備投資）", "annual_fallback": "最新の年次（直近4四半期が取れない・現金の期末とずれる）",
                        "financial_excluded": "金融は資金の持ちの対象外"}[_rb]
-            L.append(f"Runway_Basis: {_rb_txt}")
+            _rb_end = (stonks_data.get("runway", {}).get("burn_ttm_end") if stonks_data else None) or (extra or {}).get("computed_runway_ttm_end")
+            _rb_why = (stonks_data.get("runway", {}).get("burn_reason") if stonks_data else None) or (extra or {}).get("computed_runway_basis_reason")
+            _rb_note = f"・期末 {_rb_end}" if (_rb == "ttm" and _rb_end) else (f"・理由 {_rb_why}" if (_rb == "annual_fallback" and _rb_why) else "")
+            L.append(f"Runway_Basis: {_rb_txt}{_rb_note}")
         L.append(f"Revenue_Growth_YoY: {rev_growth_str}%")
         L.append(f"Next_Earnings_Date: {next_earnings}")
         # 黒字化の予測（会計）は収益の部品の値（common/profitability.py::breakeven_view。[[DEFICIT-QUALITY-ADOPT-1]]）
@@ -2971,9 +2979,11 @@ class TanukiValuationPipeline:
         from common.profitability import noncash_adjustment_view
         _nv = noncash_adjustment_view(load_entry(ticker))
         if _nv["status"] == "applied":
-            _kinds = "・".join(f"{k} {v/1e6:+,.1f}M" for k, v in _nv["by_kind"].items())
-            L.append(f"Breakeven_Noncash: 営業利益から現金を伴わない評価損益・減損を除いて回帰（直近TTMで{(_nv['ttm_addback'] or 0)/1e6:+,.1f}M足し戻し、"
-                     f"TTM営業利益の{(_nv['share'] or 0)*100:.0f}%。{_kinds}）")
+            L.append(f"Breakeven_Noncash: 黒字化の予測の回帰は営業利益から現金を伴わない評価損益・減損を除く（{'・'.join(_nv['exclusions'])}、"
+                     f"TTM営業利益の{(_nv['share'] or 0)*100:.0f}%）")
+            if _nv["ttm_operating_income"] is not None and _nv["ttm_operating_income_adjusted"] is not None:
+                _sm = lambda v: f"{'+' if v >= 0 else '−'}${abs(v) / 1e6:,.1f}M"
+                L.append(f"Breakeven_OpIncome_TTM: 報告値 {_sm(_nv['ttm_operating_income'])} → 調整後 {_sm(_nv['ttm_operating_income_adjusted'])}（黒字化の予測の回帰は調整後）")
         elif _nv["status"] == "candidate":
             _tags = "・".join(f"{c['tag']} {c['ttm_sum']/1e6:+,.1f}M" for c in _nv["candidates"][:3])
             L.append(f"Breakeven_Noncash: 許可リスト外の評価損益らしいタグあり（除いていない）: {_tags}")

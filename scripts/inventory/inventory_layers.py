@@ -941,7 +941,6 @@ _COMMON.update(
                      "previous_cover_date", "previous_cover_shares", "shares_end", "tce_end")},
         **{k: "残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）"
            for k in ("daily_close", "daily_date", "expected_factor", "observed_factor", "price_factor", "price_factor_reason", "recorded_price")},
-        "ttm_operating_income_adjusted": "これから作る: [[STONKS-PROFITABILITY-ADJUSTED-DISPLAY-1]]（STONKS 画面の黒字化予測の欄に、報告値の営業利益と並べて出す。読み手は画面。今は読む所が無い）",
         "etf": "残す: 業種→ETF の写し（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ。tests/test_sector_master.py が一致を検査する）",
         "rules": "残す: 業種の名前の規則の写し（上の rules と同じ。layer3_builder・share_unit_fix は別の意味の同名のキー）",
     },

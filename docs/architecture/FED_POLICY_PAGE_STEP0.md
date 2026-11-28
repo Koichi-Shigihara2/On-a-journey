@@ -71,7 +71,7 @@ refresh_fed_context_on_new_statement()      … 毎日の実行（22:15 UTC の 
 
 ## 5. この調査で見つけたこと（範囲外・直していない）
 
-- **`common/system_health.py:164` が `docs/market-monitor/macro-pulse/data/fed_context.csv`（`05_` の接頭辞なし）を見ている**。このファイルは存在せず、`_git_last_commit_date` が `None` を返す行は `continue` で飛ばされるため、**System Health の「ワークフロー」の項は MACRO PULSE の鮮度を見ていない**（他の3つ〈MarketPulse・TANUKI・StonksSilo〉だけ）。FINDINGS に1行。新ページの監視を足すときに一緒に直す。
+- **`common/system_health.py:164` が、存在しない旧名 `fed_context.csv`（`05_` の接頭辞なし）を見ていた**（2026-11-28 に `05_fed_context.csv` に直した）。`_git_last_commit_date` が `None` を返す行は `continue` で飛ばされるため、**System Health の「ワークフロー」の項は MACRO PULSE の鮮度を見ていなかった**（他の3つ〈MarketPulse・TANUKI・StonksSilo〉だけ）。直した後は、`05_fed_context.csv` の最後の commit からの日数（7日超で ⚠️）で判定する（11-28 の時点では 11-22 の commit で6日＝✅）。FINDINGS の1行も解消。
 - `get_implied_cuts` の docstring・`zq_*` の列・`get_zq_futures` の別名は名残（BACKLOG に既出）。
 
 ## 6. 次（STEP 1 の案。着手は Koichi の指示）

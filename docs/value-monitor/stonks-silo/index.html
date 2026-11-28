@@ -110,7 +110,7 @@
     /* 詳細パネル再設計 */
     .detail{display:none;border:1px solid var(--bdr);border-top:none;background:var(--sur);margin-top:-1px}
     .detail.open{display:block}
-    .detail-inner{padding:20px}
+    .detail-inner{padding:20px;white-space:normal}   /* 詳細は tbody td の nowrap を受け継ぐと、長い説明の1行で幅が広がり右端が切れる */
 
     /* 結論レイヤー */
     .conclusion-layer{display:flex;align-items:center;gap:16px;padding:14px 18px;border-bottom:1px solid var(--bdr);background:var(--sur2)}
@@ -1137,6 +1137,8 @@ function buildDetail(ticker, d) {
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業CF黒字<span class="tip-icon">?</span><span class="tip-box">OCF(営業CF)がプラスかどうか。本業のキャッシュ創出力がプラスに転じている状態</span></span></span><span class="detail-val ${pp.hidden_profit_already?'pos':''}">${pp.hidden_profit_already?'✓ 達成済み':'未達'}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業CF黒字化予測(キャッシュ)<span class="tip-icon">?</span><span class="tip-box">キャッシュの黒字化。年次のOCF率の直近4年の回帰を外挿してゼロを超える年を予測。会計の黒字化(営業利益)とは別の概念</span></span></span><span class="detail-val">${fmtBe(pp.ocf_breakeven_year, pp.ocf_breakeven_reason)}</span></div>
           <div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業黒字化予測<span class="tip-icon">?</span><span class="tip-box">会計の黒字化。TTM(直近4四半期)の営業利益率の直近8四半期の回帰で、最新の実際の率から2年以内に0に届くか(当てはまりR²≥0.5)。収益の部品(common/profitability.py)の値。営業CFの黒字化(キャッシュ)とは別の概念</span></span></span><span class="detail-val">${fmtBe(pp.op_breakeven_year ?? pp.gaap_breakeven_year, pp.op_breakeven_reason ?? pp.gaap_breakeven_reason)}</span></div>
+          ${buildNoncashRow(pp.noncash_adjustment)}
+          ${buildRunwayBasisRow(ra)}
           ${pp.discontinuous_growth ? `<div style="font-size:10px;color:var(--amb);margin-top:4px;">⚠ 非連続成長の可能性あり<br><span style="color:var(--mut)">${pp.discontinuous_growth_note}</span></div>` : ''}
         </div>
       </details>
@@ -1551,6 +1553,26 @@ function scoreColor(s) {
   if (s >= 55) return 'var(--amb)';
   if (s >= 35) return 'var(--mut)';
   return '#374151';
+}
+
+// 営業利益（TTM）の報告値と調整後を並べる（[[STONKS-PROFITABILITY-ADJUSTED-DISPLAY-1]]）。差がある銘柄（applied）だけ。
+// 黒字化の予測の回帰は調整後で行う。差の内訳は種類別（評価損益・減損）。表示だけで、計算は common/profitability.py
+function buildNoncashRow(na) {
+  if (!na || na.status !== 'applied') return '';
+  const rep = na.ttm_operating_income, adj = na.ttm_operating_income_adjusted;
+  if (rep == null || adj == null || Math.abs(adj - rep) < 1) return '';
+  const sm = v => `${v < 0 ? '−' : '+'}$${(Math.abs(v) / 1e6).toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})}M`;
+  const parts = (na.exclusions || []).join('・');   // 文は common/profitability.py::noncash_exclusion_texts（report.txt と同じ）
+  return `<div class="detail-row"><span class="detail-key"><span class="tip-wrap">営業利益(TTM)<span class="tip-icon">?</span><span class="tip-box">黒字化予測の回帰は、報告された営業利益から現金を伴わない評価損益・減損を除いた調整後の値で行う。差の内訳は種類別。表示だけで、収益の段階（黒字／赤字）の判定は報告値のまま</span></span></span><span class="detail-val">報告値 ${sm(rep)} → 調整後 ${sm(adj)}</span></div><div style="font-size:10px;color:var(--mut);line-height:1.5;margin:2px 0 4px;">${parts}（評価益・評価損＝条件付き対価等の公正価値の変動、減損＝のれん・無形資産・長期性資産）</div>`;
+}
+
+// 資金の持ちの流出の基準（[[STONKS-DEFICIT-REALITY-EPIC-1]] ①）。ttm＝直近4四半期（期末つき）、annual_fallback＝年次（理由つき）、financial_excluded＝金融は対象外
+function buildRunwayBasisRow(ra) {
+  if (!ra || !ra.burn_basis) return '';
+  const txt = ra.burn_basis === 'ttm' ? `TTM 〜${ra.burn_ttm_end || '—'}`
+    : ra.burn_basis === 'annual_fallback' ? `年次・理由 ${ra.burn_reason || '—'}`
+    : ra.burn_basis === 'financial_excluded' ? '対象外（金融）' : ra.burn_basis;
+  return `<div class="detail-row"><span class="detail-key"><span class="tip-wrap">runwayの基準<span class="tip-icon">?</span><span class="tip-box">資金の持ち（月）の流出の取り方。TTM＝直近4四半期（期末つき）の営業CF−設備投資が基本。年次＝直近4四半期が取れない・現金の期末とずれるとき（理由つき）。金融は対象外</span></span></span><span class="detail-val">${txt}</span></div>`;
 }
 
 function fmtB(v) {

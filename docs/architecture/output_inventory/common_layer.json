@@ -804,7 +804,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 574,
+     "line": 596,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -812,7 +812,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 635,
+     "line": 657,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -820,7 +820,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 648,
+     "line": 670,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1100,7 +1100,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2496,
+     "line": 2501,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1108,7 +1108,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2866,
+     "line": 2871,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1116,7 +1116,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3145,
+     "line": 3155,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1124,7 +1124,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3294,
+     "line": 3304,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1940,7 +1940,7 @@
     {
      "file": "common/profitability.py",
      "func": "write",
-     "line": 619
+     "line": 641
     }
    ],
    "writers_outside_layer": [],
@@ -1983,7 +1983,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 523,
+     "line": 545,
      "func": "load_entry",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1991,7 +1991,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 576,
+     "line": 598,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/profitability.py::_load",
@@ -1999,7 +1999,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 603,
+     "line": 625,
      "func": "_load",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2007,7 +2007,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 635,
+     "line": 657,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/profitability.py::_load",
@@ -2015,7 +2015,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 648,
+     "line": 670,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/profitability.py::_load",
@@ -2159,7 +2159,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2960,
+     "line": 2968,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2167,7 +2167,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2972,
+     "line": 2980,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2175,7 +2175,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3970,
+     "line": 3980,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -3006,7 +3006,7 @@
    "dir": "common",
    "file": "common/profitability.py",
    "decision": "残す（2026-11-27）",
-   "lines": 648,
+   "lines": 670,
    "workflows": [
     ".github/workflows/Market_Data_Weekly_Update.yml",
     ".github/workflows/SEC_Data_Update.yml"
@@ -4365,6 +4365,13 @@
     "note": "残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）"
    },
    {
+    "key": "fair_value_change",
+    "sources": [
+     "docs/common/profitability.json"
+    ],
+    "note": ""
+   },
+   {
     "key": "fcf_points",
     "sources": [
      "docs/common/profitability.json"
@@ -4426,6 +4433,13 @@
      "docs/common/stage_v2/{T}.json"
     ],
     "note": "残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）"
+   },
+   {
+    "key": "impairment",
+    "sources": [
+     "docs/common/profitability.json"
+    ],
+    "note": ""
    },
    {
     "key": "l_industry",
@@ -4590,20 +4604,6 @@
     "note": "残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）"
    },
    {
-    "key": "ttm_operating_income",
-    "sources": [
-     "docs/common/profitability.json"
-    ],
-    "note": "残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）"
-   },
-   {
-    "key": "ttm_operating_income_adjusted",
-    "sources": [
-     "docs/common/profitability.json"
-    ],
-    "note": "これから作る: [[STONKS-PROFITABILITY-ADJUSTED-DISPLAY-1]]（STONKS 画面の黒字化予測の欄に、報告値の営業利益と並べて出す。読み手は画面。今は読む所が無い）"
-   },
-   {
     "key": "unclassified_industries",
     "sources": [
      "config/sector_master.json"
@@ -4618,20 +4618,7 @@
     "note": "残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）"
    }
   ],
-  "written_key_count": 228,
-  "stale_keys": [
-   {
-    "key": "fair_value_change",
-    "sources": [
-     "docs/common/profitability.json"
-    ]
-   },
-   {
-    "key": "impairment",
-    "sources": [
-     "docs/common/profitability.json"
-    ]
-   }
-  ]
+  "written_key_count": 230,
+  "stale_keys": []
  }
 }

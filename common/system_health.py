@@ -161,7 +161,7 @@ def check_d_actions() -> tuple[str, bool, str]:
         ("MarketPulse", "docs/market-monitor/market-pulse/data/market_data.json"),
         ("TANUKI",      "docs/value-monitor/tanuki_valuation/data/tickers.json"),
         ("StonksSilo",  "docs/value-monitor/stonks-silo/data/results.json"),
-        ("MacroPulse",  "docs/market-monitor/macro-pulse/data/fed_context.csv"),
+        ("MacroPulse",  "docs/market-monitor/macro-pulse/data/05_fed_context.csv"),
     ]
     stale = []
     today = date.today()

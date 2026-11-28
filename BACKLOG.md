@@ -2884,7 +2884,7 @@ NH-NL、TAKE PROFIT（未発動の日は画面で隠す）、Tech Pulseの計算
 **着手条件:** [[MARKETPULSE-REVIEW-EPIC-1]]・画面の要望④と一緒
 **関連:** [[MACROPULSE-DATA-LAG-AND-REGIME-DRIFT-1]]（同じ10/28の声明が BALANCED と TIGHTENING に分かれた）・[[MACROPULSE-RECESSION-SCORE-STEPS-1]]
 **登録だけで、実装は許可されていない**
-**STEP 0（読み取りだけ、2026-11-28）:** `docs/architecture/FED_POLICY_PAGE_STEP0.md`（ZQ をやめた理由・取得元の候補〈Kalshi・yfinance の各限月〉・今のデータの流れ・影響を受ける所）。①金利見通しの表示と②政策金利の専用ページは、この1項目で扱う（①は②で解消する前提。急がない。MACRO PULSE の整理〈画面の要望④〉と一緒）。**Kalshi の利用条件は未確認**
+**STEP 0（読み取りだけ、2026-11-28）:** `docs/architecture/FED_POLICY_PAGE_STEP0.md`（ZQ をやめた理由・取得元の候補〈Kalshi・yfinance の各限月〉・今のデータの流れ・影響を受ける所）。①金利見通しの表示と②政策金利の専用ページは、この1項目で扱う（①は②で解消する前提。急がない。MACRO PULSE の整理〈画面の要望④〉と一緒）。**Kalshi は使わない**（Developer Agreement で、取得したデータの保存は自分の取引のためだけ・書面の同意なしの第三者との共有の禁止。公開サイトでの表示は共有にあたる）。取得元の候補は yfinance の FF 金利先物の各限月に絞る（各限月の欠け・更新の遅れの確認は着手するとき）
 
 #### MACRO PULSE の今の表示の問題
 - 「1Y EXPECTED FF」に DGS1 をそのまま使っており、題と中身がずれる（1年先の金利ではなく、今後1年の平均＋国債の上乗せ）
@@ -2901,7 +2901,7 @@ NH-NL、TAKE PROFIT（未発動の日は画面で隠す）、Tech Pulseの計算
 - 新ページの完成時に、サテライトの TAIL の `exit_condition` へ「利下げ局面での売り」を加えるかを検討する（CRWV は当面売らない）
 
 #### 難所・影響・負荷
-- 会合ごとの確率の取得元: CME FedWatch は無料 API なし。候補は Kalshi の公開データ、yfinance の FF 金利先物。**過去に ZQ 先物をやめた理由を先に確かめる**
+- 会合ごとの確率の取得元: CME FedWatch は無料 API なし。候補は yfinance の FF 金利先物の各限月だけ（Kalshi は規約上使えない。決定 2026-11-28）。**過去に ZQ 先物をやめた理由を先に確かめる**
 - 影響の範囲（着手時に洗い出す）: `05_fed_context.csv` の regime を読む流動性の判定（stealthLayer1）、`05_events.csv` の regime・`cuts_implied`、`fomc_calendar.py` と声明の AI 分析
 - 負荷: ワークフローと System Health の監視が1つ増える。最初は読み取りの調査（取得元・データの流れ）から
 

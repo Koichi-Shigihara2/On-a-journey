@@ -383,11 +383,33 @@ def noncash_candidates(company_facts: Optional[Dict[str, Any]], allow_tags: set,
     return sorted(out, key=lambda x: -abs(x["ttm_sum"]))
 
 
+def noncash_exclusion_texts(by_kind: Optional[Dict[str, float]]) -> list:
+    """除いた分を、営業利益に入っていた元の項目の符号で書く（足し戻す額 by_kind の逆の符号）。
+    例: 条件付き対価の公正価値の変動が +151.7M の利益だったなら「評価益 +$151.7M を除外」、減損が −151.3M の損失なら「減損 −$151.3M を除外」。
+    STONKS の画面と report.txt が同じ文を使う（[[STONKS-PROFITABILITY-ADJUSTED-DISPLAY-1]]）"""
+    out = []
+    for kind, addback in (by_kind or {}).items():
+        orig = -float(addback)
+        if kind == "fair_value_change":
+            label = "評価益" if orig >= 0 else "評価損"
+        elif kind == "impairment":
+            label = "減損"
+        else:
+            label = kind
+        sign = "+" if orig >= 0 else "−"
+        out.append(f"{label} {sign}${abs(orig) / 1e6:,.1f}M を除外")
+    return out
+
+
 def noncash_adjustment_view(entry: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """出力 noncash_adjustment の読み方（STONKS・report.txt 用）。{"status", "ttm_addback", "share", "by_kind", "candidates"}"""
     na = (entry or {}).get("noncash_adjustment") or {}
     return {"status": na.get("status") or NONCASH_NONE, "ttm_addback": na.get("ttm_addback"), "share": na.get("share_of_ttm_operating_income"),
-            "by_kind": na.get("by_kind") or {}, "candidates": na.get("candidates") or []}
+            "by_kind": na.get("by_kind") or {}, "candidates": na.get("candidates") or [],
+            "exclusions": noncash_exclusion_texts(na.get("by_kind")),
+            # 画面・report.txt が報告値と調整後を並べて出すための値（[[STONKS-PROFITABILITY-ADJUSTED-DISPLAY-1]]。表示だけ・計算は変えない）
+            "ttm_operating_income": (entry or {}).get("ttm_operating_income"),
+            "ttm_operating_income_adjusted": (entry or {}).get("ttm_operating_income_adjusted")}
 
 
 # ── 1銘柄の計算 ───────────────────────────────────────────────────────
