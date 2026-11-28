@@ -797,3 +797,40 @@ def test_unread_key_notes_state_reason_and_reading_scene():
                 if not note.strip():
                     bad.append((layer, f"{part['part']}:{key}", "注記が空"))
     assert not bad, bad
+
+
+def test_untracked_files_are_counted_but_ignored_files_are_not(tmp_path, monkeypatch):
+    """一覧の検査が数えるファイル（git_ls_files）: git に追加済みのファイルに加えて、未追跡のファイルも数える。.gitignore で除いたものは数えない。
+    commit 前の rcc が、新しい出力のファイルを数えず NG-INV-1 を出さなかった（push の後に NG が出た。2026-11-28）"""
+    _git(tmp_path, "init", "-q")
+    (tmp_path / ".gitignore").write_text("ignored/\n", encoding="utf-8")
+    (tmp_path / "tracked.py").write_text("x = 1\n", encoding="utf-8")
+    _git(tmp_path, "add", ".gitignore", "tracked.py")
+    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@example.com", "commit", "-q", "-m", "x")
+    (tmp_path / "new_output.json").write_text('{"a": 1}', encoding="utf-8")            # 未追跡
+    (tmp_path / "ignored").mkdir()
+    (tmp_path / "ignored" / "cache.json").write_text("{}", encoding="utf-8")              # .gitignore で除く
+    monkeypatch.setattr(inv, "REPO", str(tmp_path))
+    monkeypatch.setattr(inv, "_LS_FILES", {})
+    got = inv.git_ls_files()
+    assert "tracked.py" in got and "new_output.json" in got and "ignored/cache.json" not in got
+    assert inv.git_ls_files("*.json") == ["new_output.json"]
+
+
+def test_untracked_new_output_gets_nginv1_and_its_blob_is_hashed(tmp_path, monkeypatch):
+    """未追跡の新しい出力のファイルがあるとき、NG-INV-1（一覧に無い出力）が出る。キーの要約のための blob の hash も作れる"""
+    _git(tmp_path, "init", "-q")
+    (tmp_path / "w.py").write_text("x = 1\n", encoding="utf-8")
+    _git(tmp_path, "add", "w.py")
+    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@example.com", "commit", "-q", "-m", "x")
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "new.json").write_text('{"k": 1}', encoding="utf-8")              # 未追跡の新しい出力
+    _fresh_key_cache(monkeypatch, tmp_path)
+    monkeypatch.setattr(inv, "_LS_FILES", {})
+    assert "out/new.json" in inv.file_blobs()                                              # 未追跡でも hash を作る
+    assert inv.data_summary("out/new.json")["keys"] == ["k"]
+    saved = _inventory()
+    now = copy.deepcopy(saved)
+    now["outputs"].append(_output("out/new.json"))                                          # 今の一覧に出力が増え、保存した一覧に無い
+    ng, _ = inv.check_inventory(saved, now, known_rules=[], out_json="x_layer.json", tag="")
+    assert any("NG-INV-1" in x and "out/new.json" in x for x in ng)

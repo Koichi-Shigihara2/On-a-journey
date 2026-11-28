@@ -54,8 +54,10 @@ _LS_FILES: Dict[Tuple[str, ...], List[str]] = {}   # git ls-files の結果（�
 
 
 def git_ls_files(*args: str) -> List[str]:
+    """一覧の検査が数えるファイル。**git に追加済みのファイルに加えて、未追跡のファイル（.gitignore で除いたものは除く）も数える**
+    （2026-11-28。commit 前の rcc が、新しい出力のファイルを数えず NG-INV-1 を出さなかったため。push の後に NG が出た）"""
     if args not in _LS_FILES:
-        out = subprocess.run(["git", "ls-files", *args], cwd=REPO, capture_output=True, text=True, encoding="utf-8", check=True).stdout
+        out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard", *args], cwd=REPO, capture_output=True, text=True, encoding="utf-8", check=True).stdout
         _LS_FILES[args] = [line for line in out.splitlines() if line]
     return list(_LS_FILES[args])
 
@@ -2115,6 +2117,9 @@ def file_blobs() -> Dict[str, str]:
     for p in changed:
         out.pop(p, None)
     changed = [p for p in changed if os.path.isfile(os.path.join(REPO, p))]
+    # 未追跡のファイル（.gitignore で除いたものは除く）も、今の中身から hash を作る（git_ls_files が数えるため）
+    r = subprocess.run(["git", "-C", REPO, "ls-files", "--others", "--exclude-standard", "-z"], capture_output=True, check=True)
+    changed += [p for p in r.stdout.decode("utf-8").split("\0") if p and os.path.isfile(os.path.join(REPO, p)) and p not in out]
     if changed:
         r = subprocess.run(["git", "-C", REPO, "hash-object", "--stdin-paths"], input="\n".join(changed).encode("utf-8"),
                            capture_output=True, check=True)

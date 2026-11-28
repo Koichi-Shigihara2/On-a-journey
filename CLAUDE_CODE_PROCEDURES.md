@@ -1328,7 +1328,7 @@ git push origin kaihatsu
   3. `python common/sec_data/audit.py`
   4. **自動生成の一覧を作り直す**: ワークフローを変えたら `python scripts/gen_update_schedule.py`（`UPDATE_SCHEDULE.md`・`config/workflow_dependencies.json`）、
      出力のキー・書き手・読み手を変えたら `python scripts/inventory/build_output_inventory.py --layer <層>`。作り直した結果も同じ commit に入れる
-     （入れ忘れると `tests/test_update_schedule.py` や CHECK-INV が落ちる。**新しい出力のファイルを作ったとき、また新しいファイルのパスを文書・一覧に書くときは、先にそのファイルを `git add` してから rcc・一覧の作り直しを回す**。出力の一覧の検査・WARN-68 は git に追加済みのファイルだけを見るので、未追跡のままだと rcc が NG 0 になり、push の後に NG が出る〔2026-11-28、`estimates_history/` の事例〕）
+     （入れ忘れると `tests/test_update_schedule.py` や CHECK-INV が落ちる。出力の一覧の検査（CHECK-INV。NG-INV-1 など）と文書のパスの検査（WARN-68）は、**2026-11-28 から、git に追加済みのファイルに加えて未追跡のファイル〔.gitignore で除いたものは除く〕も数える**ので、commit 前でも rcc は新しい出力のファイルを見落とさない〔以前は見落とし、push の後に NG が出た。`estimates_history/` の事例〕。念のため、新しい出力のファイルを作ったとき・新しいファイルのパスを文書・一覧に書くときは、先にそのファイルを `git add` してから rcc・一覧の作り直しを回す手順は残す）
 - [ ] コミット・プッシュ完了
 
 ---

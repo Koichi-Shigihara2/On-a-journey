@@ -43,7 +43,9 @@ WORKFLOW_DEPS = "config/workflow_dependencies.json"
 
 
 def _git_ls(*args: str) -> List[str]:
-    r = subprocess.run(["git", "-C", REPO_ROOT, "ls-files", *args], capture_output=True, check=True)
+    """文書が書くパスが「ある」かの判定に使うファイルの一覧。git に追加済みのファイルに加えて、未追跡のファイル
+    （.gitignore で除いたものは除く）も数える（2026-11-28。新しいファイルを書いた文書を、commit 前に rcc で確かめられるように）"""
+    r = subprocess.run(["git", "-C", REPO_ROOT, "ls-files", "--cached", "--others", "--exclude-standard", *args], capture_output=True, check=True)
     return [p for p in r.stdout.decode("utf-8").splitlines() if p]
 
 
