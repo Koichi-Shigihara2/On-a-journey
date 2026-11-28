@@ -84,6 +84,7 @@ if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
 from common.sec_data.layer3_builder import build_ticker_store, get_quarterly_series  # noqa: E402
+from common.sec_data.utils import quarter_label  # noqa: E402
 
 # config側セグメント名 → layer2.json側KPI名。TSLAの
 # "Automotive & Services and Other"は直接のKPIを持たず、
@@ -134,16 +135,11 @@ _MAX_WEIGHT_QUARTERS = 4
 # 四半期（layer2.jsonのセグメント系列の最新共通四半期）がSEC EDGAR Layer3の
 # 全社売上の最新四半期からこの四半期数以上遅れている場合、古い成長率を
 # DCFへ使わず呼び出し元の次順位ソース（segment_config.json）へフォール
-# バックする。比較は両者とも暦年ラベル（_quarter_label()、end日の暦月から
+# バックする。比較は両者とも暦年ラベル（common.sec_data.utils.quarter_label()、end日の暦月から
 # 算出）で行う。layer2.jsonのquarterも暦年ラベル（例: NVDAの"2026Q3"は
 # 2026-07-26期末＝会計年度2027Q2、filed 2026-08-26）であり、common/sec_data/
 # data/のquarterly_{fy}{fp}.json（会計年度ラベル）とは直接比較できない。
 _STALE_LAG_QUARTERS = 2
-
-
-def _quarter_label(end: str) -> str:
-    d = date.fromisoformat(end[:10])
-    return f"{d.year}Q{(d.month - 1) // 3 + 1}"
 
 
 def _quarter_index(quarter: str) -> int:
@@ -224,7 +220,7 @@ def _total_revenue_series(ticker: str) -> Dict[str, float]:
         end = e.get("end")
         if val is None or not end:
             continue
-        result[_quarter_label(end)] = val
+        result[quarter_label(end, strict=True)] = val
     return result
 
 

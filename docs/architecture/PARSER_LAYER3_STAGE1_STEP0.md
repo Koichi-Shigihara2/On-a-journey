@@ -1,6 +1,6 @@
 # PARSER-LAYER3-SINGLE-SOURCE-1 段1の前の守り（valの検査）＋段1（四半期の貸借対照表）のSTEP 0
 
-2026-11-11。読み取りと手元の試算だけ（実装・公開なし）。試作は `tools/sim/parser_l3/val_guard_proto.py`（common には入れていない）。
+2026-11-11。読み取りと手元の試算だけ（実装・公開なし）。試作は `tools/sim/parser_l3/val_guard_proto.py`（common には入れていない。2026-11-28 に削除、本体は common/sec_data/val_guard.py）。
 表: `PARSER_LAYER3_VAL_GUARD_hits.csv`（守りの当たり全件）・`PARSER_LAYER3_STAGE1_cells.csv`（段1で変わる527セル）・`PARSER_LAYER3_STAGE1_movers.csv`（動く銘柄・必須の6銘柄・保有9銘柄と原本の申告での理由）・`PARSER_LAYER3_STAGE1_longtermdebt.csv`（長期借入金のタグと申告の行の差）・`PARSER_LAYER3_STAGE1_equity_nci.csv`（非支配持分を含む純資産の全期）。
 
 ## 1. valの守り（FINDINGS 2026-11-11のCOHR・APPを1つの規則に）

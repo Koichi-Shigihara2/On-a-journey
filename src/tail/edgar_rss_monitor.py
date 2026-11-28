@@ -48,6 +48,7 @@ JST = ZoneInfo("Asia/Tokyo")
 if repo_root not in sys.path:
     sys.path.insert(0, repo_root)
 from common.external_api import sec_get  # noqa: E402
+from common.sec_data.utils import quarter_label  # noqa: E402
 
 # 提出の遅れ: 次の報告期（最新の提出の対象期末＋3か月）の法定の提出期限を過ぎても提出が無ければ、
 # 期限を過ぎてからの平日の数を遅れの日数として、毎回アラートを出す（提出が見つかれば止まる）。
@@ -371,15 +372,6 @@ def save_queue(queue: Dict[str, Any]) -> None:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ユーティリティ
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-def quarter_label(period_end: str) -> str:
-    """'2026-03-31' → '2026Q1'"""
-    try:
-        d = date.fromisoformat(period_end[:10])
-        return f"{d.year}Q{(d.month - 1) // 3 + 1}"
-    except Exception:
-        return period_end
-
 
 def send_discord(message: str) -> bool:
     webhook = os.environ.get("DISCORD_WEBHOOK", "")

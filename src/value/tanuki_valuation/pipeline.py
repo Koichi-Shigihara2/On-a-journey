@@ -667,7 +667,7 @@ class TanukiValuationPipeline:
     @staticmethod
     def _basis_mix_restated_lines(bm: dict, limit: int = 3) -> list:
         """ベースが混在の注記の「組み替えた期・項目・前の申告の値 → 組み替えた値（変化率）」の行。変化の大きい順にlimit件まで。
-        期は期末の月からの暦の四半期（segment_growth_xbrl._quarter_labelと同じ）。"""
+        期は期末の月からの暦の四半期（common.sec_data.utils.quarter_labelと同じ）。"""
         labels = {"Revenue": "売上", "OperatingIncome": "営業利益", "CapEx": "CapEx"}
         rows = sorted(bm.get("restated") or [], key=lambda r: -abs(r.get("change_pct") or 0))
         lines = []

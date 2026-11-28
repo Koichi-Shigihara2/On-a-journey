@@ -449,3 +449,20 @@ def determine_fiscal_year(end_date, fiscal_end_month: int,
           f"(end_date={end_date_only}, fiscal_end_month={fiscal_end_month}, "
           f"anchor=({anchor_month},{anchor_day}), best_diff={best_diff})")
     return _month_only_fallback()
+
+
+def quarter_label(period_end: str, strict: bool = False) -> str:
+    """期末日から暦の四半期の名前を作る（'2026-03-31' → '2026Q1'）。会計年度の名前ではない。
+
+    [[DUPLICATE-RULES-ZERO-EPIC-1]] 段3: TAIL（edgar_rss_monitor・xbrl_segment_fetcher）と
+    TANUKI（segment_growth_xbrl）の3つの同じ実装を1か所にした。
+    strict=False（既定）: 日付として読めなければ入力をそのまま返す（TAILの従来の動き）。
+    strict=True: 読めなければ ValueError（TANUKIの従来の動き）。
+    """
+    try:
+        d = date.fromisoformat(period_end[:10])
+        return f"{d.year}Q{(d.month - 1) // 3 + 1}"
+    except Exception:
+        if strict:
+            raise
+        return period_end

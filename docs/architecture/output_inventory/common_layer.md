@@ -11,7 +11,7 @@
 
 **誰も読まないキー**: **40**（この段階のJSONのキーで今の書き手のコードにある 166 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 0 は数えない）
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 5件＋ファイル名で当たった行 1件／解決できた読み込み 164件＋ファイル名で当たった行 13件（3.3%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 5件＋ファイル名で当たった行 1件／解決できた読み込み 168件＋ファイル名で当たった行 13件（3.2%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
@@ -45,10 +45,10 @@
 
 ### `config/monitor_tickers.yaml`（2件以上）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- Python・保存済みファイル: `common/market_data/fetcher.py` 行 51・1186・1474・1489・1558・1571（経由 `common/market_data/fetcher.py::get_monitor_tickers`）
+- Python・保存済みファイル: `common/market_data/fetcher.py` 行 51・1245・1533・1548・1617・1630（経由 `common/market_data/fetcher.py::get_monitor_tickers`）
 - Python・保存済みファイル: `common/registration/register_ticker.py` 行 101
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 53・73・449・653・667・669（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
-- Python・保存済みファイル: `common/system_health.py` 行 790・1395・1483（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
+- Python・保存済みファイル: `common/system_health.py` 行 790・1385・1473（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 960・1071（経由 `src/value/adjusted_eps_analyzer/pipeline.py::run`）
 - テスト・保存済みファイル: `tests/test_eps_run_status.py` 行 95・115・125・133・151・160・174（経由 `src/value/adjusted_eps_analyzer/pipeline.py::run`）
 - テスト・保存済みファイル: `tests/test_market_data_fetcher.py` 行 245・267・280・290・319・335・350・361・371・393・401・422 ほか17（経由 `common/market_data/fetcher.py::get_monitor_tickers`）
@@ -356,7 +356,7 @@
 
 段階の.pyを動かすワークフローの中で、`$GITHUB_STEP_SUMMARY`に書く段。`.get()`で読むキーが、この段階のJSON（全ファイル）にあるか。
 
-- `.github/workflows/Market_Data_Weekly_Update.yml`（行 104・105・108・109）: 
+- `.github/workflows/Market_Data_Weekly_Update.yml`（行 113・114・117・118）: 
 - `.github/workflows/SEC_Data_Update.yml`（行 133・134・135・136・142）: 
 - `.github/workflows/TANUKI_VALUATION_Update.yml`（行 104・105・106・107・112）: `intrinsic_value_per_share`（**無い**）・`overall`（**無い**）・`validation`（**無い**）
 
@@ -398,5 +398,5 @@
   - `common/method_change.py:203` previous_output → `docs/common/sec_data/rotce/<?>`
   - `common/method_change.py:203` previous_output → `docs/value-monitor/tanuki_valuation/data/<?>`
   - `common/method_change.py:231` read_json → `<?>`
-  - `common/reference_check.py:213` workflow_name_mismatch → `.github/workflows/<?>`
+  - `common/reference_check.py:215` workflow_name_mismatch → `.github/workflows/<?>`
   - `common/screening/dcf_validity_checker.py:66` _load_json → `<?>`

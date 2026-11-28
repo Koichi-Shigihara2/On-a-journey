@@ -54,6 +54,7 @@ OUTPUT_DIR = os.path.join(
 SEC_BASE = "https://www.sec.gov"
 # User-Agent・リクエストの間隔（毎秒10件）・再試行は common/external_api.py の sec_get（[[EXTERNAL-API-CLIENT-UNIFY-1]]）
 from common.external_api import sec_get  # noqa: E402
+from common.sec_data.utils import quarter_label  # noqa: E402
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -175,15 +176,6 @@ def select_tag(tag_history: List[Dict[str, Any]], period_end: str) -> Optional[s
             continue
         return entry["tag"]
     return None
-
-
-def quarter_label(period_end: str) -> str:
-    """'2025-03-31' → '2025Q1'"""
-    try:
-        d = date.fromisoformat(period_end[:10])
-        return f"{d.year}Q{(d.month - 1) // 3 + 1}"
-    except Exception:
-        return period_end
 
 
 def _is_quarterly(start: Optional[str], end: Optional[str]) -> bool:

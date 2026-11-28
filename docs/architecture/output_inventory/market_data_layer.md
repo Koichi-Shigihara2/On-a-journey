@@ -101,7 +101,7 @@
 - Python・保存済みファイル: `common/market_data/estimates_history.py` 行 85・102・105・107・114（経由 `common/market_data/estimates_history.py::_load`、`common/market_data/estimates_history.py::append`、`common/market_data/estimates_history.py::main`）
 - Python・保存済みファイル: `common/market_data/reader.py` 行 257・260・277（経由 `common/market_data/reader.py::_load_json`、`common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `common/market_data/valuation_history.py` 行 38・64・70（経由 `common/market_data/valuation_history.py::_load`、`common/market_data/valuation_history.py::append`）
-- Python・保存済みファイル: `common/sec_data/audit.py` 行 73・191・317・369・390・468（経由 `common/market_data/reader.py::get_attributes`）
+- Python・保存済みファイル: `common/sec_data/audit.py` 行 73・227・353・405・435・513（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `common/sector_master.py` 行 206・291・350・363（経由 `common/sector_master.py::_load_json`、`common/sector_master.py::build_entry`）
 - Python・保存済みファイル: `common/system_health.py` 行 89（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 404・478（経由 `common/market_data/reader.py::get_attributes`）

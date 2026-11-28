@@ -339,8 +339,8 @@
     ".github/workflows/Market_Pulse_Headlines.yml",
     ".github/workflows/Market_Pulse_Update.yml"
    ],
-   "files_tracked": 31,
-   "top_keys_sampled_files": 31,
+   "files_tracked": 32,
+   "top_keys_sampled_files": 32,
    "top_keys": [
     {
      "key": "date_et",
@@ -2194,28 +2194,18 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 219,
+     "line": 220,
      "text": "if latest is None or entry[\"filed\"] > latest[\"filed\"]:"
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 419,
+     "line": 411,
      "text": "if latest[\"filed\"] >= prev_filed:"
     },
     {
      "file": "src/value/adjusted_eps_analyzer/extract_key_facts.py",
      "line": 602,
      "text": "if cand['filed'] > existing_filed:"
-    },
-    {
-     "file": "tools/sim/parser_l3/val_guard_proto.py",
-     "line": 138,
-     "text": "pick = max(full, key=lambda v: v[\"filed\"])"
-    },
-    {
-     "file": "tools/sim/parser_l3/val_guard_proto.py",
-     "line": 139,
-     "text": "latest = max(vs, key=lambda v: v[\"filed\"])"
     }
    ],
    "files": [
@@ -2227,8 +2217,7 @@
     "common/sec_data/share_unit_fix.py",
     "common/sec_data/split_adjust.py",
     "src/tail/edgar_rss_monitor.py",
-    "src/value/adjusted_eps_analyzer/extract_key_facts.py",
-    "tools/sim/parser_l3/val_guard_proto.py"
+    "src/value/adjusted_eps_analyzer/extract_key_facts.py"
    ],
    "in_layer": false,
    "duplicated": true
@@ -2336,28 +2325,16 @@
    ],
    "sites": [
     {
-     "file": "src/tail/edgar_rss_monitor.py",
-     "line": 375,
-     "text": "def quarter_label(period_end: str) -> str:"
-    },
-    {
-     "file": "src/tail/xbrl_segment_fetcher.py",
-     "line": 180,
-     "text": "def quarter_label(period_end: str) -> str:"
-    },
-    {
-     "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
-     "line": 144,
-     "text": "def _quarter_label(end: str) -> str:"
+     "file": "common/sec_data/utils.py",
+     "line": 454,
+     "text": "def quarter_label(period_end: str, strict: bool = False) -> str:"
     }
    ],
    "files": [
-    "src/tail/edgar_rss_monitor.py",
-    "src/tail/xbrl_segment_fetcher.py",
-    "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py"
+    "common/sec_data/utils.py"
    ],
    "in_layer": false,
-   "duplicated": true
+   "duplicated": false
   },
   {
    "id": "fiscal_year",
@@ -2398,7 +2375,7 @@
     },
     {
      "file": "src/tail/edgar_rss_monitor.py",
-     "line": 137,
+     "line": 138,
      "text": "def get_fiscal_year_end(cik: str) -> Optional[str]:"
     }
    ],
@@ -2569,12 +2546,12 @@
    "sites": [
     {
      "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
-     "line": 121,
+     "line": 122,
      "text": "_GROWTH_FLOOR = 0.15"
     },
     {
      "file": "src/value/tanuki_valuation/calculator/segment_growth_xbrl.py",
-     "line": 122,
+     "line": 123,
      "text": "_GROWTH_CAP = 0.50"
     }
    ],
@@ -2985,6 +2962,7 @@
     "tests/test_market_pulse_provisional_kind.py",
     "tests/test_market_pulse_sector_rotation.py",
     "tests/test_market_pulse_stage_conclusions.py",
+    "tests/test_market_pulse_volume_msg.py",
     "tests/test_step_rules.py",
     "tests/test_type_e_wording.py"
    ]
