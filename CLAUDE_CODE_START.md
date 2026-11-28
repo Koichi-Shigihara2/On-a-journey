@@ -5,7 +5,7 @@
 
 ## 今の状態（2026-11-28）
 
-- BACKLOG.md のアクティブは **26件**（`^### [` の機械カウント）。rcc NG 0・WARN 179〔11-27 終業の実測。START の前の数字 181 は誤り〕、pytest 3164件通過・失敗0・skip 3（kaihatsu）。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`（`PYTHONUTF8=1`。約5〜7分。長いので分けるときは`-k`で絞る）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
+- BACKLOG.md のアクティブは **27件**（`^### [` の機械カウント）。rcc NG 0・WARN 179〔11-27 終業の実測。START の前の数字 181 は誤り〕、pytest 3164件通過・失敗0・skip 3（kaihatsu）。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`（`PYTHONUTF8=1`。約5〜7分。長いので分けるときは`-k`で絞る）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
 - **未公開のコードの置き場所**: ブランチ `parser-layer3-stage2a`（`37d45f7310`、PARSER-LAYER3 段2a＋2b、公開は 12-01〈火〉。手順は `docs/architecture/PARSER_LAYER3_STAGE2_STEP0.md` §2c）の1つだけ（Layer3の定義の列〈PARSER段1・CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARES〉は2026-11-23に全部公開済み。記録は`BACKLOG_DONE.md`・各STEP 0・`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`）。PARSER-LAYER3は段3（年次）以降が残る
 - 2026-11-28: 手順47〜54のうち47・48・50・52〜54は合格〔49・51は MACRO の週次待ち〕。STONKS-DEFICIT-REALITY-EPIC-1 ② を公開（`3bc782822d`、手順55）
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正

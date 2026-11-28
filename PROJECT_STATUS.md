@@ -11,6 +11,7 @@
 終了時ブラッシュアップのサマリーもここに記録する。新DB構築プロジェクト
 自体とは無関係な話題であることに留意）**
 
+**【本線】2026-11-28 から: `[[DUPLICATE-RULES-ZERO-EPIC-1]]`（二重実装の規則を0にする。0になったら機能の追加に入る）。段0＝11-29〜30 の手順55a・b・c の確認、段1＝12-01 の段2a の公開、段2＝段2a の確認の後に古い経路とデッドコードを消す、段3＝小さい種（6 は11-28 に済、二重 14→13）、段4〜6＝計算方法を変える段（段2a の公開・確認の後。MAC-11・MAC-20 は手順55c の後）。この EPIC の間は、新しい機能・改善・ゲートや手順の改善を行わない（事故を除く）。詳細は BACKLOG と `docs/architecture/DUPLICATE_RULES_AND_OLD_PATHS_2026-11-28.md`。下の番号の作業は、この本線に重ならない範囲で進める**
 **次の作業（2026-11-27 終業 更新〈それまでは2026-11-23〉。上から順。確認の中身はCLAUDE_CODE_START.md「次回の確認手順」〈未済のものだけ〉が正。履歴は`docs/history/CLAUDE_CODE_START_HISTORY.md`）**:
 1. **11-28（土）朝**: daily_guard の確かめ（手順48⑦。^N225 の `jpx_only` の取り直しの回が走り、下流を起動していない）→ 手順47〜54（47＝STONKS ① の定時の後の確認、48〜54＝MARKETPULSE-REVIEW-EPIC-1 の順1〜6・2-b の確認）→ `[[STONKS-DEFICIT-REALITY-EPIC-1]]` ② の公開（11-30 までに）→ 手順48〜54 が合格したら `[[MARKETPULSE-REVIEW-EPIC-1]]` を BACKLOG_DONE.md へ移設
 2. **11-30（月）朝**: 手順44・45（`[[EARNINGS-REFLECTION-LAG-1]]`・`[[TANUKI-GUIDANCE-REVISION-BLIND-1]]` の11-29 日曜の分）・② の2回目の確認
