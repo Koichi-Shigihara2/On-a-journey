@@ -512,6 +512,8 @@ _MARKET.update(
     READ_HINT="market_data", NAME_SHORT="市場データ層",
     KNOWN_DUPLICATE_RULES=[], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
+        "up_7d": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）",
+        "down_7d": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）",
         "_contract_roll": "残す: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS の動的な読み）",
         "reason_label": "残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む",
         "prev": "残す（監査用）: 足の訂正の前の値（_corrections の prev）。訂正が正しいかを、人（Claude Code）が日足の訂正の前後を比べて確かめる。テストも参照する",

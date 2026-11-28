@@ -217,7 +217,7 @@
 - `_contract_roll`（`common/market_data/daily/{T}.json`）: 残す: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS の動的な読み）
 - `_validation_warnings`（`common/market_data/attributes/{T}.json`、`common/market_data/daily/{T}.json`）: 残す: 保存前の検証の品質の印（読み手は後の画面の整理で決める）
 - `current_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
-- `down_7d`（`common/market_data/attributes/{T}.json`）
+- `down_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）
 - `eps_actual`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
 - `eps_difference`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
 - `eps_estimate`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
@@ -228,7 +228,7 @@
 - `reason_label`（`common/market_data/daily/{T}.json`）: 残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む
 - `strong_buy`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
 - `strong_sell`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
-- `up_7d`（`common/market_data/attributes/{T}.json`）
+- `up_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 

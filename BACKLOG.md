@@ -2943,6 +2943,15 @@ STONKS 画面の黒字化予測の欄に、報告値の営業利益（TTM）と�
 **着手条件:** [[STONKS-DEFICIT-REALITY-EPIC-1]] ②の2回目の確認（手順55）の後。表示の実装は登録の日はしない
 **発見:** 2026-11-28 rcc の INV-6（`ttm_operating_income_adjusted` を読む所が無い）。読み手＝この項目の画面
 
+### [EPS-REVISION-OUTLOOK-MARK-1] EPS予想の改定（上方・下方）を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す
+EPS 予想の改定（上方・下方）を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。11-22 の買いの検討で、INTU・CRM・NOW の見通しの悪化が TANUKI の数字に出なかった欠点への対応。GUIDANCE（成長率−アナリスト予想の差）の表示と並べて、整合する出し方にする。
+**型・処置:** 表示の追加（判定・理論株価・funda・stage は変えない。出し方は着手時の STEP 0 で決める）
+**優先度:** 中
+**分類:** 市場データ層（`common/market_data/fetcher.py` の `eps_revisions`）・`common/guidance_gap.py`・TANUKI の個別銘柄の画面（stock.html）・BUY チェックリスト
+**登録日:** 2026-11-28
+**関連:** [[TANUKI-GUIDANCE-REVISION-BLIND-1]]（案1で成長率−予想の差と、改定の件数〈30日〉を表示済み。今は次の会計年度〈+1y〉の30日の件数だけを読む）
+**今ある材料（2026-11-28 に確かめた）:** `attributes/{T}.json` の `estimates.eps_revisions` に、期間 `0y`・`+1y` の `up_30d`・`down_30d`・`up_7d`・`down_7d`（件数）を保存している。読まれているのは `+1y` の30日の2つだけで、7日の2つ（`up_7d`・`down_7d`）は読み手が無い（出力の一覧の INV-6b に「これから作る：この項目」と注記）。yfinance は `eps_revisions` で `0q`・`+1q` の改定の件数も返すが、今は保存していない（INTU の `0q` は30日で上方2・下方19）。**改定の幅**は `eps_trend`（現在・7日前・30日前・60日前・90日前の EPS 予想。INTU の `0q` は 4.17→3.20）で取れるが、これも保存していない。**登録だけで、実装は許可されていない**
+
 ## 優先度：低（アイデア段階）
 
 （[[MARKETDATA-DAILY-ROW-WRITE-1]]は2026-11-04、次回の確認手順24の本番の確認で完了、BACKLOG_DONE.md「2026-11-04（完了）」参照）
