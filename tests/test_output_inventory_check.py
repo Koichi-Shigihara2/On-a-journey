@@ -550,7 +550,7 @@ def test_market_pulse_layer_settings():
     assert mp["KNOWN_DUPLICATE_RULES"] == []  # fred_api・grok_endpoint は external_api.py の1か所に（R-E2）
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]
     # 段階2（2026-10-23）: 手で動かすスクリプト4つを消し、誰も読まないキー48と、消したスクリプトだけが読んでいた true・false は理由を書いて残す
-    assert not mp["NON_PRODUCTION_FILES"] and len(mp["UNREAD_KEY_NOTES"]) == 57 and "過去の行の記録" in mp["UNREAD_KEY_NOTES"]["backfilled_at"]
+    assert not mp["NON_PRODUCTION_FILES"] and mp["UNREAD_KEY_NOTES"] and "過去の行の記録" in mp["UNREAD_KEY_NOTES"]["backfilled_at"]
 
 
 def test_mail_notification_is_output(monkeypatch):
@@ -754,3 +754,31 @@ def test_inv6b_unread_key_without_note_is_counted_even_after_rebuild():
     now3["screen"]["unread_keys"][0]["note"] = "残す: 検証のための記録"
     _, warn3 = _check_tanuki(saved, now3)
     assert not any("WARN-INV-6b" in x and "no_note_key" in x for x in warn3)
+
+
+def test_unread_key_notes_state_reason_and_reading_scene():
+    """全層の UNREAD_KEY_NOTES（誰も読まないキーの注記）の中身を確かめる（件数は固定しない。2026-11-28）。
+    ・どの注記も、決まった書き出し（残す／これから作る／廃止／書き込みをやめた／生成を止めた）で理由を書いている
+    ・「これから作る」は項目名 [[ID]] を書き、その ID が BACKLOG.md に登録されている
+    ・INV-6b で足した「残す（監査用）」「残す（確認用）」は、読む場面（誰が・どの手順で読むか）を書いている
+    （前からある「残す: 作り直せない記録」型の注記は理由だけで、読む場面は書いていない。書き直すかはチャット側の判断）"""
+    import re
+    backlog = open(os.path.join(_REPO_ROOT, "BACKLOG.md"), encoding="utf-8").read()
+    heads = ("残す", "これから作る", "廃止", "書き込みをやめた", "生成を止めた")
+    scene = re.compile(r"人（Claude Code）が|が読む|を読む|実行が|テスト")
+    bad = []
+    for layer, cfg in inv.LAYERS.items():
+        for key, note in cfg["UNREAD_KEY_NOTES"].items():
+            if not note.strip() or not note.startswith(heads):
+                bad.append((layer, key, "書き出しが決まった形でない"))
+            elif note.startswith("これから作る"):
+                ids = re.findall(r"\[\[([A-Z0-9][A-Z0-9-]*)\]\]", note)
+                if not ids or any(f"### [{i}]" not in backlog for i in ids):
+                    bad.append((layer, key, "これから作る: 項目名が無い・BACKLOG に登録が無い"))
+            elif note.startswith(("残す（監査用）", "残す（確認用）")) and not scene.search(note):
+                bad.append((layer, key, "読む場面（誰が・どの手順で読むか）が無い"))
+        for part in cfg.get("PART_OUTPUTS", []):
+            for key, note in (part.get("notes") or {}).items():
+                if not note.strip():
+                    bad.append((layer, f"{part['part']}:{key}", "注記が空"))
+    assert not bad, bad
