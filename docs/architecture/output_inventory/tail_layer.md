@@ -105,7 +105,7 @@
 ### `docs/portfolio/tail/data/ctrl/{T}/latest.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `effective`(2)・`fetched_at`(3)・`filing_date`(3)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`material_weaknesses`(2)・`quarter`(2)・`report_date`(1)・`significant_deficiencies`(2)・`ticker`(4)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1389・1483（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 894・1389
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::check_f_tail`）
@@ -114,7 +114,7 @@
 ### `docs/portfolio/tail/data/ctrl/{T}/{Q}.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `effective`(2)・`fetched_at`(3)・`filing_date`(3)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`material_weaknesses`(2)・`quarter`(2)・`quarters`(2)・`report_date`(1)・`significant_deficiencies`(2)・`ticker`(4)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1389・1483（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 894・1381・1388・1389・2422
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 474
@@ -243,7 +243,7 @@
 ### `docs/portfolio/tail/data/{item_key}/{T}/latest.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Items.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accession`(2)・`changed`(3)・`effective`(3)・`excerpt`(2)・`excerpt_ja`(2)・`fetched_at`(3)・`filing_date`(5)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`item_key`(1)・`material_weaknesses`(3)・`period`(2)・`quarter`(3)・`report_date`(2)・`segment_outlook`(1)・`significant_deficiencies`(3)・`source`(3)・`ticker`(7)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1389・1483（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308・414・425・459（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
 - Python・保存済みファイル: `tools/sim/sim.py` 行 153・155・165・175・176・205・222・223・253・255・260（経由 `tools/sim/sim.py::_latest`、`tools/sim/sim.py::_tickers`、`tools/sim/sim.py::cmd_scope`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 340
@@ -257,7 +257,7 @@
 ### `docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Items.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accession`(4)・`changed`(3)・`effective`(3)・`excerpt`(4)・`excerpt_ja`(4)・`fetched_at`(4)・`filing_date`(8)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`item_key`(3)・`material_weaknesses`(3)・`period`(4)・`periods`(2)・`quarter`(5)・`quarters`(3)・`report_date`(4)・`segment_outlook`(1)・`significant_deficiencies`(3)・`source`(4)・`ticker`(9)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1389・1483（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308・414・424・425・426・434・459（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
 - Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 361・363・371・407・472・601・608（経由 `src/tail/sec_items_fetcher.py::_stored_period`）
 - Python・保存済みファイル: `tools/sim/sim.py` 行 153・155・165・175・176・205・222・223・253・255・260（経由 `tools/sim/sim.py::_latest`、`tools/sim/sim.py::_tickers`、`tools/sim/sim.py::cmd_scope`）

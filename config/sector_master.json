@@ -1,142 +1,11 @@
 {
  "_schema_version": "1.0",
- "_description": "業種のマスター（common/sector_master.py が機械で作る。手で書かない）。主は yfinance の sector・industry、SIC・社名は控え。区分と写像は rules の業種の名前の規則で決める。読み手は [[SECTOR-MASTER-ADOPT-1]] で寄せる",
- "generated_at": "2026-11-25T01:20:59+00:00",
- "rules": {
-  "cyclical_keywords": [
-   "Agricultural",
-   "Airlines",
-   "Aluminum",
-   "Auto",
-   "Automobile",
-   "Chemicals",
-   "Coal",
-   "Copper",
-   "Gas",
-   "Gold",
-   "Lumber",
-   "Marine",
-   "Metals",
-   "Mining",
-   "Oil",
-   "Paper",
-   "Semiconductor Equipment",
-   "Shipping",
-   "Silver",
-   "Steel",
-   "Timber"
-  ],
-  "cyclical_industries_stage_a": [
-   "Semiconductor Equipment & Materials",
-   "Copper",
-   "Oil & Gas Integrated",
-   "Farm & Heavy Construction Machinery"
-  ],
-  "unclassified_industry_prefixes": [
-   "Banks",
-   "Insurance",
-   "REIT"
-  ],
-  "unclassified_industries": [
-   "Biotechnology"
-  ],
-  "financial_sectors": [
-   "Financial Services"
-  ],
-  "financial_excluded_industries": [
-   "Financial Data & Stock Exchanges"
-  ],
-  "financial_sic_range": [
-   6000,
-   6799
-  ],
-  "eps_category_by_industry": {
-   "Aerospace & Defense": "宇宙・航空",
-   "Airports & Air Services": "宇宙・航空",
-   "Communication Equipment": "通信・インフラ",
-   "Telecom Services": "通信・インフラ"
-  },
-  "eps_category_by_sector": {
-   "Technology": "Technology",
-   "Communication Services": "Technology",
-   "Financial Services": "フィンテック / 銀行",
-   "Healthcare": "ヘルスケア / バイオ",
-   "Consumer Cyclical": "一般消費財 / 製造 / EV",
-   "Consumer Defensive": "一般消費財 / 製造 / EV",
-   "Industrials": "一般消費財 / 製造 / EV",
-   "Basic Materials": "一般消費財 / 製造 / EV",
-   "Energy": "一般消費財 / 製造 / EV",
-   "Utilities": "通信・インフラ",
-   "Real Estate": "不動産 (REITs)"
-  },
-  "damodaran_by_industry": {
-   "Advertising Agencies": "Advertising",
-   "Aerospace & Defense": "Aerospace/Defense",
-   "Airports & Air Services": "Air Transport",
-   "Auto Manufacturers": "Auto & Truck",
-   "Beverages - Non-Alcoholic": "Beverage (Soft)",
-   "Biotechnology": "Drugs (Biotechnology)",
-   "Communication Equipment": "Telecom. Equipment",
-   "Computer Hardware": "Computers/Peripherals",
-   "Conglomerates": "Diversified",
-   "Consumer Electronics": "Computers/Peripherals",
-   "Copper": "Metals & Mining",
-   "Credit Services": "Financial Svcs. (Non-bank & Insurance)",
-   "Discount Stores": "Retail (General)",
-   "Drug Manufacturers - General": "Drugs (Pharmaceutical)",
-   "Electrical Equipment & Parts": "Electrical Equipment",
-   "Electronic Components": "Electronics (General)",
-   "Farm & Heavy Construction Machinery": "Machinery",
-   "Financial Data & Stock Exchanges": "Information Services",
-   "Health Information Services": "Heathcare Information and Technology",
-   "Household & Personal Products": "Household Products",
-   "Information Technology Services": "Computer Services",
-   "Internet Content & Information": "Software (Internet)",
-   "Internet Retail": "Retail (General)",
-   "Oil & Gas Integrated": "Oil/Gas (Integrated)",
-   "Real Estate Services": "Real Estate (Operations & Services)",
-   "Restaurants": "Restaurant/Dining",
-   "Scientific & Technical Instruments": "Electronics (General)",
-   "Security & Protection Services": "Business & Consumer Services",
-   "Semiconductor Equipment & Materials": "Semiconductor Equip",
-   "Semiconductors": "Semiconductor",
-   "Software - Application": "Software (System & Application)",
-   "Software - Infrastructure": "Software (System & Application)",
-   "Specialty Business Services": "Business & Consumer Services",
-   "Specialty Industrial Machinery": "Machinery",
-   "Telecom Services": "Telecom. Services",
-   "Tobacco": "Tobacco",
-   "Travel Services": "Hotel/Gaming",
-   "Utilities - Independent Power Producers": "Power"
-  },
-  "etf_by_sector": {
-   "Technology": "XLK",
-   "Communication Services": "XLC",
-   "Consumer Cyclical": "XLY",
-   "Consumer Defensive": "XLP",
-   "Financial Services": "XLF",
-   "Healthcare": "XLV",
-   "Industrials": "XLI",
-   "Energy": "XLE",
-   "Basic Materials": "XLB",
-   "Real Estate": "XLRE",
-   "Utilities": "XLU"
-  },
-  "mega_tech_min_market_cap": 1000000000000.0,
-  "mega_tech_industry_prefixes": [
-   "Software - ",
-   "Internet "
-  ],
-  "mega_tech_industries": [
-   "Semiconductors",
-   "Consumer Electronics"
-  ]
- },
+ "_description": "業種のマスター（common/sector_master.py が機械で作る。手で書かない）。主は yfinance の sector・industry、SIC・社名は控え。区分と写像は本モジュールの定数（業種の名前の規則）で決める。読み手は [[SECTOR-MASTER-ADOPT-1]] で寄せる",
+ "generated_at": "2026-11-28T05:11:20+00:00",
  "tickers": {
   "AAPL": {
    "sector": "Technology",
    "industry": "Consumer Electronics",
-   "attributes_fetched_at": "2026-11-25T01:13:54.202020+00:00",
    "sic": 3571,
    "sic_description": "Electronic Computers",
    "entity_name": "Apple Inc.",
@@ -154,7 +23,6 @@
   "ABBV": {
    "sector": "Healthcare",
    "industry": "Drug Manufacturers - General",
-   "attributes_fetched_at": "2026-11-25T01:13:34.344147+00:00",
    "sic": 2834,
    "sic_description": "Pharmaceutical Preparations",
    "entity_name": "AbbVie Inc.",
@@ -172,7 +40,6 @@
   "ADBE": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:13:35.479365+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "ADOBE INC.",
@@ -190,7 +57,6 @@
   "ADSK": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:14:01.088571+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Autodesk, Inc.",
@@ -208,7 +74,6 @@
   "ALAB": {
    "sector": "Technology",
    "industry": "Semiconductors",
-   "attributes_fetched_at": "2026-11-25T01:18:16.544555+00:00",
    "sic": 3674,
    "sic_description": "Semiconductors & Related Devices",
    "entity_name": "Astera Labs, Inc.",
@@ -226,7 +91,6 @@
   "AMAT": {
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
-   "attributes_fetched_at": "2026-11-25T01:13:54.866530+00:00",
    "sic": 3674,
    "sic_description": "Semiconductors & Related Devices",
    "entity_name": "APPLIED MATERIALS INC /DE",
@@ -244,7 +108,6 @@
   "AMD": {
    "sector": "Technology",
    "industry": "Semiconductors",
-   "attributes_fetched_at": "2026-11-25T01:13:36.052720+00:00",
    "sic": 3674,
    "sic_description": "Semiconductors & Related Devices",
    "entity_name": "ADVANCED MICRO DEVICES INC",
@@ -262,7 +125,6 @@
   "AMZN": {
    "sector": "Consumer Cyclical",
    "industry": "Internet Retail",
-   "attributes_fetched_at": "2026-11-25T01:13:45.207559+00:00",
    "sic": 5961,
    "sic_description": "Retail-Catalog & Mail-Order Houses",
    "entity_name": "AMAZON COM INC",
@@ -280,7 +142,6 @@
   "APP": {
    "sector": "Communication Services",
    "industry": "Advertising Agencies",
-   "attributes_fetched_at": "2026-11-25T01:13:55.529799+00:00",
    "sic": 7370,
    "sic_description": "Services-Computer Programming, Data Processing, Etc.",
    "entity_name": "AppLovin Corp",
@@ -298,7 +159,6 @@
   "ASTS": {
    "sector": "Technology",
    "industry": "Communication Equipment",
-   "attributes_fetched_at": "2026-11-25T01:18:17.083432+00:00",
    "sic": 4899,
    "sic_description": "Communications Services, NEC",
    "entity_name": "AST SpaceMobile, Inc.",
@@ -316,7 +176,6 @@
   "AVAV": {
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
-   "attributes_fetched_at": "2026-11-25T01:18:17.661449+00:00",
    "sic": 3721,
    "sic_description": "Aircraft",
    "entity_name": "AeroVironment Inc",
@@ -334,7 +193,6 @@
   "BKNG": {
    "sector": "Consumer Cyclical",
    "industry": "Travel Services",
-   "attributes_fetched_at": "2026-11-25T01:14:12.484429+00:00",
    "sic": 4700,
    "sic_description": "Transportation Services",
    "entity_name": "Booking Holdings Inc.",
@@ -352,7 +210,6 @@
   "BROS": {
    "sector": "Consumer Cyclical",
    "industry": "Restaurants",
-   "attributes_fetched_at": "2026-11-25T01:18:34.721918+00:00",
    "sic": 5810,
    "sic_description": "Retail-Eating & Drinking Places",
    "entity_name": "Dutch Bros Inc.",
@@ -370,7 +227,6 @@
   "BSY": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:18:18.210769+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "BENTLEY SYSTEMS INC",
@@ -388,7 +244,6 @@
   "CAKE": {
    "sector": "Consumer Cyclical",
    "industry": "Restaurants",
-   "attributes_fetched_at": "2026-11-25T01:18:18.846606+00:00",
    "sic": 5812,
    "sic_description": "Retail-Eating  Places",
    "entity_name": "CHEESECAKE FACTORY INC",
@@ -406,7 +261,6 @@
   "CART": {
    "sector": "Consumer Cyclical",
    "industry": "Internet Retail",
-   "attributes_fetched_at": "2026-11-25T01:18:19.390230+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "Maplebear Inc.",
@@ -424,7 +278,6 @@
   "CAT": {
    "sector": "Industrials",
    "industry": "Farm & Heavy Construction Machinery",
-   "attributes_fetched_at": "2026-11-25T01:14:22.520743+00:00",
    "sic": 3531,
    "sic_description": "Construction Machinery & Equip",
    "entity_name": "CATERPILLAR INC",
@@ -442,7 +295,6 @@
   "CDNS": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:14:18.055505+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "CADENCE DESIGN SYSTEMS INC",
@@ -460,7 +312,6 @@
   "CEG": {
    "sector": "Utilities",
    "industry": "Utilities - Independent Power Producers",
-   "attributes_fetched_at": "2026-11-25T01:14:42.459446+00:00",
    "sic": 4911,
    "sic_description": "Electric Services",
    "entity_name": "Constellation Energy Corp",
@@ -478,7 +329,6 @@
   "CELH": {
    "sector": "Consumer Defensive",
    "industry": "Beverages - Non-Alcoholic",
-   "attributes_fetched_at": "2026-11-25T01:18:20.113949+00:00",
    "sic": 2086,
    "sic_description": "Bottled & Canned Soft Drinks & Carbonated Waters",
    "entity_name": "Celsius Holdings, Inc.",
@@ -496,7 +346,6 @@
   "CIX": {
    "sector": "Industrials",
    "industry": "Security & Protection Services",
-   "attributes_fetched_at": "2026-11-25T01:18:30.695388+00:00",
    "sic": 3420,
    "sic_description": "Cutlery, Handtools & General Hardware",
    "entity_name": "COMPX INTERNATIONAL INC",
@@ -514,7 +363,6 @@
   "COHR": {
    "sector": "Technology",
    "industry": "Scientific & Technical Instruments",
-   "attributes_fetched_at": "2026-11-25T01:14:38.188428+00:00",
    "sic": 3827,
    "sic_description": "Optical Instruments & Lenses",
    "entity_name": "COHERENT CORP.",
@@ -532,7 +380,6 @@
   "CPRT": {
    "sector": "Industrials",
    "industry": "Specialty Business Services",
-   "attributes_fetched_at": "2026-11-25T01:14:43.588704+00:00",
    "sic": 5500,
    "sic_description": "Retail-Auto Dealers & Gasoline Stations",
    "entity_name": "COPART INC",
@@ -550,7 +397,6 @@
   "CRM": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:17:19.555906+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Salesforce, Inc.",
@@ -568,7 +414,6 @@
   "CRWV": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:20.634264+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "CoreWeave, Inc.",
@@ -586,7 +431,6 @@
   "CSGP": {
    "sector": "Real Estate",
    "industry": "Real Estate Services",
-   "attributes_fetched_at": "2026-11-25T01:14:45.271392+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "COSTAR GROUP, INC.",
@@ -604,7 +448,6 @@
   "DDOG": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:14:50.889809+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Datadog, Inc.",
@@ -622,7 +465,6 @@
   "DELL": {
    "sector": "Technology",
    "industry": "Computer Hardware",
-   "attributes_fetched_at": "2026-11-25T01:14:53.323488+00:00",
    "sic": 3571,
    "sic_description": "Electronic Computers",
    "entity_name": "Dell Technologies Inc.",
@@ -640,7 +482,6 @@
   "DOCN": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:31.260232+00:00",
    "sic": 7370,
    "sic_description": "Services-Computer Programming, Data Processing, Etc.",
    "entity_name": "DigitalOcean Holdings, Inc.",
@@ -658,7 +499,6 @@
   "ELF": {
    "sector": "Consumer Defensive",
    "industry": "Household & Personal Products",
-   "attributes_fetched_at": "2026-11-25T01:18:21.273408+00:00",
    "sic": 2844,
    "sic_description": "Perfumes, Cosmetics & Other Toilet Preparations",
    "entity_name": "e.l.f. Beauty, Inc.",
@@ -676,7 +516,6 @@
   "ENTG": {
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
-   "attributes_fetched_at": "2026-11-25T01:18:38.055102+00:00",
    "sic": 3089,
    "sic_description": "Plastics Products, NEC",
    "entity_name": "ENTEGRIS INC",
@@ -694,7 +533,6 @@
   "ESTC": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:18:21.860072+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Elastic N.V.",
@@ -712,7 +550,6 @@
   "FICO": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:15:18.634852+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "FAIR ISAAC CORP",
@@ -730,7 +567,6 @@
   "FLYW": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:35.248921+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "Flywire Corp",
@@ -748,7 +584,6 @@
   "FROG": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:18:35.870161+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "JFrog Ltd",
@@ -766,7 +601,6 @@
   "FRSH": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:18:31.821451+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Freshworks Inc.",
@@ -784,7 +618,6 @@
   "GEV": {
    "sector": "Industrials",
    "industry": "Specialty Industrial Machinery",
-   "attributes_fetched_at": "2026-11-25T01:15:31.646768+00:00",
    "sic": 3600,
    "sic_description": "Electronic & Other Electrical Equipment (No Computer Equip)",
    "entity_name": "GE Vernova Inc.",
@@ -802,7 +635,6 @@
   "GOOGL": {
    "sector": "Communication Services",
    "industry": "Internet Content & Information",
-   "attributes_fetched_at": "2026-11-25T01:13:43.335062+00:00",
    "sic": 7370,
    "sic_description": "Services-Computer Programming, Data Processing, Etc.",
    "entity_name": "Alphabet Inc.",
@@ -820,7 +652,6 @@
   "GTLB": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:22.464506+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Gitlab Inc.",
@@ -838,7 +669,6 @@
   "HEI": {
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
-   "attributes_fetched_at": "2026-11-25T01:18:32.356554+00:00",
    "sic": 3724,
    "sic_description": "Aircraft Engines & Engine Parts",
    "entity_name": "HEICO CORP",
@@ -856,7 +686,6 @@
   "HON": {
    "sector": "Industrials",
    "industry": "Conglomerates",
-   "attributes_fetched_at": "2026-11-25T01:15:44.390581+00:00",
    "sic": 3724,
    "sic_description": "Aircraft Engines & Engine Parts",
    "entity_name": "HONEYWELL INTERNATIONAL INC",
@@ -874,7 +703,6 @@
   "HQY": {
    "sector": "Healthcare",
    "industry": "Health Information Services",
-   "attributes_fetched_at": "2026-11-25T01:18:32.990209+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "HEALTHEQUITY, INC.",
@@ -892,7 +720,6 @@
   "HWM": {
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
-   "attributes_fetched_at": "2026-11-25T01:15:46.000549+00:00",
    "sic": 3350,
    "sic_description": "Rolling Drawing & Extruding of  Nonferrous Metals",
    "entity_name": "Howmet Aerospace Inc.",
@@ -910,7 +737,6 @@
   "INTU": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:15:56.658510+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "INTUIT INC.",
@@ -928,7 +754,6 @@
   "IONQ": {
    "sector": "Technology",
    "industry": "Computer Hardware",
-   "attributes_fetched_at": "2026-11-25T01:18:23.041146+00:00",
    "sic": 7373,
    "sic_description": "Services-Computer Integrated Systems Design",
    "entity_name": "IonQ, Inc.",
@@ -946,7 +771,6 @@
   "IOT": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:23.682846+00:00",
    "sic": 7373,
    "sic_description": "Services-Computer Integrated Systems Design",
    "entity_name": "Samsara Inc.",
@@ -964,7 +788,6 @@
   "JNJ": {
    "sector": "Healthcare",
    "industry": "Drug Manufacturers - General",
-   "attributes_fetched_at": "2026-11-25T01:16:02.286734+00:00",
    "sic": 2834,
    "sic_description": "Pharmaceutical Preparations",
    "entity_name": "JOHNSON & JOHNSON",
@@ -982,7 +805,6 @@
   "JOBY": {
    "sector": "Industrials",
    "industry": "Airports & Air Services",
-   "attributes_fetched_at": "2026-11-25T01:18:24.226921+00:00",
    "sic": 3721,
    "sic_description": "Aircraft",
    "entity_name": "Joby Aviation, Inc.",
@@ -1000,7 +822,6 @@
   "KLAC": {
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
-   "attributes_fetched_at": "2026-11-25T01:16:08.070448+00:00",
    "sic": 3827,
    "sic_description": "Optical Instruments & Lenses",
    "entity_name": "KLA CORP",
@@ -1018,7 +839,6 @@
   "KO": {
    "sector": "Consumer Defensive",
    "industry": "Beverages - Non-Alcoholic",
-   "attributes_fetched_at": "2026-11-25T01:14:37.049870+00:00",
    "sic": 2080,
    "sic_description": "Beverages",
    "entity_name": "COCA COLA CO",
@@ -1036,7 +856,6 @@
   "LITE": {
    "sector": "Technology",
    "industry": "Communication Equipment",
-   "attributes_fetched_at": "2026-11-25T01:16:17.977333+00:00",
    "sic": 3669,
    "sic_description": "Communications Equipment, NEC",
    "entity_name": "Lumentum Holdings Inc.",
@@ -1054,7 +873,6 @@
   "LLY": {
    "sector": "Healthcare",
    "industry": "Drug Manufacturers - General",
-   "attributes_fetched_at": "2026-11-25T01:16:14.051191+00:00",
    "sic": 2834,
    "sic_description": "Pharmaceutical Preparations",
    "entity_name": "ELI LILLY & Co",
@@ -1072,7 +890,6 @@
   "LMT": {
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
-   "attributes_fetched_at": "2026-11-25T01:16:15.766396+00:00",
    "sic": 3760,
    "sic_description": "Guided Missiles & Space Vehicles & Parts",
    "entity_name": "LOCKHEED MARTIN CORP",
@@ -1090,7 +907,6 @@
   "LOAR": {
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
-   "attributes_fetched_at": "2026-11-25T01:18:36.431796+00:00",
    "sic": 3728,
    "sic_description": "Aircraft Parts & Auxiliary Equipment, NEC",
    "entity_name": "Loar Holdings Inc.",
@@ -1108,7 +924,6 @@
   "LRCX": {
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
-   "attributes_fetched_at": "2026-11-25T01:16:10.862518+00:00",
    "sic": 3559,
    "sic_description": "Special Industry Machinery, NEC",
    "entity_name": "LAM RESEARCH CORP",
@@ -1126,7 +941,6 @@
   "LYFT": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:18:36.967346+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "Lyft, Inc.",
@@ -1144,7 +958,6 @@
   "META": {
    "sector": "Communication Services",
    "industry": "Internet Content & Information",
-   "attributes_fetched_at": "2026-11-25T01:16:26.819089+00:00",
    "sic": 7370,
    "sic_description": "Services-Computer Programming, Data Processing, Etc.",
    "entity_name": "Meta Platforms, Inc.",
@@ -1162,7 +975,6 @@
   "MRVL": {
    "sector": "Technology",
    "industry": "Semiconductors",
-   "attributes_fetched_at": "2026-11-25T01:16:22.183438+00:00",
    "sic": 3674,
    "sic_description": "Semiconductors & Related Devices",
    "entity_name": "Marvell Technology, Inc.",
@@ -1180,7 +992,6 @@
   "MSCI": {
    "sector": "Financial Services",
    "industry": "Financial Data & Stock Exchanges",
-   "attributes_fetched_at": "2026-11-25T01:16:35.947896+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "MSCI Inc.",
@@ -1198,7 +1009,6 @@
   "MSFT": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:16:30.172863+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "MICROSOFT CORP",
@@ -1216,7 +1026,6 @@
   "NET": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:24.792353+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Cloudflare, Inc.",
@@ -1234,7 +1043,6 @@
   "NOW": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:17:23.271247+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "ServiceNow, Inc.",
@@ -1252,7 +1060,6 @@
   "NVDA": {
    "sector": "Technology",
    "industry": "Semiconductors",
-   "attributes_fetched_at": "2026-11-25T01:16:45.358185+00:00",
    "sic": 3674,
    "sic_description": "Semiconductors & Related Devices",
    "entity_name": "NVIDIA CORP",
@@ -1270,7 +1077,6 @@
   "PAYS": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:33.579956+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "Paysign, Inc.",
@@ -1288,7 +1094,6 @@
   "PLTR": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:16:53.150287+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Palantir Technologies Inc.",
@@ -1306,7 +1111,6 @@
   "RBRK": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:25.467982+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Rubrik, Inc.",
@@ -1324,7 +1128,6 @@
   "RCAT": {
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
-   "attributes_fetched_at": "2026-11-25T01:18:26.110032+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Red Cat Holdings, Inc.",
@@ -1342,7 +1145,6 @@
   "RKLB": {
    "sector": "Industrials",
    "industry": "Aerospace & Defense",
-   "attributes_fetched_at": "2026-11-25T01:18:26.657381+00:00",
    "sic": 3760,
    "sic_description": "Guided Missiles & Space Vehicles & Parts",
    "entity_name": "Rocket Lab Corp",
@@ -1360,7 +1162,6 @@
   "RMBS": {
    "sector": "Technology",
    "industry": "Semiconductors",
-   "attributes_fetched_at": "2026-11-25T01:18:37.519408+00:00",
    "sic": 3674,
    "sic_description": "Semiconductors & Related Devices",
    "entity_name": "RAMBUS INC",
@@ -1378,7 +1179,6 @@
   "S": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:27.195742+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "SentinelOne, Inc.",
@@ -1396,7 +1196,6 @@
   "SITM": {
    "sector": "Technology",
    "industry": "Semiconductors",
-   "attributes_fetched_at": "2026-11-25T01:18:27.780112+00:00",
    "sic": 3674,
    "sic_description": "Semiconductors & Related Devices",
    "entity_name": "SITIME Corp",
@@ -1414,7 +1213,6 @@
   "SNPS": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:17:33.835733+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "SYNOPSYS INC",
@@ -1432,7 +1230,6 @@
   "SOFI": {
    "sector": "Financial Services",
    "industry": "Credit Services",
-   "attributes_fetched_at": "2026-11-25T01:18:28.365806+00:00",
    "sic": 6199,
    "sic_description": "Finance Services",
    "entity_name": "SoFi Technologies, Inc.",
@@ -1450,7 +1247,6 @@
   "SOUN": {
    "sector": "Technology",
    "industry": "Software - Application",
-   "attributes_fetched_at": "2026-11-25T01:18:28.926358+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "SOUNDHOUND AI, INC.",
@@ -1468,7 +1264,6 @@
   "TASK": {
    "sector": "Technology",
    "industry": "Information Technology Services",
-   "attributes_fetched_at": "2026-11-25T01:18:34.174649+00:00",
    "sic": 7374,
    "sic_description": "Services-Computer Processing & Data Preparation",
    "entity_name": "TaskUs, Inc.",
@@ -1486,7 +1281,6 @@
   "TDY": {
    "sector": "Technology",
    "industry": "Scientific & Technical Instruments",
-   "attributes_fetched_at": "2026-11-25T01:17:38.807366+00:00",
    "sic": 3812,
    "sic_description": "Search, Detection, Navigation, Guidance, Aeronautical Sys",
    "entity_name": "TELEDYNE TECHNOLOGIES INC",
@@ -1504,7 +1298,6 @@
   "TER": {
    "sector": "Technology",
    "industry": "Semiconductor Equipment & Materials",
-   "attributes_fetched_at": "2026-11-25T01:17:39.351682+00:00",
    "sic": 3825,
    "sic_description": "Instruments For Meas & Testing of  Electricity & Elec Signals",
    "entity_name": "TERADYNE, INC",
@@ -1522,7 +1315,6 @@
   "TSLA": {
    "sector": "Consumer Cyclical",
    "industry": "Auto Manufacturers",
-   "attributes_fetched_at": "2026-11-25T01:17:39.920852+00:00",
    "sic": 3711,
    "sic_description": "Motor Vehicles & Passenger Car Bodies",
    "entity_name": "Tesla, Inc.",
@@ -1540,7 +1332,6 @@
   "V": {
    "sector": "Financial Services",
    "industry": "Credit Services",
-   "attributes_fetched_at": "2026-11-25T01:18:00.217522+00:00",
    "sic": 7389,
    "sic_description": "Services-Business Services, NEC",
    "entity_name": "VISA INC.",
@@ -1558,7 +1349,6 @@
   "VRT": {
    "sector": "Industrials",
    "industry": "Electrical Equipment & Parts",
-   "attributes_fetched_at": "2026-11-25T01:17:58.485793+00:00",
    "sic": 3679,
    "sic_description": "Electronic Components, NEC",
    "entity_name": "Vertiv Holdings Co",
@@ -1576,7 +1366,6 @@
   "VST": {
    "sector": "Utilities",
    "industry": "Utilities - Independent Power Producers",
-   "attributes_fetched_at": "2026-11-25T01:18:00.794965+00:00",
    "sic": 4911,
    "sic_description": "Electric Services",
    "entity_name": "Vistra Corp.",
@@ -1594,7 +1383,6 @@
   "WMT": {
    "sector": "Consumer Defensive",
    "industry": "Discount Stores",
-   "attributes_fetched_at": "2026-11-25T01:18:04.660700+00:00",
    "sic": 5331,
    "sic_description": "Retail-Variety Stores",
    "entity_name": "Walmart Inc.",
@@ -1612,7 +1400,6 @@
   "ZETA": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:29.597784+00:00",
    "sic": 7372,
    "sic_description": "Services-Prepackaged Software",
    "entity_name": "Zeta Global Holdings Corp.",
@@ -1630,7 +1417,6 @@
   "ZS": {
    "sector": "Technology",
    "industry": "Software - Infrastructure",
-   "attributes_fetched_at": "2026-11-25T01:18:30.158360+00:00",
    "sic": 7371,
    "sic_description": "Services-Computer Programming Services",
    "entity_name": "Zscaler, Inc.",

@@ -75,7 +75,7 @@
 ### `docs/market-monitor/market-pulse/data/headlines/{date_et}.json`（2件以上）
 - 起動元: .github/workflows/Market_Pulse_Headlines.yml・.github/workflows/Market_Pulse_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `date_et`(2)・`fetches`(4)・`items`(5)
-- Python・保存済みファイル: `common/system_health.py` 行 1004・1027・1293・1372（経由 `common/system_health.py::_check_n`）
+- Python・保存済みファイル: `common/system_health.py` 行 1004・1027・1399・1483（経由 `common/system_health.py::_check_n`）
 - Python・保存済みファイル: `src/market/market_pulse/headlines_store.py` 行 71・72
 - テスト・保存済みファイル: `tests/test_market_pulse_headlines_push.py` 行 206
 - テスト・保存済みファイル: `tests/test_market_pulse_headlines_store.py` 行 289・299・303・309・314・321（経由 `common/system_health.py::_check_n`）
@@ -85,7 +85,7 @@
 ### `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`（2件以上）
 - 起動元: .github/workflows/Market_Pulse_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `date_et`(1)・`interval`(1)・`missing`(3)・`tickers`(4)・`tz`(2)
-- Python・保存済みファイル: `common/system_health.py` 行 1053・1056・1065・1083・1094・1295・1372（経由 `common/system_health.py::_check_o`、`common/system_health.py::_intraday_missing_days`）
+- Python・保存済みファイル: `common/system_health.py` 行 1053・1056・1065・1083・1094・1401・1483（経由 `common/system_health.py::_check_o`、`common/system_health.py::_intraday_missing_days`）
 - Python・保存済みファイル: `src/market/market_pulse/intraday_store.py` 行 92・94
 - テスト・保存済みファイル: `tests/test_market_pulse_intraday_store.py` 行 240・246・253・256・260（経由 `common/system_health.py::_check_o`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::_check_o`）
@@ -96,7 +96,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `ai_facts`(0)・`asset_flow`(0)・`basis`(1)・`buy_checklist`(1)・`calendar`(2)・`commodity_fx`(0)・`credit`(1)・`data_freshness`(2)・`data_quality`(3)・`date`(9)・`fear_greed`(4)・`futures`(0)・`haiku`(0)・`headlines`(1)・`hindenburg`(1)・`indicators`(3)・`judgment`(0)・`sector_rotation`(2)・`semis_m7`(0)・`sentiment`(1)・`stage_conclusions`(0)・`summary`(2)・`take_profit_checklist`(1)・`tech_pulse`(0)・`watch_list`(0)・`weather`(0)
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 146・156・173・330・352・365・408（経由 `common/market_pulse_data.py::load_latest`）
 - Python・保存済みファイル: `common/market_pulse_data.py` 行 21・37
-- Python・保存済みファイル: `common/system_health.py` 行 1136・1150・1299・1372（経由 `common/system_health.py::_check_q`）
+- Python・保存済みファイル: `common/system_health.py` 行 1136・1150・1405・1483（経由 `common/system_health.py::_check_q`）
 - Python・保存済みファイル: `src/portfolio/snapshot.py` 行 40・144（経由 `common/market_pulse_data.py::load_latest`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 577・852・1204（経由 `common/market_pulse_data.py::load_latest`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 239
@@ -120,7 +120,7 @@
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 68・146・156・173・330・352・365・398・408・411・447・457（経由 `browser_checks/market_pulse_elements.py::load_entries`、`common/market_pulse_data.py::load_latest`）
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 41・153・339・812・916（経由 `browser_checks/market_pulse_elements.py::load_entries`）
 - Python・保存済みファイル: `common/market_pulse_data.py` 行 20・46
-- Python・保存済みファイル: `common/system_health.py` 行 161・1281・1372（経由 `common/system_health.py::check_d_actions`）
+- Python・保存済みファイル: `common/system_health.py` 行 161・1387・1483（経由 `common/system_health.py::check_d_actions`）
 - Python・保存済みファイル: `scripts/migrate_market_data_comments_history.py` 行 21
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 25・551・580・599・667・1916・1926・1929・1938・2002（経由 `src/market/market_pulse/collect_and_send.py::_load_div_history`、`src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score`、`src/market/market_pulse/collect_and_send.py::_load_recent_entries` ほか）
 - Python・保存済みファイル: `src/portfolio/snapshot.py` 行 40・144（経由 `common/market_pulse_data.py::load_latest`）

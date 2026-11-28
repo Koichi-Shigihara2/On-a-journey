@@ -46,7 +46,7 @@
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `brokers`(11)・`last_updated`(2)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1938・1940・3528・3752（経由 `common/sec_data/report_consistency_check.py::_check_holdings_vs_theses`）
-- Python・保存済みファイル: `common/system_health.py` 行 54・732・779・1289・1372（経由 `common/system_health.py::_portfolio_tickers`）
+- Python・保存済みファイル: `common/system_health.py` 行 54・732・779・1395・1483（経由 `common/system_health.py::_portfolio_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1595・1629・2011・2013（経由 `src/market/market_pulse/sector_rotation.py::watch_tickers`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 229・272（経由 `src/market/market_pulse/sector_rotation.py::watch_tickers`）
 - Python・保存済みファイル: `src/portfolio/snapshot.py` 行 29・34・144（経由 `src/portfolio/snapshot.py::main`）

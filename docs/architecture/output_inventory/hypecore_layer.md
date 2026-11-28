@@ -66,7 +66,7 @@
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 173・473・653・667・669（経由 `common/sec_data/registration_validator.py::check_p1_registration_completeness`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2848・2877・2888（経由 `common/screening/dcf_validity_checker.py::_load_json`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 80・308・337・344・355・361（経由 `common/stage_v2.py::_load`、`common/stage_v2.py::finalize`）
-- Python・保存済みファイル: `common/system_health.py` 行 241・1284・1372（経由 `common/system_health.py::check_g_hypecore`）
+- Python・保存済みファイル: `common/system_health.py` 行 241・1390・1483（経由 `common/system_health.py::check_g_hypecore`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1595・2011（経由 `src/market/market_pulse/sector_rotation.py::_hype_phase`）
 - Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 255・280（経由 `src/market/market_pulse/sector_rotation.py::_hype_phase`）
 - Python・保存済みファイル: `src/portfolio/snapshot.py` 行 48・144（経由 `src/portfolio/snapshot.py::main`）

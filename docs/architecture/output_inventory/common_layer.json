@@ -230,7 +230,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1289,
+     "line": 1395,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::_load_monitor_tickers",
@@ -238,7 +238,7 @@
     },
     {
      "file": "common/system_health.py",
-     "line": 1372,
+     "line": 1483,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::_load_monitor_tickers",
@@ -686,7 +686,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 293,
+     "line": 295,
      "func": "test_main_one_line_shows_j_and_k_in_full",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::_load_monitor_tickers",
@@ -694,7 +694,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 301,
+     "line": 303,
      "func": "test_main_warning_only_j_exits_one",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::_load_monitor_tickers",
@@ -702,7 +702,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 433,
+     "line": 435,
      "func": "test_main_overall_severity_matches_discord_and_exit_code",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::_load_monitor_tickers",
@@ -710,7 +710,7 @@
     },
     {
      "file": "tests/test_system_health_workflow_monitor.py",
-     "line": 446,
+     "line": 448,
      "func": "test_main_red_label_of_other_check_is_critical",
      "how": "保存済みファイル",
      "via": "common/sec_data/registration_validator.py::_load_monitor_tickers",
@@ -757,7 +757,7 @@
     {
      "file": "common/sector_master.py",
      "func": "write",
-     "line": 334
+     "line": 313
     }
    ],
    "writers_outside_layer": [],
@@ -783,10 +783,6 @@
     {
      "key": "generated_at",
      "reader_files": 4
-    },
-    {
-     "key": "rules",
-     "reader_files": 3
     },
     {
      "key": "tickers",
@@ -844,7 +840,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 33,
+     "line": 34,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -852,7 +848,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 253,
+     "line": 233,
      "func": "load",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::_load_json",
@@ -860,7 +856,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 267,
+     "line": 247,
      "func": "master_entry",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -868,7 +864,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 277,
+     "line": 257,
      "func": "is_financial_ticker",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -876,7 +872,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 300,
+     "line": 280,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -884,7 +880,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 362,
+     "line": 341,
      "func": "change_items",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -892,7 +888,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 371,
+     "line": 350,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -900,7 +896,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 384,
+     "line": 363,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -972,7 +968,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 469,
+     "line": 468,
      "func": "StonksAnalyzer._analyze_runway",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1396,14 +1392,6 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 67,
-     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
-     "how": "保存済みファイル",
-     "via": "common/sector_master.py::load",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sector_master.py",
      "line": 68,
      "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
      "how": "保存済みファイル",
@@ -1420,7 +1408,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 75,
+     "line": 70,
      "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1428,15 +1416,15 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 81,
-     "func": "test_industry_change_goes_to_external_change",
+     "line": 76,
+     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
      "type": "テスト"
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 84,
+     "line": 82,
      "func": "test_industry_change_goes_to_external_change",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1452,7 +1440,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 88,
+     "line": 86,
      "func": "test_industry_change_goes_to_external_change",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1468,7 +1456,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 95,
+     "line": 90,
      "func": "test_industry_change_goes_to_external_change",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1476,7 +1464,15 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 105,
+     "line": 96,
+     "func": "test_industry_change_goes_to_external_change",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 106,
      "func": "test_external_watch_collects_sector_changes",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1484,7 +1480,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 133,
+     "line": 134,
      "func": "test_saved_master_covers_registered_tickers",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1492,7 +1488,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 140,
+     "line": 141,
      "func": "test_public_view_for_screen",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1500,7 +1496,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 153,
+     "line": 154,
      "func": "test_screen_reads_master_not_keyword_list",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -2103,7 +2099,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 577,
+     "line": 576,
      "func": "StonksAnalyzer._analyze_profitability_path",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2111,7 +2107,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 672,
+     "line": 671,
      "func": "StonksAnalyzer._analyze_profitability_path",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2119,7 +2115,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 759,
+     "line": 758,
      "func": "StonksAnalyzer._breakeven_estimate",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2670,7 +2666,7 @@
     {
      "file": "common/sector_master.py",
      "func": "write_public",
-     "line": 354
+     "line": 333
     }
    ],
    "writers_outside_layer": [],
@@ -2693,7 +2689,7 @@
    "readers": [
     {
      "file": "common/sector_master.py",
-     "line": 35,
+     "line": 36,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2709,7 +2705,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 152,
+     "line": 153,
      "func": "test_screen_reads_master_not_keyword_list",
      "how": "保存済みファイル",
      "via": "AST",
@@ -3133,7 +3129,7 @@
    "dir": "common",
    "file": "common/sector_master.py",
    "decision": "残す（2026-11-27）",
-   "lines": 384,
+   "lines": 363,
    "workflows": [
     ".github/workflows/Market_Data_Weekly_Update.yml",
     ".github/workflows/SEC_Data_Update.yml"
@@ -3242,7 +3238,7 @@
    "dir": "common",
    "file": "common/system_health.py",
    "decision": "残す（2026-11-27）",
-   "lines": 1372,
+   "lines": 1483,
    "workflows": [
     ".github/workflows/System_Health.yml"
    ],
@@ -4232,13 +4228,6 @@
  "data_keys": {
   "unread_keys": [
    {
-    "key": "attributes_fetched_at",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "basis_ends",
     "sources": [
      "docs/common/profitability.json"
@@ -4288,20 +4277,6 @@
     "note": "これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）"
    },
    {
-    "key": "cyclical_industries_stage_a",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "cyclical_keywords",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "daily_close",
     "sources": [
      "config/split_price_ledger.json"
@@ -4316,39 +4291,11 @@
     "note": "残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）"
    },
    {
-    "key": "damodaran_by_industry",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "eps_category_by_industry",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "eps_category_by_sector",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
     "key": "etf",
     "sources": [
      "config/sector_master.json"
     ],
     "note": "残す（写し）: 業種→ETF の写し。tests/test_sector_master.py が定数との一致を検査する（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ）"
-   },
-   {
-    "key": "etf_by_sector",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
    },
    {
     "key": "ev_gross_profit",
@@ -4377,27 +4324,6 @@
      "docs/common/profitability.json"
     ],
     "note": "残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む"
-   },
-   {
-    "key": "financial_excluded_industries",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "financial_sectors",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "financial_sic_range",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
    },
    {
     "key": "fiscal_year_end",
@@ -4461,27 +4387,6 @@
      "docs/common/profitability.json"
     ],
     "note": "残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む"
-   },
-   {
-    "key": "mega_tech_industries",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "mega_tech_industry_prefixes",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "mega_tech_min_market_cap",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
    },
    {
     "key": "multiple_type",
@@ -4563,10 +4468,9 @@
    {
     "key": "rules",
     "sources": [
-     "config/sector_master.json",
      "docs/common/profitability.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: この JSON を作った規則の記録（回帰の方法・点の数・R²の下限・時点の基準・足し戻しの規則）。黒字化の予測の規則を変えた前後の比較のとき、人（Claude Code）が profitability.json で確かめる"
    },
    {
     "key": "shares_end",
@@ -4602,23 +4506,9 @@
      "docs/common/profitability.json"
     ],
     "note": "残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む"
-   },
-   {
-    "key": "unclassified_industries",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
-   },
-   {
-    "key": "unclassified_industry_prefixes",
-    "sources": [
-     "config/sector_master.json"
-    ],
-    "note": ""
    }
   ],
-  "written_key_count": 230,
+  "written_key_count": 166,
   "stale_keys": []
  }
 }

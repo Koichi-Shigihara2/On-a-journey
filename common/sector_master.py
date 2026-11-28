@@ -4,7 +4,8 @@
   1. 銘柄の業種は yfinance の sector・industry（common/market_data/attributes/{T}.json、Market Data Weekly が取る）を主にし、
      SECの SIC・社名（common/sec_data/data/{T}/submissions.json、SEC_Data_Update が保存）は控えとして持つ
   2. 銘柄の一覧は書かない。区分（景気循環株・金融・区分なし）と他の分類への写像（EPS ANALYZERの9区分・Damodaranの業種・
-     Market PulseのETF）は、業種の名前の規則として本モジュールの1か所に持ち、マスターにも写しを書く
+     Market PulseのETF）は、業種の名前の規則として本モジュールの1か所に持つ（定数が正。マスターには規則の写しを書かない。
+     2026-11-28 に写し〔JSON の rules と銘柄ごとの attributes_fetched_at〕の書き出しをやめた。JSONを読む所が無かった〔INV-6b〕）
   3. 景気循環株は、TANUKI SCOREの画面にあった語の一覧と定義v2の段Aの4業種の和集合を、業種の名前の規則として持つ
      （画面は 2026-11-06 から語の一覧を持たず、docs/common/sector_class.json の cyclical を読む。[[SECTOR-MASTER-ADOPT-1]] 段5）
   4. 今はマスターを作るだけ。読み手（TANUKI・EPS ANALYZER・STONKS・Market Pulse・画面）は今のまま（[[SECTOR-MASTER-ADOPT-1]] で寄せる）
@@ -141,26 +142,6 @@ ETF_BY_SECTOR = {
 }
 
 
-def rules() -> Dict[str, Any]:
-    """マスターに書く規則の写し（読み手が規則の版を確かめられるように）"""
-    return {
-        "cyclical_keywords": sorted(set(CYCLICAL_KEYWORDS_SCREEN)),
-        "cyclical_industries_stage_a": CYCLICAL_INDUSTRIES_STAGE_A,
-        "unclassified_industry_prefixes": UNCLASSIFIED_INDUSTRY_PREFIXES,
-        "unclassified_industries": UNCLASSIFIED_INDUSTRIES,
-        "financial_sectors": FINANCIAL_SECTORS,
-        "financial_excluded_industries": FINANCIAL_EXCLUDED_INDUSTRIES,
-        "financial_sic_range": list(FINANCIAL_SIC_RANGE),
-        "eps_category_by_industry": EPS_CATEGORY_BY_INDUSTRY,
-        "eps_category_by_sector": EPS_CATEGORY_BY_SECTOR,
-        "damodaran_by_industry": DAMODARAN_BY_INDUSTRY,
-        "etf_by_sector": ETF_BY_SECTOR,
-        "mega_tech_min_market_cap": MEGA_TECH_MIN_MARKET_CAP,
-        "mega_tech_industry_prefixes": list(MEGA_TECH_INDUSTRY_PREFIXES),
-        "mega_tech_industries": list(MEGA_TECH_INDUSTRIES),
-    }
-
-
 # ── 区分の判定 ──────────────────────────────────────────────────────────
 def is_cyclical(industry: Optional[str]) -> bool:
     if not industry:
@@ -230,7 +211,6 @@ def build_entry(ticker: str, attr_dir: str = ATTR_DIR, sec_dir: str = SEC_DIR) -
     return {
         "sector": sector,
         "industry": industry,
-        "attributes_fetched_at": attrs.get("fetched_at"),
         "sic": sic,
         "sic_description": subs.get("sic_description") or None,
         "entity_name": subs.get("entity_name") or None,
@@ -317,9 +297,8 @@ def build(tickers: Optional[List[str]] = None, path: str = MASTER_PATH, attr_dir
     return {
         "_schema_version": SCHEMA_VERSION,
         "_description": "業種のマスター（common/sector_master.py が機械で作る。手で書かない）。主は yfinance の sector・industry、"
-                        "SIC・社名は控え。区分と写像は rules の業種の名前の規則で決める。読み手は [[SECTOR-MASTER-ADOPT-1]] で寄せる",
+                        "SIC・社名は控え。区分と写像は本モジュールの定数（業種の名前の規則）で決める。読み手は [[SECTOR-MASTER-ADOPT-1]] で寄せる",
         "generated_at": now,
-        "rules": rules(),
         "tickers": {t: entries[t] for t in sorted(entries)},
         "changes": changes,
     }

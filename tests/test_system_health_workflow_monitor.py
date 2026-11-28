@@ -278,6 +278,8 @@ def _patch_main(monkeypatch, j, k_ok=True, k_detail="すべて正常"):
     monkeypatch.setattr(sh, "_check_n", lambda: {"label": "✅", "ok": True, "detail": "OK", "critical": False})
     monkeypatch.setattr(sh, "_check_o", lambda: {"label": "✅", "ok": True, "detail": "OK", "critical": False})
     monkeypatch.setattr(sh, "_check_p", lambda: {"label": "✅", "ok": True, "detail": "", "severity": 0, "critical": False})
+    # [R]（日足の検証の印）は実データの日足を読むため、正常に固定する
+    monkeypatch.setattr(sh, "_check_r", lambda: {"label": "✅", "ok": True, "detail": "", "severity": 0, "critical": False})
     sent = []
     monkeypatch.setattr(sh, "post_discord", lambda text: sent.append(text) or False)
     monkeypatch.setattr(sys, "argv", ["system_health.py", "--quiet"])

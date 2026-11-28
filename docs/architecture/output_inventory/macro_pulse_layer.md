@@ -50,7 +50,7 @@
 ### `docs/market-monitor/macro-pulse/data/05_fed_context.csv`（2件以上）
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
 - Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 241・321・323・325・326・327（経由 `browser_checks/check_macro_pulse.py::read_csv`）
-- Python・保存済みファイル: `common/system_health.py` 行 164・1281・1372（経由 `common/system_health.py::check_d_actions`）
+- Python・保存済みファイル: `common/system_health.py` 行 164・1387・1483（経由 `common/system_health.py::check_d_actions`）
 - Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 52・781・1434・2010・2664・2692・2696・2807・2816（経由 `src/market/macro_pulse/05_main.py::get_financial_context`、`src/market/macro_pulse/05_main.py::refresh_fed_context_on_new_statement`、`src/market/macro_pulse/05_main.py::run_weekly_analysis`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 744・3191
 - テスト・保存済みファイル: `tests/test_macro_pulse_accuracy.py` 行 263・399（経由 `src/market/macro_pulse/05_main.py::run_weekly_analysis`）
@@ -68,7 +68,7 @@
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 62・123・307・408・457（経由 `browser_checks/check_dependency_map.py::expected_hollow_rally_trigger`）
 - Python・保存済みファイル: `browser_checks/check_macro_pulse.py` 行 241・321・323・325・326・327・1201・1339・1365（経由 `browser_checks/check_macro_pulse.py::derived_checks`、`browser_checks/check_macro_pulse.py::read_csv`）
-- Python・保存済みファイル: `common/system_health.py` 行 1137・1174・1299・1372（経由 `common/system_health.py::_check_q`）
+- Python・保存済みファイル: `common/system_health.py` 行 1137・1174・1405・1483（経由 `common/system_health.py::_check_q`）
 - Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 54
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 341・360・1635・1844・1880（経由 `src/tail/quarterly_review_generator.py::load_macro_context`）
 - JS・HTML・保存済みファイル: `docs/market-monitor/macro-pulse/index.html` 行 2828
@@ -106,7 +106,7 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-- `fomc_date_source`（`docs/market-monitor/macro-pulse/data/05_fed_context.csv`）
+- `fomc_date_source`（`docs/market-monitor/macro-pulse/data/05_fed_context.csv`）: 残す（監査用）: 判定した声明が予備（FOMCの予定のキャッシュ）のものか（cache）、予定のページから取れたもの（空）かの印。FOMCの予定のページが取れない日の後に、人（Claude Code）が regime の判定の元の声明を 05_fed_context.csv で確かめる（System Health [P] の『FOMCのキャッシュが古い』が出たとき）。[[FED-POLICY-PAGE-1]] で fomc_calendar.py を移すときは、新ページが声明の出どころを表示する読み手の候補
 - `zq_price`（`docs/market-monitor/macro-pulse/data/05_fed_context.csv`）: 残す（記録）: 作り直せない。cuts_implied を作った時点の入力（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）
 - `zq_ticker`（`docs/market-monitor/macro-pulse/data/05_fed_context.csv`）: 残す（記録）: 作り直せない。cuts_implied を作った時点の入力（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）
 

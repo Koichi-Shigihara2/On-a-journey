@@ -58,7 +58,8 @@ def test_classification_by_industry_rules(tmp_path):
     assert T["AAA"]["eps_category"] == "一般消費財 / 製造 / EV" and T["GGG"]["eps_category"] == "Technology"
     assert T["GGG"]["damodaran_industry"] == "Software (System & Application)" and T["GGG"]["etf"] == "XLK"
     assert T["HHH"]["eps_category"] is None and T["HHH"]["etf"] is None
-    assert m["rules"]["financial_sic_range"] == [6000, 6799]
+    assert "rules" not in m and all("attributes_fetched_at" not in e for e in T.values())   # 写しは書かない（2026-11-28。正は定数）
+    assert sm.FINANCIAL_SIC_RANGE == (6000, 6799)
 
 
 def test_retired_not_in_master_and_single_ticker_keeps_others(tmp_path):

@@ -72,8 +72,8 @@ class DeficitQuality:
     mature_profit_note: str = ""              # 投資除外後も赤字の場合に注記
     revenue_outlier_years: list[int] = field(default_factory=list)  # 外れ値除去された年
 
-    # ユニットエコノミクス（DESIGN-11）
-    gross_margin_trend: Optional[str] = None      # "improving"/"stable"/"declining"
+    # ユニットエコノミクス（DESIGN-11）。粗利率のトレンド（improving/stable/declining）は点数を決める入力として
+    # 関数の中だけで使い、出力には出さない（読み手が無かった〔INV-6b、2026-11-28〕）
     unit_economics_score: Optional[float] = None   # 0-100
 
 
@@ -399,7 +399,6 @@ class StonksAnalyzer:
             sbc_yoy_change=sbc_yoy_change,
             sbc_burden=sbc_burden,
             revenue_outlier_years=revenue_outlier_years,
-            gross_margin_trend=gross_margin_trend,
             unit_economics_score=ue_score,
         )
 

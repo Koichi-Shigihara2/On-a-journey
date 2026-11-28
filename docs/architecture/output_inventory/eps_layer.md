@@ -41,7 +41,7 @@
 ### `docs/value-monitor/adjusted_eps_analyzer/data/summary.json`（2件以上）
 - 起動元: .github/workflows/Adjusted_Eps_Analyzer_update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `last_updated`(5)・`run_status`(3)・`tickers`(12)
-- Python・保存済みファイル: `common/system_health.py` 行 207・353・407・1286・1372（経由 `common/system_health.py::_check_i`）
+- Python・保存済みファイル: `common/system_health.py` 行 207・353・407・1392・1483（経由 `common/system_health.py::_check_i`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 503・887・891
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 460・555・560・806・995・1080・1141・1204・1414・1622・3150（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
 - JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 31
@@ -95,7 +95,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `execution_metrics`(1)・`last_updated`(2)・`quarters`(8)・`ticker`(13)
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 126・130・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1285・1333・2459・2463・2963・2995・3029・3466・3708・3752（経由 `common/sec_data/report_consistency_check.py::_read_eps_quarterly`）
-- Python・保存済みファイル: `common/system_health.py` 行 89・1278（経由 `common/sec_data/audit.py::audit_ticker`）
+- Python・保存済みファイル: `common/system_health.py` 行 89・1384（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 1050・1054・1147（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 255・982・1039・1043・1078（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`、`src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 424・460・1058・1129・1153・1414・1632・1636・2767・2770・3981（経由 `src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）

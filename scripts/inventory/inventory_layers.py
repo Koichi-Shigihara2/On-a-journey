@@ -245,6 +245,7 @@ _TANUKI.update(
         "fiscal_year_end": "残す（監査用）: 履歴ファイルの会計年度末。過去の行を読む人（Claude Code）が、その行が何年度の値かを確かめる",
         "method_change_applied": "残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）",
         "rec_evidence_weight": "残す（確認用）: 成長率の健全性（growth_sanity）の根拠の重み。推奨成長率が動いたとき、人（Claude Code）が根拠の強さを latest.json で確かめる",
+        "fallback": "残す（監査用）: セグメント別の成長率の XBRL が2四半期以上古く、設定（segment_config）の静的値に戻したか（segment_xbrl_status.fallback）。DCF の成長率の出どころが変わった理由を、人（Claude Code）が latest.json で確かめる",
         "g_fundamental": "残す（動的な読み）: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）",
         **{k: "残す（動的な読み）: validator の検証の結果（validation.checks）。overall の判定を validator が読む"
            for k in ("formula_verification", "pt_shares_consistency")},
@@ -495,6 +496,7 @@ _MARKET.update(
     UNREAD_KEY_NOTES={
         **{k: "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）"
            for k in ("up_7d", "down_7d")},
+        "_validation_warnings": "残す（確認用）: 取得時の検証の印（保存はするが印を付ける）。common/system_health.py の [R] が直近90日の行を数えて読み、直近7日に出来高0が普通でない銘柄の印が出ると ⚠️ にする。人（Claude Code）が、⚠️ が出たとき該当の日足の行を開いて確かめる",
         "_contract_roll": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）",
         "reason_label": "残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む",
         "prev": "残す（監査用）: 足の訂正の前の値（_corrections の prev）。訂正が正しいかを、人（Claude Code）が日足の訂正の前後を比べて確かめる。テストも参照する",
@@ -795,6 +797,7 @@ _MACRO_PULSE.update(
     SCREEN_PAGES=("docs/market-monitor/macro-pulse",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
+        "fomc_date_source": "残す（監査用）: 判定した声明が予備（FOMCの予定のキャッシュ）のものか（cache）、予定のページから取れたもの（空）かの印。FOMCの予定のページが取れない日の後に、人（Claude Code）が regime の判定の元の声明を 05_fed_context.csv で確かめる（System Health [P] の『FOMCのキャッシュが古い』が出たとき）。[[FED-POLICY-PAGE-1]] で fomc_calendar.py を移すときは、新ページが声明の出どころを表示する読み手の候補",
         **{k: "残す（記録）: 作り直せない。cuts_implied を作った時点の入力（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
            for k in ("zq_price", "zq_ticker")},
     },
@@ -935,6 +938,7 @@ _COMMON.update(
            for k in ("net_income_5y_years", "previous_cover_date", "previous_cover_shares", "shares_end", "tce_end")},
         **{k: "残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）"
            for k in ("daily_close", "daily_date", "expected_factor", "observed_factor", "price_factor", "price_factor_reason", "recorded_price")},
+        "rules": "残す（監査用）: この JSON を作った規則の記録（回帰の方法・点の数・R²の下限・時点の基準・足し戻しの規則）。黒字化の予測の規則を変えた前後の比較のとき、人（Claude Code）が profitability.json で確かめる",
         "etf": "残す（写し）: 業種→ETF の写し。tests/test_sector_master.py が定数との一致を検査する（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ）",
     },
     IO_HELPER_BY_CALLER=True,   # sector_master._load_json・multiples._load 等、パスを引数で受ける読み書きの関数が多い。Falseだと読み手が別の出力に付く

@@ -9,7 +9,7 @@
 
 **件数**: 出力 1（ファイル 1・人が見るもの 0）／読み手0件 0／テストだけ 0／1件 0／2件以上 1／規則の二重 9（検出式 11種のうち。STONKSのファイルを含むもの 1）
 
-**画面の項目**: 画面が読むキー 100（この段階の書き手あり 92・ほかの書き手あり 5・画面の中で作る値 0・**書き手なし 3**）／書き手があるのに誰も読まないキー **5**（今の書き手のコードに無いキー 3 は数えない）
+**画面の項目**: 画面が読むキー 100（この段階の書き手あり 92・ほかの書き手あり 5・画面の中で作る値 0・**書き手なし 3**）／書き手があるのに誰も読まないキー **4**（今の書き手のコードに無いキー 4 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 1件／解決できた読み込み 7件＋ファイル名で当たった行 13件（9.1%）→ 当たらない
 
@@ -40,7 +40,7 @@
 - 起動元: .github/workflows/Stonks_Silo_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `errors`(1)・`generated_at`(6)・`method_change`(1)・`method_change_applied`(1)・`tickers`(11)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 180・216・1063・1854・1856・2655・3466・3572・3752（経由 `common/sec_data/report_consistency_check.py::_check_stonks_silo_flag_rule`、`common/sec_data/report_consistency_check.py::_load_stonks_results`）
-- Python・保存済みファイル: `common/system_health.py` 行 52・163・186・1281・1282・1372（経由 `common/system_health.py::check_d_actions`、`common/system_health.py::check_e_silo`）
+- Python・保存済みファイル: `common/system_health.py` 行 52・163・186・1387・1388・1483（経由 `common/system_health.py::check_d_actions`、`common/system_health.py::check_e_silo`）
 - Python・保存済みファイル: `scripts/method_change_scope.py` 行 39
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 36
 - Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 409・460・824・828・1204・1414・1701・1706・3650・3654・3981（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._compute_tanuki_score`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment`）
@@ -79,7 +79,6 @@
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
 - `fair_value_change`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
-- `gross_margin_trend`（`docs/value-monitor/stonks-silo/data/results.json`）
 - `impairment`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
 - `latest_year`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
 - `method_change_applied`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）
@@ -89,6 +88,7 @@
 データのキーのうち、書き手のコード（書き手の .py・それを import する呼び出し元・それらが import する .py）に文字列として出てこないもの。書くのをやめて履歴のスナップショット・古いエントリに残るキーや、取得元のデータをそのまま写したキー（SEC の単位・次元の名前等）
 
 - `core_profit`（`docs/value-monitor/stonks-silo/data/results.json`）
+- `gross_margin_trend`（`docs/value-monitor/stonks-silo/data/results.json`）
 - `ocf_acceleration`（`docs/value-monitor/stonks-silo/data/results.json`）
 - `ocf_yoy_change`（`docs/value-monitor/stonks-silo/data/results.json`）
 
@@ -251,11 +251,11 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（6ファイル・2,361行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（6ファイル・2,360行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
-| `analyzer.py` | 1,170 | — | — | `src/value/stonks_silo/pipeline.py` | 10件 |
+| `analyzer.py` | 1,169 | — | — | `src/value/stonks_silo/pipeline.py` | 10件 |
 | `fetcher.py` | 299 | — | — | `src/value/stonks_silo/pipeline.py` | 0件 |
 | `financial_as_of.py` | 104 | — | — | `src/value/stonks_silo/pipeline.py` | 3件 |
 | `financial_trend_calculator.py` | 393 | — | — | `src/value/stonks_silo/pipeline.py` | 3件 |

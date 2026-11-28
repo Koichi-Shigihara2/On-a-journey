@@ -595,7 +595,7 @@
    "top_keys": [
     {
      "key": "_validation_warnings",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "analyst_count",
@@ -647,7 +647,7 @@
     },
     {
      "key": "fetched_at",
-     "reader_files": 10
+     "reader_files": 9
     },
     {
      "key": "forward_eps",
@@ -869,7 +869,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 225,
+     "line": 206,
      "func": "build_entry",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::_load_json",
@@ -877,7 +877,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 311,
+     "line": 291,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -885,7 +885,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 371,
+     "line": 350,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -893,7 +893,7 @@
     },
     {
      "file": "common/sector_master.py",
-     "line": 384,
+     "line": 363,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -1893,14 +1893,6 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 67,
-     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
-     "how": "保存済みファイル",
-     "via": "common/sector_master.py::build_entry",
-     "type": "テスト"
-    },
-    {
-     "file": "tests/test_sector_master.py",
      "line": 68,
      "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
      "how": "保存済みファイル",
@@ -1917,7 +1909,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 75,
+     "line": 70,
      "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -1925,7 +1917,15 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 81,
+     "line": 76,
+     "func": "test_retired_not_in_master_and_single_ticker_keeps_others",
+     "how": "保存済みファイル",
+     "via": "common/sector_master.py::build_entry",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_sector_master.py",
+     "line": 82,
      "func": "test_industry_change_goes_to_external_change",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -1933,7 +1933,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 84,
+     "line": 85,
      "func": "test_industry_change_goes_to_external_change",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -1941,7 +1941,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 88,
+     "line": 89,
      "func": "test_industry_change_goes_to_external_change",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -1949,7 +1949,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 95,
+     "line": 96,
      "func": "test_industry_change_goes_to_external_change",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -1957,7 +1957,7 @@
     },
     {
      "file": "tests/test_sector_master.py",
-     "line": 140,
+     "line": 141,
      "func": "test_public_view_for_screen",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::build_entry",
@@ -2810,6 +2810,30 @@
      "func": "_check_p",
      "how": "保存済みファイル",
      "via": "common/market_data/futures_roll.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1304,
+     "func": "_check_r",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1407,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_r",
+     "type": "Python"
+    },
+    {
+     "file": "common/system_health.py",
+     "line": 1483,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_r",
      "type": "Python"
     },
     {
@@ -4429,11 +4453,51 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_sec_freshness.py",
+     "line": 505,
+     "func": "test_main_exits_two_when_m_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_r",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_sector_master.py",
-     "line": 105,
+     "line": 106,
      "func": "test_external_watch_collects_sector_changes",
      "how": "保存済みファイル",
      "via": "common/market_data/futures_roll.py::_load",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 295,
+     "func": "test_main_one_line_shows_j_and_k_in_full",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_r",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 303,
+     "func": "test_main_warning_only_j_exits_one",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_r",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 435,
+     "func": "test_main_overall_severity_matches_discord_and_exit_code",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_r",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_system_health_workflow_monitor.py",
+     "line": 448,
+     "func": "test_main_red_label_of_other_check_is_critical",
+     "how": "保存済みファイル",
+     "via": "common/system_health.py::_check_r",
      "type": "テスト"
     },
     {
@@ -4662,7 +4726,7 @@
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
    "reader_count": 22,
-   "reader_count_test": 15,
+   "reader_count_test": 17,
    "reader_count_compute": 1,
    "group": "2件以上",
    "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
@@ -5244,7 +5308,7 @@
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 36,
+  "name_hit_sites_resolved": 37,
   "name_hit_sites_undetermined": [
    {
     "file": "common/market_data/split_reconcile.py",
@@ -5272,7 +5336,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.082,
+  "ratio_reader": 0.081,
   "threshold": 0.1,
   "hit": false
  },
@@ -5337,14 +5401,6 @@
      "common/market_data/daily/{T}.json"
     ],
     "note": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）"
-   },
-   {
-    "key": "_validation_warnings",
-    "sources": [
-     "common/market_data/attributes/{T}.json",
-     "common/market_data/daily/{T}.json"
-    ],
-    "note": ""
    },
    {
     "key": "current_price_target",

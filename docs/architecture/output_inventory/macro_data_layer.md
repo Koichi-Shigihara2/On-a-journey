@@ -41,7 +41,7 @@
 - 起動元: .github/workflows/MACRO_PULSE_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `last_success_utc`(2)・`meetings`(2)・`statements`(2)
 - Python・保存済みファイル: `common/macro_data/fomc_calendar.py` 行 19・90・99・108・128（経由 `common/macro_data/fomc_calendar.py::load_cache`）
-- Python・保存済みファイル: `common/system_health.py` 行 1109・1126・1131・1297（経由 `common/macro_data/fomc_calendar.py::load_cache`）
+- Python・保存済みファイル: `common/system_health.py` 行 1109・1126・1131・1403（経由 `common/macro_data/fomc_calendar.py::load_cache`）
 - Python・保存済みファイル: `src/market/macro_pulse/05_main.py` 行 1227・1374（経由 `common/macro_data/fomc_calendar.py::load_cache`）
 - テスト・保存済みファイル: `tests/test_external_watch.py` 行 59・62（経由 `common/macro_data/fomc_calendar.py::load_cache`）
 - テスト・保存済みファイル: `tests/test_fomc_calendar_cache.py` 行 54・55・56・57・59・60・75・77・92・97・119（経由 `common/macro_data/fomc_calendar.py::load_cache`）
@@ -51,7 +51,7 @@
 - 起動元: .github/workflows/Macro_Data_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `BAMLH0A0HYM2`(2)・`CFNAI`(1)・`CFNAIMA3`(1)・`DFEDTARL`(1)・`DFEDTARU`(1)・`DGS1`(1)・`DGS3MO`(1)・`FEDFUNDS`(1)・`FTSD`(1)・`GACDFSA066MSFRBPHI`(1)・`IC4WSA`(1)・`M2SL`(1)・`MICH`(1)・`PAYEMS`(1)・`PERMIT`(1)・`RRPONTSYD`(1)・`SAHMCURRENT`(1)・`SP500`(1)・`T10Y2Y`(1)・`T5YIE`(1)・`UMCSENT`(1)・`VIXCLS`(1)・`VXNCLS`(1)・`WALCL`(1)・`WDTGAL`(1)・`WRBWFRBL`(1)・`WTREGEN`(1)
 - Python・保存済みファイル: `common/macro_data/fetcher.py` 行 109
-- Python・保存済みファイル: `common/system_health.py` 行 55・852・869・1290・1372（経由 `common/system_health.py::_check_l`）
+- Python・保存済みファイル: `common/system_health.py` 行 55・852・869・1396・1483（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_system_health_macro_data.py` 行 59（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/system_health.py::_check_l`）
@@ -79,7 +79,7 @@
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `BAMLH0A0HYM2`(4)・`CFNAIMA3`(2)・`DFEDTARL`(1)・`DFEDTARU`(1)・`DGS1`(1)・`DGS3MO`(1)・`FEDFUNDS`(1)・`GACDFSA066MSFRBPHI`(1)・`IC4WSA`(2)・`M2SL`(2)・`MICH`(1)・`PAYEMS`(2)・`PERMIT`(2)・`RRPONTSYD`(2)・`SAHMCURRENT`(1)・`SP500`(2)・`T10Y2Y`(2)・`T5YIE`(1)・`UMCSENT`(2)・`VIXCLS`(1)・`VXNCLS`(1)・`WALCL`(2)・`WDTGAL`(1)・`WRBWFRBL`(2)・`WTREGEN`(2)
 - Python・保存済みファイル: `common/macro_data/fetcher.py` 行 105・368・414（経由 `common/macro_data/fetcher.py::_load_json`、`common/macro_data/fetcher.py::fetch_all_series`）
-- Python・保存済みファイル: `common/system_health.py` 行 56・857・869・1290・1372（経由 `common/system_health.py::_check_l`）
+- Python・保存済みファイル: `common/system_health.py` 行 56・857・869・1396・1483（経由 `common/system_health.py::_check_l`）
 - テスト・保存済みファイル: `tests/test_macro_data_fetcher.py` 行 254・286・406・421・437・440・459・472・479（経由 `common/macro_data/fetcher.py::fetch_all_series`）
 - テスト・保存済みファイル: `tests/test_macro_pulse_accuracy.py` 行 279・280
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::_check_l`）

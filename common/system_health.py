@@ -1217,7 +1217,7 @@ def build_one_line(run_date: str, results: dict) -> str:
         "A": "SEC", "B": "Score", "C": "Latest", "D": "Actions", "E": "Silo",
         "F": "Tail", "G": "Hype", "H": "Config", "I": "EPS", "J": "CronRuns",
         "K": "TickerAudit", "L": "MacroData", "M": "SecFresh", "N": "Headlines", "O": "Intraday",
-        "P": "ExtChange", "Q": "Fresh",
+        "P": "ExtChange", "Q": "Fresh", "R": "DailyVal",
     }
     for key, label in labels.items():
         r = results.get(key, {})
@@ -1263,6 +1263,61 @@ def _overall_text(severity: int, n_problem: int) -> str:
 
 
 # ── メイン ───────────────────────────────────────────────────────────
+_DAILY_DIR = os.path.join(_REPO_ROOT, "common", "market_data", "daily")
+
+
+def _volume_zero_expected(symbol: str) -> bool:
+    """出来高が0なのが普通の銘柄（指数・為替・先物・ドル指数）。『volume must be > 0』の印は想定内として数える"""
+    return symbol.startswith("^") or symbol.endswith(("=X", "=F")) or symbol.startswith("DX-Y")
+
+
+def _check_r(today: Optional[date] = None, daily_dir: Optional[str] = None, window_days: int = 90, new_days: int = 7) -> dict:
+    """日足の検証の印（common/market_data/daily/{T}.json の行の `_validation_warnings`。取得時の検証で、保存はするが印を付ける）。
+    直近 window_days 日の印の行数・銘柄数を数え、**想定内**（出来高0が普通の指数・為替・先物の volume の印）と**それ以外**に分ける。
+    それ以外の印が直近 new_days 日の行に新しく出ていたら ⚠️（銘柄・日付・印の種類）。過去の日足は書き換えない（2026-11-28）"""
+    today = today or date.today()
+    ddir = daily_dir or _DAILY_DIR
+    win_from, new_from = today - timedelta(days=window_days), today - timedelta(days=new_days)
+    expected_rows = other_rows = 0
+    syms_other: set = set()
+    new_items = []
+    try:
+        files = sorted(glob.glob(os.path.join(ddir, "*.json")))
+        for fp in files:
+            sym = os.path.basename(fp)[:-5]
+            with open(fp, encoding="utf-8") as f:
+                doc = json.load(f)
+            rows = next((v for v in doc.values() if isinstance(v, list) and v and isinstance(v[0], dict) and "date" in v[0]), [])                 if isinstance(doc, dict) else (doc if isinstance(doc, list) else [])
+            for r in rows:
+                warns = r.get("_validation_warnings") or []
+                if not warns:
+                    continue
+                try:
+                    d = date.fromisoformat(str(r.get("date"))[:10])
+                except ValueError:
+                    continue
+                if d < win_from:
+                    continue
+                others = [w for w in warns if not (w.startswith("volume must be > 0") and _volume_zero_expected(sym))]
+                if others:
+                    other_rows += 1
+                    syms_other.add(sym)
+                    if d >= new_from:
+                        kind = others[0].split(" (got")[0][:40]
+                        new_items.append(f"{sym} {d.isoformat()} {kind}")
+                else:
+                    expected_rows += 1
+    except Exception as e:  # noqa: BLE001
+        return {"label": f"⚠️  日足を読めない: {type(e).__name__}", "ok": False, "detail": "日足を読めない", "severity": 1, "critical": False}
+    head = (f"直近{window_days}日の印 {other_rows + expected_rows}行（想定内の出来高0 {expected_rows}・それ以外 {other_rows}行/{len(syms_other)}銘柄）")
+    if new_items:
+        more = f" ほか{len(new_items) - 3}件" if len(new_items) > 3 else ""
+        shown = "、".join(new_items[:3]) + more
+        return {"label": f"⚠️  {head} / 直近{new_days}日の新しい印 {len(new_items)}件: {shown}", "ok": False,
+                "detail": f"新しい印{len(new_items)}件", "severity": 1, "critical": False, "new": new_items}
+    return {"label": f"✅ {head} / 直近{new_days}日の新しい印0", "ok": True, "detail": "", "severity": 0, "critical": False, "new": []}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="全システム健全性チェック")
     parser.add_argument("--quiet", action="store_true", help="コンソール出力を省略")
@@ -1298,6 +1353,8 @@ def main() -> int:
     label_p, ok_p, det_p = p["label"], p["ok"], p["detail"]
     q = _check_q()
     label_q, ok_q, det_q = q["label"], q["ok"], q["detail"]
+    r = _check_r()
+    label_r, ok_r, det_r = r["label"], r["ok"], r["detail"]
 
     results = {
         "A": {"ok": ok_a, "short": det_a.split("件")[0] + "件" if "件" in det_a else det_a[:10]},
@@ -1324,10 +1381,12 @@ def main() -> int:
         "P": {"ok": ok_p, "short": det_p},
         # Q（値の日付・鮮度、[[MARKETPULSE-REVIEW-EPIC-1]] 順1）も切らない（何が古いかが通知から読めるように）
         "Q": {"ok": ok_q, "short": det_q},
+        # R（日足の検証の印、2026-11-28）も切らない（銘柄・日付が通知から読めるように）
+        "R": {"ok": ok_r, "short": det_r},
     }
     labels = {"A": label_a, "B": label_b, "C": label_c, "D": label_d, "E": label_e, "F": label_f, "G": label_g,
               "H": label_h, "I": label_i, "J": label_j, "K": label_k, "L": label_l, "M": label_m,
-              "N": label_n, "O": label_o, "P": label_p, "Q": label_q}
+              "N": label_n, "O": label_o, "P": label_p, "Q": label_q, "R": label_r}
     for key, r in results.items():
         r["severity"] = _item_severity(labels[key], r["ok"])
     # Jは自身の判定（⚪初回待ちを含む）の絵文字をそのまま使う
@@ -1355,6 +1414,7 @@ def main() -> int:
         print(f"[O] Intraday:      {label_o}")
         print(f"[P] ExternalChange: {label_p}")
         print(f"[Q] Freshness:     {label_q}")
+        print(f"[R] DailyValidation: {label_r}")
         print(f"Overall: {_overall_text(severity, n_problem)}\n")
 
     # Discord 通知
