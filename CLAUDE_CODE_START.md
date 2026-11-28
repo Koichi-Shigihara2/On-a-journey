@@ -3,10 +3,11 @@
 > 2026-11-06 から細くした。**今の状態・未済の確認手順・決まりへの参照だけ**を置く（行数の上限は `tests/test_claude_code_start_thin.py`）。
 > 日付つきの記録・件数の推移・済んだ手順は `docs/history/CLAUDE_CODE_START_HISTORY.md`。終業のまとめは `PROJECT_STATUS.md`。
 
-## 今の状態（2026-11-27 終業）
+## 今の状態（2026-11-28）
 
 - BACKLOG.md のアクティブは **23件**（`^### [` の機械カウント）。rcc NG 0・WARN 181、pytest 3164件通過・失敗0・skip 3（kaihatsu）。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`（`PYTHONUTF8=1`。約5〜7分。長いので分けるときは`-k`で絞る）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
 - **未公開のコードの置き場所**: ブランチ `parser-layer3-stage2a`（`37d45f7310`、PARSER-LAYER3 段2a＋2b、公開は 12-01〈火〉。手順は `docs/architecture/PARSER_LAYER3_STAGE2_STEP0.md` §2c）の1つだけ（Layer3の定義の列〈PARSER段1・CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARES〉は2026-11-23に全部公開済み。記録は`BACKLOG_DONE.md`・各STEP 0・`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`）。PARSER-LAYER3は段3（年次）以降が残る
+- 2026-11-28: 手順47〜54のうち47・48・50・52〜54は合格〔49・51は MACRO の週次待ち〕。STONKS-DEFICIT-REALITY-EPIC-1 ② を公開（`3bc782822d`、手順55）
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
 - 依頼文の見出しの【Opus】【Sonnet】に合わせて `/model` で切り替える（`CHAT_RULES.md`「モデルの使い分け」。付いていない依頼はOpus）
 - 報告は20行以内（結論・変わった数・判定の変化・決めてほしいこと）。詳しい表はファイルに置き、場所だけ書く（`CHAT_RULES.md`「報告の形」）
@@ -53,44 +54,20 @@
    - 期限: 2026-12-01
    - 確認の手順: ①`attributes/{T}.json` の `estimates.fetched_at` が日曜の定時の時刻に更新されている（監視銘柄84のうち取れない銘柄は一覧にして報告。CIXが取れない理由を確認）②`latest.json` の `guidance_gap.status` が82銘柄で `ok` か `no_estimate`（理由つき）、`report.txt` に `Guidance_Gap` 行がある ③TANUKI SCOREの「成長率−予想(pt)」列で並べ替えられ、stock.htmlに行が出る ④理論株価・判定が前日と同じ。合格したら`[[TANUKI-GUIDANCE-REVISION-BLIND-1]]`をBACKLOG_DONE.mdへ移設する
 
-47. **STONKS-DEFICIT-REALITY-EPIC-1 ①（資金の持ちの流出をTTMに）の、定時の後の確認**（公開は2026-11-26 手動: kaihatsu `f7b9d04284`・Stonks `45832636938`・TANUKI `45832652097`→HypeCore `45834738589`→TANUKI `45835195932`。ID `STONKS-DEFICIT-REALITY-EPIC-1-1`、scope 17銘柄。理論株価・判定・funda・stageの変化0〔82銘柄〕）
-   - 日時: **2026-11-28（土）06:30 JST ごろ**のTANUKI・Stonksの定時の実行の後（1回目の🛠は公開の手動の連鎖で付いた。この回が2回目。当初は11-27朝だったが、11-26 は米国の感謝祭でNYSE休場のため Market Data Daily がガードで何もせず連鎖が動かない〈11-26 10:03・10:52 UTCの実行は cancelled・下流 skipped を確認〉。11-27 は米国の短縮日で、その分の Daily が 11-28 朝に動く）
-   - 期限: 2026-11-30（②の公開はこの確認の後。11-28 朝に合格したら 11-28 中に公開できる）
-   - 確認の手順: ①`latest.json`と`stonks-silo/data/results.json`に`method_change`の印が付かない（`method_change_applied`に`STONKS-DEFICIT-REALITY-EPIC-1-1`）②runwayが公開の直後の値と同じ（SOUN 19.27か月・IONQ 17.47か月〔総合 PROMISING 70.7〕・ASTS 35.34・AVAV 155.48・CRWV 2.46・JOBY 33.62・RKLB 169.81、TANUKIの`computed_runway_months`はCOHR 15.82・AMZN 29.23）③SOFIの`computed_runway_basis`が`financial_excluded`のまま（runwayなし・fundaは変わらない）④RCAT・CPRTが`annual_fallback`のまま ⑤理論株価・判定が前日と同じ。合格したら`[[STONKS-DEFICIT-REALITY-EPIC-1]]`の①を済にする（②③④は残す）
+49. **MARKETPULSE-REVIEW-EPIC-1 順2（型E）の残り: MACRO PULSE の週次AI解説**（実装は2026-11-27 kaihatsu。2026-11-28 に Market Pulse 側①〜④は合格・確認済み）
+   - 日時: 次の MACRO PULSE の週次の実行の後
+   - 期限: 2026-12-01
+   - 確認の手順: `05_weekly_analysis.csv` の次の行の `factor_analysis` が、寄与0の指標（点数が1週前と同じ）を理由にしていない（実行ログに「寄与0の指標を理由に挙げた」の警告が出ていれば言い直しの結果も見る）。合格したら手順51と合わせて `[[MARKETPULSE-REVIEW-EPIC-1]]` を BACKLOG_DONE.md へ移設（順1〜6・2-b は2026-11-28 に確認済み）
 
-48. **MARKETPULSE-REVIEW-EPIC-1 順1（型L: 日付・鮮度）の、次の定時の後の確認**（実装は2026-11-27 kaihatsu。method_changeなし・判定に効かない）
-   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後（11-27 の米国は短縮日で、その分のDailyが11-28朝に動く）。MACRO PULSE の `05_liquidity.csv` の新しい列は次の MACRO PULSE の実行の後
+51. **MARKETPULSE-REVIEW-EPIC-1 順4（型P）の残り: MACRO の週次**（実装は2026-11-27 kaihatsu。2026-11-28 に Market Pulse 側①〜③⑤⑥は合格・確認済み）
+   - 日時: 次の MACRO PULSE の週次の実行の後
    - 期限: 2026-12-01
-   - 確認の手順: ①`market_data.json` の最新エントリの `data_quality` に `expected_by_kind`（us_close・jpx・fred_daily）があり、`as_of` に「日経平均」「HYスプレッド」が入っている。`freshness` は新しくない要素だけ（日経が期待する日以降なら空）②`buy_checklist.checks.hy_spread.as_of` に日付がある ③画面（Market Pulse）のカードに日付、BUYチェックリストのHYスプレッドに日付が出る ④`daily/^N225.json` に 11-25（と 11-26）の行が入っている（`daily_guard` の取り直し。11-26 の感謝祭の分は 11-27 の実行で入る見込み）⑤`05_liquidity.csv` の最新の行に `sp500_asof`・`hy_spread_asof` が入り、System Health の [Q] が ✅（古い値なら⚠️の理由が日付つきで出る）⑥理論株価・判定・stageが前日と同じ ⑦**日本の行の取り直しだけの回**（`daily_guard` の `mode=jpx_only`。実行の Summary に `mode=jpx_only`・コミットの件名に「日本の行の取り直しだけ: ^N225」）が出ていれば、その回は**取り消し（cancelled）で終わり、直後に Market Pulse・Stonks Silo・TANUKI が起動していない**（`gh run list`で確認。実装の commit は `771196c82d`）。1日の jpx_only の回は、^N225の終値がYahooに入る21:30 UTC以降のcron〈21:47・22:17・22:47・23:17・01:47・02:17〉で、入った時点で止まる（最大6回。休場日は外部の起動が無くcronだけ）
+   - 確認の手順: ④次の週次の行に `basis=STEP-RULES-1`、`score` は小数の点数を丸めた整数、`phase` は前の週の phase から2pt越えたときだけ変わる（前の週が拡張で今週スコア30・31なら拡張のまま、32以上で踊り場）。画面のスコア推移に縦線
 
-49. **MARKETPULSE-REVIEW-EPIC-1 順2（型E: 説明と計算のずれ）の、次の定時の後の確認**（実装は2026-11-27 kaihatsu。表示とAIの入力だけ・理論株価・判定に効かない）
-   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後。MACRO PULSE の週次AI解説は次の週次の実行の後
+55. **STONKS-DEFICIT-REALITY-EPIC-1 ②（黒字化の予測から現金を伴わない評価損益・減損を除く）の、日曜の取り込みの後の確認**（公開は2026-11-28 手動: kaihatsu `3bc782822d`・Stonks `46092665726`・TANUKI `46092663177`→HypeCore `46093926925`→TANUKI `46094103217`。ID `STONKS-DEFICIT-REALITY-EPIC-1-2`、scope 1銘柄〔SOUN〕。理論株価・判定・funda・stageの変化0〔82銘柄〕）
+   - 日時: 2026-11-30（月）06:30 JST ごろの定時の実行の後（11-29 日曜の Market Data Weekly が `profitability.json` を作り直した後）
    - 期限: 2026-12-01
-   - 確認の手順: ①`market_data.json` の最新エントリの `ai_facts` に「センチメント指数の内訳（寄与ptの合計＝指数−50）」があり、合計が`sentiment.score − 50`と±0.1で合う ②`stage_conclusions` の段階5の文言に「SPYより相対的に強い（Strong）」と「業種の実際の騰落: 1日…・5日…」、段階7が「SPYより相対的に強いセクター（Strong・Improving）にいる監視銘柄」、`sector_rotation.sectors.*.change_5d_pct` がある ③AIの見解（`summary`）が寄与0・「使った値=false」の指標を理由にしていない ④画面: 段階8の題名が「過去の似た日、その後どうなったか」、セクター表に1日・5日の列、BUYチェックリスト②の文言が「90日の最大値より0.30%以上低いか」⑤`05_weekly_analysis.csv` の次の行の `factor_analysis` が、寄与0の指標（点数が1週前と同じ）を理由にしていない（実行ログに「寄与0の指標を理由に挙げた」の警告が出ていれば言い直しの結果も見る）
-
-50. **MARKETPULSE-REVIEW-EPIC-1 順3（型S: market_data.json の分割）の、明朝の定時の後の確認と、旧キーの読みを外す**（実装は2026-11-27 kaihatsu。`comments_history` を持たない形。Market Pulse の判定・出力は変わらない）
-   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
-   - 期限: 2026-12-01
-   - 確認の手順: ①`market_data.json` の最新のエントリに `comments_history` が無く、ほかのキー（`summary`・`stage_conclusions`・`data_quality` 等）は前日と同じ形で、ファイルが 7.3MB 前後（1日約50KB増）②画面（Market Pulse）の「過去のAIコメント」が最新のエントリで直近11件ぶん出る（前のエントリの `summary` から作る）③`scripts/migrate_market_data_comments_history.py --check` が「旧キーあり 0・食い違い 0」。合格したら、移行のスクリプト（`scripts/migrate_market_data_comments_history.py` と `tests/test_market_data_comments_history.py` の移行の検査）は役目を終えるので削除してよい（`COMMENTS_HISTORY_FROM` は残す。旧エントリの表示を変えないため）。⑤**latest.json と trail**: `docs/market-monitor/market-pulse/data/latest.json` が最新のエントリと同じ（`market_data.json` の最後のエントリと等しい）で、最新以外のエントリの `sector_rotation.sectors.*.trail` が増えていない（新しい回で前の最新の trail が消えている）。TANUKI SCORE の画面が表示され「最終更新」が最新の回の時刻、`snapshot.py`（TANUKI_Score_Update）が成功。System Health [Q] が latest.json を読んで✅。**旧キーの読みは画面に入れていない**（同じ push で旧キーを消したため。書き手のないキーを画面が読むと出力の一覧の検査 INV-5 が NG になる）
-
-51. **MARKETPULSE-REVIEW-EPIC-1 順4（型P: 段・閾値の切り替わり）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。理論株価・判定に効かない。TANUKI・HypeCore は局面・ゾーン・象限・発動を読まない）
-   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後。MACRO PULSE の週次（スコア・局面）は次の週次の実行の後
-   - 期限: 2026-12-01
-   - 確認の手順: ①`market_data.json` の最新のエントリに `basis.step_rules`（`STEP-RULES-1`）があり、`buy_checklist` に `trigger_held` がある。前日のF&Gが25以下で発動し当日26〜30なら `triggered=true`・`trigger_held=true`（31以上なら外れる）②`sector_rotation.sectors.*.quadrant` が前日の象限と、境目（100）を0.5以内で越えた分だけ違わない（前日 Strong で RS-Ratio が99.5〜100なら Strong のまま）③画面（Market Pulse）の時系列に、`basis` が入った最初の日（11-28）の縦線「判定の基準を変更」④MACRO: 次の週次の行に `basis=STEP-RULES-1`、`score` は小数の点数を丸めた整数、`phase` は前の週の phase から2pt越えたときだけ変わる（前の週が拡張で今週スコア30・31なら拡張のまま、32以上で踊り場）。画面のスコア推移に縦線 ⑤`05_main.py` の `SIGNAL_STEPS` と画面の写しが一致（テストが検査）⑥理論株価・判定が前日と同じ
-
-52. **MARKETPULSE-REVIEW-EPIC-1 順5（2-c: 買いの主を BUY チェックリストに）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。判定の出力・理論株価は変えていない）
-   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
-   - 期限: 2026-12-01
-   - 確認の手順: ①`market_data.json` の最新エントリに `buy_checklist.rule_text`・`sentiment.signal.rule_text`・`tech_pulse.divergence.rule_text` がある ②画面の段階8の見出しが「買いの判断（主）— BUY チェックリスト」→「参考: センチメントのシグナル」→「参考: Tech Pulse のシグナル」の順で、文言の数字（25・30・20・30など）が定数と同じ ③`buy_checklist.triggered`・`points`・`sentiment.signal.signal` が前日の判定の規則と同じ（閾値を変えていない） ④理論株価・判定が前日と同じ
-53. **MARKETPULSE-REVIEW-EPIC-1 順5(b)の文言と順6（2-a: 段階8の下位10%・重ならない件数）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。判定・ラベル・理論株価は変えていない）
-   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
-   - 期限: 2026-12-01
-   - 確認の手順: ①最新エントリの `stage_conclusions["8"].signals.*.outcomes[*]` に `p10_pct`・`n_indep` がある（件数不足の項目は`p10_pct`なし）②画面の段階8の表に「下位10%」「重ならない件数」の列があり、値が①と同じ（翌営業日の重ならない件数は「—」）③画面の段階3のバッジが「株（当日−1%超の下落）」「クレジット（当日のHYG/LQD比）」④`label`・`line` が前日の規則と同じ（zを変えていない）⑤理論株価・判定が前日と同じ
-   - 合格したら: ⑥`z`が重ならない件数で計算されている（`diff_pt`と`base_up_pct`と`n_indep`から検算して同じ）⑦手順48〜54がすべて合格したら、[[MARKETPULSE-REVIEW-EPIC-1]]を BACKLOG_DONE.md へ移設
-54. **MARKETPULSE-REVIEW-EPIC-1 2-b（セクター象限の基準をRSPに）と段階8の件数不足（重ならない件数）の、明朝の定時の後の確認**（実装は2026-11-27 kaihatsu。TANUKI・HypeCore・理論株価・判定は読まない）
-   - 日時: 2026-11-28（土）06:30 JST ごろの Market Pulse の実行の後
-   - 期限: 2026-12-01
-   - 確認の手順: ①最新エントリの `sector_rotation.benchmark` が `RSP`、`basis.sector_benchmark` が `RSP` ②画面のセクター表の下に「象限の基準: RSP（均等加重）。（その日）より前の記録はSPY基準」、段階5・7と4象限の見出しが「RSP（均等加重）より相対的に強い」、AIの見解がSPYと書いていない ③切り替えの日の象限は前のエントリの象限に引きずられていない（今までの段の判定：`ratio`・`momentum` が境目の100の側と `quadrant` が一致）、翌日以降は境目の幅つき ④グラフ（センチメント推移）に「セクターの基準をRSPに変更」の線 ⑤段階8: `outcomes[*].label` が `n_indep<20` のとき「件数不足」、`line` が「重ならない件数」 ⑥理論株価・判定が前日と同じ
+   - 確認の手順: ①`stonks-silo/data/results.json` に `method_change` の印が付かない（`method_change_applied` に `-1-2`）②SOUN の黒字化の予測が `TOO_FAR`・`op_breakeven_year` 2030・総合 10x_CANDIDATE 78.2 のまま、AVAV が `NO_TREND` のまま ③`docs/common/profitability.json` が公開の直後の値と同じ（`noncash_adjustment` applied 12・candidate 2〔IONQ・SITM〕・none 70、SOUN `loss` 14.99四半期・R² 0.964、RKLB 12.21・S 14.70・RCAT R² 0.001・AVAV R² 0.749）④理論株価・判定・funda・stage が前日と同じ ⑤`docs/common/stage_v2/SOUN.json` の最新の月が変わらない。合格したら `[[STONKS-DEFICIT-REALITY-EPIC-1]]` の②を済にする（③④は残す）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 

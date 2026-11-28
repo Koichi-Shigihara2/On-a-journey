@@ -2105,7 +2105,7 @@ Phase 2の説明も「取得時検証6項目の実装」から「複数ソース
 ## 優先度：中（こなれてきたら対応）
 
 ### [STONKS-DEFICIT-REALITY-EPIC-1] STONKS SILOの判定が赤字企業の実態とずれる（資金の持ちの流出が年次・黒字化の予測に現金を伴わない評価損益・開示本文を見ていない）。保有のSOUNで確認
-**①公開済み（2026-11-26、ID `STONKS-DEFICIT-REALITY-EPIC-1-1`、scope 17銘柄、`f7b9d04284`）:** 資金の持ちの流出を直近4四半期（TTM）に。理論株価・判定・funda・stageの変化0。SOUN 24.2→19.3か月・IONQ SAFE→WATCH（総合 PROMISING 70.7）・SOFIは対象外（金融）。確認は手順47（11-27朝）。②は`profitability-noncash`に実装済み・未公開（①の確認の後に公開）
+**①公開済み（2026-11-26、ID `STONKS-DEFICIT-REALITY-EPIC-1-1`、scope 17銘柄、`f7b9d04284`）:** 資金の持ちの流出を直近4四半期（TTM）に。理論株価・判定・funda・stageの変化0。SOUN 24.2→19.3か月・IONQ SAFE→WATCH（総合 PROMISING 70.7）・SOFIは対象外（金融）。①の確認は2026-11-28に合格（手順47、記録は`CLAUDE_CODE_START_HISTORY.md`）。**②公開済み（2026-11-28、ID `STONKS-DEFICIT-REALITY-EPIC-1-2`、scope 1銘柄〔SOUN〕、`3bc782822d`）:** 黒字化の予測から現金を伴わない評価損益・減損を除く。SOUN PREDICTED 2026→TOO_FAR 2030（総合 10x_CANDIDATE 78.2のまま）、理論株価・判定・funda・stageの変化0。確認は手順55（11-30朝）。③④は残す
 **型・処置:** 型A（入力の時点・定義のずれ）＋新機能（開示本文の印）・段階的
 **優先度:** 中
 **分類:** STONKS SILO / `src/value/stonks_silo/analyzer.py`・`common/profitability.py`・`src/tail/sec_items_fetcher.py`・TANUKIの`computed_runway_months`
