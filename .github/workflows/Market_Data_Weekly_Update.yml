@@ -86,7 +86,9 @@ jobs:
           git config merge.ours.driver true
           git add common/market_data/attributes/ || true
           git add common/market_data/analyst_history/ || true
-          git add common/market_data/daily/ common/market_data/_split_reconcile_skips.json || true
+          git add common/market_data/daily/ || true
+          # [SKIP] の記録は、1度も出ていなければ無い。git add は存在しないパスが1つでもあると全部を追加せず終わるので、必ず単独の行にする
+          git add common/market_data/_split_reconcile_skips.json || true
           git add common/market_data/_sp500_constituents_cache.json || true
           git add config/sector_master.json docs/common/sector_class.json || true
           git add docs/common/profitability.json || true
