@@ -81,3 +81,9 @@ refresh_fed_context_on_new_statement()      … 毎日の実行（22:15 UTC の 
 3. MACRO PULSE を「読む側」にする変更の範囲（regime・cuts_implied・1Y EXPECTED FF の出し所）を決める
 
 [[FED-POLICY-PAGE-1]]・[[MACROPULSE-RECESSION-SCORE-STEPS-1]]・[[MARKETPULSE-REVIEW-EPIC-1]]
+
+## 7. 追記（2026-11-28、Koichi の決定）: 取得元は yfinance の各限月に絞る。Kalshi は使わない
+
+- **Kalshi は使わない**。Developer Agreement で、取得したデータの保存は Kalshi での自分の取引のためだけに限られ、書面の同意なしに第三者と共有することも禁じられている。**公開サイトでの表示は共有にあたる**。§2 の表の Kalshi の行（「認証なしで取得できた」）は事実だが、使えない。
+- **取得元の候補は、yfinance の FF 金利先物の各限月（`ZQ=F`・`ZQZ26.CBT` 形式）に絞る**。各限月の欠けと更新の遅れ（20営業日ぶん程度）の確認は、着手するとき（STEP 1）に行う。取れない日は0やスキップで埋めず「取れない」と出す。
+- §6 の STEP 1 の1番は「Kalshi の規約の確認」ではなく「yfinance の各限月の確認」に読み替える。独立した2つ目の取得元は、今は持たない（FRED の DGS1 は 1年のレートで会合ごとではないため、2つ目の取得元にはならない）。
