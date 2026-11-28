@@ -2604,6 +2604,28 @@ def check_inventory(saved: dict, now: dict, known_rules: Optional[List[str]] = N
         for u in now["data_keys"].get("unread_keys", []):
             if u["key"] not in known_dk:
                 warn.append(f"  [WARN-INV-6 {tg}誰も読まないキー] {u['key']}（{'、'.join(u['sources'][:2])}）。読み手を作るか、書くのをやめる")
+    # CHECK-INV-6b（2026-11-28）: 読み手が無く、注記（「これから作る：項目名」か残す理由）も無いキーは、保存した一覧にあっても数える。
+    # INV-6・INV-7 は「新しくできたキー」だけなので、一覧を作り直すと（ゲートが求める操作）そのときの誰も読まないキーが全部「既知」になって
+    # WARN が注記も読み手も無いまま消えていた。新しいキーは INV-6・INV-7 が数えるので、ここは「保存した一覧にもあるキー」だけ（二重に数えない）
+    def _warn_6b(key: str, sources: List[str]) -> None:
+        warn.append(f"  [WARN-INV-6b {tg}読み手も注記も無いキー] {key}（{'、'.join(sources[:2])}）。読み手を作る・UNREAD_KEY_NOTES に"
+                    "「これから作る：項目名」か残す理由を書く・書き出しごと消す、のどれかにする")
+    if now.get("screen") is not None:
+        known_s = {u["key"] for u in (saved.get("screen") or {}).get("unread_keys", [])}
+        for u in now["screen"].get("unread_keys", []):
+            if not u.get("note") and u["key"] in known_s:
+                _warn_6b(u["key"], u["sources"])
+    if now.get("data_keys") is not None:
+        known_d = {u["key"] for u in (saved.get("data_keys") or {}).get("unread_keys", [])}
+        for u in now["data_keys"].get("unread_keys", []):
+            if not u.get("note") and u["key"] in known_d:
+                _warn_6b(u["key"], u["sources"])
+    if now.get("part_outputs") is not None:
+        known_p = {(p_["part"], k["key"]) for p_ in (saved.get("part_outputs") or []) for k in p_.get("keys", []) if not k["readers"]}
+        for p_ in now["part_outputs"]:
+            for k in p_.get("keys", []):
+                if not k["readers"] and not k.get("note") and (p_["part"], k["key"]) in known_p:
+                    _warn_6b(k["key"], [p_.get("sink") or p_["part"]])
     return ng, warn
 
 

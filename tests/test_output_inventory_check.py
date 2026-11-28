@@ -429,7 +429,7 @@ def test_market_data_check_known_rules_warn_and_new_unread_key_warns():
     ng, warn = inv.check_inventory(saved, now, known_rules=known, out_json="market_data_layer.json", tag="市場データ層")
     assert any("WARN-INV-3" in x and "trading_day" in x for x in warn)
     assert any("NG-INV-3" in x and "bar_close_rule" in x for x in ng)
-    assert [x for x in warn if "WARN-INV-6" in x and "new_key" in x] and not [x for x in warn if "eps_actual" in x]
+    assert [x for x in warn if "WARN-INV-6" in x and "new_key" in x] and not [x for x in warn if "WARN-INV-6 " in x and "eps_actual" in x]   # 既知のキーは INV-6 では数えない（注記が無ければ INV-6b が数える）
 
 
 def test_strict2_loop_over_names_and_same_folder_import(monkeypatch):
@@ -724,3 +724,33 @@ def test_part_outputs_unread_key_warns_only_when_new():
         assert any("NG-INV-7" in x for x in ng)
     finally:
         inv.set_layer("sec")
+
+
+def test_inv6b_unread_key_without_note_is_counted_even_after_rebuild():
+    """CHECK-INV-6b（2026-11-28）: 読み手も注記も無いキーは、一覧を作り直しても（saved == now でも）WARN のまま。
+    注記（これから作る・残す理由）を足すか、キーが無くなると消える。新しいキーは INV-6 が数える（二重に数えない）"""
+    saved = _tanuki_inventory()
+    saved["screen"]["unread_keys"] = [{"key": "no_note_key", "sources": ["docs/x.json"], "note": ""},
+                                      {"key": "noted_key", "sources": ["docs/x.json"], "note": "これから作る: [[SOME-ITEM-1]]"}]
+    saved["data_keys"] = {"unread_keys": [{"key": "data_no_note", "sources": ["common/a/{T}.json"], "note": ""}], "written_key_count": 1}
+    saved["part_outputs"] = [{"part": "common/p.py", "sink": "docs/common/p.json", "exists": True, "callers": ["x.py"],
+                              "keys": [{"key": "part_no_note", "readers": [], "note": ""},
+                                       {"key": "part_noted", "readers": [], "note": "残す: 根拠の記録"},
+                                       {"key": "part_read", "readers": ["a.html"], "note": ""}]}]
+    now = copy.deepcopy(saved)          # 一覧を作り直した直後（新しいキーは無い）
+    ng, warn = _check_tanuki(saved, now)
+    b = [x for x in warn if "WARN-INV-6b" in x]
+    assert any("no_note_key" in x for x in b) and any("data_no_note" in x for x in b) and any("part_no_note" in x for x in b)
+    assert not any("noted_key" in x or "part_noted" in x or "part_read" in x for x in b)
+    assert not [x for x in warn if "WARN-INV-6 " in x]            # 新しいキーではないので INV-6 は出ない
+    # 新しいキー（保存した一覧に無い）は INV-6 が数え、INV-6b は二重に数えない
+    now2 = copy.deepcopy(saved)
+    now2["screen"]["unread_keys"].append({"key": "brand_new", "sources": ["docs/y.json"], "note": ""})
+    _, warn2 = _check_tanuki(saved, now2)
+    assert any("WARN-INV-6 " in x and "brand_new" in x for x in warn2)
+    assert not any("WARN-INV-6b" in x and "brand_new" in x for x in warn2)
+    # 注記を足せば消える
+    now3 = copy.deepcopy(saved)
+    now3["screen"]["unread_keys"][0]["note"] = "残す: 検証のための記録"
+    _, warn3 = _check_tanuki(saved, now3)
+    assert not any("WARN-INV-6b" in x and "no_note_key" in x for x in warn3)
