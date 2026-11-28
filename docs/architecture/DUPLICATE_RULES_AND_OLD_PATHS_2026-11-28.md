@@ -162,3 +162,31 @@ A は22件のうち関数16件・約150行（`signed`・`fmt_md` を含む）。
 | Python の行数 | 78,939行・179ファイル | **78,764行・178ファイル**（−175行・−1ファイル。`val_guard_proto.py` の削除 −172 と、`quarter_label` の集約・ほかの差し引き −3） |
 | ワークフローの本数 | 21 | 21 |
 | 読み手の決まっていない出力 | 0 | 0 |
+
+## 6. 2026-11-28 夜の続き（規則5・3・デッドコード）
+
+### 6-1 規則5（会計年度）を数え方から外した（13→12）
+`parser.py` の `_detect_fiscal_end_month`・`_detect_fiscal_anchor_date` は `utils.py` を呼ぶ薄いラッパー。TAIL の `get_fiscal_year_end` は SEC の submissions API の `fiscalYearEnd` を取る別の関数。一本化する対象が無いので、検出式（`fiscal_year`）と既知の一覧（SEC 層・TAIL）から削除した。
+
+### 6-2 規則3（古さの判定）を `freshness.py` に一本化した（12→11）
+- 判定は `common/sec_data/freshness.py::is_stale_period(period_end, today, limit_days)` の1か所（期末から今日までの日数が上限を超えたか。期末が読めなければ None）。
+- 上限は使う側の方針で、基準は変えていない: STONKS は 135日（`financial_as_of.STALE_DAYS_AFTER_QUARTER_END`。`layer3_builder` の `CURRENT_VALUE_MAX_LAG_DAYS` と揃えてある）、EPS ANALYZER は次が10-Q（直近がQ1・Q2・Q4）なら145日・10-K（直近がQ3）なら190日（`freshness.eps_stale_limit_days`）。
+- STONKS: `financial_as_of.is_stale` は `is_stale_period` を呼ぶだけにした。
+- EPS ANALYZER: 実行時に `summary.json` の各行へ `stale`・`stale_days`・`stale_limit_days` を書く（`pipeline.py`。銘柄を絞った実行でマージした古い行も、その実行の日で判定し直す）。画面（`index.html`）は書かれた値を読むだけ（JS の `stalePeriod` と日数の定数を削除。見出しの説明の日数も `stale_limit_days` から読む）。
+- **基準が変わる銘柄**: なし。2026-11-28 の `summary.json` 82銘柄で、旧 JS の判定と新しい Python の判定が全件同じ（印が付くのは CEG の1銘柄、期末から151日で目安145日を超過）。STONKS の `results.json` 17銘柄で、保存済みの `stale` と再計算が全件同じ。前後の一覧（銘柄・前・後）は差が0件なので表にしない。
+- **変わる点（時点）**: EPS の印は、以前は画面を開いた日で判定し、今は EPS ANALYZER の実行の日（月曜の定時・手動実行）で判定する。印が付く日が最大で次の実行まで遅れる。
+- Playwright（Chromium、`docs/` を `/On-a-journey/` で配信）で EPS 画面を確認: 82行・印1（CEG）・見出しの日数・表のツールチップ「期末から151日。目安145日を超過」。変更の途中で見出しの説明が削除した定数 `STALE_PERIOD_DAYS_10Q` を参照して表が出なくなる不具合があり、Playwright で見つけて直した。STONKS 画面は表示（35行）・エラーなし（404 は RKLB・ZS の TANUKI の `latest.json` が無いだけで、今回の変更と無関係の既存のもの）。
+- 検出式は「判定の定義」（`def is_stale_period`・`function …stalePeriod…`）だけにし、既知の一覧から外した。同じ判定が別の場所に戻れば NG-INV-3 になる。SEC の取り込みの遅れの警告（CHECK-60・System Health [M]）は `freshness.py` を呼んでいるだけ、`parser._freshness` は候補の並べ替え、TAIL の `_updateReviewStaleness` はレビューのログの古さで、いずれも別の規則。
+
+### 6-3 デッドコードの削除（5-3 の A と B のうち、parser・MACRO PULSE に関係しないもの）
+- 関数19件（約190行）: 5-3 の A の16件（`fmt_md`・`signed`・`needs_quarterly_update`・`update_quarterly_run_state`・`get_tickers_by_flag`・`check_m/n/o/p`・`fetch_spy_qqq`・`format_for_prompt`・`_calc_yoy_text_stage2`・`_lookup_layer2_value`・`get_diluted_shares_from_facts`・`available_tickers`・`create_calculator`）＋ B のうち `check_j_workflow_runs`（テストは本体の `_check_j` を直接呼ぶ形に）・`safe_yf_history`（テスト3件も削除）・`calc_hindenburg_active`（テスト4件のクラスも削除）。
+- ファイル: `common/sec_data/newfield_q4_cutoff_check.py`（217行）。
+- 残した: `us_federal_business_days_add`・`step_rules.check_table`・`value_freshness.stale_names`（MACRO PULSE の入力・共通部品。手順55c の後）、`migrate_market_data_latest.py`・`migrate_market_data_comments_history.py`（移行は済んでいて `--check` が0件。ただし MARKETPULSE-REVIEW-EPIC-1 の確認〔手順55c〕とテストが絡むので、手順55c の後に）、`tools/sim/parser_l3` の3本（段2a の確認の後）。
+
+### 6-4 今日の終業の数（11-28 の最終）
+| 数 | 昼の前（`4f9723d2a9`） | 最終 |
+|---|---|---|
+| 二重実装の規則 | 14 | **11**（6・5・3） |
+| Python の行数 | 78,939行・179ファイル | **78,362行・177ファイル**（−577行・−2ファイル） |
+| ワークフローの本数 | 21 | 21 |
+| 読み手の決まっていない出力 | 0 | 0 |
