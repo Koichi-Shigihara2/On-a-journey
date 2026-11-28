@@ -5336,7 +5336,7 @@
     "sources": [
      "common/market_data/daily/{T}.json"
     ],
-    "note": "残す: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS の動的な読み）"
+    "note": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）"
    },
    {
     "key": "_validation_warnings",
@@ -5344,14 +5344,14 @@
      "common/market_data/attributes/{T}.json",
      "common/market_data/daily/{T}.json"
     ],
-    "note": "残す: 保存前の検証の品質の印（読み手は後の画面の整理で決める）"
+    "note": ""
    },
    {
     "key": "current_price_target",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "down_7d",
@@ -5365,21 +5365,21 @@
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "eps_difference",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "eps_estimate",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "prev",
@@ -5393,7 +5393,7 @@
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "price_to_sales",
@@ -5401,14 +5401,14 @@
      "common/market_data/attributes/{T}.json",
      "common/market_data/valuation_history/{T}.json"
     ],
-    "note": "残す（作り直せない履歴）: valuation_history は4つの倍率を同じ形で月ごとに溜める（Yahooは直近の値しか返さない）。人（Claude Code）が倍率の推移を調べるとき〈評価の見直し・バックテスト〉に読む"
+    "note": "残す（記録）: 作り直せない。valuation_history が4つの倍率（先行PER・実績PER・PSR・EV/EBITDA）を同じ形で月ごとに溜めた履歴（Yahooは直近の値しか返さない）"
    },
    {
     "key": "prior_price_target",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "reason_label",
@@ -5422,14 +5422,14 @@
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "strong_sell",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
     ],
-    "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+    "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
     "key": "up_7d",

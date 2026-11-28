@@ -26,9 +26,9 @@
 | 区分 | 出力（パスの型） | 何か | 書き手 | 読み手の数（その場で計算） | 画面 | 投資判断 | 定義 | 残す／消す |
 |---|---|---|---|---|---|---|---|---|
 | 2件以上 | `docs/value-monitor/adjusted_eps_analyzer/data/summary.json`<br>（1ファイル） | 全銘柄の一覧（銘柄ごとの最新期のGAAP EPS・調整後EPS・差・前年比・健全性）と実行の結果（run_status）。EPSの画面の一覧・TANUKI VALUATIONの調整後EPSが読む | `pipeline.py:run` | 8・テスト7 | common/ticker-links.js（直接）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（直接）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/adjusted_eps_analyzer/tickers.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・EPSの画面 | — | 残す（2026-10-21） |
-| 2件以上 | `docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json`<br>（95ファイル） | 銘柄ごとの年次の調整後EPS（年ごとの調整項目）。TANUKI VALUATIONのFCFの外れ値の判定が、一過性の費用の突合に読む（calculator/adjustments.py） | `pipeline.py:process_one_ticker` | 3・テスト6 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-020・AS-IS-021 | 残す（2026-10-21） |
-| 2件以上 | `docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json`<br>（95ファイル） | 銘柄ごとの四半期の調整後EPS（調整項目・税の調整・AIの分析・特記）と経営者実行力の指標（execution_metrics）。EPSの個別ページ・TANUKI VALUATIONの調整後PERが読む | `pipeline.py:process_one_ticker` | 8・テスト11 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（直接）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・EPSの画面 | AS-IS-181・AS-IS-265 | 残す（2026-10-21） |
-| 2件以上 | `docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json`<br>（95ファイル） | 銘柄ごとの直近4四半期の合計（TTM）の純利益・調整後純利益・EPSの時系列。EPSの個別ページが読む | `pipeline.py:process_one_ticker` | 2 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・EPSの画面 | AS-IS-033 | 残す（2026-10-21） |
+| 2件以上 | `docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json`<br>（82ファイル） | 銘柄ごとの年次の調整後EPS（年ごとの調整項目）。TANUKI VALUATIONのFCFの外れ値の判定が、一過性の費用の突合に読む（calculator/adjustments.py） | `pipeline.py:process_one_ticker` | 3・テスト7 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-020・AS-IS-021 | 残す（2026-10-21） |
+| 2件以上 | `docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json`<br>（82ファイル） | 銘柄ごとの四半期の調整後EPS（調整項目・税の調整・AIの分析・特記）と経営者実行力の指標（execution_metrics）。EPSの個別ページ・TANUKI VALUATIONの調整後PERが読む | `pipeline.py:process_one_ticker` | 8・テスト12 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（直接）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・EPSの画面 | AS-IS-181・AS-IS-265 | 残す（2026-10-21） |
+| 2件以上 | `docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json`<br>（82ファイル） | 銘柄ごとの直近4四半期の合計（TTM）の純利益・調整後純利益・EPSの時系列。EPSの個別ページが読む | `pipeline.py:process_one_ticker` | 2 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・EPSの画面 | AS-IS-033 | 残す（2026-10-21） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -41,9 +41,9 @@
 ### `docs/value-monitor/adjusted_eps_analyzer/data/summary.json`（2件以上）
 - 起動元: .github/workflows/Adjusted_Eps_Analyzer_update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `last_updated`(5)・`run_status`(3)・`tickers`(12)
-- Python・保存済みファイル: `common/system_health.py` 行 207・353・407・1222・1303（経由 `common/system_health.py::_check_i`）
+- Python・保存済みファイル: `common/system_health.py` 行 207・353・407・1286・1372（経由 `common/system_health.py::_check_i`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 503・887・891
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 466・561・566・814・1003・1088・1163・1373・1581・3057（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 460・555・560・806・995・1080・1141・1204・1414・1622・3150（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
 - JS・HTML・保存済みファイル: `docs/common/ticker-links.js` 行 31
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/index.html` 行 240
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/stock.html` 行 595
@@ -54,7 +54,7 @@
 - テスト・保存済みファイル: `tests/test_eps_upc_prereorg_filter.py` 行 177（経由 `src/value/adjusted_eps_analyzer/pipeline.py::generate_summary`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 211・233・253・266・285・289・294・299・304・309・332・348 ほか64（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::_check_i`）
-- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 132・135・144（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
+- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 131・134・143（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_eps_map`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/system_health.py::_check_i`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -67,16 +67,17 @@
 ### `docs/value-monitor/adjusted_eps_analyzer/data/{T}/annual.json`（2件以上）
 - 起動元: .github/workflows/Adjusted_Eps_Analyzer_update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `last_updated`(0)・`ticker`(5)・`years`(5)
-- Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 994・998・1143（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 255・1056（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 430・1066・1134（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
-- テスト・その場で計算: `tests/test_eps_sector_classifier_master.py` 行 31・44・46・51（経由 `src/value/adjusted_eps_analyzer/sector_classifier_v2.py::SectorClassifierV2`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 1006・1010・1155（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 255・1078（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 424・1058・1129・1153（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
+- テスト・その場で計算: `tests/test_eps_sector_classifier_master.py` 行 31・43・45・50（経由 `src/value/adjusted_eps_analyzer/sector_classifier_v2.py::SectorClassifierV2`）
 - テスト・その場で計算: `tests/test_split_history_adjustments.py` 行 41・52（経由 `src/value/adjusted_eps_analyzer/pipeline.py::load_split_history`）
 - テスト・保存済みファイル: `tests/test_core_calculator_rf_reference.py` 行 23（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
 - テスト・保存済みファイル: `tests/test_core_calculator_v0_note.py` 行 47・54・63・72（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 3211・3220
 - テスト・保存済みファイル: `tests/test_policy_a_floor_end_to_end.py` 行 55（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
-- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 60・65（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
+- テスト・保存済みファイル: `tests/test_reverse_growth.py` 行 43・50（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
+- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 61・66（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
 - テスト・保存済みファイル: `tests/test_tanuki_calc_continuity.py` 行 73（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_annual`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -94,13 +95,13 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `execution_metrics`(1)・`last_updated`(2)・`quarters`(8)・`ticker`(13)
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 126・130・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1285・1333・2459・2463・2963・2995・3029・3466・3708・3752（経由 `common/sec_data/report_consistency_check.py::_read_eps_quarterly`）
-- Python・保存済みファイル: `common/system_health.py` 行 89・1214（経由 `common/sec_data/audit.py::audit_ticker`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 1038・1042・1135（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 255・960・1017・1021・1056（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`、`src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 430・466・1066・1134・1373・1591・1595・2700・2703・3862（経由 `src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
+- Python・保存済みファイル: `common/system_health.py` 行 89・1278（経由 `common/sec_data/audit.py::audit_ticker`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 1050・1054・1147（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 255・982・1039・1043・1078（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`、`src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 424・460・1058・1129・1153・1414・1632・1636・2767・2770・3981（経由 `src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/stock.html` 行 617
-- JS・HTML・保存済みファイル: `docs/value-monitor/stonks-silo/index.html` 行 657
-- テスト・その場で計算: `tests/test_eps_sector_classifier_master.py` 行 31・44・46・51（経由 `src/value/adjusted_eps_analyzer/sector_classifier_v2.py::SectorClassifierV2`）
+- JS・HTML・保存済みファイル: `docs/value-monitor/stonks-silo/index.html` 行 663
+- テスト・その場で計算: `tests/test_eps_sector_classifier_master.py` 行 31・43・45・50（経由 `src/value/adjusted_eps_analyzer/sector_classifier_v2.py::SectorClassifierV2`）
 - テスト・その場で計算: `tests/test_split_history_adjustments.py` 行 41・52（経由 `src/value/adjusted_eps_analyzer/pipeline.py::load_split_history`）
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 66・71・78（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_read_eps_quarterly`）
@@ -110,8 +111,9 @@
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 211・233・253・266・285・289・294・299・304・309・642・662 ほか24（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_policy_a_floor_end_to_end.py` 行 55・63・74（経由 `src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_read_eps_quarterly`）
-- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 60・65（経由 `src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::_read_eps_quarterly`）
+- テスト・保存済みファイル: `tests/test_reverse_growth.py` 行 43・50（経由 `src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
+- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 61・66（経由 `src/value/tanuki_valuation/core_calculator.py::_calc_adjusted_per`）
 - テスト・保存済みファイル: `tests/test_tanuki_calc_continuity.py` 行 73（経由 `src/value/tanuki_valuation/calculator/adjustments.py::_load_eps_quarterly`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -125,9 +127,9 @@
 ### `docs/value-monitor/adjusted_eps_analyzer/data/{T}/ttm.json`（2件以上）
 - 起動元: .github/workflows/Adjusted_Eps_Analyzer_update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `last_updated`(1)・`ticker`(3)・`ttm`(2)
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 466・1350・1354・3862（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 460・1391・1395・3981（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_result`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/stock.html` 行 633
-- テスト・その場で計算: `tests/test_eps_sector_classifier_master.py` 行 31・44・46・51（経由 `src/value/adjusted_eps_analyzer/sector_classifier_v2.py::SectorClassifierV2`）
+- テスト・その場で計算: `tests/test_eps_sector_classifier_master.py` 行 31・43・45・50（経由 `src/value/adjusted_eps_analyzer/sector_classifier_v2.py::SectorClassifierV2`）
 - テスト・その場で計算: `tests/test_split_history_adjustments.py` 行 41・52（経由 `src/value/adjusted_eps_analyzer/pipeline.py::load_split_history`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -151,8 +153,8 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-- `finished_at`（`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`）: 残す: テストが参照する
-- `share_structure_mismatch`（`docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json`）: 残す: テストが参照する
+- `finished_at`（`docs/value-monitor/adjusted_eps_analyzer/data/summary.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
+- `share_structure_mismatch`（`docs/value-monitor/adjusted_eps_analyzer/data/{T}/quarterly.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 
@@ -338,15 +340,15 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 規則 | ファイル数 | 場所 | EPSを含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:185`<br>`common/sec_data/q4_implied.py:194`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | はい |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:245`<br>`common/sec_data/bs_lines.py:264`<br>`common/sec_data/bs_lines.py:396`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:920`<br>`common/sec_data/layer3_builder.py:1143`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:125`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | はい |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:191`<br>`common/sec_data/q4_implied.py:200`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | はい |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:292`<br>`common/sec_data/bs_lines.py:311`<br>`common/sec_data/bs_lines.py:443`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:1031`<br>`common/sec_data/layer3_builder.py:1254`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:156`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | はい |
 | データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1579`<br>`common/sec_data/report_consistency_check.py:1776`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:239`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:293` | はい |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:242`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:293` | はい |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
-| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:591`<br>`docs/value-monitor/tanuki_score/index.html:1114`<br>`docs/value-monitor/tanuki_score/index.html:1338`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1150`<br>`docs/value-monitor/tanuki_valuation/stock.html:1151`<br>`src/value/tanuki_valuation/pipeline.py:598`<br>`src/value/tanuki_valuation/pipeline.py:600`<br>`src/value/tanuki_valuation/pipeline.py:602`<br>`src/value/tanuki_valuation/pipeline.py:872`<br>`src/value/tanuki_valuation/pipeline.py:885`<br>`src/value/tanuki_valuation/pipeline.py:905`<br>`src/value/tanuki_valuation/pipeline.py:907`<br>`src/value/tanuki_valuation/pipeline.py:979`<br>`src/value/tanuki_valuation/pipeline.py:980`<br>`src/value/tanuki_valuation/pipeline.py:981`<br>`src/value/tanuki_valuation/pipeline.py:982`<br>`src/value/tanuki_valuation/pipeline.py:1405`<br>`src/value/tanuki_valuation/pipeline.py:1432`<br>`src/value/tanuki_valuation/pipeline.py:1437`<br>`src/value/tanuki_valuation/pipeline.py:1483`<br>`src/value/tanuki_valuation/pipeline.py:1789`<br>`src/value/tanuki_valuation/pipeline.py:1967` | いいえ |
-| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1192` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:221`<br>`src/value/tanuki_valuation/calculator/adjustments.py:196`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1176` | いいえ |
+| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:358`<br>`docs/value-monitor/tanuki_score/index.html:617`<br>`docs/value-monitor/tanuki_score/index.html:1140`<br>`docs/value-monitor/tanuki_score/index.html:1364`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1108`<br>`docs/value-monitor/tanuki_valuation/stock.html:1176`<br>`docs/value-monitor/tanuki_valuation/stock.html:1177`<br>`src/value/tanuki_valuation/pipeline.py:590`<br>`src/value/tanuki_valuation/pipeline.py:592`<br>`src/value/tanuki_valuation/pipeline.py:594`<br>`src/value/tanuki_valuation/pipeline.py:864`<br>`src/value/tanuki_valuation/pipeline.py:877`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:971`<br>`src/value/tanuki_valuation/pipeline.py:972`<br>`src/value/tanuki_valuation/pipeline.py:973`<br>`src/value/tanuki_valuation/pipeline.py:974`<br>`src/value/tanuki_valuation/pipeline.py:1446`<br>`src/value/tanuki_valuation/pipeline.py:1473`<br>`src/value/tanuki_valuation/pipeline.py:1478`<br>`src/value/tanuki_valuation/pipeline.py:1524`<br>`src/value/tanuki_valuation/pipeline.py:1830`<br>`src/value/tanuki_valuation/pipeline.py:2008` | いいえ |
+| β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1194` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:295`<br>`src/value/tanuki_valuation/calculator/adjustments.py:199`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1178` | いいえ |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）
 

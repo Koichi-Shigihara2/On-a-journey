@@ -136,26 +136,22 @@ DECISION_NOTE = "段階2の判断（2026-10-20、チャット側の案をKoichi�
 NON_PRODUCTION_FILES: List[str] = []         # 本番外のコードの候補（フォルダ単位でなく、ファイル単位で示すもの）
 SCREEN_PAGES: Tuple[str, ...] = ()           # 画面の項目の表を作るページのフォルダ（TANUKI）
 SCREEN_SECTION_DECISIONS: List[Tuple[str, str, str, str]] = []   # (ページ, 区画の始まりの行の式, 次の区画の行の式, 判断)
-UNREAD_KEY_NOTES: Dict[str, str] = {      # 誰も読まないキーを残した理由（段階2の判断）。SEC層（_SEC）の分
+UNREAD_KEY_NOTES: Dict[str, str] = {
     **{k: "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
-       for k in ('accn_aligned', 'accn_aligned_anchor', 'aligned_to_sibling_accn', 'bs_tag_sources', 'cross_check', 'dimension_aggregate_applied', 'gap_amount', 'gp_anchor_realigned', 'gp_anchor_realigned_tag', 'gp_rejected_reason', 'override_applied', 'override_reason', 'revenue_tag_realigned', 'revenue_tag_realigned_to', 'restructuring_charges_deducted', 'source_is_own_data', 'sga_captured')},
+       for k in ("accn_aligned", "accn_aligned_anchor", "aligned_to_sibling_accn", "bs_tag_sources", "cross_check", "dimension_aggregate_applied", "gap_amount", "gp_anchor_realigned", "gp_anchor_realigned_tag", "gp_rejected_reason", "override_applied", "override_reason", "revenue_tag_realigned", "revenue_tag_realigned_to", "restructuring_charges_deducted", "source_is_own_data", "sga_captured")},
     **{k: "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
-       for k in ('computed_year', 'diff_base', 'diff_base_pct', 'diff_extended', 'extra_components', 'other_side', 'own_data_side')},
+       for k in ("computed_year", "diff_base", "diff_base_pct", "diff_extended", "extra_components", "other_side", "own_data_side")},
     "verification_command": "残す（監査用）: dimension_aggregate_registry の登録の検証コマンド。新しい銘柄を登録する手順（register_ticker）や登録の見直しのとき、人（Claude Code）がこのコマンドをそのまま実行して確かめる",
     **{k: "残す（監査用）: 貸借・CF の行の出所（どの申告のどの行〈lab・role〉から作ったか）。TCE・CapEx の値が疑わしいとき、人（Claude Code）が bs_lines・cf_lines を開いて元の行を辿る"
-       for k in ('lab', 'role', 'source_files')},
+       for k in ("lab", "role", "source_files")},
     "legacy_ciks_merged": "残す（監査用）: 旧CIKを合併して取り込んだ銘柄の記録。取り込みの欠け・二重を調べるとき、人（Claude Code）が submissions.json を開いて読む",
     **{k: "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
-       for k in ('annual_fill_max_days', 'min_quarters', 'ptbv_pctl_max', 'ptbv_pctl_min', 'rotce_pctl_max', 'rotce_pctl_min', 'rich', 'first_quarter', 'last_quarter', 'rotce_series')},
+       for k in ("annual_fill_max_days", "min_quarters", "ptbv_pctl_max", "ptbv_pctl_min", "rotce_pctl_max", "rotce_pctl_min", "rich", "first_quarter", "last_quarter", "rotce_series")},
     "reference_only": "残す（確認用）: ROTCE が参考表示だけ（判定に使わない）の銘柄の印。ROTCE を判定に使う切り替え（STAGE-V2-ROLLOUT-1）のとき、人（Claude Code）が対象を確かめる",
-    "method_change_applied": "残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）",
+    "method_change_applied": "残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）",
     "tce_first_val": "残す（監査用）: ROTCE の P/TBV の履歴の分母に使った『その期の最初の申告日までの TCE』（MULTIPLES-ADOPT-1 段4）。`ptbv`（読まれる値）の分母の時点を、人（Claude Code）が後から確かめるときに読む。再申告で `tce`（最新の値）と食い違う行が 1,226 行のうち 69 行ある",
-    "mark": "残す: 年次の cf_provenance.capital_expenditure の印「CF計算書にCapExの行なし」（cf_lines.py、"
-            "[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b、2026-11-04）。0が欠けでなく申告の行の無いことを人が確かめるための出所の記録",
-    # [[HYPECORE-STAGE-TIMESCALE-1]] 段B-3（2026-11-05）: 定義v2の資本の使い方。読み手は段C（本番の部品での再検証）とSTAGE-V2-ROLLOUT-1で作る
-    **{k: "残す: 定義v2の資本の使い方（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3、2026-11-05）。読み手は段Cと[[STAGE-V2-ROLLOUT-1]]で作る"
-       for k in ("dividends_paid", "dividends_per_share", "equity_issuance_proceeds", "option_exercise_proceeds",
-                 "stock_issued_acquisitions")},
+    **{k: "これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の資本の使い方。読み手は段C〈本番の部品での再検証〉と STAGE-V2-ROLLOUT-1 の切り替えで作る）"
+       for k in ("dividends_per_share", "equity_issuance_proceeds", "option_exercise_proceeds", "stock_issued_acquisitions")},
 }
 HTML_COPIES: List[Tuple[str, List[str]]] = []   # 本番外の HTML の複製の候補と、比べる docs/ のページ
 PAGE_CHECKS: List[str] = []    # 範囲外の確認をするページ（何のページか・書き手・読み手・ナビ）
@@ -241,30 +237,19 @@ _TANUKI.update(
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
         "age_days": "残す（確認用）: 手書きの成長率（handset_growth）の鮮度の日数。status が stale になった理由を、人（Claude Code）が latest.json で確かめる",
-        "announced_period_end_est": "残す（確認用）: 決算は反映前の印（earnings_pending）の根拠。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる",
-        "earnings_source": "残す（確認用）: 決算は反映前の印（earnings_pending）の根拠。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる",
+        **{k: "残す（確認用）: 決算は反映前の印（earnings_pending）の根拠。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる"
+           for k in ("announced_period_end_est", "earnings_source")},
         "calculation_steps": "残す（監査用）: 履歴ファイルの計算過程。過去の理論株価が今と違うとき、人（Claude Code）が history/{日付}.json を開いて、当時の計算の各段を比べる",
         "dilution_basis": "残す（確認用）: 希薄化の率の取り方（3年／上場来）。希薄化の判定が動いたとき、人（Claude Code）が latest.json でどちらの基準だったかを確かめる",
         "estimates_fetched_at": "残す（確認用）: 成長率と予想の差（guidance_gap）の予想を取った時刻。Market Data Weekly の後の確認で、人（Claude Code）が予想の鮮度を確かめる",
         "fiscal_year_end": "残す（監査用）: 履歴ファイルの会計年度末。過去の行を読む人（Claude Code）が、その行が何年度の値かを確かめる",
-        "method_change_applied": "残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）",
+        "method_change_applied": "残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）",
         "rec_evidence_weight": "残す（確認用）: 成長率の健全性（growth_sanity）の根拠の重み。推奨成長率が動いたとき、人（Claude Code）が根拠の強さを latest.json で確かめる",
-        **{k: "残す: 書き手が grep で見つからない（今の pipeline は書かず、過去の history/ のスナップショットにだけ残る）"
-           for k in ("applicable", "current_subgroup", "deviation_from_current", "invalid_reason", "realized_ratio",
-                     "reclassify_recommended", "recommended_subgroup", "software_system_reclassification", "v0_adjusted")},
-        "g_fundamental": "残す: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）",
-        "formula_verification": "残す: validator の検証の結果（validation.checks。overall の判定に入る）",
-        "pt_shares_consistency": "残す: validator の検証の結果（validation.checks。overall の判定に入る）",
-        **{k: "残す: テストが参照する" for k in ("dupont_bs_period", "max_eps", "max_eps_ttm_end", "segment_quarter", "segment_xbrl_status", "v0_note")},
-        # 2026-10-21 の本番の実行（819d51bc53）で latest.json・tickers.json からは消えた。過去の history/ のスナップショットと
-        # score_history.json の古いエントリには残り続けるため、一覧の「誰も読まないキー」からは消えない（FINDINGS.md 2026-10-21）
-        **{k: "書き込みをやめた（2026-10-20）。latest.json からは 2026-10-21 の実行で消えた。過去の history/ のスナップショット・score_history.json の古いエントリには残る"
-           for k in ("avg_rev_growth_lagged", "assumed_realization_years", "intrinsic_value_pt", "is_provisional",
-                     "moat_gross_margin_norm", "moat_roic_norm", "moat_fcf_margin_norm", "forward_earnings_yield",
-                     "shares_yr_now_label", "shares_yr_3ago_label", "upside_pct", "validated_at",
-                     "hype_phase_label", "hype_substage_label")},
-        "fallback": "残す: 名前が一般的で、grep で読み手を決めきれない",
-        "labels": "残す: 名前が一般的で、grep で読み手を決めきれない",
+        "g_fundamental": "残す（動的な読み）: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）",
+        **{k: "残す（動的な読み）: validator の検証の結果（validation.checks）。overall の判定を validator が読む"
+           for k in ("formula_verification", "pt_shares_consistency")},
+        **{k: "残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む"
+           for k in ("dupont_bs_period", "max_eps", "max_eps_ttm_end", "segment_quarter", "segment_xbrl_status", "v0_note")},
     },
     RULES=RULES + [
         {"id": "valuation_threshold", "name": "理論株価の割安・割高の判定のしきい値（upsideの比較）",
@@ -327,7 +312,7 @@ _HYPECORE.update(
     SCREEN_PAGES=("docs/value-monitor/hypecore",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
-        "method_change_applied": "残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）",
+        "method_change_applied": "残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）",
     },
     RULES=_TANUKI["RULES"],
 
@@ -385,9 +370,8 @@ _EPS.update(
     SCREEN_PAGES=("docs/value-monitor/adjusted_eps_analyzer",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
-        **{k: "残す: テストが参照する" for k in ("fair_value_auto_detect", "finished_at", "share_structure_mismatch")},
-        # 今の出力のファイル（commit 済み）には、次の本番の実行（月曜の連鎖）まで残る
-        **{k: "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える" for k in ('adjusted_income', 'condition1', 'detected_items', 'adjustment_amount', 'dta_detected', 'maturity_monitor', 'sbc_per_share', 'sector_threshold', 'sector_exclusions', 'split_adjusted', 'xbrl_eps')},
+        **{k: "残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む"
+           for k in ("finished_at", "share_structure_mismatch")},
     },
     RULES=_TANUKI["RULES"],
 
@@ -440,13 +424,10 @@ _STONKS.update(
     SCREEN_PAGES=("docs/value-monitor/stonks-silo",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
-        "fair_value_change": "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる",
-        "impairment": "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる",
-        "method_change_applied": "残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）",
-        "gross_margin_trend": "残す: 書き手の中の計算（Unit Economics の点数の GM トレンド）に使う",
-        "latest_year": "残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）",
-        # 今の出力のファイル（commit 済み）には、次の本番の実行まで残る
-        **{k: "書き込みをやめた（2026-10-21）。今の出力のファイルからは次の本番の実行で消える" for k in ('angle', 'composite', 'population_size', 'fields_available', 'fields_missing', 'heatmap_fields', 'financial_vectors_note', 'gross_margin_note', 'ticker_count', 'unit_economics_label')},
+        **{k: "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる"
+           for k in ("fair_value_change", "impairment")},
+        "method_change_applied": "残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）",
+        "latest_year": "残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む",
     },
     RULES=_TANUKI["RULES"],
 
@@ -512,17 +493,14 @@ _MARKET.update(
     READ_HINT="market_data", NAME_SHORT="市場データ層",
     KNOWN_DUPLICATE_RULES=[], TITLE="市場データ層（common/market_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
-        "up_7d": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）",
-        "down_7d": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）",
-        "_contract_roll": "残す: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS の動的な読み）",
+        **{k: "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）"
+           for k in ("up_7d", "down_7d")},
+        "_contract_roll": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）",
         "reason_label": "残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む",
         "prev": "残す（監査用）: 足の訂正の前の値（_corrections の prev）。訂正が正しいかを、人（Claude Code）が日足の訂正の前後を比べて確かめる。テストも参照する",
-        "price_to_sales": "残す（作り直せない履歴）: valuation_history は4つの倍率を同じ形で月ごとに溜める（Yahooは直近の値しか返さない）。人（Claude Code）が倍率の推移を調べるとき〈評価の見直し・バックテスト〉に読む",
-        **{k: "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
-           for k in ("current_price_target", "eps_actual", "eps_difference", "eps_estimate",
-                     "price_target_action", "prior_price_target", "strong_buy", "strong_sell")},
-        "_validation_warnings": "残す: 保存前の検証の品質の印（読み手は後の画面の整理で決める）",
-        "next_quarter_eps_date": "書き込みをやめた（2026-10-22）。今の attributes のファイルからは次の本番の実行（Market Data Weekly）で消える",
+        "price_to_sales": "残す（記録）: 作り直せない。valuation_history が4つの倍率（先行PER・実績PER・PSR・EV/EBITDA）を同じ形で月ごとに溜めた履歴（Yahooは直近の値しか返さない）",
+        **{k: "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
+           for k in ("current_price_target", "eps_actual", "eps_difference", "eps_estimate", "price_target_action", "prior_price_target", "strong_buy", "strong_sell")},
     },
     RULES=[
         # 2026-10-23（[[MARKET-CALENDAR-UNIVERSE-UNIFY-1]]）: 3つとも「決める所」に当てる式にした。以前の名前の式は、取引日・暫定の足を
@@ -612,36 +590,22 @@ _TAIL.update(
     SCREEN_PAGES=("docs/portfolio/tail",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
-        "business_model": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "competitive_advantage": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "management": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "recommendation_reason": "残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "segment_outlook": "生成を止めた（2026-10-22、Koichiさんの判断）。過去の mda のファイルにだけ作った時点の記録として残る（TANUKI の report.txt にも出ていなかった、FINDINGS 2026-10-22）",
-        "base_revenue": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）",
-        "fcf_adjustment": "残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）",
-        "rejection_reason": "残す: KPIの提案を却下した理由（XBRLとの照合の結果）。作った時点の記録",
-        "macro_score_at_action": "残す: 人の入力（売買・見直しの判断をした時点のMACROの点数）。作り直せない",
-        "thesis_version": "残す: 作った時点の仮説の版（人の入力の版。後から仮説が変わっても、どの版で作ったかを残す）",
-        "kpi_snapshot": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
-        "layer3_snapshot": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
-        "macro_snapshot": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
-        "filed_date": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
-        "data_version": "残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）",
-        "queued_at": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
-        "completed_at": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
-        "superseded_at": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
-        "superseded_reason": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
-        "review_path": "残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録",
-        "grok_call1_success": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "grok_call2_success": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "stage2_json_valid": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "layer1_complete": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "layer3_complete": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "layer2_missing_kpis": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "transcript_available": "残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）",
-        "changed": "残す: 取得の印（前回の取得から本文が変わったか）。取得した時点の記録",
-        "_updated_at": "残す: 予想と実績の突合を最後に更新した時点の記録",
-        "last_checked": "残す: RSSで銘柄を最後に確かめた時点の記録（提出の遅れの判定の状態）",
+        **{k: "残す（記録）: 作り直せない。AI（Grok）が作った時点の出力（事業モデル・競争優位・経営・推奨理由）。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
+           for k in ("business_model", "competitive_advantage", "management", "recommendation_reason")},
+        **{k: "残す（記録）: 作り直せない。レビューを作った時点のシナリオDCFの入力（stage2.scenarios〈AIの出力〉から作った値）"
+           for k in ("base_revenue", "fcf_adjustment")},
+        "rejection_reason": "残す（記録）: 作り直せない。KPIの提案を却下した理由（作った時点の XBRL との照合の結果）",
+        "macro_score_at_action": "残す（記録）: 作り直せない。売買・見直しの判断をした時点の MACRO の点数（人の入力）",
+        "thesis_version": "残す（記録）: 作り直せない。レビューを作った時点の仮説の版（人の入力の版。後から仮説が変わっても、どの版で作ったかを残す）",
+        **{k: "残す（記録）: 作り直せない。レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）"
+           for k in ("kpi_snapshot", "layer3_snapshot", "macro_snapshot", "filed_date", "data_version")},
+        **{k: "残す（記録）: 作り直せない。待ち行列の状態（いつ積み・終え・置き換えたか）"
+           for k in ("queued_at", "completed_at", "review_path")},
+        **{k: "残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）"
+           for k in ("grok_call1_success", "grok_call2_success", "stage2_json_valid", "layer1_complete", "layer3_complete", "layer2_missing_kpis", "transcript_available")},
+        "changed": "残す（記録）: 作り直せない。取得した時点の、前回の取得から本文が変わったかの印",
+        "_updated_at": "残す（記録）: 作り直せない。予想と実績の突合を最後に更新した時点",
+        "last_checked": "残す（記録）: 作り直せない。RSS で銘柄を最後に確かめた時点（提出の遅れの判定の状態）",
     },
     RULES=_TANUKI["RULES"] + [
         # 宛先・再試行は common/external_api.py の1か所（[[EXTERNAL-API-CLIENT-UNIFY-1]]、2026-10-24）。各ファイルの call_grok は
@@ -700,9 +664,10 @@ _PORTFOLIO.update(
     KNOWN_DUPLICATE_RULES=[], TITLE="Portfolio（src/portfolio・docs/portfolio）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/portfolio/index.html",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={k: "残す: 日ごとの資産の合計の記録（snapshot.py がその日の株価・為替で作る）。過去の日の値は作り直せない"
-                      for k in ("cash_usd", "cost_usd", "equity_usd", "total_cash_jpy", "total_cash_usd", "total_equity_jpy",
-                                "total_equity_usd", "total_pnl_jpy", "total_pnl_pct")},
+    UNREAD_KEY_NOTES={
+        **{k: "残す（記録）: 作り直せない。日ごとの資産の合計（snapshot.py がその日の株価・為替・保有で作る）"
+           for k in ("cash_usd", "cost_usd", "equity_usd", "total_cash_jpy", "total_cash_usd", "total_equity_jpy", "total_equity_usd", "total_pnl_jpy", "total_pnl_pct")},
+    },
     RULES=_TANUKI["RULES"],
 
     HTML_COPIES=[],
@@ -770,8 +735,7 @@ _MACRO_DATA.update(
     READ_HINT="macro_data", NAME_SHORT="マクロデータ層",
     KNOWN_DUPLICATE_RULES=["atomic_write_json"], TITLE="マクロデータ層（common/macro_data）の出力の一覧（段階1の下書き）",
     UNREAD_KEY_NOTES={
-        "source_detail": "残す: 値の出所の記録（取得した系列。BAMLH0A0HYM2 の古い6,947件は 05_events.csv から移した印 migrated_from）。"
-                         "読んでいたのは2026-10-23に消した移行のスクリプト（二重に動かさない判定）だけ",
+        "source_detail": "残す（記録）: 作り直せない。値の出所（取得した系列。BAMLH0A0HYM2 の古い6,947件は 05_events.csv から移した印 migrated_from）",
     },
     RULES=_TANUKI["RULES"] + _MACRO_RULES,
 
@@ -830,8 +794,10 @@ _MACRO_PULSE.update(
     TITLE="MACRO PULSE（src/market/macro_pulse・docs/market-monitor/macro-pulse）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/market-monitor/macro-pulse",),
     SCREEN_SECTION_DECISIONS=[],
-    UNREAD_KEY_NOTES={k: "残す: cuts_implied を作った時点の入力の記録（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
-                      for k in ("zq_price", "zq_ticker")},
+    UNREAD_KEY_NOTES={
+        **{k: "残す（記録）: 作り直せない。cuts_implied を作った時点の入力（1年の金利の取り方と値。後から取り方が変わっても、その行が何を見たかを残す）"
+           for k in ("zq_price", "zq_ticker")},
+    },
     RULES=_TANUKI["RULES"] + _MARKET["RULES"][:1] + _MACRO_RULES,
 
     HTML_COPIES=[],
@@ -905,22 +871,14 @@ _MARKET_PULSE.update(
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
         **{k: "残す（確認用）: 見出しの積み足しの記録（最初に見た時刻・題の更新・日別の新しい件数）。見出しの積み足しの確認手順で、人（Claude Code）が新しい見出し・題の更新の件数を確かめる"
-           for k in ('first_seen', 'new_by_date', 'seen_at')},
+           for k in ("first_seen", "new_by_date", "seen_at")},
         "interval": "残す（確認用）: 5分足ファイルの間隔の記録。人（Claude Code）が intraday ファイルの形〈間隔・時間帯〉を確かめるとき",
         **{k: "廃止（11-28）。過去のエントリに残るだけで、新しいエントリには出ない"
-           for k in ('fred_daily', 'jpx', 'us_close')},
-        **{k: "残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力"
-           for k in (
-                 "ad_ratio", "ai_facts", "base_n", "breadth_date", "conditions", "distribution", "divergence_vs_sp", "earnings_tickers",
-                 "etf", "etf_change_percent", "hy_bond", "ig_bond", "ivw_minus_ive_pt", "mcclellan_negative", "median_pct", "momentum_lag_weeks",
-                 "new_highs", "new_lows", "nh_le_2x_nl", "nh_nl", "nh_nl_both_2_2pct", "one_month_ago", "one_week_ago", "prev_close",
-                 "prev_date", "ratio_weeks", "raw_change", "raw_change_percent", "risk_avg_pct", "rsp_spy_divergence", "safe_avg_pct", "sentiment_label",
-                 "sentiment_score", "sox_date", "sp500_ma200", "sp500_ma_dev", "sp500_uptrend_50d", "stage1_vix", "stage3", "stage4",
-                 "stocks_ahead_of_base_date", "threshold_pt", "ultra_short", "vix_level", "vxn_available", "week", "zscore",
-           )},
-        **{k: "残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ"
+           for k in ("fred_daily", "jpx", "us_close")},
+        **{k: "残す（記録）: 作り直せない。段階の結論の根拠の値とその日に取った値（過去の日の分は取り直せない。Market Pulse の再設計〔[[UI-STORY-REDESIGN-1]]〕の入力）"
+           for k in ("ad_ratio", "ai_facts", "base_n", "breadth_date", "conditions", "distribution", "divergence_vs_sp", "earnings_tickers", "hy_bond", "ig_bond", "ivw_minus_ive_pt", "mcclellan_negative", "median_pct", "momentum_lag_weeks", "new_highs", "new_lows", "nh_le_2x_nl", "nh_nl", "nh_nl_both_2_2pct", "one_month_ago", "one_week_ago", "prev_close", "prev_date", "ratio_weeks", "raw_change_percent", "risk_avg_pct", "rsp_spy_divergence", "safe_avg_pct", "sentiment_label", "sentiment_score", "sox_date", "sp500_ma200", "sp500_ma_dev", "sp500_uptrend_50d", "stage1_vix", "stage3", "stage4", "stocks_ahead_of_base_date", "ultra_short", "vix_level", "vxn_available", "week", "zscore")},
+        **{k: "残す（記録）: 作り直せない。その日の見出しの「市況と関係あり」の判定（Grok）の件数"
            for k in ("true", "false")},
-        "backfilled_at": "残す: 過去の行の記録（2026-10-09 に最新のエントリの見出しを取り直した印。書き手の backfill_implc.py は2026-10-23に削除し、新しい行には付かない）",
     },
     RULES=_TANUKI["RULES"] + _MARKET["RULES"] + _MACRO_RULES + [
         {"id": "market_holidays", "name": "休場日（祝日）の一覧の作り方",
@@ -963,26 +921,21 @@ _COMMON.update(
         "Discord（DISCORD_WEB_HOOK）": "System Health の通知（毎日の実行の結果）",
     },
     UNREAD_KEY_NOTES={
-        "fair_value_change": "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる",
-        "impairment": "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる",
-        **{k: "残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。"
-              "これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）"
-           for k in ("attributes_fetched_at", "cyclical_industries_stage_a", "cyclical_keywords", "damodaran_by_industry", "eps_category_by_industry",
-                     "eps_category_by_sector", "etf_by_sector", "financial_excluded_industries", "financial_sectors", "financial_sic_range",
-                     "mega_tech_industries", "mega_tech_industry_prefixes", "mega_tech_min_market_cap", "unclassified_industries",
-                     "unclassified_industry_prefixes")},
-        **{k: "残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）"
-           for k in ("basis_ends", "breakeven_method", "breakeven_min_r2", "breakeven_points", "breakeven_start", "fcf_points", "fiscal_year_end",
-                     "margins", "near_horizon_quarters", "slope_per_quarter", "stage_reason", "time_basis", "ttm_operating_income")},
-        **{k: "残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）"
+        **{k: "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる"
+           for k in ("fair_value_change", "impairment")},
+        **{k: "残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む"
+           for k in ("basis_ends", "breakeven_method", "breakeven_min_r2", "breakeven_points", "breakeven_start", "fcf_points", "fiscal_year_end", "margins", "near_horizon_quarters", "slope_per_quarter", "stage_reason", "time_basis")},
+        **{k: "これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）"
            for k in ("current_definition_label", "current_definition_stage", "g_f", "g_m", "l_industry", "l_own", "multiple_type")},
-        **{k: "残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）"
-           for k in ("ev_gross_profit", "forward_pe_snapshot", "forward_pe_snapshot_date", "net_income_5y_years", "p_tbv", "pe_5y_avg_earnings",
-                     "previous_cover_date", "previous_cover_shares", "shares_end", "tce_end")},
-        **{k: "残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）"
+        **{k: "残す（動的な読み）: 定義v2（common/stage_v2.py）が倍率の種類を名前で選んで読む（一覧の読みの形では拾えない）"
+           for k in ("ev_gross_profit", "p_tbv", "pe_5y_avg_earnings")},
+        **{k: "残す（記録）: 作り直せない。その月末に取った先行PERの値と日付（Yahooは過去の値を返さない）"
+           for k in ("forward_pe_snapshot", "forward_pe_snapshot_date")},
+        **{k: "残す（監査用）: 倍率の分母・株数の時点の根拠。倍率の履歴の点が疑わしいとき、人（Claude Code）が common/multiples の月末の行で確かめる"
+           for k in ("net_income_5y_years", "previous_cover_date", "previous_cover_shares", "shares_end", "tce_end")},
+        **{k: "残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）"
            for k in ("daily_close", "daily_date", "expected_factor", "observed_factor", "price_factor", "price_factor_reason", "recorded_price")},
-        "etf": "残す: 業種→ETF の写し（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ。tests/test_sector_master.py が一致を検査する）",
-        "rules": "残す: 業種の名前の規則の写し（上の rules と同じ。layer3_builder・share_unit_fix は別の意味の同名のキー）",
+        "etf": "残す（写し）: 業種→ETF の写し。tests/test_sector_master.py が定数との一致を検査する（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ）",
     },
     IO_HELPER_BY_CALLER=True,   # sector_master._load_json・multiples._load 等、パスを引数で受ける読み書きの関数が多い。Falseだと読み手が別の出力に付く
     EXTRA_OUTPUT_DIRS=(),

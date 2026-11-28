@@ -233,21 +233,21 @@
 - `announced_period_end_est`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 決算は反映前の印（earnings_pending）の根拠。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる
 - `calculation_steps`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す（監査用）: 履歴ファイルの計算過程。過去の理論株価が今と違うとき、人（Claude Code）が history/{日付}.json を開いて、当時の計算の各段を比べる
 - `dilution_basis`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 希薄化の率の取り方（3年／上場来）。希薄化の判定が動いたとき、人（Claude Code）が latest.json でどちらの基準だったかを確かめる
-- `dupont_bs_period`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `dupont_bs_period`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
 - `earnings_source`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 決算は反映前の印（earnings_pending）の根拠。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる
 - `estimates_fetched_at`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 成長率と予想の差（guidance_gap）の予想を取った時刻。Market Data Weekly の後の確認で、人（Claude Code）が予想の鮮度を確かめる
-- `fallback`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: 名前が一般的で、grep で読み手を決めきれない
+- `fallback`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）
 - `fiscal_year_end`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`）: 残す（監査用）: 履歴ファイルの会計年度末。過去の行を読む人（Claude Code）が、その行が何年度の値かを確かめる
-- `formula_verification`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: validator の検証の結果（validation.checks。overall の判定に入る）
-- `g_fundamental`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）
-- `max_eps`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
-- `max_eps_ttm_end`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
-- `method_change_applied`（`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/history.json`）: 残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）
-- `pt_shares_consistency`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: validator の検証の結果（validation.checks。overall の判定に入る）
+- `formula_verification`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（動的な読み）: validator の検証の結果（validation.checks）。overall の判定を validator が読む
+- `g_fundamental`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（動的な読み）: report_consistency_check.py が名前の組（_REC_G_CANDIDATE_KEYS）で読む（一覧の読みの形では拾えない）
+- `max_eps`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
+- `max_eps_ttm_end`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
+- `method_change_applied`（`docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/history.json`）: 残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）
+- `pt_shares_consistency`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（動的な読み）: validator の検証の結果（validation.checks）。overall の判定を validator が読む
 - `rec_evidence_weight`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 成長率の健全性（growth_sanity）の根拠の重み。推奨成長率が動いたとき、人（Claude Code）が根拠の強さを latest.json で確かめる
-- `segment_quarter`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
-- `segment_xbrl_status`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
-- `v0_note`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す: テストが参照する
+- `segment_quarter`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
+- `segment_xbrl_status`（`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
+- `v0_note`（`docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json`、`docs/value-monitor/tanuki_valuation/data/{T}/latest.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 

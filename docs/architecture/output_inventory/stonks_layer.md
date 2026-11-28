@@ -79,10 +79,10 @@
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
 - `fair_value_change`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
-- `gross_margin_trend`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す: 書き手の中の計算（Unit Economics の点数の GM トレンド）に使う
+- `gross_margin_trend`（`docs/value-monitor/stonks-silo/data/results.json`）
 - `impairment`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
-- `latest_year`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す: テストが参照する（DeficitQuality・RunwayAnalysis の引数）
-- `method_change_applied`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）
+- `latest_year`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（確認用）: 検証のテスト（tests/）がこのキーの値を検査する。人が読むのではなく、テストが読む
+- `method_change_applied`（`docs/value-monitor/stonks-silo/data/results.json`）: 残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 

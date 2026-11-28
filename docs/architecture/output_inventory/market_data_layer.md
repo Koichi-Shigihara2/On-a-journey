@@ -214,20 +214,20 @@
 
 この段階の出力のJSON（全ファイル、入れ子8段まで）のキーのうち、テストを除くコード（.py・.js・.html。書き手のファイルを含む）に読みの形（`.key`・`['key']`〈代入でない〉・`.get('key')`）で出てこないもの。銘柄名・日付など小文字を含まないキーは除く。Pythonで`for k in d`・`d.items()`のように回して読むものは拾えないので、消す前にキーの名前でgrepする
 
-- `_contract_roll`（`common/market_data/daily/{T}.json`）: 残す: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS の動的な読み）
-- `_validation_warnings`（`common/market_data/attributes/{T}.json`、`common/market_data/daily/{T}.json`）: 残す: 保存前の検証の品質の印（読み手は後の画面の整理で決める）
-- `current_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `_contract_roll`（`common/market_data/daily/{T}.json`）: 残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）
+- `_validation_warnings`（`common/market_data/attributes/{T}.json`、`common/market_data/daily/{T}.json`）
+- `current_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `down_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）
-- `eps_actual`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
-- `eps_difference`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
-- `eps_estimate`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `eps_actual`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
+- `eps_difference`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
+- `eps_estimate`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `prev`（`common/market_data/daily/{T}.json`）: 残す（監査用）: 足の訂正の前の値（_corrections の prev）。訂正が正しいかを、人（Claude Code）が日足の訂正の前後を比べて確かめる。テストも参照する
-- `price_target_action`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
-- `price_to_sales`（`common/market_data/attributes/{T}.json`、`common/market_data/valuation_history/{T}.json`）: 残す（作り直せない履歴）: valuation_history は4つの倍率を同じ形で月ごとに溜める（Yahooは直近の値しか返さない）。人（Claude Code）が倍率の推移を調べるとき〈評価の見直し・バックテスト〉に読む
-- `prior_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `price_target_action`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
+- `price_to_sales`（`common/market_data/attributes/{T}.json`、`common/market_data/valuation_history/{T}.json`）: 残す（記録）: 作り直せない。valuation_history が4つの倍率（先行PER・実績PER・PSR・EV/EBITDA）を同じ形で月ごとに溜めた履歴（Yahooは直近の値しか返さない）
+- `prior_price_target`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `reason_label`（`common/market_data/daily/{T}.json`）: 残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む
-- `strong_buy`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
-- `strong_sell`（`common/market_data/analyst_history/{T}.json`）: 残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）
+- `strong_buy`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
+- `strong_sell`（`common/market_data/analyst_history/{T}.json`）: 残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）
 - `up_7d`（`common/market_data/attributes/{T}.json`）: これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定〈上方・下方〉を、見通しの悪化の印として個別銘柄の画面と BUY チェックリストに出す。直近7日の改定の件数。読み手は画面）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）

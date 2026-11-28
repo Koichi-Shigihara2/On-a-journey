@@ -136,3 +136,12 @@
 - **STONKS の `core_profit`・`ocf_acceleration`・`ocf_yoy_change`**: 画面（`ocf_trend` だけを読む）・他のコード・動的な読み（`dataclasses.asdict` は書き出しだけ）のどれにも読み手が無かった → **C。書き出しごと消す**（コードの変更は pytest・rcc の結果を報告してから commit。`ocf_trend` を決める速度・加速度は、`_analyze_profitability` の中の変数として残す）。前後比較は STONKS 17銘柄で、3キーが消える以外の差 0。
 - **市場データの `prev`**: 日足の訂正の台帳（`_corrections`）の「訂正の前の値」。人が訂正の前後を比べて確かめる記録で、テストも参照する → **B**（C ではない）。検出漏れではないので FINDINGS は書いていない。
 - **SEC の C（11件）・D（5件）**: 段2a のブランチとぶつかるので触らない。BACKLOG の PARSER-LAYER3 の項に「段2a の公開（12-01）の後に仕分ける」と書いた。それまでは WARN のまま（注記しない）。
+
+## 前からある注記（292件）の整理（2026-11-28、Koichi の決定）
+
+- **今はもう書き出されていないキーの注記 58 件を消した**（古い注記が残っているだけ: TANUKI 24〈旧キーの『書き込みをやめた』ほか〉・EPS 12・STONKS 10・Market Pulse 5・TAIL 3・SEC 2・市場データ 1・common 1）。
+- **残した注記 215 件を、区分に揃えた**: 残す（記録）＝作り直せない＋何の記録か **95**・残す（監査用）**72**・残す（確認用）**20**・残す（動的な読み）**11**・残す（写し）**1**・これから作る **13**・廃止 **0**。テスト（`test_unread_key_notes_state_reason_and_reading_scene`）は、すべての注記を区分ごとの書き方で確かめる（対象外の扱いはやめた）。
+- **作り直せる値なのに『作り直せない』とされていたものは、区分を移した**: 収益の根拠 12 キー（`profitability.json`。過去の時点も `--as-of` で作り直せる）→ 監査用（予測年が動いた理由を人が確かめる）、倍率の履歴 10 キーは分けた（先行PERの2つ＝記録、`ev_gross_profit`・`p_tbv`・`pe_5y_avg_earnings`＝動的な読み〈定義v2 が名前で選んで読む〉、残り5＝監査用）、分割の台帳 7 キー→ 監査用。
+- **読む場面が書けなかった 19 件は、注記を外した（C＝書き出しごと消す候補。WARN-INV-6b のまま。コードはまだ消していない）**:
+  - `config/sector_master.json` の定数の写し **16 キー**（`attributes_fetched_at`・`cyclical_industries_stage_a`・`cyclical_keywords`・`damodaran_by_industry`・`eps_category_by_industry`・`eps_category_by_sector`・`etf_by_sector`・`financial_excluded_industries`・`financial_sectors`・`financial_sic_range`・`mega_tech_industries`・`mega_tech_industry_prefixes`・`mega_tech_min_market_cap`・`unclassified_industries`・`unclassified_industry_prefixes`・`rules`）。正は `common/sector_master.py` の定数で、JSON を読んで動くコードは無い（FINDINGS 2026-11-27 の『JSON を正にするか、写しをやめるか』）。**消すなら書き手〈`sector_master.py` の JSON の出力〉と、写しを検査するテストの範囲を決める**
+  - TANUKI の `fallback`（名前が一般的で読み手を決めきれなかった）・STONKS の `gross_margin_trend`（書き手の中の計算にだけ使う。`core_profit` と同じ型）・市場データの `_validation_warnings`（全日足の行に付く保存前の検証の印。**日足の全ファイルの書き換えが要る**）

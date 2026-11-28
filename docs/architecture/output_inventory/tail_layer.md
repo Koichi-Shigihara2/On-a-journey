@@ -9,7 +9,7 @@
 
 **件数**: 出力 20（ファイル 19・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 4／2件以上 15／規則の二重 9（検出式 13種のうち。TAILのファイルを含むもの 3）
 
-**画面の項目**: 画面が読むキー 204（この段階の書き手あり 193・ほかの書き手あり 8・画面の中で作る値 3・**書き手なし 0**）／書き手があるのに誰も読まないキー **27**（今の書き手のコードに無いキー 16 は数えない）
+**画面の項目**: 画面が読むキー 205（この段階の書き手あり 193・ほかの書き手あり 9・画面の中で作る値 3・**書き手なし 0**）／書き手があるのに誰も読まないキー **27**（今の書き手のコードに無いキー 16 は数えない）
 
 **止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 7件／解決できた読み込み 36件＋ファイル名で当たった行 57件（7.0%）→ 当たらない
 
@@ -19,7 +19,7 @@
 - `common/method_change.py` 行 43（`docs/portfolio/tail/data/ctrl/{T}/latest.json`）: `"tanuki": ("docs/value-monitor/tanuki_valuation/data", "{T}/latest.json"),`
 - `scripts/method_change_scope.py` 行 82（`docs/portfolio/tail/data/{item_key}/{T}/latest.json`）: `elif os.path.isfile(os.path.join(p, "latest.json")):`
 - `scripts/method_change_scope.py` 行 83（`docs/portfolio/tail/data/{item_key}/{T}/latest.json`）: `put(name, flatten(_read(os.path.join(p, "latest.json"))))`
-- `scripts/method_change_scope.py` 行 145（`docs/portfolio/tail/data/ctrl/{T}/latest.json`）: `p = os.path.join(src, t, "latest.json")`
+- `scripts/method_change_scope.py` 行 151（`docs/portfolio/tail/data/ctrl/{T}/latest.json`）: `p = os.path.join(src, t, "latest.json")`
 - `tools/sim/sim.py` 行 109（`docs/portfolio/tail/data/ctrl/{T}/latest.json`）: `tickers = sorted(d for d in os.listdir(tanuki_dir) if os.path.isfile(os.path.join(tanuki_dir, d, "latest.json")))`
 - `tools/sim/sim.py` 行 153（`docs/portfolio/tail/data/ctrl/{T}/latest.json`）: `p = os.path.join(base, sub, ticker, "latest.json")`
 - `tools/sim/sim.py` 行 165（`docs/portfolio/tail/data/ctrl/{T}/latest.json`）: `ts = sorted(t for t in os.listdir(d) if os.path.isfile(os.path.join(d, t, "latest.json")))`
@@ -105,7 +105,7 @@
 ### `docs/portfolio/tail/data/ctrl/{T}/latest.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `effective`(2)・`fetched_at`(3)・`filing_date`(3)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`material_weaknesses`(2)・`quarter`(2)・`report_date`(1)・`significant_deficiencies`(2)・`ticker`(4)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1219・1303（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 894・1389
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::check_f_tail`）
@@ -114,7 +114,7 @@
 ### `docs/portfolio/tail/data/ctrl/{T}/{Q}.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Ctrl.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `effective`(2)・`fetched_at`(3)・`filing_date`(3)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`material_weaknesses`(2)・`quarter`(2)・`quarters`(2)・`report_date`(1)・`significant_deficiencies`(2)・`ticker`(4)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1219・1303（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 894・1381・1388・1389・2422
 - テスト・保存済みファイル: `tests/test_output_inventory_check.py` 行 474
@@ -138,7 +138,7 @@
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 129・133・1633・1844・1856・1880（経由 `src/tail/quarterly_review_generator.py::load_layer2_kpi`、`src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 105・108・206・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_layer2_kpi`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py` 行 203・207・255・339・364（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 3334（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 3436（経由 `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py::_load_layer2_kpi_series`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 323
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/index.html` 行 1357
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_check_kpi_fetch_failures`）
@@ -179,8 +179,8 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `positions`(11)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1946・2019・2031・2124・2199・3520・3528・3536・3548・3752（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 399・478（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1517・1551・1913（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
-- Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 222・258（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 1595・1629・2013（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
+- Python・保存済みファイル: `src/market/market_pulse/sector_rotation.py` 行 236・272（経由 `src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `src/tail/edgar_rss_monitor.py` 行 39・247・281・318・324・575・576・624（経由 `src/tail/edgar_rss_monitor.py::get_excluded_positions`、`src/tail/edgar_rss_monitor.py::get_monitored_tickers`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 38・378・397・459（経由 `src/tail/sec_ctrl_fetcher.py::load_tail_tickers`）
 - Python・保存済みファイル: `src/tail/workflow_write.py` 行 32
@@ -193,7 +193,7 @@
 - テスト・保存済みファイル: `tests/test_tail_workflow_write.py` 行 27
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/tail/workflow_write.py → docs/portfolio/tail/data/journal.json））: `docs/portfolio/tail/decision_log.html`
-- 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/value-monitor/tanuki_score/index.html`
+- 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/latest.json））: `docs/value-monitor/tanuki_score/index.html`
 
 ### `docs/portfolio/tail/data/prediction_history.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_RSS_Monitor.yml
@@ -243,7 +243,7 @@
 ### `docs/portfolio/tail/data/{item_key}/{T}/latest.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Items.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accession`(2)・`changed`(3)・`effective`(3)・`excerpt`(2)・`excerpt_ja`(2)・`fetched_at`(3)・`filing_date`(5)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`item_key`(1)・`material_weaknesses`(3)・`period`(2)・`quarter`(3)・`report_date`(2)・`segment_outlook`(1)・`significant_deficiencies`(3)・`source`(3)・`ticker`(7)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1219・1303（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308・414・425・459（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
 - Python・保存済みファイル: `tools/sim/sim.py` 行 153・155・165・175・176・205・222・223・253・255・260（経由 `tools/sim/sim.py::_latest`、`tools/sim/sim.py::_tickers`、`tools/sim/sim.py::cmd_scope`）
 - JS・HTML・保存済みファイル: `docs/portfolio/tail/detail.html` 行 340
@@ -257,7 +257,7 @@
 ### `docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`（2件以上）
 - 起動元: .github/workflows/TANUKI_TAIL_SEC_Items.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accession`(4)・`changed`(3)・`effective`(3)・`excerpt`(4)・`excerpt_ja`(4)・`fetched_at`(4)・`filing_date`(8)・`item4_excerpt`(2)・`item4_excerpt_ja`(2)・`item_key`(3)・`material_weaknesses`(3)・`period`(4)・`periods`(2)・`quarter`(5)・`quarters`(3)・`report_date`(4)・`segment_outlook`(1)・`significant_deficiencies`(3)・`source`(4)・`ticker`(9)
-- Python・保存済みファイル: `common/system_health.py` 行 226・1219・1303（経由 `common/system_health.py::check_f_tail`）
+- Python・保存済みファイル: `common/system_health.py` 行 226・1283・1372（経由 `common/system_health.py::check_f_tail`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 282・284・308・414・424・425・426・434・459（経由 `src/tail/sec_ctrl_fetcher.py::_stored_latest`、`src/tail/sec_ctrl_fetcher.py::main`）
 - Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 361・363・371・407・472・601・608（経由 `src/tail/sec_items_fetcher.py::_stored_period`）
 - Python・保存済みファイル: `tools/sim/sim.py` 行 153・155・165・175・176・205・222・223・253・255・260（経由 `tools/sim/sim.py::_latest`、`tools/sim/sim.py::_tickers`、`tools/sim/sim.py::cmd_scope`）
@@ -281,33 +281,33 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-- `_updated_at`（`docs/portfolio/tail/data/prediction_history.json`）: 残す: 予想と実績の突合を最後に更新した時点の記録
-- `base_revenue`（`docs/portfolio/scenario/{T}/{sc_name}.json`）: 残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）
-- `business_model`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `changed`（`docs/portfolio/tail/data/{item_key}/{T}/latest.json`、`docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`）: 残す: 取得の印（前回の取得から本文が変わったか）。取得した時点の記録
-- `competitive_advantage`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `completed_at`（`docs/portfolio/tail/data/review_queue.json`）: 残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録
-- `data_version`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
-- `fcf_adjustment`（`docs/portfolio/scenario/{T}/{sc_name}.json`）: 残す: シナリオのDCFの入力（レビューの stage2.scenarios〈AIの出力〉から作った時点の値）
-- `filed_date`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
-- `grok_call1_success`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `grok_call2_success`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `kpi_snapshot`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
-- `last_checked`（`docs/portfolio/tail/data/rss_state.json`）: 残す: RSSで銘柄を最後に確かめた時点の記録（提出の遅れの判定の状態）
-- `layer1_complete`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `layer2_missing_kpis`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `layer3_complete`（`docs/portfolio/tail/data/kpi/{T}_layer3.json`）: 残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `layer3_snapshot`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
-- `macro_score_at_action`（`docs/portfolio/tail/data/journal.json`）: 残す: 人の入力（売買・見直しの判断をした時点のMACROの点数）。作り直せない
-- `macro_snapshot`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
-- `management`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `queued_at`（`docs/portfolio/tail/data/review_queue.json`）: 残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録
-- `recommendation_reason`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: AIの出力（Grok）。作った時点の記録で、同じものは作り直せない。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `rejection_reason`（`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`）: 残す: KPIの提案を却下した理由（XBRLとの照合の結果）。作った時点の記録
-- `review_path`（`docs/portfolio/tail/data/review_queue.json`）: 残す: 待ち行列の状態（いつ積み・終え・置き換えたか）。作った時点の記録
-- `stage2_json_valid`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）
-- `thesis_version`（`docs/portfolio/tail/data/journal.json`、`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`）: 残す: 作った時点の仮説の版（人の入力の版。後から仮説が変わっても、どの版で作ったかを残す）
-- `transcript_available`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す: 品質の印（AIの呼び出し・入力のそろい方の結果）。作った時点の記録。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `_updated_at`（`docs/portfolio/tail/data/prediction_history.json`）: 残す（記録）: 作り直せない。予想と実績の突合を最後に更新した時点
+- `base_revenue`（`docs/portfolio/scenario/{T}/{sc_name}.json`）: 残す（記録）: 作り直せない。レビューを作った時点のシナリオDCFの入力（stage2.scenarios〈AIの出力〉から作った値）
+- `business_model`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AI（Grok）が作った時点の出力（事業モデル・競争優位・経営・推奨理由）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `changed`（`docs/portfolio/tail/data/{item_key}/{T}/latest.json`、`docs/portfolio/tail/data/{item_key}/{T}/{Q}.json`）: 残す（記録）: 作り直せない。取得した時点の、前回の取得から本文が変わったかの印
+- `competitive_advantage`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AI（Grok）が作った時点の出力（事業モデル・競争優位・経営・推奨理由）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `completed_at`（`docs/portfolio/tail/data/review_queue.json`）: 残す（記録）: 作り直せない。待ち行列の状態（いつ積み・終え・置き換えたか）
+- `data_version`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
+- `fcf_adjustment`（`docs/portfolio/scenario/{T}/{sc_name}.json`）: 残す（記録）: 作り直せない。レビューを作った時点のシナリオDCFの入力（stage2.scenarios〈AIの出力〉から作った値）
+- `filed_date`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
+- `grok_call1_success`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `grok_call2_success`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `kpi_snapshot`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
+- `last_checked`（`docs/portfolio/tail/data/rss_state.json`）: 残す（記録）: 作り直せない。RSS で銘柄を最後に確かめた時点（提出の遅れの判定の状態）
+- `layer1_complete`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `layer2_missing_kpis`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `layer3_complete`（`docs/portfolio/tail/data/kpi/{T}_layer3.json`）: 残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `layer3_snapshot`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
+- `macro_score_at_action`（`docs/portfolio/tail/data/journal.json`）: 残す（記録）: 作り直せない。売買・見直しの判断をした時点の MACRO の点数（人の入力）
+- `macro_snapshot`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。レビューを作った時点の入力の控え（後から入力が変わっても、そのレビューが何を見たかを残す）
+- `management`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AI（Grok）が作った時点の出力（事業モデル・競争優位・経営・推奨理由）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `queued_at`（`docs/portfolio/tail/data/review_queue.json`）: 残す（記録）: 作り直せない。待ち行列の状態（いつ積み・終え・置き換えたか）
+- `recommendation_reason`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AI（Grok）が作った時点の出力（事業モデル・競争優位・経営・推奨理由）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `rejection_reason`（`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`）: 残す（記録）: 作り直せない。KPIの提案を却下した理由（作った時点の XBRL との照合の結果）
+- `review_path`（`docs/portfolio/tail/data/review_queue.json`）: 残す（記録）: 作り直せない。待ち行列の状態（いつ積み・終え・置き換えたか）
+- `stage2_json_valid`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
+- `thesis_version`（`docs/portfolio/tail/data/journal.json`、`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json`）: 残す（記録）: 作り直せない。レビューを作った時点の仮説の版（人の入力の版。後から仮説が変わっても、どの版で作ったかを残す）
+- `transcript_available`（`docs/portfolio/tail/data/reviews/{T}_{Q}_review.json`）: 残す（記録）: 作り直せない。AIの呼び出し・入力のそろい方の品質の印（作った時点の結果）。画面には出していない（[[UI-STORY-REDESIGN-1]]）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 
@@ -348,7 +348,7 @@
 | — | `type` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 175・187・201 | 残す（2026-10-22） |
 | — | `value` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 117・171・172 | 残す（2026-10-22） |
 
-### `docs/portfolio/tail/detail.html`（83項目）
+### `docs/portfolio/tail/detail.html`（84項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
@@ -430,6 +430,7 @@
 | — | `thesis` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/positions/{T}_thesis.json` | 304・417・482・495 | 残す（2026-10-22） |
 | — | `thesis_questions` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 734 | 残す（2026-10-22） |
 | — | `ticker` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 312・315・394・394 | 残す（2026-10-22） |
+| — | `title` | ほかの書き手あり<br>`docs/market-monitor/market-pulse/data/latest.json` | 298 | 残す（2026-10-22） |
 | テーゼデータなし | `type` | この段階の書き手あり<br>`docs/portfolio/tail/data/journal.json`<br>`docs/portfolio/tail/data/kpi_proposals/{T}_proposal.json` | 393・393・393・418 | 残す（2026-10-22） |
 | — | `unit` | この段階の書き手あり<br>`docs/portfolio/scenario/{T}/{sc_name}.json`<br>`docs/portfolio/tail/data/ctrl/{T}/index.json` | 537 | 残す（2026-10-22） |
 | — | `upside_percent` | ほかの書き手あり<br>`docs/value-monitor/tanuki_valuation/data/AAPL/latest.json`<br>`docs/value-monitor/tanuki_valuation/data/ABBV/latest.json` | 374・449 | 残す（2026-10-22） |
@@ -564,7 +565,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 区画 | 元のキー（書き手の有無） | 投資判断に使っているか |
 |---|---|---|
 | 認証画面 | `from`（この段階の書き手あり）<br>`key`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
-| アプリシェル（認証後に表示） | `all`（この段階の書き手あり）<br>`backfilled`（この段階の書き手あり）<br>`backfilled_note`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`bear`（この段階の書き手あり）<br>`bull`（この段階の書き手あり）<br>`call2`（この段階の書き手あり）<br>`company`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`concerns`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`data`（この段階の書き手あり）<br>`data_as_of`（この段階の書き手あり）<br>`earnings_pending`（ほかの書き手あり）<br>`effective`（この段階の書き手あり）<br>`entry_condition`（この段階の書き手あり）<br>`entry_date`（この段階の書き手あり）<br>`entry_price`（この段階の書き手あり）<br>`entry_story`（この段階の書き手あり）<br>`entry_story_progress`（この段階の書き手あり）<br>`excerpt`（この段階の書き手あり）<br>`excerpt_ja`（この段階の書き手あり）<br>`exit_condition`（この段階の書き手あり）<br>`exit_distance`（この段階の書き手あり）<br>`exit_distance_reason`（この段階の書き手あり）<br>`exit_guide`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`five_perspectives`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`health_score`（この段階の書き手あり）<br>`historical_analogy`（この段階の書き手あり）<br>`implication`（この段階の書き手あり）<br>`intrinsic_value`（この段階の書き手あり）<br>`intrinsic_value_per_share`（ほかの書き手あり）<br>`key`（この段階の書き手あり）<br>`key_assumptions`（この段階の書き手あり）<br>`kpi`（この段階の書き手あり）<br>`kpi_current`（この段階の書き手あり）<br>`kpi_forecasts`（この段階の書き手あり）<br>`kpi_format`（この段階の書き手あり）<br>`kpi_layer1_keys`（この段階の書き手あり）<br>`kpis`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`macro_implications`（この段階の書き手あり）<br>`market_attention`（この段階の書き手あり）<br>`match`（この段階の書き手あり）<br>`material_weaknesses`（この段階の書き手あり）<br>`next_kpis`（この段階の書き手あり）<br>`next_review_focus`（この段階の書き手あり）<br>`ok`（この段階の書き手あり）<br>`operating_margin_terminal`（この段階の書き手あり）<br>`optimism_bias_warning`（この段階の書き手あり）<br>`outcome`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`positions`（この段階の書き手あり）<br>`positives`（この段階の書き手あり）<br>`quarter`（この段階の書き手あり）<br>`queue`（この段階の書き手あり）<br>`recommendation`（この段階の書き手あり）<br>`revenue_growth_y1`（この段階の書き手あり）<br>`revenue_growth_y2`（この段階の書き手あり）<br>`revenue_growth_y3`（この段階の書き手あり）<br>`risk_factors`（この段階の書き手あり）<br>`scenarios`（この段階の書き手あり）<br>`significant_deficiencies`（この段階の書き手あり）<br>`similarity`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`stage1`（この段階の書き手あり）<br>`stage2`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`strategy_name`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`thesis`（この段階の書き手あり）<br>`thesis_questions`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`type`（この段階の書き手あり）<br>`unit`（この段階の書き手あり）<br>`upside_percent`（ほかの書き手あり）<br>`val`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
+| アプリシェル（認証後に表示） | `all`（この段階の書き手あり）<br>`backfilled`（この段階の書き手あり）<br>`backfilled_note`（この段階の書き手あり）<br>`base`（この段階の書き手あり）<br>`bear`（この段階の書き手あり）<br>`bull`（この段階の書き手あり）<br>`call2`（この段階の書き手あり）<br>`company`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`concerns`（この段階の書き手あり）<br>`current_price`（この段階の書き手あり）<br>`data`（この段階の書き手あり）<br>`data_as_of`（この段階の書き手あり）<br>`earnings_pending`（ほかの書き手あり）<br>`effective`（この段階の書き手あり）<br>`entry_condition`（この段階の書き手あり）<br>`entry_date`（この段階の書き手あり）<br>`entry_price`（この段階の書き手あり）<br>`entry_story`（この段階の書き手あり）<br>`entry_story_progress`（この段階の書き手あり）<br>`excerpt`（この段階の書き手あり）<br>`excerpt_ja`（この段階の書き手あり）<br>`exit_condition`（この段階の書き手あり）<br>`exit_distance`（この段階の書き手あり）<br>`exit_distance_reason`（この段階の書き手あり）<br>`exit_guide`（この段階の書き手あり）<br>`filing_date`（この段階の書き手あり）<br>`five_perspectives`（この段階の書き手あり）<br>`generated_at`（この段階の書き手あり）<br>`health_score`（この段階の書き手あり）<br>`historical_analogy`（この段階の書き手あり）<br>`implication`（この段階の書き手あり）<br>`intrinsic_value`（この段階の書き手あり）<br>`intrinsic_value_per_share`（ほかの書き手あり）<br>`key`（この段階の書き手あり）<br>`key_assumptions`（この段階の書き手あり）<br>`kpi`（この段階の書き手あり）<br>`kpi_current`（この段階の書き手あり）<br>`kpi_forecasts`（この段階の書き手あり）<br>`kpi_format`（この段階の書き手あり）<br>`kpi_layer1_keys`（この段階の書き手あり）<br>`kpis`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`macro_implications`（この段階の書き手あり）<br>`market_attention`（この段階の書き手あり）<br>`match`（この段階の書き手あり）<br>`material_weaknesses`（この段階の書き手あり）<br>`next_kpis`（この段階の書き手あり）<br>`next_review_focus`（この段階の書き手あり）<br>`ok`（この段階の書き手あり）<br>`operating_margin_terminal`（この段階の書き手あり）<br>`optimism_bias_warning`（この段階の書き手あり）<br>`outcome`（この段階の書き手あり）<br>`period`（この段階の書き手あり）<br>`positions`（この段階の書き手あり）<br>`positives`（この段階の書き手あり）<br>`quarter`（この段階の書き手あり）<br>`queue`（この段階の書き手あり）<br>`recommendation`（この段階の書き手あり）<br>`revenue_growth_y1`（この段階の書き手あり）<br>`revenue_growth_y2`（この段階の書き手あり）<br>`revenue_growth_y3`（この段階の書き手あり）<br>`risk_factors`（この段階の書き手あり）<br>`scenarios`（この段階の書き手あり）<br>`significant_deficiencies`（この段階の書き手あり）<br>`similarity`（この段階の書き手あり）<br>`source`（この段階の書き手あり）<br>`stage1`（この段階の書き手あり）<br>`stage2`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`strategy_name`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`thesis`（この段階の書き手あり）<br>`thesis_questions`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`title`（ほかの書き手あり）<br>`type`（この段階の書き手あり）<br>`unit`（この段階の書き手あり）<br>`upside_percent`（ほかの書き手あり）<br>`val`（この段階の書き手あり）<br>`value`（この段階の書き手あり） |  |
 | （区画を決められない） | `base_intrinsic_value`（この段階の書き手あり）<br>`future_values`（この段階の書き手あり）<br>`kpi_forecasts`（この段階の書き手あり） |  |
 
 ### `docs/portfolio/tail/index.html`
@@ -610,15 +611,15 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 規則 | ファイル数 | 場所 | TAILを含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:185`<br>`common/sec_data/q4_implied.py:194`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:292`<br>`common/sec_data/bs_lines.py:311`<br>`common/sec_data/bs_lines.py:443`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:1030`<br>`common/sec_data/layer3_builder.py:1253`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:156`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | はい |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:191`<br>`common/sec_data/q4_implied.py:200`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:292`<br>`common/sec_data/bs_lines.py:311`<br>`common/sec_data/bs_lines.py:443`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:1031`<br>`common/sec_data/layer3_builder.py:1254`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:156`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | はい |
 | データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1579`<br>`common/sec_data/report_consistency_check.py:1776`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:239`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:293` | いいえ |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:242`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:293` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | はい |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | はい |
-| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:595`<br>`docs/value-monitor/tanuki_score/index.html:1118`<br>`docs/value-monitor/tanuki_score/index.html:1342`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1159`<br>`docs/value-monitor/tanuki_valuation/stock.html:1160`<br>`src/value/tanuki_valuation/pipeline.py:598`<br>`src/value/tanuki_valuation/pipeline.py:600`<br>`src/value/tanuki_valuation/pipeline.py:602`<br>`src/value/tanuki_valuation/pipeline.py:872`<br>`src/value/tanuki_valuation/pipeline.py:885`<br>`src/value/tanuki_valuation/pipeline.py:905`<br>`src/value/tanuki_valuation/pipeline.py:907`<br>`src/value/tanuki_valuation/pipeline.py:979`<br>`src/value/tanuki_valuation/pipeline.py:980`<br>`src/value/tanuki_valuation/pipeline.py:981`<br>`src/value/tanuki_valuation/pipeline.py:982`<br>`src/value/tanuki_valuation/pipeline.py:1405`<br>`src/value/tanuki_valuation/pipeline.py:1432`<br>`src/value/tanuki_valuation/pipeline.py:1437`<br>`src/value/tanuki_valuation/pipeline.py:1483`<br>`src/value/tanuki_valuation/pipeline.py:1789`<br>`src/value/tanuki_valuation/pipeline.py:1967` | いいえ |
+| 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:358`<br>`docs/value-monitor/tanuki_score/index.html:617`<br>`docs/value-monitor/tanuki_score/index.html:1140`<br>`docs/value-monitor/tanuki_score/index.html:1364`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1108`<br>`docs/value-monitor/tanuki_valuation/stock.html:1176`<br>`docs/value-monitor/tanuki_valuation/stock.html:1177`<br>`src/value/tanuki_valuation/pipeline.py:590`<br>`src/value/tanuki_valuation/pipeline.py:592`<br>`src/value/tanuki_valuation/pipeline.py:594`<br>`src/value/tanuki_valuation/pipeline.py:864`<br>`src/value/tanuki_valuation/pipeline.py:877`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:971`<br>`src/value/tanuki_valuation/pipeline.py:972`<br>`src/value/tanuki_valuation/pipeline.py:973`<br>`src/value/tanuki_valuation/pipeline.py:974`<br>`src/value/tanuki_valuation/pipeline.py:1446`<br>`src/value/tanuki_valuation/pipeline.py:1473`<br>`src/value/tanuki_valuation/pipeline.py:1478`<br>`src/value/tanuki_valuation/pipeline.py:1524`<br>`src/value/tanuki_valuation/pipeline.py:1830`<br>`src/value/tanuki_valuation/pipeline.py:2008` | いいえ |
 | β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1194` | いいえ |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:221`<br>`src/value/tanuki_valuation/calculator/adjustments.py:196`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1178` | いいえ |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:295`<br>`src/value/tanuki_valuation/calculator/adjustments.py:199`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1178` | いいえ |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）・AI（Grok）の呼び方（APIの宛先・再試行）（1）・比較・集計から外すレビュー（superseded・skipped_old・後付け・対象より後の期）（1）
 

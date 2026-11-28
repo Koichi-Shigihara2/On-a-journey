@@ -305,61 +305,61 @@
 
 この段階の出力のJSON（全ファイル、入れ子8段まで）のキーのうち、テストを除くコード（.py・.js・.html。書き手のファイルを含む）に読みの形（`.key`・`['key']`〈代入でない〉・`.get('key')`）で出てこないもの。銘柄名・日付など小文字を含まないキーは除く。Pythonで`for k in d`・`d.items()`のように回して読むものは拾えないので、消す前にキーの名前でgrepする
 
-- `attributes_fetched_at`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `basis_ends`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `breakeven_method`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `breakeven_min_r2`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `breakeven_points`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `breakeven_start`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `current_definition_label`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
-- `current_definition_stage`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
-- `cyclical_industries_stage_a`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `cyclical_keywords`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `daily_close`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
-- `daily_date`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
-- `damodaran_by_industry`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `eps_category_by_industry`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `eps_category_by_sector`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `etf`（`config/sector_master.json`）: 残す: 業種→ETF の写し（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ。tests/test_sector_master.py が一致を検査する）
-- `etf_by_sector`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `ev_gross_profit`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `expected_factor`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
+- `attributes_fetched_at`（`config/sector_master.json`）
+- `basis_ends`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `breakeven_method`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `breakeven_min_r2`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `breakeven_points`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `breakeven_start`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `current_definition_label`（`docs/common/stage_v2/{T}.json`）: これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）
+- `current_definition_stage`（`docs/common/stage_v2/{T}.json`）: これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）
+- `cyclical_industries_stage_a`（`config/sector_master.json`）
+- `cyclical_keywords`（`config/sector_master.json`）
+- `daily_close`（`config/split_price_ledger.json`）: 残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）
+- `daily_date`（`config/split_price_ledger.json`）: 残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）
+- `damodaran_by_industry`（`config/sector_master.json`）
+- `eps_category_by_industry`（`config/sector_master.json`）
+- `eps_category_by_sector`（`config/sector_master.json`）
+- `etf`（`config/sector_master.json`）: 残す（写し）: 業種→ETF の写し。tests/test_sector_master.py が定数との一致を検査する（Market Pulse の sector_rotation.py は自分の SECTOR_MAP を持つ）
+- `etf_by_sector`（`config/sector_master.json`）
+- `ev_gross_profit`（`docs/common/multiples/{T}.json`）: 残す（動的な読み）: 定義v2（common/stage_v2.py）が倍率の種類を名前で選んで読む（一覧の読みの形では拾えない）
+- `expected_factor`（`config/split_price_ledger.json`）: 残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）
 - `fair_value_change`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
-- `fcf_points`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `financial_excluded_industries`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `financial_sectors`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `financial_sic_range`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `fiscal_year_end`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `forward_pe_snapshot`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `forward_pe_snapshot_date`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `g_f`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
-- `g_m`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
+- `fcf_points`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `financial_excluded_industries`（`config/sector_master.json`）
+- `financial_sectors`（`config/sector_master.json`）
+- `financial_sic_range`（`config/sector_master.json`）
+- `fiscal_year_end`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `forward_pe_snapshot`（`docs/common/multiples/{T}.json`）: 残す（記録）: 作り直せない。その月末に取った先行PERの値と日付（Yahooは過去の値を返さない）
+- `forward_pe_snapshot_date`（`docs/common/multiples/{T}.json`）: 残す（記録）: 作り直せない。その月末に取った先行PERの値と日付（Yahooは過去の値を返さない）
+- `g_f`（`docs/common/stage_v2/{T}.json`）: これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）
+- `g_m`（`docs/common/stage_v2/{T}.json`）: これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）
 - `impairment`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
-- `l_industry`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
-- `l_own`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
-- `margins`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `mega_tech_industries`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `mega_tech_industry_prefixes`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `mega_tech_min_market_cap`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `multiple_type`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
-- `near_horizon_quarters`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `net_income_5y_years`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `observed_factor`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
-- `p_tbv`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `pe_5y_avg_earnings`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `previous_cover_date`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `previous_cover_shares`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `price_factor`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
-- `price_factor_reason`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
-- `recorded_price`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
-- `rules`（`config/sector_master.json`、`docs/common/profitability.json`）: 残す: 業種の名前の規則の写し（上の rules と同じ。layer3_builder・share_unit_fix は別の意味の同名のキー）
-- `shares_end`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `slope_per_quarter`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `stage_reason`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `tce_end`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
-- `time_basis`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
-- `unclassified_industries`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
-- `unclassified_industry_prefixes`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
+- `l_industry`（`docs/common/stage_v2/{T}.json`）: これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）
+- `l_own`（`docs/common/stage_v2/{T}.json`）: これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）
+- `margins`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `mega_tech_industries`（`config/sector_master.json`）
+- `mega_tech_industry_prefixes`（`config/sector_master.json`）
+- `mega_tech_min_market_cap`（`config/sector_master.json`）
+- `multiple_type`（`docs/common/stage_v2/{T}.json`）: これから作る: [[STAGE-V2-ROLLOUT-1]]（定義v2の並行計算の根拠。切り替えで読み手を作る）
+- `near_horizon_quarters`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `net_income_5y_years`（`docs/common/multiples/{T}.json`）: 残す（監査用）: 倍率の分母・株数の時点の根拠。倍率の履歴の点が疑わしいとき、人（Claude Code）が common/multiples の月末の行で確かめる
+- `observed_factor`（`config/split_price_ledger.json`）: 残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）
+- `p_tbv`（`docs/common/multiples/{T}.json`）: 残す（動的な読み）: 定義v2（common/stage_v2.py）が倍率の種類を名前で選んで読む（一覧の読みの形では拾えない）
+- `pe_5y_avg_earnings`（`docs/common/multiples/{T}.json`）: 残す（動的な読み）: 定義v2（common/stage_v2.py）が倍率の種類を名前で選んで読む（一覧の読みの形では拾えない）
+- `previous_cover_date`（`docs/common/multiples/{T}.json`）: 残す（監査用）: 倍率の分母・株数の時点の根拠。倍率の履歴の点が疑わしいとき、人（Claude Code）が common/multiples の月末の行で確かめる
+- `previous_cover_shares`（`docs/common/multiples/{T}.json`）: 残す（監査用）: 倍率の分母・株数の時点の根拠。倍率の履歴の点が疑わしいとき、人（Claude Code）が common/multiples の月末の行で確かめる
+- `price_factor`（`config/split_price_ledger.json`）: 残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）
+- `price_factor_reason`（`config/split_price_ledger.json`）: 残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）
+- `recorded_price`（`config/split_price_ledger.json`）: 残す（監査用）: 分割の調整の台帳の根拠。分割の調整を確かめるとき、人（Claude Code）が台帳（config/split_price_ledger.json）と突き合わせて読む（price_factor は multiples.py が台帳から読む〈動的〉）
+- `rules`（`config/sector_master.json`、`docs/common/profitability.json`）
+- `shares_end`（`docs/common/multiples/{T}.json`）: 残す（監査用）: 倍率の分母・株数の時点の根拠。倍率の履歴の点が疑わしいとき、人（Claude Code）が common/multiples の月末の行で確かめる
+- `slope_per_quarter`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `stage_reason`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `tce_end`（`docs/common/multiples/{T}.json`）: 残す（監査用）: 倍率の分母・株数の時点の根拠。倍率の履歴の点が疑わしいとき、人（Claude Code）が common/multiples の月末の行で確かめる
+- `time_basis`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測の根拠（回帰の傾き・点・R²・基準の四半期）。予測年が動いた理由を、人（Claude Code）が profitability.json の根拠で確かめる（SOUN の 2026→2030 など）。画面は段階と年数だけ読む
+- `unclassified_industries`（`config/sector_master.json`）
+- `unclassified_industry_prefixes`（`config/sector_master.json`）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 

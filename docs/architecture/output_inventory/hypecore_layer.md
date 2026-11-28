@@ -109,7 +109,7 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-- `method_change_applied`（`docs/value-monitor/hypecore/data/{T}_poc.json`）: 残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）
+- `method_change_applied`（`docs/value-monitor/hypecore/data/{T}_poc.json`）: 残す（動的な読み）: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から定数のキー名で読んで印を付ける（一覧の読みの形では拾えない）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 
