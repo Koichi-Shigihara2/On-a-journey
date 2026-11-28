@@ -238,7 +238,7 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
                  now_utc: Optional[datetime] = None, extras: Optional[Dict[str, Optional[str]]] = None) -> dict:
     """設計書6章。期待する日と要素ごとのas_ofを比べる。期待する日は要素の種類ごと（common/value_freshness.py。米国の終値・日経・FRED日次）。
     extras: {要素名: 基準日}（ind・af に無い入力。HYスプレッド等）。基準日が None の入力は「日付なし」として old に入れる。
-    出力の freshness: {要素: {expected, status(stale|unknown), lag_days, kind}}（新しくない要素だけ）、expected_by_kind: {kind: 期待する日}。
+    出力の freshness: {要素: {expected, status(stale|unknown), lag_days, kind}}（新しくない要素だけ）。
     画面の値ごとの日付と「古い」の印・System Health が読む"""
     from common import value_freshness as _fr
     as_of: Dict[str, Optional[str]] = {}
@@ -280,11 +280,9 @@ def data_quality(ind: dict, af: Optional[dict], breadth: Optional[dict], expecte
     assessed = _fr.assess(as_of, now_utc, expected_close)
     fresh = {k: {"expected": v["expected"], "status": v["status"], "lag_days": v["lag_days"], "kind": v["kind"]}
              for k, v in assessed.items() if v["status"] != "fresh"}      # 画面が小さくなるよう、新しくない要素だけを残す
-    expected_by_kind = {kd: _fr.expected_as_of(kd, now_utc, expected_close) for kd in _fr.KINDS}
     out = {"expected_close_date": expected_close, "as_of": as_of, "status": "unknown",
            "old_elements": [], "old_stages": [], "provisional_elements": sorted(provisional),
-           "expected_provisional_elements": dict(sorted(expected_prov.items())), "freshness": fresh,
-           "expected_by_kind": expected_by_kind}
+           "expected_provisional_elements": dict(sorted(expected_prov.items())), "freshness": fresh}
     if not expected_close or as_of.get("S&P500") is None:
         return out   # S&P500の基準日が無い（取得失敗、または基準日を記録する前の2026-06-07以前のエントリ）は判定不能
     spx = as_of.get("S&P500")

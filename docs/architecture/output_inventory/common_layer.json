@@ -804,7 +804,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 439,
+     "line": 574,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -812,7 +812,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 498,
+     "line": 635,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -820,7 +820,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 511,
+     "line": 648,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -972,7 +972,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 469,
+     "line": 472,
      "func": "StonksAnalyzer._analyze_runway",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1116,7 +1116,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3135,
+     "line": 3145,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1124,7 +1124,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3284,
+     "line": 3294,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1940,7 +1940,7 @@
     {
      "file": "common/profitability.py",
      "func": "write",
-     "line": 482
+     "line": 619
     }
    ],
    "writers_outside_layer": [],
@@ -1961,7 +1961,7 @@
     },
     {
      "key": "generated_at",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "rules",
@@ -1969,13 +1969,13 @@
     },
     {
      "key": "tickers",
-     "reader_files": 7
+     "reader_files": 8
     }
    ],
    "readers": [
     {
      "file": "common/profitability.py",
-     "line": 43,
+     "line": 47,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -1983,7 +1983,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 397,
+     "line": 523,
      "func": "load_entry",
      "how": "保存済みファイル",
      "via": "AST",
@@ -1991,7 +1991,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 441,
+     "line": 576,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/profitability.py::_load",
@@ -1999,7 +1999,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 466,
+     "line": 603,
      "func": "_load",
      "how": "保存済みファイル",
      "via": "AST",
@@ -2007,7 +2007,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 498,
+     "line": 635,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/profitability.py::_load",
@@ -2015,7 +2015,7 @@
     },
     {
      "file": "common/profitability.py",
-     "line": 511,
+     "line": 648,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/profitability.py::_load",
@@ -2095,7 +2095,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 187,
+     "line": 190,
      "func": "StonksAnalyzer.analyze",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2103,7 +2103,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 591,
+     "line": 594,
      "func": "StonksAnalyzer._analyze_profitability_path",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2111,8 +2111,24 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 775,
+     "line": 692,
+     "func": "StonksAnalyzer._analyze_profitability_path",
+     "how": "保存済みファイル",
+     "via": "common/profitability.py::load_entry",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/analyzer.py",
+     "line": 779,
      "func": "StonksAnalyzer._breakeven_estimate",
+     "how": "保存済みファイル",
+     "via": "common/profitability.py::load_entry",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/stonks_silo/pipeline.py",
+     "line": 122,
+     "func": "run",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
      "type": "Python"
@@ -2151,7 +2167,15 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3960,
+     "line": 2972,
+     "func": "TanukiValuationPipeline._generate_report",
+     "how": "保存済みファイル",
+     "via": "common/profitability.py::load_entry",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 3970,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2613,11 +2637,11 @@
     },
     {
      "page": "docs/value-monitor/stonks-silo/index.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/index.html",
@@ -2625,14 +2649,14 @@
     },
     {
      "page": "docs/value-monitor/tanuki_valuation/stock.html",
-     "how": "経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json）"
+     "how": "経由（src/value/stonks_silo/pipeline.py → docs/value-monitor/stonks-silo/data/results.json）"
     }
    ],
    "definitions": [],
    "decision_effect": [
     "理論株価・判定（TANUKI VALUATION）"
    ],
-   "reader_count": 7,
+   "reader_count": 8,
    "reader_count_test": 6,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -2982,7 +3006,7 @@
    "dir": "common",
    "file": "common/profitability.py",
    "decision": "残す（2026-11-27）",
-   "lines": 511,
+   "lines": 648,
    "workflows": [
     ".github/workflows/Market_Data_Weekly_Update.yml",
     ".github/workflows/SEC_Data_Update.yml"
@@ -3000,6 +3024,7 @@
    "tests": [
     "tests/test_deficit_quality_adopt.py",
     "tests/test_profitability.py",
+    "tests/test_profitability_noncash.py",
     "tests/test_register_ticker_preflight.py"
    ]
   },
@@ -3330,7 +3355,7 @@
   "outputs": 8,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 163,
+  "python_read_sites_into_layer_resolved": 164,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/method_change.py",
@@ -3456,7 +3481,8 @@
       "common/market_data/fetcher.py",
       "docs/portfolio/tail/detail.html",
       "docs/value-monitor/tanuki_score/index.html",
-      "docs/value-monitor/tanuki_valuation/stock.html"
+      "docs/value-monitor/tanuki_valuation/stock.html",
+      "src/value/tanuki_valuation/pipeline.py"
      ],
      "screens": [
       "docs/portfolio/tail/detail.html",
@@ -3464,7 +3490,8 @@
       "docs/value-monitor/tanuki_valuation/stock.html"
      ],
      "code": [
-      "common/market_data/fetcher.py"
+      "common/market_data/fetcher.py",
+      "src/value/tanuki_valuation/pipeline.py"
      ],
      "note": ""
     },
@@ -3561,13 +3588,16 @@
      "key": "status",
      "readers": [
       "docs/value-monitor/tanuki_score/index.html",
-      "docs/value-monitor/tanuki_valuation/stock.html"
+      "docs/value-monitor/tanuki_valuation/stock.html",
+      "src/value/tanuki_valuation/pipeline.py"
      ],
      "screens": [
       "docs/value-monitor/tanuki_score/index.html",
       "docs/value-monitor/tanuki_valuation/stock.html"
      ],
-     "code": [],
+     "code": [
+      "src/value/tanuki_valuation/pipeline.py"
+     ],
      "note": ""
     },
     {
@@ -3777,13 +3807,16 @@
      "key": "status",
      "readers": [
       "docs/value-monitor/tanuki_score/index.html",
-      "docs/value-monitor/tanuki_valuation/stock.html"
+      "docs/value-monitor/tanuki_valuation/stock.html",
+      "src/value/tanuki_valuation/pipeline.py"
      ],
      "screens": [
       "docs/value-monitor/tanuki_score/index.html",
       "docs/value-monitor/tanuki_valuation/stock.html"
      ],
-     "code": [],
+     "code": [
+      "src/value/tanuki_valuation/pipeline.py"
+     ],
      "note": ""
     },
     {
@@ -3819,13 +3852,16 @@
      "key": "status",
      "readers": [
       "docs/value-monitor/tanuki_score/index.html",
-      "docs/value-monitor/tanuki_valuation/stock.html"
+      "docs/value-monitor/tanuki_valuation/stock.html",
+      "src/value/tanuki_valuation/pipeline.py"
      ],
      "screens": [
       "docs/value-monitor/tanuki_score/index.html",
       "docs/value-monitor/tanuki_valuation/stock.html"
      ],
-     "code": [],
+     "code": [
+      "src/value/tanuki_valuation/pipeline.py"
+     ],
      "note": ""
     },
     {
@@ -4561,6 +4597,13 @@
     "note": "残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）"
    },
    {
+    "key": "ttm_operating_income_adjusted",
+    "sources": [
+     "docs/common/profitability.json"
+    ],
+    "note": "これから作る: [[STONKS-PROFITABILITY-ADJUSTED-DISPLAY-1]]（STONKS 画面の黒字化予測の欄に、報告値の営業利益と並べて出す。読み手は画面。今は読む所が無い）"
+   },
+   {
     "key": "unclassified_industries",
     "sources": [
      "config/sector_master.json"
@@ -4575,7 +4618,20 @@
     "note": "残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）"
    }
   ],
-  "written_key_count": 220,
-  "stale_keys": []
+  "written_key_count": 228,
+  "stale_keys": [
+   {
+    "key": "fair_value_change",
+    "sources": [
+     "docs/common/profitability.json"
+    ]
+   },
+   {
+    "key": "impairment",
+    "sources": [
+     "docs/common/profitability.json"
+    ]
+   }
+  ]
  }
 }

@@ -9,9 +9,9 @@
 
 **件数**: 出力 9（ファイル 8・人が見るもの 1）／読み手0件 0／テストだけ 0／1件 2／2件以上 6／規則の二重 12（検出式 20種のうち。Market Pulseのファイルを含むもの 0）
 
-**画面の項目**: 画面が読むキー 157（この段階の書き手あり 157・ほかの書き手あり 0・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **49**（今の書き手のコードに無いキー 5 は数えない）
+**画面の項目**: 画面が読むキー 166（この段階の書き手あり 166・ほかの書き手あり 0・画面の中で作る値 0・**書き手なし 0**）／書き手があるのに誰も読まないキー **52**（今の書き手のコードに無いキー 6 は数えない）
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 4件／解決できた読み込み 22件＋ファイル名で当たった行 24件（8.0%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋0件（0.0%）、読み方を決めきれない読み込み 0件＋ファイル名で当たった行 4件／解決できた読み込み 24件＋ファイル名で当たった行 26件（7.4%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
@@ -33,10 +33,10 @@
 | 1件 | `src/market/market_pulse/02_market_rss.txt`<br>（1ファイル） | 市況のニュースを取るRSSの一覧（Google Newsの検索7本）。**コードの書き手は無い（人の手で書く静的なファイル）**。collect_and_send.py の get_market_news が読む |  | 1 | market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 | 2件以上 | `${RUNNER_TEMP}/headlines_pending.json` | その回の見出しの積み足しの入力（items・訳と判定・取得の時刻・回・配信元の結果）。GitHub Actions の一時のフォルダに置き、同じ job のheadlines_push.py が push の衝突のときに見出しのファイルをリモートの版に戻してから積み足し直すのに読む（commit しない。手元では書かない） | `headlines_store.py:save_pending` | 2 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
 | 2件以上 | `docs/market-monitor/market-pulse/data/breadth_data.json`<br>（1ファイル） | S&P500の構成銘柄の騰落・新高値・新安値・50日線の上の割合（breadth_calculator.py）。collect_and_send.py が読んで market_data.json に写す | `breadth_calculator.py:save_breadth` | 4 | market-monitor/market-pulse/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由） | 効く: Market Pulse（市況の判定・8段階の結論・天気） | AS-IS-334 | 残す（2026-10-23） |
-| 2件以上 | `docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>（30ファイル） | 見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す） | `headlines_store.py:accumulate` | 2・テスト4 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
-| 2件以上 | `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`<br>（71ファイル） | 10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）の5分足の日ごとの保存（ETの日付で1ファイル、銘柄ごとにt〈HH:MM ET〉・o・h・l・c・v の列の配列、整形なし、取れなかった銘柄は missing）。書き手は intraday_store.py の update（夜の Market Pulse の回。直近10取引日のうち無い日・足りない日だけ取り直す）。読み手は System Health の [O]（直近の取引日のファイルが無ければ⚠️）。大きく動いた日の事後分析の材料M・X（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。Yahooの5分足は今日から60日（暦日）で消えるため残す | `intraday_store.py:update` | 2・テスト3 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
-| 2件以上 | `docs/market-monitor/market-pulse/data/latest.json`<br>（0ファイル） | market_data.json の最新のエントリだけ（同じ書き手 save_data_to_json_and_csv が、履歴と一緒に毎回書く）。最新だけを読む所（TANUKI SCORE の画面・TANUKI のパイプライン・ポートフォリオのスナップショット・System Health・検査）が、履歴ぜんぶ（5MB超）の代わりに読む。最新以外のエントリの sector_rotation.trail は履歴に複製しない（日足から作り直せる）。common/market_pulse_data.py | `collect_and_send.py:save_data_to_json_and_csv` | 2・テスト3 | value-monitor/tanuki_score/index.html（直接） | — | AS-IS-056・AS-IS-071 | 残す（2026-10-23） |
-| 2件以上 | `docs/market-monitor/market-pulse/data/market_data.json`<br>（1ファイル） | 1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。**AIの出力（Grok）**: summary・haiku（comments_history は2026-11-27に書くのをやめた。画面が前のエントリの summary から作る）（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures | `collect_and_send.py:save_data_to_json_and_csv` | 7・テスト4 | market-monitor/market-pulse/index.html（直接）<br>value-monitor/tanuki_score/index.html（直接） | 効く: Market Pulse（市況の判定・8段階の結論・天気）・Market Pulseの画面 | AS-IS-300・AS-IS-388・AS-IS-390 | 残す（2026-10-23） |
+| 2件以上 | `docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>（31ファイル） | 見出しの日ごとの積み足し（記事の時刻の米国東部の日付で1ファイル。題名・時刻・リンク・出典・also_in・title_updates、夜の回の訳・判定と、取得の記録 fetches）。書き手は headlines_store.py の accumulate（6時間ごとの Market_Pulse_Headlines.yml と夜の Market Pulse の回）。読み手は System Health の [N]（fetches の最新が12時間より古ければ⚠️、24時間より古ければ🔴）。大きく動いた日の事後分析の材料H（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。merge=ours にしない（push の衝突は headlines_push.py が積み足し直す） | `headlines_store.py:accumulate` | 2・テスト4 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
+| 2件以上 | `docs/market-monitor/market-pulse/data/intraday/{date_et}.json`<br>（73ファイル） | 10本（^GSPC・^IXIC・^VIX・^TNX・DX-Y.NYB・CL=F・GC=F・HYG・ES=F・NQ=F）の5分足の日ごとの保存（ETの日付で1ファイル、銘柄ごとにt〈HH:MM ET〉・o・h・l・c・v の列の配列、整形なし、取れなかった銘柄は missing）。書き手は intraday_store.py の update（夜の Market Pulse の回。直近10取引日のうち無い日・足りない日だけ取り直す）。読み手は System Health の [O]（直近の取引日のファイルが無ければ⚠️）。大きく動いた日の事後分析の材料M・X（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ③）の入力。Yahooの5分足は今日から60日（暦日）で消えるため残す | `intraday_store.py:update` | 2・テスト3 | — | 効く: Market Pulse（市況の判定・8段階の結論・天気） | — | 残す（2026-10-23） |
+| 2件以上 | `docs/market-monitor/market-pulse/data/latest.json`<br>（1ファイル） | market_data.json の最新のエントリだけ（同じ書き手 save_data_to_json_and_csv が、履歴と一緒に毎回書く）。最新だけを読む所（TANUKI SCORE の画面・TANUKI のパイプライン・ポートフォリオのスナップショット・System Health・検査）が、履歴ぜんぶ（5MB超）の代わりに読む。最新以外のエントリの sector_rotation.trail は履歴に複製しない（日足から作り直せる）。common/market_pulse_data.py | `collect_and_send.py:save_data_to_json_and_csv` | 6・テスト5 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-056・AS-IS-071 | 残す（2026-10-23） |
+| 2件以上 | `docs/market-monitor/market-pulse/data/market_data.json`<br>（1ファイル） | 1日1エントリの市況（指標・センチメント・F&G・Tech Pulse・資金の流れ・クレジット・8段階の結論・天気・data_quality 等）。画面が読む。**AIの出力（Grok）**: summary・haiku（comments_history は2026-11-27に書くのをやめた。画面が前のエントリの summary から作る）（judgment は summary から取り出す）、headlines の items の title_ja・market と translation・relevance。2026-09-26からの再設計（MARKET_PULSE_REDESIGN.md、実装A〜C）で足したキー: stage_conclusions・weather・data_quality・ai_facts・hindenburg・sector_rotation・semis_m7・commodity_fx・watch_list・headlines・calendar・futures | `collect_and_send.py:save_data_to_json_and_csv` | 10・テスト6 | market-monitor/market-pulse/index.html（直接）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（直接）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・Market Pulse（市況の判定・8段階の結論・天気）・Market Pulseの画面 | AS-IS-300・AS-IS-388・AS-IS-390 | 残す（2026-10-23） |
 
 ### 人が見るもの（Step Summary・Discord・メール）
 
@@ -54,7 +54,7 @@
 
 ### `src/market/market_pulse/02_market_rss.txt`（1件）
 - 起動元: ワークフローから書き手を呼ぶ参照が見つからない
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 18・1054
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 18・1062
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/latest.json））: `docs/value-monitor/tanuki_score/index.html`
 
@@ -68,7 +68,7 @@
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 71・176・365・408・457（経由 `browser_checks/check_dependency_map.py::expected_hindenburg_active`）
 - Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 44
 - Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 29
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 27・220・367・1860・1919（経由 `src/market/market_pulse/collect_and_send.py::_load_latest_breadth`）
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 27・220・367・1910・1970（経由 `src/market/market_pulse/collect_and_send.py::_load_latest_breadth`）
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json））: `docs/market-monitor/market-pulse/index.html`
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/latest.json））: `docs/value-monitor/tanuki_score/index.html`
 
@@ -93,25 +93,55 @@
 
 ### `docs/market-monitor/market-pulse/data/latest.json`（2件以上）
 - 起動元: .github/workflows/Market_Pulse_Update.yml
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `ai_facts`(0)・`asset_flow`(0)・`basis`(1)・`buy_checklist`(1)・`calendar`(2)・`commodity_fx`(0)・`credit`(1)・`data_freshness`(2)・`data_quality`(3)・`date`(9)・`fear_greed`(4)・`futures`(0)・`haiku`(0)・`headlines`(1)・`hindenburg`(1)・`indicators`(3)・`judgment`(0)・`sector_rotation`(2)・`semis_m7`(0)・`sentiment`(1)・`stage_conclusions`(0)・`summary`(2)・`take_profit_checklist`(1)・`tech_pulse`(0)・`watch_list`(0)・`weather`(0)
+- Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 146・156・173・330・352・365・408（経由 `common/market_pulse_data.py::load_latest`）
+- Python・保存済みファイル: `common/market_pulse_data.py` 行 21・37
 - Python・保存済みファイル: `common/system_health.py` 行 1136・1150・1299・1372（経由 `common/system_health.py::_check_q`）
+- Python・保存済みファイル: `src/portfolio/snapshot.py` 行 40・144（経由 `common/market_pulse_data.py::load_latest`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 577・852・1204（経由 `common/market_pulse_data.py::load_latest`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 239
+- テスト・保存済みファイル: `tests/test_market_pulse_latest.py` 行 38・40・42・44・46・104・107・110（経由 `common/market_pulse_data.py::load_latest`）
+- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 332・348・364・396・421・1585・1614・1684・1703・1730・1749・1769 ほか6（経由 `common/market_pulse_data.py::load_latest`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::_check_q`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/system_health.py::_check_q`）
 - テスト・保存済みファイル: `tests/test_value_freshness.py` 行 124・128・139・142・144（経由 `common/system_health.py::_check_q`）
+- 画面（経由（src/portfolio/snapshot.py → docs/portfolio/data/history.json））: `docs/portfolio/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/adjusted_eps_analyzer/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/adjusted_eps_analyzer/stock.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/hypecore/detail.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/stonks-silo/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/value-monitor/tanuki_valuation/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json））: `docs/value-monitor/tanuki_valuation/stock.html`
 
 ### `docs/market-monitor/market-pulse/data/market_data.json`（2件以上）
 - 起動元: .github/workflows/Market_Pulse_Update.yml
-- Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 68・398・408・411・447・457（経由 `browser_checks/market_pulse_elements.py::load_entries`）
-- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 41・153・337・810・914（経由 `browser_checks/market_pulse_elements.py::load_entries`）
+- Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 68・146・156・173・330・352・365・398・408・411・447・457（経由 `browser_checks/market_pulse_elements.py::load_entries`、`common/market_pulse_data.py::load_latest`）
+- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 41・153・339・812・916（経由 `browser_checks/market_pulse_elements.py::load_entries`）
+- Python・保存済みファイル: `common/market_pulse_data.py` 行 20・46
 - Python・保存済みファイル: `common/system_health.py` 行 161・1281・1372（経由 `common/system_health.py::check_d_actions`）
 - Python・保存済みファイル: `scripts/migrate_market_data_comments_history.py` 行 21
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 25・551・580・599・667・1866・1876・1879・1888・1949（経由 `src/market/market_pulse/collect_and_send.py::_load_div_history`、`src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score`、`src/market/market_pulse/collect_and_send.py::_load_recent_entries` ほか）
-- JS・HTML・保存済みファイル: `docs/market-monitor/market-pulse/index.html` 行 1412
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 25・551・580・599・667・1916・1926・1929・1938・2002（経由 `src/market/market_pulse/collect_and_send.py::_load_div_history`、`src/market/market_pulse/collect_and_send.py::_load_prev_tech_pulse_score`、`src/market/market_pulse/collect_and_send.py::_load_recent_entries` ほか）
+- Python・保存済みファイル: `src/portfolio/snapshot.py` 行 40・144（経由 `common/market_pulse_data.py::load_latest`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 577・852・1204（経由 `common/market_pulse_data.py::load_latest`）
+- JS・HTML・保存済みファイル: `docs/market-monitor/market-pulse/index.html` 行 1423
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 240
 - テスト・保存済みファイル: `tests/test_market_data_comments_history.py` 行 80・81
 - テスト・保存済みファイル: `tests/test_market_pulse_headlines_push.py` 行 98・106・207
+- テスト・保存済みファイル: `tests/test_market_pulse_latest.py` 行 38・40・42・44・46・107・110（経由 `common/market_pulse_data.py::load_latest`）
+- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 332・348・364・396・421・1585・1614・1684・1703・1730・1749・1769 ほか6（経由 `common/market_pulse_data.py::load_latest`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::check_d_actions`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/system_health.py::check_d_actions`）
+- 画面（経由（src/portfolio/snapshot.py → docs/portfolio/data/history.json））: `docs/portfolio/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/adjusted_eps_analyzer/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/adjusted_eps_analyzer/stock.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/hypecore/detail.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/value-monitor/stonks-silo/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/value-monitor/tanuki_valuation/index.html`
+- 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/hypecore_history/{T}.json））: `docs/value-monitor/tanuki_valuation/stock.html`
 
 ## 画面の項目
 
@@ -122,55 +152,58 @@
 
 ### 書き手があるのに誰も読まないキー（この段階のJSONのキーで、書き手のファイルとテストを除くコードに読みの形で出てこない）
 
-- `ad_ratio`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `ai_facts`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `base_n`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `breadth_date`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `conditions`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `distribution`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `divergence_vs_sp`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `earnings_tickers`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `false`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ
+- `ad_ratio`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `ai_facts`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `base_n`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `breadth_date`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `conditions`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `distribution`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `divergence_vs_sp`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `earnings_tickers`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `false`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ
 - `first_seen`（`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`）
-- `hy_bond`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `ig_bond`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `fred_daily`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）
+- `hy_bond`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `ig_bond`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `interval`（`docs/market-monitor/market-pulse/data/intraday/{date_et}.json`）
-- `ivw_minus_ive_pt`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `mcclellan_negative`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `median_pct`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `momentum_lag_weeks`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `ivw_minus_ive_pt`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `jpx`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）
+- `mcclellan_negative`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `median_pct`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `momentum_lag_weeks`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `new_by_date`（`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`）
-- `new_highs`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `new_lows`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `nh_le_2x_nl`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `nh_nl`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `nh_nl_both_2_2pct`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `one_month_ago`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `one_week_ago`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `new_highs`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `new_lows`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `nh_le_2x_nl`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `nh_nl`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `nh_nl_both_2_2pct`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `one_month_ago`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `one_week_ago`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `prev_close`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `prev_date`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `ratio_weeks`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `prev_date`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `ratio_weeks`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `raw_change_percent`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `risk_avg_pct`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `rsp_spy_divergence`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `safe_avg_pct`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `risk_avg_pct`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `rsp_spy_divergence`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `safe_avg_pct`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `seen_at`（`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`）
 - `sentiment_label`（`docs/market-monitor/market-pulse/data/market_data.csv`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `sentiment_score`（`docs/market-monitor/market-pulse/data/market_data.csv`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `sox_date`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `sp500_ma200`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `sp500_ma_dev`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `sp500_uptrend_50d`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `stage1_vix`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `stage3`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `stage4`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `sox_date`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `sp500_ma200`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `sp500_ma_dev`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `sp500_uptrend_50d`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `stage1_vix`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `stage3`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `stage4`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 - `stocks_ahead_of_base_date`（`docs/market-monitor/market-pulse/data/breadth_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `true`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ
-- `ultra_short`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `vix_level`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `vxn_available`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `week`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
-- `zscore`（`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `true`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: その日の見出しの「市況と関係あり」の判定（Grok）の件数の記録。読んでいたのは2026-10-23に消した backfill_implc.py（結果の表示）だけ
+- `ultra_short`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `us_close`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）
+- `vix_level`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `vxn_available`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `week`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
+- `zscore`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）: 残す: 段階の結論の根拠の値とその日に取った値で、過去の日の分は取り直せない。Market Pulse の再設計・画面のストーリー化（[[UI-STORY-REDESIGN-1]]）の入力
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
 
@@ -179,170 +212,180 @@
 - `backfilled_at`（`docs/market-monitor/market-pulse/data/market_data.json`）
 - `etf`（`docs/market-monitor/market-pulse/data/market_data.json`）
 - `etf_change_percent`（`docs/market-monitor/market-pulse/data/market_data.json`）
+- `expected_by_kind`（`docs/market-monitor/market-pulse/data/latest.json`、`docs/market-monitor/market-pulse/data/market_data.json`）
 - `raw_change`（`docs/market-monitor/market-pulse/data/market_data.json`）
 - `threshold_pt`（`docs/market-monitor/market-pulse/data/market_data.json`）
 
-### `docs/market-monitor/market-pulse/index.html`（157項目）
+### `docs/market-monitor/market-pulse/index.html`（166項目）
 
 | 項目（画面の言葉、推定） | 元のキー | 書き手 | 行 | 投資判断に使っているか（残す／消す） |
 |---|---|---|---|---|
-| データ取得不可 | `above` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1284・1285・1289・1289 | 残す（2026-10-23） |
-| データ取得不可 | `active` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1308・1309・1311 | 残す（2026-10-23） |
-| VIX指数 | `ad_line` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 638 | 残す（2026-10-23） |
-| VIX指数 | `ad_ratio_5d` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 638・880・880・902 | 残す（2026-10-23） |
-| VIX短期vs中期 | `advances` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 877・877・877・902 | 残す（2026-10-23） |
-| シグナル | `as_of` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1016・1043・1148・1150 | 残す（2026-10-23） |
-| 今日 | `asset_flow` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1335・1375・1388・1396 | 残す（2026-10-23） |
-| 最新値 | `bar_time_utc` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1114 | 残す（2026-10-23） |
-| 件数不足 | `base_up_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013・1013 | 残す（2026-10-23） |
-| VIX指数 | `breadth` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 638・638・638・638 | 残す（2026-10-23） |
-| — | `buy_checklist` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1233 | 残す（2026-10-23） |
-| 銘柄 | `calculated` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075・1075 | 残す（2026-10-23） |
-| — | `calendar` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1118 | 残す（2026-10-23） |
-| 米10年債 | `change` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 725・725 | 残す（2026-10-23） |
-| セクター | `change_5d_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1043・1043・1043・1043 | 残す（2026-10-23） |
-| 米10年債 | `change_bp` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 725 | 残す（2026-10-23） |
-| セクター | `change_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1043・1043・1043・1043 | 残す（2026-10-23） |
-| 米10年債 | `change_percent` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 726・1170・1170 | 残す（2026-10-23） |
-| 期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: | `checked_at` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1150・1150 | 残す（2026-10-23） |
-| S&P500の出来高÷前営業日の出来高と、前日比 | `chg_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 858・858・858 | 残す（2026-10-23） |
-| — | `commodity_fx` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1056 | 残す（2026-10-23） |
-| — | `components` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 973・975・1184・1234 | 残す（2026-10-23） |
-| VIX指数 | `contango` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 867 | 残す（2026-10-23） |
-| 最新値 | `contract` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1114 | 残す（2026-10-23） |
-| 米10年債 | `contract_roll` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 729 | 残す（2026-10-23） |
-| 株 | `credit` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 777・778・779・780 | 残す（2026-10-23） |
-| データ取得不可 | `current` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1296・1297・1299 | 残す（2026-10-23） |
-| )[k]?.expected?`（期待 ）`:"")):expProv[k]?` | `data_freshness` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1149 | 残す（2026-10-23） |
-| — | `data_quality` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 714・1129・1137・1144 | 残す（2026-10-23） |
-| }時点の値） | `date` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 677・700・734・735 | 残す（2026-10-23） |
-| 該当なし | `date_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1121 | 残す（2026-10-23） |
-| 該当なし | `date_local` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1121 | 残す（2026-10-23） |
-| VIX短期vs中期 | `declines` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 877・902 | 残す（2026-10-23） |
-| スコア構成指標 | `desc` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 861・1371 | 残す（2026-10-23） |
-| スコア構成指標 | `detail` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 861・1222 | 残す（2026-10-23） |
-| 指標 | `diff_percent` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1171・1171 | 残す（2026-10-23） |
-| 件数不足 | `diff_pt` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013 | 残す（2026-10-23） |
-| 日付 | `end_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1122 | 残す（2026-10-23） |
-| 日 | `entries` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 682・861・1042・1059 | 残す（2026-10-23） |
-| — | `error` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1177 | 残す（2026-10-23） |
-| 記録なし | `events` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1120 | 残す（2026-10-23） |
-| セクター | `excluded` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1043・1043 | 残す（2026-10-23） |
-| 期待する基準日 ${kindLabel? | `expected` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 716・716・1148・1148 | 残す（2026-10-23） |
-| 今日の結論 | `expected_close_date` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1132・1132・1150・1425 | 残す（2026-10-23） |
-| すべて最新 | `expected_provisional_elements` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1147 | 残す（2026-10-23） |
-| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `failed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1082・1082 | 残す（2026-10-23） |
-| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `failed_reasons` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1082 | 残す（2026-10-23） |
-| VIX指数 | `fear_greed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 638・694・939・950 | 残す（2026-10-23） |
-| x.title_ja)?'日本語の見出しはAI（Grok）による訳で、下の小さな | `fetched_at` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1096・1104・1114・1122 | 残す（2026-10-23） |
-| — | `fg_score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1184・1234 | 残す（2026-10-23） |
-| 記録なし | `flowing` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1074 | 残す（2026-10-23） |
-| )[k]?.expected?`（期待 ）`:"")):expProv[k]?` | `freshness` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 714・1148・1148 | 残す（2026-10-23） |
-| — | `futures` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1112 | 残す（2026-10-23） |
-| VIX指数 | `gold` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 630・630・630 | 残す（2026-10-23） |
-| 件数不足 | `guide` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013 | 残す（2026-10-23） |
-| AIの見解 | `haiku` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 806・806・1160・1160 | 残す（2026-10-23） |
-| 段階1の区分×VIX水準 | `headline_signal` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1005・1008 | 残す（2026-10-23） |
-| — | `headlines` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1088 | 残す（2026-10-23） |
-| 銘柄 | `held` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075 | 残す（2026-10-23） |
-| シグナル | `history_from` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1016 | 残す（2026-10-23） |
-| — | `holidays` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1411 | 残す（2026-10-23） |
-| 件数不足 | `horizon` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013・1013 | 残す（2026-10-23） |
-| 銘柄 | `hype_phase` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075・1075 | 残す（2026-10-23） |
-| VIX指数 | `indicators` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 638・638・695・723 | 残す（2026-10-23） |
-| 現在: % \| 90日最高値: ${c.max_90d?? | `is_contracting` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1301 | 残す（2026-10-23） |
-| 同限月 | `is_fallback` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 733・1363・1388 | 残す（2026-10-23） |
-| 取得できず | `items` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1090・1096・1105・1114 | 残す（2026-10-23） |
-| 不明 | `judgment` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 648・1414・1414 | 残す（2026-10-23） |
-| 米10年債 | `key` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 723・725・726・735 | 残す（2026-10-23） |
-| 日本の取引日（Yahooの日足の終値は翌日以降に入る） | `kind` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 715・1121 | 残す（2026-10-23） |
-| 不明 | `label` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 648・678・749・769 | 残す（2026-10-23） |
-| 一部前営業日 | `line` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 801・801・1131・1133 | 残す（2026-10-23） |
-| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `link` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1084 | 残す（2026-10-23） |
-| 記録なし | `m7_members` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1059・1059・1061・1061 | 残す（2026-10-23） |
-| 判定: SOXはS&amp;P500との差±1.0pt、M7は±0.5ptで「け | `m7_missing` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1061・1061 | 残す（2026-10-23） |
-| 均等加重 | `m7_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 744・744・744・1060 | 残す（2026-10-23） |
-| 前日比 | `m7_vs_sp500_pt` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1060 | 残す（2026-10-23） |
-| — | `market` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1107・1108 | 残す（2026-10-23） |
-| データ取得不可 | `max_90d` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1297・1297・1299 | 残す（2026-10-23） |
-| VIX指数 | `mcclellan_oscillator` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 638・884・884 | 残す（2026-10-23） |
-| 件数不足 | `mean_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013 | 残す（2026-10-23） |
-| 限月乗り換え日 | `method` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 730・731 | 残す（2026-10-23） |
-| 記録なし | `momentum` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1042・1042・1043・1045 | 残す（2026-10-23） |
-| 件数不足 | `n` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013 | 残す（2026-10-23） |
-| セクター | `name` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1043・1064・1114・1114 | 残す（2026-10-23） |
-| 市場の広がり | `new_highs_52w` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 902 | 残す（2026-10-23） |
-| 市場の広がり | `new_lows_52w` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 902 | 残す（2026-10-23） |
-| VIX指数 | `nh_nl_diff` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 638・881・881・902 | 残す（2026-10-23） |
-| 古い | `old` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 718・718・1298 | 残す（2026-10-23） |
-| 取得できず: ${escHtml(dq.unavailable.join( | `old_elements` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 714・1139・1139・1148 | 残す（2026-10-23） |
-| — | `old_stages` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1129 | 残す（2026-10-23） |
-| — | `outcomes` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1011 | 残す（2026-10-23） |
-| — | `passed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1213 | 残す（2026-10-23） |
-| 市場の広がり | `pct_above_200ma` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 902・902 | 残す（2026-10-23） |
-| 市場の広がり | `pct_above_50ma` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 886・886・902・902 | 残す（2026-10-23） |
-| ❌ 警戒 | `point` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1216・1216・1318 | 残す（2026-10-23） |
-| }時点の値） | `provisional` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 735・738 | 残す（2026-10-23） |
-| 取得できず: ${escHtml(dq.unavailable.join( | `provisional_elements` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1139・1148 | 残す（2026-10-23） |
-| 暫定（） | `provisional_kind` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 738・738・739・739 | 残す（2026-10-23） |
-| 取得できず（取得時刻から時間以内の見出しが無い） | `published_utc` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1093・1105 | 残す（2026-10-23） |
-| 取得できず（取得時刻から時間以内の見出しが無い） | `publisher` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1093・1093 | 残す（2026-10-23） |
-| — | `qqq_vs_spy_20d` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 975 | 残す（2026-10-23） |
-| セクター | `quadrant` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1043・1043・1043・1075 | 残す（2026-10-23） |
-| — | `rating` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 950 | 残す（2026-10-23） |
-| セクター | `ratio` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1043・1045 | 残す（2026-10-23） |
-| スコア構成指標 | `raw` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 861 | 残す（2026-10-23） |
-| 以降の直近20営業日）`:""} | `reason` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1032・1130 | 残す（2026-10-23） |
-| 最新値 | `region` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1114・1114・1121 | 残す（2026-10-23） |
-| — | `relevance` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1107 | 残す（2026-10-23） |
-| — | `risk_off_score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 778・780 | 残す（2026-10-23） |
-| 同限月 | `roll_suspect` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 731 | 残す（2026-10-23） |
-| 銘柄 | `rows` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075 | 残す（2026-10-23） |
-| 市場の広がり | `rsp_spy_divergence_20d_avg` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 882・882・902・902 | 残す（2026-10-23） |
-| 今日の結論 | `rule` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1132 | 残す（2026-10-23） |
-| VIX指数 | `score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 638・638・692・694 | 残す（2026-10-23） |
-| 銘柄 | `sector_etf` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075・1075 | 残す（2026-10-23） |
-| 銘柄 | `sector_name` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075 | 残す（2026-10-23） |
-| — | `sector_rotation` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1040 | 残す（2026-10-23） |
-| 記録なし | `sectors` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1042 | 残す（2026-10-23） |
-| — | `semis_m7` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 742・1056 | 残す（2026-10-23） |
-| VIX指数 | `sentiment` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 638・638・638・638 | 残す（2026-10-23） |
-| 件数不足 | `signal` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013・1024・1031・1031 | 残す（2026-10-23） |
-| 記録なし | `signals` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1004・1010 | 残す（2026-10-23） |
-| 傾き: 上向き | `slope_up` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1286・1289 | 残す（2026-10-23） |
-| 取得できず（取得時刻から時間以内の見出しが無い） | `source` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1093 | 残す（2026-10-23） |
-| 前日比 | `sox_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 743・743・1060 | 残す（2026-10-23） |
-| — | `sox_value` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 743・743 | 残す（2026-10-23） |
-| 前日比 | `sox_vs_sp500_pt` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1060 | 残す（2026-10-23） |
-| 前日比 | `sp500_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1060 | 残す（2026-10-23） |
-| — | `stage_conclusions` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 800・1003・1129・1154 | 残す（2026-10-23） |
-| 日付 | `start_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1122 | 残す（2026-10-23） |
-| 最新値 | `status` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 714・1107・1114・1138 | 残す（2026-10-23） |
-| — | `sub_scores` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 850 | 残す（2026-10-23） |
-| AIの見解 | `summary` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 806・816・816・817 | 残す（2026-10-23） |
-| 値 | `symbol` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1064 | 残す（2026-10-23） |
-| — | `tags` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1154 | 残す（2026-10-23） |
-| 銘柄 | `tail` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075 | 残す（2026-10-23） |
-| — | `take_profit_checklist` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1183 | 残す（2026-10-23） |
-| 銘柄 | `tanuki_score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075・1075 | 残す（2026-10-23） |
-| VIX指数 | `tech_pulse` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 696・938・988・1184 | 残す（2026-10-23） |
-| 銘柄 | `ticker` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1075・1075・1360・1371 | 残す（2026-10-23） |
-| 該当なし | `time_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1121・1121 | 残す（2026-10-23） |
-| 該当なし | `time_jst` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1121・1121 | 残す（2026-10-23） |
-| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `title` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085・1085・1121 | 残す（2026-10-23） |
-| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `title_ja` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085・1085・1096 | 残す（2026-10-23） |
-| 同限月 | `to` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 731 | 残す（2026-10-23） |
-| セクター | `trail` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1045・1045・1045 | 残す（2026-10-23） |
-| 取得できず: ${escHtml(dq.unavailable.join( | `unavailable` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1139・1139 | 残す（2026-10-23） |
-| 件数不足 | `up_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013 | 残す（2026-10-23） |
-| VIX指数 | `value` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 638・638・707・707 | 残す（2026-10-23） |
-| S&P500の出来高÷前営業日の出来高と、前日比 | `vol_ratio` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 858 | 残す（2026-10-23） |
-| — | `vxn_latest` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 973 | 残す（2026-10-23） |
-| （計算日: —） | `watch_list` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1072 | 残す（2026-10-23） |
-| 不明 | `weather` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 648・648・1130・1132 | 残す（2026-10-23） |
-| スコア構成指標 | `weight` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 861・861 | 残す（2026-10-23） |
-| 以降の直近20営業日）`:""} | `window_start` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1032・1032 | 残す（2026-10-23） |
-| 件数不足 | `z` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1013 | 残す（2026-10-23） |
+| データ取得不可 | `above` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1295・1296・1300・1300 | 残す（2026-10-23） |
+| データ取得不可 | `active` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1319・1320・1322 | 残す（2026-10-23） |
+| VIX指数 | `ad_line` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 641 | 残す（2026-10-23） |
+| VIX指数 | `ad_ratio_5d` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 641・883・883・905 | 残す（2026-10-23） |
+| VIX短期vs中期 | `advances` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 880・880・880・905 | 残す（2026-10-23） |
+| シグナル | `as_of` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1023・1052・1158・1160 | 残す（2026-10-23） |
+| 今日 | `asset_flow` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1346・1386・1399・1407 | 残す（2026-10-23） |
+| 最新値 | `bar_time_utc` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1124 | 残す（2026-10-23） |
+| 件数不足 | `base_up_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020・1020 | 残す（2026-10-23） |
+| 判定の基準を変更 | `basis` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 934・934・1053 | 残す（2026-10-23） |
+| 象限の基準: 。 | `benchmark` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1053・1053 | 残す（2026-10-23） |
+| VIX指数 | `breadth` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 641・641・641・641 | 残す（2026-10-23） |
+| — | `buy_checklist` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1243 | 残す（2026-10-23） |
+| 銘柄 | `calculated` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085・1085 | 残す（2026-10-23） |
+| — | `calendar` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1128 | 残す（2026-10-23） |
+| 米10年債 | `change` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 728・728 | 残す（2026-10-23） |
+| セクター | `change_5d_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1052・1052・1052・1052 | 残す（2026-10-23） |
+| 米10年債 | `change_bp` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 728 | 残す（2026-10-23） |
+| セクター | `change_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1052・1052・1052・1052 | 残す（2026-10-23） |
+| 米10年債 | `change_percent` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 729・1180・1180 | 残す（2026-10-23） |
+| 期待する終値日（実行時点で取引が終わった直近のNYSE取引日）: | `checked_at` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1160・1160 | 残す（2026-10-23） |
+| S&P500の出来高÷前営業日の出来高と、前日比 | `chg_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 861・861・861 | 残す（2026-10-23） |
+| — | `commodity_fx` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1066 | 残す（2026-10-23） |
+| — | `components` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 980・982・1194・1244 | 残す（2026-10-23） |
+| VIX指数 | `contango` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 870 | 残す（2026-10-23） |
+| 最新値 | `contract` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1124 | 残す（2026-10-23） |
+| 米10年債 | `contract_roll` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 732 | 残す（2026-10-23） |
+| 株（当日−1%超の下落） | `credit` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 780・781・782・783 | 残す（2026-10-23） |
+| データ取得不可 | `current` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1307・1308・1310 | 残す（2026-10-23） |
+| )[k]?.expected?`（期待 ）`:"")):expProv[k]?` | `data_freshness` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1159 | 残す（2026-10-23） |
+| — | `data_quality` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 717・1139・1147・1154 | 残す（2026-10-23） |
+| }時点の値） | `date` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 680・703・737・738 | 残す（2026-10-23） |
+| 該当なし | `date_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1131 | 残す（2026-10-23） |
+| 該当なし | `date_local` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1131 | 残す（2026-10-23） |
+| VIX短期vs中期 | `declines` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 880・905 | 残す（2026-10-23） |
+| スコア構成指標 | `desc` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 864・1382 | 残す（2026-10-23） |
+| スコア構成指標 | `detail` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 864・1232 | 残す（2026-10-23） |
+| 指標 | `diff_percent` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1181・1181 | 残す（2026-10-23） |
+| 件数不足 | `diff_pt` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020 | 残す（2026-10-23） |
+| — | `divergence` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1039 | 残す（2026-10-23） |
+| 日付 | `end_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1132 | 残す（2026-10-23） |
+| 日 | `entries` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 685・864・1051・1069 | 残す（2026-10-23） |
+| — | `error` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1187 | 残す（2026-10-23） |
+| 記録なし | `events` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1130 | 残す（2026-10-23） |
+| セクター | `excluded` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1052・1052 | 残す（2026-10-23） |
+| 期待する基準日 ${kindLabel? | `expected` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 719・719・1158・1158 | 残す（2026-10-23） |
+| 今日の結論 | `expected_close_date` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1142・1142・1160・1436 | 残す（2026-10-23） |
+| すべて最新 | `expected_provisional_elements` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1157 | 残す（2026-10-23） |
+| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `failed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1092・1092 | 残す（2026-10-23） |
+| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `failed_reasons` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1092 | 残す（2026-10-23） |
+| VIX指数 | `fear_greed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 641・697・946・957 | 残す（2026-10-23） |
+| x.title_ja)?'日本語の見出しはAI（Grok）による訳で、下の小さな | `fetched_at` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1106・1114・1124・1132 | 残す（2026-10-23） |
+| — | `fg_score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1194・1244 | 残す（2026-10-23） |
+| 記録なし | `flowing` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1084 | 残す（2026-10-23） |
+| )[k]?.expected?`（期待 ）`:"")):expProv[k]?` | `freshness` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 717・1158・1158 | 残す（2026-10-23） |
+| — | `futures` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1122 | 残す（2026-10-23） |
+| VIX指数 | `gold` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 633・633・633 | 残す（2026-10-23） |
+| 件数不足 | `guide` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020 | 残す（2026-10-23） |
+| AIの見解 | `haiku` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 809・809・1170・1170 | 残す（2026-10-23） |
+| 段階1の区分×VIX水準 | `headline_signal` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1012・1015 | 残す（2026-10-23） |
+| — | `headlines` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1098 | 残す（2026-10-23） |
+| 銘柄 | `held` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085 | 残す（2026-10-23） |
+| シグナル | `history_from` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1023 | 残す（2026-10-23） |
+| — | `holidays` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1422 | 残す（2026-10-23） |
+| 件数不足 | `horizon` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020・1020・1020 | 残す（2026-10-23） |
+| 銘柄 | `hype_phase` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085・1085 | 残す（2026-10-23） |
+| VIX指数 | `indicators` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 641・641・698・726 | 残す（2026-10-23） |
+| 現在: % \| 90日最高値: ${c.max_90d?? | `is_contracting` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1312 | 残す（2026-10-23） |
+| 同限月 | `is_fallback` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 736・1374・1399 | 残す（2026-10-23） |
+| 取得できず | `items` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1100・1106・1115・1124 | 残す（2026-10-23） |
+| 不明 | `judgment` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 651・1425・1425 | 残す（2026-10-23） |
+| 米10年債 | `key` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 726・728・729・738 | 残す（2026-10-23） |
+| 日本の取引日（Yahooの日足の終値は翌日以降に入る） | `kind` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 718・1131 | 残す（2026-10-23） |
+| 不明 | `label` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 651・681・752・772 | 残す（2026-10-23） |
+| 一部前営業日 | `line` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 804・804・1141・1143 | 残す（2026-10-23） |
+| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `link` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1094 | 残す（2026-10-23） |
+| 記録なし | `m7_members` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1069・1069・1071・1071 | 残す（2026-10-23） |
+| 判定: SOXはS&amp;P500との差±1.0pt、M7は±0.5ptで「け | `m7_missing` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1071・1071 | 残す（2026-10-23） |
+| 均等加重 | `m7_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 747・747・747・1070 | 残す（2026-10-23） |
+| 前日比 | `m7_vs_sp500_pt` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1070 | 残す（2026-10-23） |
+| — | `market` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1117・1118 | 残す（2026-10-23） |
+| データ取得不可 | `max_90d` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1308・1308・1310 | 残す（2026-10-23） |
+| VIX指数 | `mcclellan_oscillator` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 641・887・887 | 残す（2026-10-23） |
+| 件数不足 | `mean_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020 | 残す（2026-10-23） |
+| 限月乗り換え日 | `method` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 733・734 | 残す（2026-10-23） |
+| 記録なし | `momentum` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1051・1051・1052・1055 | 残す（2026-10-23） |
+| 件数不足 | `n` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020 | 残す（2026-10-23） |
+| 件数不足 | `n_indep` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020・1020 | 残す（2026-10-23） |
+| セクター | `name` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1052・1074・1124・1124 | 残す（2026-10-23） |
+| 市場の広がり | `new_highs_52w` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 905 | 残す（2026-10-23） |
+| 市場の広がり | `new_lows_52w` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 905 | 残す（2026-10-23） |
+| VIX指数 | `nh_nl_diff` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 641・884・884・905 | 残す（2026-10-23） |
+| 古い | `old` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 721・721・1309 | 残す（2026-10-23） |
+| 取得できず: ${escHtml(dq.unavailable.join( | `old_elements` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 717・1149・1149・1158 | 残す（2026-10-23） |
+| — | `old_stages` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1139 | 残す（2026-10-23） |
+| — | `outcomes` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1018 | 残す（2026-10-23） |
+| 件数不足 | `p10_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020・1020 | 残す（2026-10-23） |
+| — | `passed` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1223 | 残す（2026-10-23） |
+| 市場の広がり | `pct_above_200ma` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 905・905 | 残す（2026-10-23） |
+| 市場の広がり | `pct_above_50ma` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 889・889・905・905 | 残す（2026-10-23） |
+| ❌ 警戒 | `point` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1226・1226・1329 | 残す（2026-10-23） |
+| }時点の値） | `provisional` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 738・741 | 残す（2026-10-23） |
+| 取得できず: ${escHtml(dq.unavailable.join( | `provisional_elements` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1149・1158 | 残す（2026-10-23） |
+| 暫定（） | `provisional_kind` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 741・741・742・742 | 残す（2026-10-23） |
+| 取得できず（取得時刻から時間以内の見出しが無い） | `published_utc` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1103・1115 | 残す（2026-10-23） |
+| 取得できず（取得時刻から時間以内の見出しが無い） | `publisher` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1103・1103 | 残す（2026-10-23） |
+| — | `qqq_vs_spy_20d` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 982 | 残す（2026-10-23） |
+| セクター | `quadrant` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1052・1052・1052・1085 | 残す（2026-10-23） |
+| — | `rating` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 957 | 残す（2026-10-23） |
+| セクター | `ratio` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1052・1055 | 残す（2026-10-23） |
+| スコア構成指標 | `raw` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 864 | 残す（2026-10-23） |
+| 以降の直近20営業日）`:""} | `reason` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1041・1140 | 残す（2026-10-23） |
+| 最新値 | `region` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1124・1124・1131 | 残す（2026-10-23） |
+| — | `relevance` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1117 | 残す（2026-10-23） |
+| — | `risk_off_score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 781・783 | 残す（2026-10-23） |
+| 同限月 | `roll_suspect` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/market_data.json` | 734 | 残す（2026-10-23） |
+| 銘柄 | `rows` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085 | 残す（2026-10-23） |
+| 市場の広がり | `rsp_spy_divergence_20d_avg` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 885・885・905・905 | 残す（2026-10-23） |
+| 今日の結論 | `rule` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1142 | 残す（2026-10-23） |
+| 反発 | `rule_text` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1040・1041・1041・1254 | 残す（2026-10-23） |
+| VIX指数 | `score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 641・641・695・697 | 残す（2026-10-23） |
+| 判定の基準を変更 | `sector_benchmark` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 934・1053 | 残す（2026-10-23） |
+| 銘柄 | `sector_etf` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085・1085 | 残す（2026-10-23） |
+| 銘柄 | `sector_name` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085 | 残す（2026-10-23） |
+| — | `sector_rotation` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1049 | 残す（2026-10-23） |
+| 記録なし | `sectors` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1051 | 残す（2026-10-23） |
+| — | `semis_m7` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 745・1066 | 残す（2026-10-23） |
+| VIX指数 | `sentiment` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 641・641・641・641 | 残す（2026-10-23） |
+| 件数不足 | `signal` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020・1031・1038・1038 | 残す（2026-10-23） |
+| 記録なし | `signals` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1011・1017 | 残す（2026-10-23） |
+| 傾き: 上向き | `slope_up` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1297・1300 | 残す（2026-10-23） |
+| 取得できず（取得時刻から時間以内の見出しが無い） | `source` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1103 | 残す（2026-10-23） |
+| 前日比 | `sox_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 746・746・1070 | 残す（2026-10-23） |
+| — | `sox_value` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 746・746 | 残す（2026-10-23） |
+| 前日比 | `sox_vs_sp500_pt` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1070 | 残す（2026-10-23） |
+| 前日比 | `sp500_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1070 | 残す（2026-10-23） |
+| — | `stage_conclusions` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 803・1010・1139・1164 | 残す（2026-10-23） |
+| 日付 | `start_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1132 | 残す（2026-10-23） |
+| 最新値 | `status` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 717・1117・1124・1148 | 残す（2026-10-23） |
+| 判定の基準を変更 | `step_rules` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 934 | 残す（2026-10-23） |
+| — | `sub_scores` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 853 | 残す（2026-10-23） |
+| AIの見解 | `summary` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 809・819・819・820 | 残す（2026-10-23） |
+| 値 | `symbol` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 1074 | 残す（2026-10-23） |
+| — | `tags` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1164 | 残す（2026-10-23） |
+| 銘柄 | `tail` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085 | 残す（2026-10-23） |
+| — | `take_profit_checklist` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1193 | 残す（2026-10-23） |
+| 銘柄 | `tanuki_score` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085・1085 | 残す（2026-10-23） |
+| VIX指数 | `tech_pulse` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 699・945・995・1039 | 残す（2026-10-23） |
+| 銘柄 | `ticker` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1085・1085・1371・1382 | 残す（2026-10-23） |
+| 該当なし | `time_et` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1131・1131 | 残す（2026-10-23） |
+| 該当なし | `time_jst` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1131・1131 | 残す（2026-10-23） |
+| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `title` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1095・1095・1131 | 残す（2026-10-23） |
+| f+(v.failed_reasons?.[f]==='stale'?'（更新停 | `title_ja` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1095・1095・1106 | 残す（2026-10-23） |
+| 同限月 | `to` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/breadth_data.json`<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json` | 734 | 残す（2026-10-23） |
+| 象限の基準: 。 | `trail` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1055・1055・1055 | 残す（2026-10-23） |
+| 買いポイント: | `trigger_held` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1285 | 残す（2026-10-23） |
+| 取得できず: ${escHtml(dq.unavailable.join( | `unavailable` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1149・1149 | 残す（2026-10-23） |
+| 件数不足 | `up_pct` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020 | 残す（2026-10-23） |
+| VIX指数 | `value` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 641・641・710・710 | 残す（2026-10-23） |
+| S&P500の出来高÷前営業日の出来高と、前日比 | `vol_ratio` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 861 | 残す（2026-10-23） |
+| — | `vxn_latest` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 980 | 残す（2026-10-23） |
+| （計算日: —） | `watch_list` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1082 | 残す（2026-10-23） |
+| 不明 | `weather` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 651・651・1140・1142 | 残す（2026-10-23） |
+| スコア構成指標 | `weight` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 864・864 | 残す（2026-10-23） |
+| 以降の直近20営業日）`:""} | `window_start` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1041・1041 | 残す（2026-10-23） |
+| 件数不足 | `z` | この段階の書き手あり<br>`docs/market-monitor/market-pulse/data/headlines/{date_et}.json`<br>`docs/market-monitor/market-pulse/data/intraday/{date_et}.json` | 1020 | 残す（2026-10-23） |
 
 ## 画面の区画
 
@@ -356,7 +399,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | ① メーター | `score`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり） |  |
 | ① メーター2つ横並び | `components`（この段階の書き手あり）<br>`fear_greed`（この段階の書き手あり）<br>`qqq_vs_spy_20d`（この段階の書き手あり）<br>`rating`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`tech_pulse`（この段階の書き手あり）<br>`vxn_latest`（この段階の書き手あり） |  |
 | ② 関連指標バー | `ad_ratio_5d`（この段階の書き手あり）<br>`advances`（この段階の書き手あり）<br>`breadth`（この段階の書き手あり）<br>`chg_pct`（この段階の書き手あり）<br>`contango`（この段階の書き手あり）<br>`declines`（この段階の書き手あり）<br>`desc`（この段階の書き手あり）<br>`detail`（この段階の書き手あり）<br>`entries`（この段階の書き手あり）<br>`indicators`（この段階の書き手あり）<br>`mcclellan_oscillator`（この段階の書き手あり）<br>`new_highs_52w`（この段階の書き手あり）<br>`new_lows_52w`（この段階の書き手あり）<br>`nh_nl_diff`（この段階の書き手あり）<br>`pct_above_200ma`（この段階の書き手あり）<br>`pct_above_50ma`（この段階の書き手あり）<br>`raw`（この段階の書き手あり）<br>`rsp_spy_divergence_20d_avg`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり）<br>`sub_scores`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`vol_ratio`（この段階の書き手あり）<br>`weight`（この段階の書き手あり） |  |
-| ③ 折れ線グラフ | `above`（この段階の書き手あり）<br>`active`（この段階の書き手あり）<br>`ad_line`（この段階の書き手あり）<br>`ad_ratio_5d`（この段階の書き手あり）<br>`as_of`（この段階の書き手あり）<br>`asset_flow`（この段階の書き手あり）<br>`bar_time_utc`（この段階の書き手あり）<br>`base_up_pct`（この段階の書き手あり）<br>`breadth`（この段階の書き手あり）<br>`buy_checklist`（この段階の書き手あり）<br>`calculated`（この段階の書き手あり）<br>`calendar`（この段階の書き手あり）<br>`change_5d_pct`（この段階の書き手あり）<br>`change_pct`（この段階の書き手あり）<br>`change_percent`（この段階の書き手あり）<br>`commodity_fx`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`contract`（この段階の書き手あり）<br>`credit`（この段階の書き手あり）<br>`current`（この段階の書き手あり）<br>`data_quality`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`date_et`（この段階の書き手あり）<br>`date_local`（この段階の書き手あり）<br>`desc`（この段階の書き手あり）<br>`detail`（この段階の書き手あり）<br>`diff_percent`（この段階の書き手あり）<br>`diff_pt`（この段階の書き手あり）<br>`end_et`（この段階の書き手あり）<br>`entries`（この段階の書き手あり）<br>`events`（この段階の書き手あり）<br>`excluded`（この段階の書き手あり）<br>`expected`（この段階の書き手あり）<br>`expected_close_date`（この段階の書き手あり）<br>`failed`（この段階の書き手あり）<br>`failed_reasons`（この段階の書き手あり）<br>`fear_greed`（この段階の書き手あり）<br>`fetched_at`（この段階の書き手あり）<br>`fg_score`（この段階の書き手あり）<br>`flowing`（この段階の書き手あり）<br>`freshness`（この段階の書き手あり）<br>`futures`（この段階の書き手あり）<br>`guide`（この段階の書き手あり）<br>`haiku`（この段階の書き手あり）<br>`headline_signal`（この段階の書き手あり）<br>`held`（この段階の書き手あり）<br>`history_from`（この段階の書き手あり）<br>`horizon`（この段階の書き手あり）<br>`hype_phase`（この段階の書き手あり）<br>`indicators`（この段階の書き手あり）<br>`is_contracting`（この段階の書き手あり）<br>`is_fallback`（この段階の書き手あり）<br>`items`（この段階の書き手あり）<br>`judgment`（この段階の書き手あり）<br>`key`（この段階の書き手あり）<br>`kind`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`line`（この段階の書き手あり）<br>`m7_members`（この段階の書き手あり）<br>`m7_missing`（この段階の書き手あり）<br>`m7_pct`（この段階の書き手あり）<br>`m7_vs_sp500_pt`（この段階の書き手あり）<br>`max_90d`（この段階の書き手あり）<br>`mcclellan_oscillator`（この段階の書き手あり）<br>`mean_pct`（この段階の書き手あり）<br>`momentum`（この段階の書き手あり）<br>`n`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`nh_nl_diff`（この段階の書き手あり）<br>`old`（この段階の書き手あり）<br>`old_elements`（この段階の書き手あり）<br>`old_stages`（この段階の書き手あり）<br>`outcomes`（この段階の書き手あり）<br>`passed`（この段階の書き手あり）<br>`point`（この段階の書き手あり）<br>`provisional_kind`（この段階の書き手あり）<br>`quadrant`（この段階の書き手あり）<br>`ratio`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`region`（この段階の書き手あり）<br>`risk_off_score`（この段階の書き手あり）<br>`rows`（この段階の書き手あり）<br>`rule`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`sector_etf`（この段階の書き手あり）<br>`sector_name`（この段階の書き手あり）<br>`sector_rotation`（この段階の書き手あり）<br>`sectors`（この段階の書き手あり）<br>`semis_m7`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`signals`（この段階の書き手あり）<br>`slope_up`（この段階の書き手あり）<br>`sox_pct`（この段階の書き手あり）<br>`sox_vs_sp500_pt`（この段階の書き手あり）<br>`sp500_pct`（この段階の書き手あり）<br>`stage_conclusions`（この段階の書き手あり）<br>`start_et`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`symbol`（この段階の書き手あり）<br>`tail`（この段階の書き手あり）<br>`take_profit_checklist`（この段階の書き手あり）<br>`tanuki_score`（この段階の書き手あり）<br>`tech_pulse`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`time_et`（この段階の書き手あり）<br>`time_jst`（この段階の書き手あり）<br>`title`（この段階の書き手あり）<br>`trail`（この段階の書き手あり）<br>`up_pct`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`watch_list`（この段階の書き手あり）<br>`weather`（この段階の書き手あり）<br>`window_start`（この段階の書き手あり）<br>`z`（この段階の書き手あり） |  |
+| ③ 折れ線グラフ | `above`（この段階の書き手あり）<br>`active`（この段階の書き手あり）<br>`ad_line`（この段階の書き手あり）<br>`ad_ratio_5d`（この段階の書き手あり）<br>`as_of`（この段階の書き手あり）<br>`asset_flow`（この段階の書き手あり）<br>`bar_time_utc`（この段階の書き手あり）<br>`base_up_pct`（この段階の書き手あり）<br>`basis`（この段階の書き手あり）<br>`benchmark`（この段階の書き手あり）<br>`breadth`（この段階の書き手あり）<br>`buy_checklist`（この段階の書き手あり）<br>`calculated`（この段階の書き手あり）<br>`calendar`（この段階の書き手あり）<br>`change_5d_pct`（この段階の書き手あり）<br>`change_pct`（この段階の書き手あり）<br>`change_percent`（この段階の書き手あり）<br>`commodity_fx`（この段階の書き手あり）<br>`components`（この段階の書き手あり）<br>`contract`（この段階の書き手あり）<br>`credit`（この段階の書き手あり）<br>`current`（この段階の書き手あり）<br>`data_quality`（この段階の書き手あり）<br>`date`（この段階の書き手あり）<br>`date_et`（この段階の書き手あり）<br>`date_local`（この段階の書き手あり）<br>`desc`（この段階の書き手あり）<br>`detail`（この段階の書き手あり）<br>`diff_percent`（この段階の書き手あり）<br>`diff_pt`（この段階の書き手あり）<br>`divergence`（この段階の書き手あり）<br>`end_et`（この段階の書き手あり）<br>`entries`（この段階の書き手あり）<br>`events`（この段階の書き手あり）<br>`excluded`（この段階の書き手あり）<br>`expected`（この段階の書き手あり）<br>`expected_close_date`（この段階の書き手あり）<br>`failed`（この段階の書き手あり）<br>`failed_reasons`（この段階の書き手あり）<br>`fear_greed`（この段階の書き手あり）<br>`fetched_at`（この段階の書き手あり）<br>`fg_score`（この段階の書き手あり）<br>`flowing`（この段階の書き手あり）<br>`freshness`（この段階の書き手あり）<br>`futures`（この段階の書き手あり）<br>`guide`（この段階の書き手あり）<br>`haiku`（この段階の書き手あり）<br>`headline_signal`（この段階の書き手あり）<br>`held`（この段階の書き手あり）<br>`history_from`（この段階の書き手あり）<br>`horizon`（この段階の書き手あり）<br>`hype_phase`（この段階の書き手あり）<br>`indicators`（この段階の書き手あり）<br>`is_contracting`（この段階の書き手あり）<br>`is_fallback`（この段階の書き手あり）<br>`items`（この段階の書き手あり）<br>`judgment`（この段階の書き手あり）<br>`key`（この段階の書き手あり）<br>`kind`（この段階の書き手あり）<br>`label`（この段階の書き手あり）<br>`line`（この段階の書き手あり）<br>`m7_members`（この段階の書き手あり）<br>`m7_missing`（この段階の書き手あり）<br>`m7_pct`（この段階の書き手あり）<br>`m7_vs_sp500_pt`（この段階の書き手あり）<br>`max_90d`（この段階の書き手あり）<br>`mcclellan_oscillator`（この段階の書き手あり）<br>`mean_pct`（この段階の書き手あり）<br>`momentum`（この段階の書き手あり）<br>`n`（この段階の書き手あり）<br>`n_indep`（この段階の書き手あり）<br>`name`（この段階の書き手あり）<br>`nh_nl_diff`（この段階の書き手あり）<br>`old`（この段階の書き手あり）<br>`old_elements`（この段階の書き手あり）<br>`old_stages`（この段階の書き手あり）<br>`outcomes`（この段階の書き手あり）<br>`p10_pct`（この段階の書き手あり）<br>`passed`（この段階の書き手あり）<br>`point`（この段階の書き手あり）<br>`provisional_kind`（この段階の書き手あり）<br>`quadrant`（この段階の書き手あり）<br>`ratio`（この段階の書き手あり）<br>`reason`（この段階の書き手あり）<br>`region`（この段階の書き手あり）<br>`risk_off_score`（この段階の書き手あり）<br>`rows`（この段階の書き手あり）<br>`rule`（この段階の書き手あり）<br>`rule_text`（この段階の書き手あり）<br>`score`（この段階の書き手あり）<br>`sector_benchmark`（この段階の書き手あり）<br>`sector_etf`（この段階の書き手あり）<br>`sector_name`（この段階の書き手あり）<br>`sector_rotation`（この段階の書き手あり）<br>`sectors`（この段階の書き手あり）<br>`semis_m7`（この段階の書き手あり）<br>`sentiment`（この段階の書き手あり）<br>`signal`（この段階の書き手あり）<br>`signals`（この段階の書き手あり）<br>`slope_up`（この段階の書き手あり）<br>`sox_pct`（この段階の書き手あり）<br>`sox_vs_sp500_pt`（この段階の書き手あり）<br>`sp500_pct`（この段階の書き手あり）<br>`stage_conclusions`（この段階の書き手あり）<br>`start_et`（この段階の書き手あり）<br>`status`（この段階の書き手あり）<br>`step_rules`（この段階の書き手あり）<br>`summary`（この段階の書き手あり）<br>`symbol`（この段階の書き手あり）<br>`tail`（この段階の書き手あり）<br>`take_profit_checklist`（この段階の書き手あり）<br>`tanuki_score`（この段階の書き手あり）<br>`tech_pulse`（この段階の書き手あり）<br>`ticker`（この段階の書き手あり）<br>`time_et`（この段階の書き手あり）<br>`time_jst`（この段階の書き手あり）<br>`title`（この段階の書き手あり）<br>`trail`（この段階の書き手あり）<br>`trigger_held`（この段階の書き手あり）<br>`up_pct`（この段階の書き手あり）<br>`value`（この段階の書き手あり）<br>`watch_list`（この段階の書き手あり）<br>`weather`（この段階の書き手あり）<br>`window_start`（この段階の書き手あり）<br>`z`（この段階の書き手あり） |  |
 | （区画を決められない） | `fetched_at`（この段階の書き手あり）<br>`items`（この段階の書き手あり）<br>`link`（この段階の書き手あり）<br>`provisional`（この段階の書き手あり）<br>`provisional_kind`（この段階の書き手あり）<br>`published_utc`（この段階の書き手あり）<br>`title`（この段階の書き手あり）<br>`title_ja`（この段階の書き手あり） |  |
 
 ## FINDINGS 2026-10-15 の読み手0件の6種（F3）
@@ -376,17 +419,17 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 | 規則 | ファイル数 | 場所 | Market Pulseを含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:185`<br>`common/sec_data/q4_implied.py:194`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:191`<br>`common/sec_data/q4_implied.py:200`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | いいえ |
 | 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:292`<br>`common/sec_data/bs_lines.py:311`<br>`common/sec_data/bs_lines.py:443`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:1031`<br>`common/sec_data/layer3_builder.py:1254`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:156`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | いいえ |
 | データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1579`<br>`common/sec_data/report_consistency_check.py:1776`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | いいえ |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:239`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:293` | いいえ |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:242`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:293` | いいえ |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
 | 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:358`<br>`docs/value-monitor/tanuki_score/index.html:617`<br>`docs/value-monitor/tanuki_score/index.html:1140`<br>`docs/value-monitor/tanuki_score/index.html:1364`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1108`<br>`docs/value-monitor/tanuki_valuation/stock.html:1176`<br>`docs/value-monitor/tanuki_valuation/stock.html:1177`<br>`src/value/tanuki_valuation/pipeline.py:590`<br>`src/value/tanuki_valuation/pipeline.py:592`<br>`src/value/tanuki_valuation/pipeline.py:594`<br>`src/value/tanuki_valuation/pipeline.py:864`<br>`src/value/tanuki_valuation/pipeline.py:877`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:971`<br>`src/value/tanuki_valuation/pipeline.py:972`<br>`src/value/tanuki_valuation/pipeline.py:973`<br>`src/value/tanuki_valuation/pipeline.py:974`<br>`src/value/tanuki_valuation/pipeline.py:1446`<br>`src/value/tanuki_valuation/pipeline.py:1473`<br>`src/value/tanuki_valuation/pipeline.py:1478`<br>`src/value/tanuki_valuation/pipeline.py:1524`<br>`src/value/tanuki_valuation/pipeline.py:1830`<br>`src/value/tanuki_valuation/pipeline.py:2008` | いいえ |
 | β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1194` | いいえ |
 | FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:275`<br>`src/value/tanuki_valuation/calculator/adjustments.py:199`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1178` | いいえ |
-| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1443`<br>`docs/market-monitor/macro-pulse/index.html:2389`<br>`src/market/macro_pulse/05_main.py:1570`<br>`src/market/macro_pulse/05_main.py:1737` | いいえ |
-| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1410`<br>`src/market/macro_pulse/05_main.py:1553`<br>`src/market/macro_pulse/05_main.py:1566` | いいえ |
+| 景気後退リスクの点数（8指標の段階の点の合計）の計算 | 2 | `docs/market-monitor/macro-pulse/index.html:1494`<br>`docs/market-monitor/macro-pulse/index.html:2446`<br>`src/market/macro_pulse/05_main.py:1588`<br>`src/market/macro_pulse/05_main.py:1749` | いいえ |
+| 指標ごとの段階の信号（しきい値で点を付ける） | 2 | `docs/market-monitor/macro-pulse/index.html:1461`<br>`src/market/macro_pulse/05_main.py:1554`<br>`src/market/macro_pulse/05_main.py:1567` | いいえ |
 | JSONの書き込み（一時ファイル→置き換え）の実装 | 2 | `common/macro_data/fetcher.py:71`<br>`common/market_data/fetcher.py:175` | いいえ |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）・取引日（市場の営業日）の決め方（取引所の暦を直接読む所・手で書いた営業日の計算）（1）・暫定の足の判定（日足の確定時刻・暫定かどうか・暫定の種類を決める関数）（1）・S&P500の構成銘柄の一覧の取り方（取得元を直接読む所）（1）・FREDのAPIを直接呼ぶ所（系列の値・公表日）（1）・AI（Grok）のAPIの宛先の直書き（1）・休場日（祝日）の一覧の作り方（1）
@@ -397,12 +440,12 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 
 候補: 段階のフォルダの.pyのうち、ワークフロー・ほかのコード・同じフォルダのどれからも呼ばれないもの（名前を挙げた候補は無い）
 
-候補は0件。見たファイル（11ファイル・4,391行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
+候補は0件。見たファイル（11ファイル・4,467行）はどれも、ワークフロー・ほかのコード・同じフォルダのどれかから呼ばれる:
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト |
 |---|---|---|---|---|---|
 | `breadth_calculator.py` | 444 | `.github/workflows/Market_Pulse_Update.yml` | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
-| `collect_and_send.py` | 1,989 | `.github/workflows/Market_Pulse_Update.yml` | `scripts/migrate_market_data_comments_history.py` | — | 8件 |
+| `collect_and_send.py` | 2,042 | `.github/workflows/Market_Pulse_Update.yml` | `scripts/migrate_market_data_comments_history.py` | — | 12件 |
 | `futures_snapshot.py` | 60 | — | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
 | `headlines_fetch.py` | 46 | `.github/workflows/Market_Pulse_Headlines.yml` | — | — | 2件 |
 | `headlines_push.py` | 152 | `.github/workflows/Market_Pulse_Headlines.yml`<br>`.github/workflows/Market_Pulse_Update.yml` | — | — | 2件 |
@@ -410,8 +453,8 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | `intraday_store.py` | 189 | — | — | `src/market/market_pulse/collect_and_send.py` | 1件 |
 | `market_calendar.py` | 227 | — | — | `src/market/market_pulse/collect_and_send.py` | 2件 |
 | `news_headlines.py` | 286 | — | `browser_checks/market_pulse_elements.py` | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/headlines_fetch.py` | 2件 |
-| `sector_rotation.py` | 305 | — | — | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/stage_conclusions.py` | 4件 |
-| `stage_conclusions.py` | 478 | — | — | `src/market/market_pulse/collect_and_send.py` | 5件 |
+| `sector_rotation.py` | 317 | — | `scripts/migrate_market_data_latest.py` | `src/market/market_pulse/collect_and_send.py`<br>`src/market/market_pulse/stage_conclusions.py` | 6件 |
+| `stage_conclusions.py` | 489 | — | — | `src/market/market_pulse/collect_and_send.py` | 5件 |
 
 ## 止める条件の内訳
 

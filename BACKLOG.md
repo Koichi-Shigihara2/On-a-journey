@@ -2930,6 +2930,15 @@ NH-NL、TAKE PROFIT（未発動の日は画面で隠す）、Tech Pulseの計算
 
 ---
 
+### [STONKS-PROFITABILITY-ADJUSTED-DISPLAY-1] STONKS 画面の黒字化予測の欄に、報告値の営業利益（TTM）と調整後の営業利益を並べて出す
+STONKS 画面の黒字化予測の欄に、報告値の営業利益（TTM）と調整後の営業利益（評価損益・減損を除いたもの）を並べて出す。予測年が動いた理由を画面で分かるようにする（例: SOUN の黒字化予測が 2026 → 2030 に動いたのは、条件付き対価の公正価値の変動 −151.7M を除いたため）。
+**型・処置:** 表示の追加（判定・理論株価・funda・stage は変えない）
+**優先度:** 中
+**分類:** STONKS SILO の画面 `docs/value-monitor/stonks-silo/index.html`・`docs/common/profitability.json` の `ttm_operating_income`（報告値）と `ttm_operating_income_adjusted`（調整後。[[STONKS-DEFICIT-REALITY-EPIC-1]] ②で追加）・`noncash_adjustment`（status・種類別・足し戻しの額）
+**登録日:** 2026-11-28
+**着手条件:** [[STONKS-DEFICIT-REALITY-EPIC-1]] ②の2回目の確認（手順55）の後。表示の実装は登録の日はしない
+**発見:** 2026-11-28 rcc の INV-6（`ttm_operating_income_adjusted` を読む所が無い）。読み手＝この項目の画面
+
 ## 優先度：低（アイデア段階）
 
 （[[MARKETDATA-DAILY-ROW-WRITE-1]]は2026-11-04、次回の確認手順24の本番の確認で完了、BACKLOG_DONE.md「2026-11-04（完了）」参照）

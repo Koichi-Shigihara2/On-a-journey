@@ -237,7 +237,7 @@ STEP 0 の試算と同じ結果になった。
 
 **場所と形**（common の下に1か所。TAIL・STONKS・TANUKI が同じものを読む）:
 - `common/filing_text/`（新設）。抽出は `extract_item_section`（目次の誤検知の除外・単語内スペースの対応つき）を共通へ移し、**TAIL の `sec_items_fetcher` も同じ関数を呼ぶ**（二重にしない）。節の切り分けは Item の中の見出し（`Results of Operations`・`Liquidity and Capital Resources`。揺れ: `Comparison of …`・`Liquidity` 単独・`Capital Resources and Liquidity` を許す）で機械で切る
-- 保存: `common/filing_text/data/{T}/{期}.json`（期は `2026Q3`・`2025FY`、TAIL の `mda/` と同じ呼び名）。中身は `{ticker, period, form, accession, filing_date, report_date, source_url, extractor_version, sections: {results_of_operations: {text, chars, status}, liquidity: {text, chars, status}}}`。`status` は `ok`・`missing`（見出しが無い）・`truncated`（上限で切った）。**取れなかった節は空で `missing` と残す**（0やスキップで埋めない）。Item 全体の全文は持たない
+- 保存（これから作る・予定。③の実装まで無い）: `common/filing_text/data/{T}/{期}.json`（期は `2026Q3`・`2025FY`、TAIL の `mda/` と同じ呼び名）。中身は `{ticker, period, form, accession, filing_date, report_date, source_url, extractor_version, sections: {results_of_operations: {text, chars, status}, liquidity: {text, chars, status}}}`。`status` は `ok`・`missing`（見出しが無い）・`truncated`（上限で切った）。**取れなかった節は空で `missing` と残す**（0やスキップで埋めない）。Item 全体の全文は持たない
 - 翻訳（`excerpt_ja`）は共通には持たない。TAIL の画面の訳は今のまま TAIL 側
 
 **大きさ**（設計値。実測は §6-6）:
@@ -278,7 +278,7 @@ STEP 0 の試算と同じ結果になった。
 
 ### 6-6. 段の案・決めてほしいこと・実測で確かめること
 
-**段の案**（読み手と書き手が増えるので1つずつ）: ④-1 内部統制を24銘柄に広げ、10-K の Item 9A も足す（今の経路の延長。AI なし）→ ③ 本文の保存（共通部品。TAIL の取得の寄せ直しを含めるか決める）→ ④-2 going concern（③の本文に正規表現）→ ④-3 8-K の `items` の保存と人員削減の印 → ④-4 ATM（AI の抽出つき）→ 表示（STONKS・TAIL が同じ `docs/common/risk_marks/{T}.json` を読む）。method_change は不要（理論株価・判定・funda・stage に入れない）。
+（これから作る・予定。④の実装まで無い）**段の案**（読み手と書き手が増えるので1つずつ）: ④-1 内部統制を24銘柄に広げ、10-K の Item 9A も足す（今の経路の延長。AI なし）→ ③ 本文の保存（共通部品。TAIL の取得の寄せ直しを含めるか決める）→ ④-2 going concern（③の本文に正規表現）→ ④-3 8-K の `items` の保存と人員削減の印 → ④-4 ATM（AI の抽出つき）→ 表示（STONKS・TAIL が同じ `docs/common/risk_marks/{T}.json` を読む）。method_change は不要（理論株価・判定・funda・stage に入れない）。
 
 **決めてほしいこと**:
 - **(a)** ③の保存の場所を `common/filing_text/`、節は2つだけ（Item 全体は持たない）、保持を直近8四半期でよいか。TAIL の取得も同じ関数・1回の取得に寄せてよいか（今は書類1本を3回取る）

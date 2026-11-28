@@ -63,7 +63,7 @@ def test_data_quality_nikkei_one_trading_day_behind_is_not_flagged_but_older_is(
     ind, af, b = _entry(nikkei="2026-11-20")
     dq = sc.data_quality(ind, af, b, "2026-11-25", now_utc=RUN, extras={"HYスプレッド": "2026-11-24"})
     assert dq["status"] == "complete" and dq["old_elements"] == [] and dq["freshness"] == {}
-    assert dq["expected_by_kind"] == {"us_close": "2026-11-25", "jpx": "2026-11-20", "fred_daily": "2026-11-24"}
+    assert "expected_by_kind" not in dq                    # 読み手が無いので書かない（期待する日は freshness の各要素の expected）
     ind, af, b = _entry(nikkei="2026-11-19")
     dq = sc.data_quality(ind, af, b, "2026-11-25", now_utc=RUN, extras={"HYスプレッド": "2026-11-24"})
     assert dq["status"] == "partial" and dq["old_elements"] == ["日経平均"]

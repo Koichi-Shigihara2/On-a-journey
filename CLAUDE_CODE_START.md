@@ -5,7 +5,7 @@
 
 ## 今の状態（2026-11-28）
 
-- BACKLOG.md のアクティブは **23件**（`^### [` の機械カウント）。rcc NG 0・WARN 181、pytest 3164件通過・失敗0・skip 3（kaihatsu）。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`（`PYTHONUTF8=1`。約5〜7分。長いので分けるときは`-k`で絞る）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
+- BACKLOG.md のアクティブは **24件**（`^### [` の機械カウント）。rcc NG 0・WARN 179〔11-27 終業の実測。START の前の数字 181 は誤り〕、pytest 3164件通過・失敗0・skip 3（kaihatsu）。コマンド: `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q -p no:cacheprovider`（`PYTHONUTF8=1`。約5〜7分。長いので分けるときは`-k`で絞る）＋`common/sec_data/audit.py`＋`report_consistency_check.py --fail-on-ng`
 - **未公開のコードの置き場所**: ブランチ `parser-layer3-stage2a`（`37d45f7310`、PARSER-LAYER3 段2a＋2b、公開は 12-01〈火〉。手順は `docs/architecture/PARSER_LAYER3_STAGE2_STEP0.md` §2c）の1つだけ（Layer3の定義の列〈PARSER段1・CONTINUITY・DILUTION・DEFICIT・MULTIPLES・TANUKI-SHARES〉は2026-11-23に全部公開済み。記録は`BACKLOG_DONE.md`・各STEP 0・`docs/architecture/PUBLISH_REHEARSAL_2026-11.md`）。PARSER-LAYER3は段3（年次）以降が残る
 - 2026-11-28: 手順47〜54のうち47・48・50・52〜54は合格〔49・51は MACRO の週次待ち〕。STONKS-DEFICIT-REALITY-EPIC-1 ② を公開（`3bc782822d`、手順55）
 - 次の作業の順と注記は `PROJECT_STATUS.md` の「次の作業」が正
@@ -67,7 +67,7 @@
 55. **STONKS-DEFICIT-REALITY-EPIC-1 ②（黒字化の予測から現金を伴わない評価損益・減損を除く）の、日曜の取り込みの後の確認**（公開は2026-11-28 手動: kaihatsu `3bc782822d`・Stonks `46092665726`・TANUKI `46092663177`→HypeCore `46093926925`→TANUKI `46094103217`。ID `STONKS-DEFICIT-REALITY-EPIC-1-2`、scope 1銘柄〔SOUN〕。理論株価・判定・funda・stageの変化0〔82銘柄〕）
    - 日時: 2026-11-30（月）06:30 JST ごろの定時の実行の後（11-29 日曜の Market Data Weekly が `profitability.json` を作り直した後）
    - 期限: 2026-12-01
-   - 確認の手順: ①`stonks-silo/data/results.json` に `method_change` の印が付かない（`method_change_applied` に `-1-2`）②SOUN の黒字化の予測が `TOO_FAR`・`op_breakeven_year` 2030・総合 10x_CANDIDATE 78.2 のまま、AVAV が `NO_TREND` のまま ③`docs/common/profitability.json` が公開の直後の値と同じ（`noncash_adjustment` applied 12・candidate 2〔IONQ・SITM〕・none 70、SOUN `loss` 14.99四半期・R² 0.964、RKLB 12.21・S 14.70・RCAT R² 0.001・AVAV R² 0.749）④理論株価・判定・funda・stage が前日と同じ ⑤`docs/common/stage_v2/SOUN.json` の最新の月が変わらない。合格したら `[[STONKS-DEFICIT-REALITY-EPIC-1]]` の②を済にする（③④は残す）
+   - 確認の手順: ①`stonks-silo/data/results.json` に `method_change` の印が付かない（`method_change_applied` に `-1-2`）②SOUN の黒字化の予測が `TOO_FAR`・`op_breakeven_year` 2030・総合 10x_CANDIDATE 78.2 のまま、AVAV が `NO_TREND` のまま ③`docs/common/profitability.json` が公開の直後の値と同じ（`noncash_adjustment` applied 12・candidate 2〔IONQ・SITM〕・none 70、SOUN `loss` 14.99四半期・R² 0.964、RKLB 12.21・S 14.70・RCAT R² 0.001・AVAV R² 0.749）④理論株価・判定・funda・stage が前日と同じ ⑤`docs/common/stage_v2/SOUN.json` の最新の月が変わらない。⑥（Market Pulse の `expected_by_kind` の書き出し廃止の確認）11-29・11-30 の Market Pulse の新しいエントリに `data_quality.expected_by_kind` が無い ⑦`freshness` の各要素に `expected` が出ていて、画面（値ごとの日付と「古い」の印）と System Health [Q] が正しく表示されている ⑧Market Data Daily と下流4つ（Market Pulse・Stonks Silo・TANUKI・Portfolio）が成功している（jpx_only の回は cancelled・下流 skipped が正）。合格したら `[[STONKS-DEFICIT-REALITY-EPIC-1]]` の②を済にする（③④は残す）
 
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
