@@ -1696,7 +1696,7 @@
    "dir": "src/value/stonks_silo",
    "file": "src/value/stonks_silo/analyzer.py",
    "decision": "残す（2026-10-21）",
-   "lines": 1192,
+   "lines": 1170,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -3516,16 +3516,6 @@
   ],
   "unread_keys": [
    {
-    "key": "core_profit",
-    "sources": [
-     "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "profitability_path"
-    ],
-    "note": ""
-   },
-   {
     "key": "fair_value_change",
     "sources": [
      "docs/value-monitor/stonks-silo/data/results.json"
@@ -3573,30 +3563,29 @@
     ],
     "parents": [],
     "note": "残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）"
+   }
+  ],
+  "written_key_count": 118,
+  "stale_keys": [
+   {
+    "key": "core_profit",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ]
    },
    {
     "key": "ocf_acceleration",
     "sources": [
      "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "profitability_path"
-    ],
-    "note": ""
+    ]
    },
    {
     "key": "ocf_yoy_change",
     "sources": [
      "docs/value-monitor/stonks-silo/data/results.json"
-    ],
-    "parents": [
-     "profitability_path"
-    ],
-    "note": ""
+    ]
    }
   ],
-  "written_key_count": 121,
-  "stale_keys": [],
   "sections": [
    {
     "page": "docs/value-monitor/stonks-silo/index.html",

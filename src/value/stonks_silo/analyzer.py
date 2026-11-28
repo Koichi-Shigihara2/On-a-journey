@@ -108,13 +108,9 @@ class RunwayAnalysis:
 class ProfitabilityPath:
     """③ 隠れ黒字化パス"""
 
-    # R&D・S&M除外後の本業利益（各年）
-    core_profit: dict[int, Optional[float]] = field(default_factory=dict)  # OCF + RnD + SM
-
-    # OCF改善速度・加速度（年次）
+    # OCF（年次）。速度・加速度（前年比・その変化）は ocf_trend を決める入力として _analyze_profitability の中だけで使う
+    # （core_profit・ocf_yoy_change・ocf_acceleration は出力に出さない。読み手が無かった〔INV-6b、2026-11-28〕）
     ocf_annual: dict[int, Optional[float]] = field(default_factory=dict)
-    ocf_yoy_change: dict[int, Optional[float]] = field(default_factory=dict)    # 速度
-    ocf_acceleration: dict[int, Optional[float]] = field(default_factory=dict)  # 加速度
 
     # OCF改善トレンドの向き
     ocf_trend: str = "UNKNOWN"   # ACCELERATING / IMPROVING / FLAT / DETERIORATING
@@ -545,21 +541,6 @@ class StonksAnalyzer:
         for yr in years:
             ocf_annual[yr] = records[yr]["cf"].get("operating_cash_flow")
 
-        # コア利益 = OCF + R&D + S&M（投資的コストを足し戻した本業キャッシュ）
-        # ※ R&D・SM は P/L 上の費用。OCF はその後の現金収支なので厳密には別軸だが、
-        #   「投資費用を除いた収益力」の代理指標として利用する。
-        core_profit = {}
-        for yr in years:
-            pl = records[yr]["pl"]
-            ocf = ocf_annual[yr]
-            rnd = pl.get("research_and_development")
-            sm = pl.get("selling_and_marketing")
-            if ocf is not None:
-                add_back = (rnd or 0) + (sm or 0)
-                core_profit[yr] = ocf + add_back
-            else:
-                core_profit[yr] = None
-
         # OCF YoY 変化（速度）
         ocf_yoy: dict[int, Optional[float]] = {}
         for i, yr in enumerate(years):
@@ -686,10 +667,7 @@ class StonksAnalyzer:
             reproduction_label = "データ不足"
 
         return ProfitabilityPath(
-            core_profit=core_profit,
             ocf_annual=ocf_annual,
-            ocf_yoy_change=ocf_yoy,
-            ocf_acceleration=ocf_accel,
             ocf_trend=ocf_trend,
             noncash_adjustment=noncash_adjustment_view(load_entry(ticker) if ticker else None),
             op_breakeven_year=op_be,
