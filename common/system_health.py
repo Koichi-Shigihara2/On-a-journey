@@ -1264,6 +1264,7 @@ def _overall_text(severity: int, n_problem: int) -> str:
 
 # ── メイン ───────────────────────────────────────────────────────────
 _DAILY_DIR = os.path.join(_REPO_ROOT, "common", "market_data", "daily")
+_SPLIT_SKIPS = os.path.join(_REPO_ROOT, "common", "market_data", "_split_reconcile_skips.json")
 
 
 def _volume_zero_expected(symbol: str) -> bool:
@@ -1279,7 +1280,27 @@ def _expected_warning(symbol: str, warning: str) -> bool:
     return warning.startswith("expected high >= close >= low") and symbol.endswith("=X")
 
 
-def _check_r(today: Optional[date] = None, daily_dir: Optional[str] = None, window_days: int = 90, new_days: int = 7) -> dict:
+def _split_skips_text(today: date, skips_path: Optional[str] = None, new_days: int = 14) -> tuple:
+    """split_reconcile の走査で、連続性の確認により当てなかった銘柄（common/market_data/_split_reconcile_skips.json）。
+    (全件数, 新しい件〈first_seen が new_days 日以内〉の表示の一覧)。表示: 銘柄・境の日付・比・割り戻したときの終値の動き"""
+    try:
+        with open(skips_path or _SPLIT_SKIPS, encoding="utf-8") as f:
+            skips = (json.load(f) or {}).get("skips") or {}
+    except (OSError, ValueError):
+        return 0, []
+    new = []
+    for sym, k in sorted(skips.items()):
+        try:
+            fresh = date.fromisoformat(str(k.get("first_seen"))[:10]) >= today - timedelta(days=new_days)
+        except ValueError:
+            fresh = True
+        if fresh:
+            new.append(f"{sym} 境{k.get('boundary')} 比{k.get('ratio'):g} {k.get('date')}の終値が1日で{float(k.get('move', 0)):+.0%}（連続性で割り戻しを止めた）")
+    return len(skips), new
+
+
+def _check_r(today: Optional[date] = None, daily_dir: Optional[str] = None, window_days: int = 90, new_days: int = 7,
+             skips_path: Optional[str] = None) -> dict:
     """日足の検証の印（common/market_data/daily/{T}.json の行の `_validation_warnings`。取得時の検証で、保存はするが印を付ける）。
     直近 window_days 日の印の行数・銘柄数を数え、**想定内**（出来高0が普通の指数・為替・先物の volume の印、為替の high ≥ close ≥ low の違反）と**それ以外**に分ける。
     それ以外の印が直近 new_days 日の行に新しく出ていたら ⚠️（銘柄・日付・印の種類）。過去の日足は書き換えない（2026-11-28）"""
@@ -1318,11 +1339,23 @@ def _check_r(today: Optional[date] = None, daily_dir: Optional[str] = None, wind
     except Exception as e:  # noqa: BLE001
         return {"label": f"⚠️  日足を読めない: {type(e).__name__}", "ok": False, "detail": "日足を読めない", "severity": 1, "critical": False}
     head = (f"直近{window_days}日の印 {other_rows + expected_rows}行（想定内 {expected_rows}・それ以外 {other_rows}行/{len(syms_other)}銘柄）")
+    n_skips, new_skips = _split_skips_text(today, skips_path)
+    if n_skips:
+        head += f" / 割り戻しの[SKIP] {n_skips}件"
+    if new_skips:
+        more_s = " / ".join(new_skips[:2]) + (f" ほか{len(new_skips) - 2}件" if len(new_skips) > 2 else "")
+        new_items_label = f" / 新しい[SKIP] {len(new_skips)}件: {more_s}"
+    else:
+        new_items_label = ""
+    if new_skips and not new_items:
+        return {"label": f"⚠️  {head}{new_items_label}", "ok": False, "detail": f"新しいSKIP{len(new_skips)}件", "severity": 1,
+                "critical": False, "new": new_skips}
     if new_items:
         more = f" ほか{len(new_items) - 3}件" if len(new_items) > 3 else ""
         shown = "、".join(new_items[:3]) + more
-        return {"label": f"⚠️  {head} / 直近{new_days}日の新しい印 {len(new_items)}件: {shown}", "ok": False,
-                "detail": f"新しい印{len(new_items)}件", "severity": 1, "critical": False, "new": new_items}
+        return {"label": f"⚠️  {head} / 直近{new_days}日の新しい印 {len(new_items)}件: {shown}{new_items_label}", "ok": False,
+                "detail": f"新しい印{len(new_items)}件" + (f"・新しいSKIP{len(new_skips)}件" if new_skips else ""), "severity": 1,
+                "critical": False, "new": new_items + new_skips}
     return {"label": f"✅ {head} / 直近{new_days}日の新しい印0", "ok": True, "detail": "", "severity": 0, "critical": False, "new": []}
 
 

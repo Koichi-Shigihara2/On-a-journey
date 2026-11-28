@@ -159,4 +159,75 @@ def test_only_correct_daily_rows_writes():
     src = open(os.path.join(REPO, "common", "market_data", "split_reconcile.py"), encoding="utf-8").read()
     assert "correct_daily_rows" in src
     assert "write_daily_rows(" not in src and "_atomic_write_json" not in src
-    assert "open(" in src and '"w"' not in src and "'w'" not in src
+    # 書くのは [SKIP] の記録（common/market_data/_split_reconcile_skips.json。daily/ ではない）だけ
+    assert "open(" in src and src.count('"w"') == 1 and "'w'" not in src and '"w"' in src.split("def record_skips")[1].split("def main")[0]
+
+
+def _mk_sndk_shape(dates):
+    """SNDK（2026-11-20・11-23 が二重に調整された形）: 境より前は ratio 8 倍の行、そのうち境の直前の2行は取得時に既に分割後の尺度、
+    そのときのYahooの値は2行とも8分の1（一時的に二重に調整されていた）。それ以外の行は Yahoo と比が8、境の後は一致"""
+    stored, yahoo = [], {}
+    for i, d in enumerate(dates):
+        y = 100.0 + i * 0.1
+        if i < 90:
+            k_store, k_yahoo = 8.0, 1.0              # 保存した行は分割前の尺度、Yahooは調整済み
+        elif i < 92:
+            k_store, k_yahoo = 1.0, 1.0 / 8.0        # 既に分割後の尺度で保存した2行、Yahooは一時的に二重に調整
+        else:
+            k_store, k_yahoo = 1.0, 1.0
+        stored.append({"date": d, "open": y * k_store, "high": y * k_store * 1.01, "low": y * k_store * 0.99, "close": y * k_store,
+                       "volume": 1000, "_validation_warnings": []})
+        yahoo[d] = {"close": y * k_yahoo, "volume": 1000.0}
+    return stored, yahoo
+
+
+def test_double_adjusted_neighbour_rows_are_not_divided_again(tmp_path):
+    """境より前の行のうち、既に分割後の尺度の行まで割ると終値が1日で8分の1に飛ぶ（SNDK 2026-11-20・11-23）。連続性の確認で当てない"""
+    base = str(tmp_path)
+    dates = _dates()
+    stored, yahoo = _mk_sndk_shape(dates)
+    _write(base, "SNDK", stored)
+    skipped = {}
+    hits = sr.scan(["SNDK"], base_dir=base, provider_fn=_provider({"SNDK": yahoo}), skipped=skipped)
+    assert hits == {}                                              # 当てない
+    assert skipped["SNDK"]["reason"] == "continuity" and skipped["SNDK"]["boundary"] == dates[92]
+    assert abs(skipped["SNDK"]["move"] + 0.875) < 0.01             # 割ると1日で −87.5%（8分の1）
+    rows = _read(base, "SNDK")
+    assert rows[dates[90]]["close"] == pytest.approx(stored[90]["close"])      # 保存した行は変わらない
+
+
+def test_without_continuity_check_the_old_behaviour_divides_the_adjusted_rows(monkeypatch, tmp_path):
+    """確認の代わりの対照: 上限を外すと、昔の動き（既に分割後の行まで割る）になる＝確認が効いていることの証拠"""
+    monkeypatch.setattr(sr, "CONTINUITY_MAX_MOVE", 1e9)
+    base = str(tmp_path)
+    dates = _dates()
+    stored, yahoo = _mk_sndk_shape(dates)
+    _write(base, "SNDK", stored)
+    hits = sr.scan(["SNDK"], base_dir=base, provider_fn=_provider({"SNDK": yahoo}))
+    assert hits["SNDK"]["boundary"] == dates[92] and hits["SNDK"]["ratio"] == pytest.approx(8.0, rel=0.02)
+
+
+def test_genuine_split_passes_the_continuity_check(tmp_path):
+    """本物の分割（境の前後が割り戻しで連続になる）は今までどおり当たる"""
+    base = str(tmp_path)
+    dates = _dates()
+    stored, yahoo = _mk(dates, 8.0)
+    _write(base, "AAA", stored)
+    skipped = {}
+    hits = sr.scan(["AAA"], base_dir=base, provider_fn=_provider({"AAA": yahoo}), skipped=skipped)
+    assert "AAA" in hits and not skipped
+
+
+def test_record_skips_keeps_first_seen_and_drops_cleared_symbols(tmp_path):
+    """[SKIP] の記録: 同じ銘柄・同じ境なら first_seen を引き継ぐ。当てなくなった銘柄は消す。1度も出ていなければファイルを作らない"""
+    base = str(tmp_path)
+    os.makedirs(os.path.join(base, "daily"), exist_ok=True)
+    assert sr.record_skips({}, base_dir=base, today="2026-11-28") is False and not os.path.exists(os.path.join(base, sr.SKIPS_FILE))
+    k = {"reason": "continuity", "date": "2026-11-24", "move": 6.11, "ratio": 8.0, "boundary": "2026-11-24"}
+    assert sr.record_skips({"SNDK": k}, base_dir=base, today="2026-11-28") is True
+    assert sr.record_skips({"SNDK": k}, base_dir=base, today="2026-12-05") is False          # 同じなら書かない（first_seen は 11-28 のまま）
+    with open(os.path.join(base, sr.SKIPS_FILE), encoding="utf-8") as f:
+        assert json.load(f)["skips"]["SNDK"]["first_seen"] == "2026-11-28"
+    assert sr.record_skips({}, base_dir=base, today="2026-12-12") is True                      # 当てなくなったら消す
+    with open(os.path.join(base, sr.SKIPS_FILE), encoding="utf-8") as f:
+        assert json.load(f)["skips"] == {}

@@ -61,3 +61,18 @@ def test_fx_high_close_low_violation_is_expected_but_not_for_stocks(tmp_path):
     _write(tmp_path, "HPE", [_row("2026-11-25", [hcl])])
     r2 = sh._check_r(TODAY, str(tmp_path))
     assert not r2["ok"] and "HPE 2026-11-25 expected high >= close >= low" in r2["label"]
+
+
+def test_new_split_reconcile_skip_warns_and_old_one_does_not(tmp_path):
+    """split_reconcile の [SKIP]（連続性の確認で割り戻しを止めた銘柄）: 最初に見た日が14日以内なら ⚠️（銘柄・境・比・終値の動き）、古ければ件数だけ"""
+    _write(tmp_path, "AAPL", [_row("2026-11-26", [])])
+    skips = tmp_path / "skips.json"
+    skips.write_text(json.dumps({"skips": {"SNDK": {"boundary": "2026-11-24", "ratio": 8.0, "date": "2026-11-24", "move": 6.11,
+                                                     "reason": "continuity", "first_seen": "2026-11-25"}}}), encoding="utf-8")
+    r = sh._check_r(TODAY, str(tmp_path), skips_path=str(skips))
+    assert not r["ok"] and r["label"].startswith("⚠️") and "新しい[SKIP] 1件" in r["label"]
+    assert "SNDK 境2026-11-24 比8 2026-11-24の終値が1日で+611%" in r["label"]
+    r2 = sh._check_r(date(2026, 12, 20), str(tmp_path), skips_path=str(skips))      # 14日より前に見たものは新しくない
+    assert r2["ok"] and "割り戻しの[SKIP] 1件" in r2["label"] and "新しい[SKIP]" not in r2["label"]
+    r3 = sh._check_r(TODAY, str(tmp_path), skips_path=str(tmp_path / "none.json"))  # ファイルが無ければ何も出さない
+    assert r3["ok"] and "SKIP" not in r3["label"]

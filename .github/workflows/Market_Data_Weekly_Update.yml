@@ -86,7 +86,7 @@ jobs:
           git config merge.ours.driver true
           git add common/market_data/attributes/ || true
           git add common/market_data/analyst_history/ || true
-          git add common/market_data/daily/ || true
+          git add common/market_data/daily/ common/market_data/_split_reconcile_skips.json || true
           git add common/market_data/_sp500_constituents_cache.json || true
           git add config/sector_master.json docs/common/sector_class.json || true
           git add docs/common/profitability.json || true
