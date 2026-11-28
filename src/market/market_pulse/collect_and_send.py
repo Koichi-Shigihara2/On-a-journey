@@ -149,6 +149,18 @@ def fetch_recent_records(ticker, count=2, days=5):
         return None
 
 
+def _volume_ratio_msg(vol_latest, vol_prev) -> str:
+    """AIの入力の文の「前日比出来高比」の部分。最新か前日の出来高が無い・0以下の指数（取得時に出来高が入っていない ^NYA 等）は、
+    N/A も 0.00 も書かず、文に出さない（2026-11-28）。market_data.json の volume_ratio はそのまま。
+    取り直しで出来高が埋まれば（[[DAILY-BAR-REFRESH-1]]）、自然に文に戻る"""
+    try:
+        if vol_latest is not None and vol_prev is not None and vol_latest > 0 and vol_prev > 0:
+            return f" | 前日比出来高比:{vol_latest / vol_prev:.2f}"
+    except TypeError:
+        pass
+    return ""
+
+
 def format_line(name, records):
     """記録リスト（fetch_recent_records()の戻り値、date/close/volume・
     古い順）から表示用の1行を生成する。
@@ -173,7 +185,7 @@ def format_line(name, records):
             vol_latest = latest_rec.get("volume")
             vol_prev = records[-2].get("volume")
             if vol_latest is not None and vol_prev is not None and vol_latest > 0 and vol_prev > 0:
-                vol_msg = f" | 前日比出来高比:{vol_latest / vol_prev:.2f}"
+                vol_msg = _volume_ratio_msg(vol_latest, vol_prev)
         return f"● {name}: {latest:.2f} [{diff:+.2f} ({pct:+.2f}%){vol_msg}] ({last_date} 確定)\n"
     except Exception as e:
         return f"● {name}: 解析エラー ({e})\n"
@@ -885,9 +897,8 @@ def get_realtime_data():
         vol_latest = nya_records[-1].get("volume")
         vol_prev = nya_records[-2].get("volume")
         vol_ratio = vol_latest / vol_prev if (vol_latest is not None and vol_prev) else None
-        vol_ratio_str = f"{vol_ratio:.2f}" if vol_ratio is not None else "N/A"
         last_date = datetime.strptime(nya_records[-1]["date"], "%Y-%m-%d").strftime("%m/%d")
-        summary += f"● NYSE Composite(^NYA): {nya_latest:.2f} [{nya_pct:+.2f}%] | 前日比出来高比:{vol_ratio_str} ({last_date} 確定)\n"
+        summary += f"● NYSE Composite(^NYA): {nya_latest:.2f} [{nya_pct:+.2f}%]{_volume_ratio_msg(vol_latest, vol_prev)} ({last_date} 確定)\n"
         sp_valid = (sp_records is not None
                     and sp_records[-1].get("close") is not None and sp_records[-2].get("close") is not None
                     and not _is_nan(sp_records[-1]["close"]) and not _is_nan(sp_records[-2]["close"]))
