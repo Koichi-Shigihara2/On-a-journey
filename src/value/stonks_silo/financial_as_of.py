@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 import json
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -68,13 +68,9 @@ def scoring_fy_end(ticker: str, fy: Optional[int], data_dir: Optional[Path] = No
 
 
 def is_stale(quarter_end: Optional[str], generated_at: datetime) -> Optional[bool]:
-    if not quarter_end:
-        return None
-    try:
-        q = date.fromisoformat(quarter_end[:10])
-    except ValueError:
-        return None
-    return (generated_at.date() - q).days > STALE_DAYS_AFTER_QUARTER_END
+    """判定は common/sec_data/freshness.py::is_stale_period（期末からの日数）。上限はここの STALE_DAYS_AFTER_QUARTER_END。"""
+    from common.sec_data import freshness
+    return freshness.is_stale_period(quarter_end, generated_at.date(), STALE_DAYS_AFTER_QUARTER_END)
 
 
 def build(ticker: str, years: list, store: Optional[dict], generated_at: datetime,

@@ -65,10 +65,6 @@ def fetch_data(ticker: str, days: int) -> pd.DataFrame:
     return df
 
 
-def fetch_spy_qqq(days: int) -> tuple[pd.DataFrame, pd.DataFrame]:
-    return fetch_data("SPY", days), fetch_data("QQQ", days)
-
-
 # ============================================================
 # テクニカル計算
 # ============================================================

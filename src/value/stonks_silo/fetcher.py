@@ -257,11 +257,6 @@ def _list_available_tickers() -> list[str]:
     return sorted(d.name for d in _SEC_DATA_DIR.iterdir() if d.is_dir())
 
 
-def available_tickers() -> list[str]:
-    """利用可能なティッカー一覧を返す"""
-    return _list_available_tickers()
-
-
 def _fmt(v) -> str:
     if v is None:
         return "N/A"

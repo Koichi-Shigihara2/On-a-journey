@@ -32,22 +32,3 @@ def safe_yf_ticker(ticker: str, retries: int = 2, wait: float = 3.0):
     logger.error(f"[yfinance] {ticker} 全リトライ失敗 → None を返す")
     return None
 
-
-def safe_yf_history(ticker: str, period: str = "5d", retries: int = 2, **kwargs) -> pd.DataFrame:
-    """
-    yfinance history を安全に取得する。
-    失敗時は空の DataFrame を返す。
-    period=None かつ start/end を kwargs で渡すことも可能。
-    """
-    for attempt in range(retries + 1):
-        try:
-            df = yf.Ticker(ticker).history(period=period, **kwargs)
-            if df.empty:
-                logger.warning(f"[yfinance] {ticker} history empty (period={period}, kwargs={kwargs})")
-            return df
-        except Exception as e:
-            logger.warning(f"[yfinance] {ticker} history attempt {attempt + 1} failed: {e}")
-            if attempt < retries:
-                time.sleep(3.0)
-    logger.error(f"[yfinance] {ticker} history 全リトライ失敗 → 空DataFrame")
-    return pd.DataFrame()

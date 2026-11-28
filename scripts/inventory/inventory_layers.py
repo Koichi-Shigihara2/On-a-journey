@@ -43,9 +43,12 @@ RULES = [
     },
     {
         "id": "staleness",
-        "name": "データの古さ・遅れの判定",
-        "patterns": [r"def\s+_?\w*(stale|lag_days|freshness)\w*\s*\(", r"function\s+\w*(stale|Stale|lag|Lag|fresh|Fresh)\w*\s*\("],
-        "context": r"10-Q|10-K|[\"']filed[\"']|SEC_LAG",   # SECの提出の古さに限る（ファイルにこの語があるもの）
+        "name": "データの古さ・遅れの判定（期末からの日数が上限を超えたか）",
+        # 2026-11-28 [[DUPLICATE-RULES-ZERO-EPIC-1]]: 判定は common/sec_data/freshness.py::is_stale_period の1か所。
+        # 検出式は「判定の定義」だけに絞った（SEC の取り込みの遅れの警告〈CHECK-60・[M]〉は freshness.py を呼ぶだけ、
+        # parser._freshness は候補の並べ替え、TAIL の _updateReviewStaleness はレビューのログの古さで、別の規則）。
+        # 画面に JS の stalePeriod 形の判定が戻ったら二重になる
+        "patterns": [r"def\s+is_stale_period\s*\(", r"function\s+\w*[sS]talePeriod\w*\s*\("],
     },
     {
         "id": "ttm_sum",
@@ -57,11 +60,6 @@ RULES = [
         "id": "quarter_label",
         "name": "期の名前（四半期のラベル）の付け方",
         "patterns": [r"def\s+_?\w*quarter_label\w*\s*\(", r"function\s+\w*(quarterLabel|QuarterLabel|periodLabel)\w*\s*\("],
-    },
-    {
-        "id": "fiscal_year",
-        "name": "会計年度・会計年度末の決め方",
-        "patterns": [r"def\s+_?\w*(determine_fiscal_year|detect_fiscal_\w+|get_fiscal_year_end|fiscal_year_of)\w*\s*\("],
     },
 ]
 
@@ -124,7 +122,7 @@ DELETED: List[Tuple[str, str]] = [
 ]
 
 # 規則の二重のうち既知のもの（CHECK-INV-3 で WARN。SEC層のファイルを含むものでこれ以外が二重になったら NG）
-KNOWN_DUPLICATE_RULES = ["q4_implied", "latest_filed", "staleness", "ttm_sum", "fiscal_year"]
+KNOWN_DUPLICATE_RULES = ["q4_implied", "latest_filed", "ttm_sum"]
 
 OUTSIDE_HINT = "sec_data"                    # 外の書き手を探す .py（この語を含むものだけ見る）
 OUTSIDE_PREFIXES: Tuple[str, ...] = ("common/sec_data/",)   # 外の書き手として数える書き先
@@ -232,7 +230,7 @@ _TANUKI.update(
     OUTSIDE_HINT="tanuki", OUTSIDE_PREFIXES=("docs/value-monitor/tanuki_valuation/", "docs/value-monitor/tanuki_score/", "src/value/tanuki_valuation/", "src/value/tanuki_score/"),
     READ_PREFIXES=("docs/value-monitor/tanuki_valuation", "docs/value-monitor/tanuki_score", "src/value/tanuki_valuation", "src/value/tanuki_score"),
     READ_HINT="tanuki", NAME_SHORT="TANUKI",
-    KNOWN_DUPLICATE_RULES=["quarter_label", "valuation_threshold", "growth_bounds", "wacc_beta", "fcf_fallback"], TITLE="TANUKI VALUATION・TANUKI Scoreの出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["valuation_threshold", "growth_bounds", "wacc_beta", "fcf_fallback"], TITLE="TANUKI VALUATION・TANUKI Scoreの出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/tanuki_valuation", "docs/value-monitor/tanuki_score"),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
@@ -421,7 +419,7 @@ _STONKS.update(
     OUTSIDE_HINT="stonks", OUTSIDE_PREFIXES=("docs/value-monitor/stonks-silo/", "src/value/stonks_silo/"),
     READ_PREFIXES=("docs/value-monitor/stonks-silo", "src/value/stonks_silo"),
     READ_HINT="stonks", NAME_SHORT="STONKS",
-    KNOWN_DUPLICATE_RULES=["staleness"], TITLE="STONKS SILO（src/value/stonks_silo）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=[], TITLE="STONKS SILO（src/value/stonks_silo）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/value-monitor/stonks-silo",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={
@@ -593,7 +591,7 @@ _TAIL.update(
     OUTSIDE_HINT="tail", OUTSIDE_PREFIXES=("docs/portfolio/tail/", "src/tail/"),
     READ_PREFIXES=("docs/portfolio/tail", "src/tail"),
     READ_HINT="tail", NAME_SHORT="TAIL",
-    KNOWN_DUPLICATE_RULES=["latest_filed", "quarter_label", "fiscal_year"], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
+    KNOWN_DUPLICATE_RULES=["latest_filed"], TITLE="TANUKI TAIL（src/tail）の出力の一覧（段階1の下書き）",
     SCREEN_PAGES=("docs/portfolio/tail",),
     SCREEN_SECTION_DECISIONS=[],
     UNREAD_KEY_NOTES={

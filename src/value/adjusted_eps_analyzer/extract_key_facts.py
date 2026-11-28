@@ -262,48 +262,6 @@ def extract_value_from_facts(facts_data: Dict, us_gaap_tag: str, form_type: Opti
         results = [r for r in results if r['end'] >= min_end_date]
     return results[:limit]
 
-def get_diluted_shares_from_facts(facts_data: Dict, form_type: Optional[str] = None, limit: int = 40) -> List[Dict]:
-    """
-    希薄化後株式数を取得（複数クラスがある場合は合算）
-    戻り値の各要素は {'end': str, 'val': float, 'filed': str, 'form': str, 'unit': str, 'start': str} の形式
-    修正点: グループ化キーを (end, start) に変更し、同じ期間内のクラス株を合算する。
-    """
-    tag = "WeightedAverageNumberOfDilutedSharesOutstanding"
-    try:
-        if 'facts' not in facts_data or 'us-gaap' not in facts_data['facts']:
-            return []
-        if tag not in facts_data['facts']['us-gaap']:
-            return []
-        
-        units_data = facts_data['facts']['us-gaap'][tag]['units']
-        # 通常は 'shares' 単位
-        for unit_key in units_data:
-            if 'shares' in unit_key:
-                # 同じ (end, start) 日付のものをグループ化して合算
-                period_map = {}
-                for item in units_data[unit_key]:
-                    if form_type and not item.get('form', '').startswith(form_type):
-                        continue
-                    if 'start' in item and 'end' in item:
-                        key = (item['end'], item['start'])  # ★修正ポイント
-                        if key not in period_map:
-                            period_map[key] = {
-                                'end': item['end'],
-                                'start': item['start'],
-                                'val': 0,
-                                'filed': item.get('filed'),
-                                'form': item.get('form'),
-                                'unit': unit_key,
-                            }
-                        period_map[key]['val'] += item.get('val', 0)
-                
-                # マップをリストに変換
-                results = list(period_map.values())
-                results.sort(key=lambda x: x['end'], reverse=True)
-                return results[:limit]
-    except Exception as e:
-        print(f"Error getting diluted shares: {e}")
-    return []
 
 # ============================================
 # 会計年度判定と四半期分類

@@ -105,8 +105,8 @@
 - Python・保存済みファイル: `common/sector_master.py` 行 206・291・350・363（経由 `common/sector_master.py::_load_json`、`common/sector_master.py::build_entry`）
 - Python・保存済みファイル: `common/system_health.py` 行 89（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `scripts/analysis/market_pulse_redesign.py` 行 404・478（経由 `common/market_data/reader.py::get_attributes`）
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 1084・1209・1232（経由 `common/market_data/reader.py::get_attributes`）
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 639・653・1007（経由 `common/market_data/reader.py::get_attributes`、`common/sector_master.py::build_entry`）
+- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 1042・1167・1190（経由 `common/market_data/reader.py::get_attributes`）
+- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 649・663・1017（経由 `common/market_data/reader.py::get_attributes`、`common/sector_master.py::build_entry`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/sector_classifier_v2.py` 行 47（経由 `common/sector_master.py::build_entry`）
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 236・490・545・548・1084（経由 `common/market_data/reader.py::get_attributes`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 115・267（経由 `common/market_data/reader.py::get_attributes`）
@@ -130,7 +130,7 @@
 - テスト・保存済みファイル: `tests/test_extract_key_facts_split.py` 行 100・124・149・176（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_market_data_reader.py` 行 286・294・301・313・325・469・471（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_multiples.py` 行 110・111・113（経由 `common/market_data/valuation_history.py::append`）
-- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 461・500・522・2323・2340・2383・2408・2437・2460・2472・2485・2496 ほか12（経由 `common/market_data/reader.py::get_attributes`）
+- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 461・500・522・2290・2307・2350・2375・2404・2427・2439・2452・2463 ほか12（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_sector_master.py` 行 49・68・69・70・76・82・85・89・96・141（経由 `common/sector_master.py::build_entry`）
 - テスト・保存済みファイル: `tests/test_split_adjust.py` 行 131（経由 `common/market_data/reader.py::get_attributes`）
 - テスト・保存済みファイル: `tests/test_valuation_fetcher_market_data_switch.py` 行 64・85・101・117・128・141・155（経由 `common/market_data/reader.py::get_attributes`）
@@ -153,7 +153,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `records`(17)・`symbol`(13)
 - Python・その場で計算: `common/market_data/split_reconcile.py` 行 62・175・196・217（経由 `common/market_data/fetcher.py::_resolve_base_dir`）
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 193・411（経由 `common/market_data/reader.py::_load_daily_payload`）
-- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 808・829・846・873・950（経由 `common/market_data/reader.py::_load_daily_payload`）
+- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 799・820・837・864・941（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `common/external_watch.py` 行 50（経由 `common/market_data/futures_roll.py::_load`）
 - Python・保存済みファイル: `common/market_data/daily_guard.py` 行 71・77・91・101・114・121（経由 `common/market_data/daily_guard.py::jpx_pending`）
 - Python・保存済みファイル: `common/market_data/fetcher.py` 行 513・514・534・556・557・566・570・571・585・586・724・741 ほか21（経由 `common/market_data/fetcher.py::_load_json`、`common/market_data/fetcher.py::_mark_no_bar_rows`、`common/market_data/fetcher.py::_repair_close_missing_records` ほか）
@@ -163,7 +163,7 @@
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1570・3580・3752（経由 `common/market_data/fetcher.py::find_missing_trading_days`）
 - Python・保存済みファイル: `common/sec_data/rotce.py` 行 342・345・432・703・743（経由 `common/sec_data/rotce.py::_load_prices`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 339・355・361（経由 `common/multiples.py::_daily_rows`）
-- Python・保存済みファイル: `common/system_health.py` 行 1111・1314・1397・1473（経由 `common/market_data/futures_roll.py::_load`、`common/system_health.py::_check_r`）
+- Python・保存済みファイル: `common/system_health.py` 行 1091・1289・1372・1448（経由 `common/market_data/futures_roll.py::_load`、`common/system_health.py::_check_r`）
 - Python・保存済みファイル: `scripts/migrate_market_data_latest.py` 行 57（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 144・304・305・435・437（経由 `common/market_data/reader.py::_load_daily_payload`）
 - Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 142・248・412・413・418・456・463・464・780・781・858・888 ほか17（経由 `common/market_data/reader.py::_load_daily_payload`）
@@ -189,7 +189,7 @@
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/system_health.py::_check_r`）
 - テスト・保存済みファイル: `tests/test_sector_master.py` 行 106（経由 `common/market_data/futures_roll.py::_load`）
 - テスト・保存済みファイル: `tests/test_system_health_daily_validation.py` 行 30・37・40・46・59・62・72・75・77（経由 `common/system_health.py::_check_r`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 295・303・435・448（経由 `common/system_health.py::_check_r`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 298・306・438・451（経由 `common/system_health.py::_check_r`）
 - テスト・保存済みファイル: `tests/test_valuation_fetcher_market_data_switch.py` 行 64・85・101・117・128・141・155（経由 `common/market_data/reader.py::_load_daily_payload`）
 - テスト・保存済みファイル: `tests/test_value_freshness.py` 行 95・96・102・109・111・114・151・154・162（経由 `common/market_data/daily_guard.py::jpx_pending`）
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
@@ -210,8 +210,8 @@
 - 起動元: .github/workflows/Market_Pulse_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `from`(2)・`holidays`(2)・`source`(2)・`to`(2)
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 398・408（経由 `browser_checks/market_pulse_elements.py::expected_holiday_rows`）
-- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 220・223・541（経由 `browser_checks/market_pulse_elements.py::expected_holiday_rows`）
-- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 2041
+- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 211・214・532（経由 `browser_checks/market_pulse_elements.py::expected_holiday_rows`）
+- Python・保存済みファイル: `src/market/market_pulse/collect_and_send.py` 行 2035
 - JS・HTML・保存済みファイル: `docs/market-monitor/market-pulse/index.html` 行 1422
 - 画面（経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/latest.json））: `docs/value-monitor/tanuki_score/index.html`
 
@@ -219,7 +219,7 @@
 - 起動元: .github/workflows/Market_Pulse_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `count`(0)・`fetched_at`(0)・`tickers`(1)
 - Python・保存済みファイル: `browser_checks/check_dependency_map.py` 行 411・447・457（経由 `browser_checks/market_pulse_elements.py::classify_base_dates`、`browser_checks/market_pulse_elements.py::run_derivation_checks`）
-- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 47・866・946
+- Python・保存済みファイル: `browser_checks/market_pulse_elements.py` 行 47・857・937
 - Python・保存済みファイル: `src/market/market_pulse/breadth_calculator.py` 行 30
 
 ## 誰も読まないキー

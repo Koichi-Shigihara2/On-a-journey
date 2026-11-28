@@ -1323,12 +1323,6 @@ def calc_hindenburg(breadth, sp500_up_50d):
     return {"active": active, "conditions": cond, "new_highs": nh, "new_lows": nl, "total_stocks": total_stocks}
 
 
-def calc_hindenburg_active(breadth, sp500_up_50d=None):
-    """calc_hindenburg()のactiveだけを返す（チェックリスト用）。"""
-    h = calc_hindenburg(breadth, sp500_up_50d)
-    return None if h is None else h["active"]
-
-
 def sp500_up_vs_50d():
     """S&P500の最新終値が50営業日前の終値より高いか（daily/）。取れなければNone。"""
     if not HAS_MARKET_DATA:

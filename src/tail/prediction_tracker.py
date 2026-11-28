@@ -170,59 +170,6 @@ def detect_tickers() -> List[str]:
     return tickers
 
 
-def format_for_prompt(ticker: str, history: Dict[str, Any], max_entries: int = 2) -> str:
-    """Stage1プロンプトに埋め込む予測振り返りテキストを生成する"""
-    entries = history.get(ticker, [])
-    matchable = [
-        e for e in entries
-        if e.get("kpi_forecast_available") and e.get("matchable") and e.get("scenario") == "base"
-    ]
-    if not matchable:
-        return ""
-
-    recent = matchable[-max_entries:]
-    lines = []
-    for entry in recent:
-        rq = entry["review_quarter"]
-        tq = entry["forecast_target"]
-        preds = entry.get("predictions", {})
-        if not preds:
-            continue
-        lines.append(f"【{rq}レビュー → {tq}実績】")
-        lines.append("| KPI | 予測値 | 実績値 | 乖離率 |")
-        lines.append("|-----|--------|--------|--------|")
-        for kpi_name, p in preds.items():
-            pred = p["predicted"]
-            actual = p["actual"]
-            dev = p["deviation_pct"]
-
-            def fmt(v: Any) -> str:
-                if v is None:
-                    return "N/A"
-                if isinstance(v, float) and abs(v) <= 10:
-                    return f"{v*100:.1f}%"
-                if abs(v) >= 1_000_000_000:
-                    return f"${v/1e9:.2f}B"
-                if abs(v) >= 1_000_000:
-                    return f"${v/1e6:.0f}M"
-                return str(v)
-
-            dev_str = f"{dev:+.1f}%" if dev is not None else "N/A"
-            lines.append(f"| {kpi_name} | {fmt(pred)} | {fmt(actual)} | {dev_str} |")
-        lines.append("")
-
-    if not lines:
-        return ""
-
-    body = "\n".join(lines)
-    return (
-        f"## 過去予測の振り返り\n"
-        f"{body}\n"
-        f"過去の予測精度を踏まえて今回の評価の楽観バイアスを調整してください。"
-        f"特に過去に過大評価したKPIには追加の保守的調整を加えてください。\n"
-    )
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="TANUKI TAIL Prediction Tracker — kpi_forecasts vs 実績照合"

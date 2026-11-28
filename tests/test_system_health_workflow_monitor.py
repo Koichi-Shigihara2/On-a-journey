@@ -182,7 +182,8 @@ def test_check_j_no_success_in_window_is_critical(monkeypatch):
 def test_check_j_healthy(monkeypatch):
     _patch_monitored(monkeypatch, [("Score_Verifier.yml", "毎日", 3)])
     monkeypatch.setattr(sh, "_fetch_runs_since", lambda slug, f, since: [_run("success", "2026-10-06T03:26:08Z")])
-    label, ok, detail = sh.check_j_workflow_runs()
+    _j = sh._check_j()
+    label, ok, detail = _j["label"], _j["ok"], _j["detail"]
     assert ok is True and label.startswith("✅")
     assert detail == "1件監視 / すべて正常"
 
@@ -203,14 +204,16 @@ def test_check_j_api_unreachable_is_not_treated_as_failure(monkeypatch):
         raise OSError("network unreachable")
 
     monkeypatch.setattr(sh, "_fetch_runs_since", raise_error)
-    label, ok, detail = sh.check_j_workflow_runs()
+    _j = sh._check_j()
+    label, ok, detail = _j["label"], _j["ok"], _j["detail"]
     assert ok is True
     assert "確認不可" in detail
 
 
 def test_check_j_no_repo_slug_skips_gracefully(monkeypatch):
     monkeypatch.setattr(sh, "_get_repo_slug", lambda: None)
-    label, ok, detail = sh.check_j_workflow_runs()
+    _j = sh._check_j()
+    label, ok, detail = _j["label"], _j["ok"], _j["detail"]
     assert ok is True
 
 

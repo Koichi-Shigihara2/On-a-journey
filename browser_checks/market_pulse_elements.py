@@ -113,10 +113,6 @@ def js_num(v) -> str:
     return str(int(v)) if isinstance(v, float) and v.is_integer() else str(v)
 
 
-def signed(v: float, n: int) -> str:
-    return ("+" if v > 0 else "") + js_fixed(v, n)
-
-
 def sentiment_label(s: float) -> str:
     """index.htmlのzoneLabel()（MP-03、CNN F&Gの区分25/45/55/75）。"""
     if s <= 25: return "EXTREME FEAR"
@@ -162,11 +158,6 @@ def filter_days(entries: list, days: int, now: datetime) -> list:
     cutoff = now - timedelta(days=days)
     out = [d for d in entries if datetime.fromisoformat(d["date"]) >= cutoff]
     return out or list(entries)
-
-
-def fmt_md(iso: str) -> str:
-    d = datetime.fromisoformat(iso).astimezone(JST)
-    return f"{d.month}/{d.day}"
 
 
 # ─────────────────────────────────────────────────────────────────

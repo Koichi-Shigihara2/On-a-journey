@@ -579,29 +579,6 @@ def _get_latest_accn(company_facts: dict) -> Optional[str]:
     return latest_accn
 
 
-def needs_quarterly_update(ticker: str, company_facts: dict, run_state: dict) -> bool:
-    """
-    company_facts の最新 filing の accn を run_state と比較。
-    差分がある（または未記録）場合のみ True を返す。
-    """
-    latest_accn = _get_latest_accn(company_facts)
-    if latest_accn is None:
-        return False
-    saved_accn = run_state.get(ticker.upper(), {}).get("quarterly", {}).get("last_accn")
-    return latest_accn != saved_accn
-
-
-def update_quarterly_run_state(ticker: str, latest_accn: str, run_state: dict) -> dict:
-    """run_state の quarterly セクションを更新して返す"""
-    ticker = ticker.upper()
-    updated = dict(run_state)
-    updated.setdefault(ticker, {})["quarterly"] = {
-        "last_fetched": datetime.now().strftime("%Y-%m-%d"),
-        "last_accn": latest_accn,
-    }
-    return updated
-
-
 if __name__ == "__main__":
     fetcher = SECFetcher()
 

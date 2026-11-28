@@ -48,7 +48,7 @@ def test_same_inventory_has_no_ng_and_known_rules_are_warn():
     saved = _inventory()
     ng, warn = _check_sec(saved, copy.deepcopy(saved))
     assert ng == []
-    assert len([w for w in warn if "WARN-INV-3" in w]) == len(SEC_KNOWN) == 5
+    assert len([w for w in warn if "WARN-INV-3" in w]) == len(SEC_KNOWN) == 3   # 2026-11-28: 古さの判定・会計年度は1か所
 
 
 def test_output_not_in_inventory_is_ng():
@@ -106,7 +106,7 @@ def test_tanuki_known_rules_and_known_screen_keys_are_not_ng():
     saved = _tanuki_inventory()
     ng, warn = _check_tanuki(saved, copy.deepcopy(saved))
     assert ng == []
-    assert len([w for w in warn if "WARN-INV-3" in w]) == len(inv.LAYERS["tanuki"]["KNOWN_DUPLICATE_RULES"]) == 5
+    assert len([w for w in warn if "WARN-INV-3" in w]) == len(inv.LAYERS["tanuki"]["KNOWN_DUPLICATE_RULES"]) == 4   # 2026-11-28: 期の名前は1か所
 
 
 def _new_screen_key_without_writer():
@@ -292,18 +292,18 @@ def test_workflow_working_directory_runs_file():
     assert inv.workflow_runs_file("python -m src.value.adjusted_eps_analyzer.pipeline", "src/value/adjusted_eps_analyzer/pipeline.py")
 
 
-def test_stonks_layer_is_checked_and_staleness_rule_is_known_warn():
+def test_stonks_layer_is_checked_and_staleness_rule_is_now_ng_if_duplicated():
     """STONKS SILO の段階3（2026-10-21）: CHECK-INV を当て、既知の規則の二重（データの古さ・遅れの判定）は WARN、それ以外の新しい二重は NG。"""
     assert "stonks" in inv.CHECK_LAYERS
     known = inv.LAYERS["stonks"]["KNOWN_DUPLICATE_RULES"]
-    assert known == ["staleness"]
+    assert known == []   # 2026-11-28: 古さの判定は common/sec_data/freshness.py::is_stale_period の1か所
     assert inv.LAYERS["stonks"]["LAYER_DIRS"] == ("src/value/stonks_silo",)
     saved = _inventory()
     saved["rules"] = [_rule("staleness", ["src/value/stonks_silo/financial_as_of.py", "common/sec_data/freshness.py"])]
     now = copy.deepcopy(saved)
     now["rules"].append(_rule("verdict_rule", ["src/value/stonks_silo/analyzer.py", "docs/x.html"]))
     ng, warn = inv.check_inventory(saved, now, known_rules=known, out_json="stonks_layer.json", tag="STONKS")
-    assert any("WARN-INV-3" in x and "staleness" in x for x in warn)
+    assert any("NG-INV-3" in x and "staleness" in x for x in ng)
     assert any("NG-INV-3" in x and "verdict_rule" in x for x in ng)
 
 
@@ -462,7 +462,7 @@ def test_tail_layer_settings():
     assert not tl["IO_HELPER_BY_CALLER"]
     assert tl["SCREEN_PAGES"] == ("docs/portfolio/tail",)
     assert "tail" in inv.CHECK_LAYERS[-5:]
-    assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed", "quarter_label", "fiscal_year"]  # grok_call は external_api.py の1か所に（R-E2）
+    assert tl["KNOWN_DUPLICATE_RULES"] == ["latest_filed"]  # grok_call は external_api.py の1か所に（R-E2）
 
 
 def test_api_page_relative_fetch_is_also_page_relative(monkeypatch):

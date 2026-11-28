@@ -261,32 +261,6 @@ class TestLoadDivHistory:
         assert cs._load_div_history(path, window=90) == [1.0]
 
 
-class TestCalcHindenburgActive:
-    """[[MARKETPULSE-MINOR-INCONSISTENCIES-1]]①対応: 固定値500ではなく
-    breadthの実測total_stocksを使うことを検証する。
-    """
-
-    def test_none_breadth_returns_none(self):
-        assert cs.calc_hindenburg_active(None) == None  # noqa: E711
-        assert cs.calc_hindenburg_active({}) is None
-
-    def test_uses_actual_total_stocks_not_fixed_500(self):
-        """total_stocks=503のとき、閾値は503*0.022=11.066。
-        nl=11（500基準の閾値11.0なら発火するが、503基準なら11.066>11で不発火）
-        という実データ（2026-04-02等）で確認済みの境界ケースを再現する。"""
-        breadth = {"new_highs_52w": 31, "new_lows_52w": 11, "total_stocks": 503}
-        assert cs.calc_hindenburg_active(breadth) is False
-
-    def test_fires_when_actual_threshold_exceeded(self):
-        breadth = {"new_highs_52w": 12, "new_lows_52w": 12, "total_stocks": 503, "mcclellan_oscillator": -5.0}
-        assert cs.calc_hindenburg_active(breadth, sp500_up_50d=True) is True
-
-    def test_missing_total_stocks_falls_back_to_500(self):
-        # total_stocks欠損時は旧来の500基準にフォールバック（閾値11.0）
-        breadth = {"new_highs_52w": 11, "new_lows_52w": 11, "mcclellan_oscillator": -5.0}
-        assert cs.calc_hindenburg_active(breadth, sp500_up_50d=True) is True
-
-
 class TestCalcHindenburgStandard:
     """MP-18（指示書㉓）: 一般的な定義。新高値・新安値の条件に加え、上昇トレンド・McClellan負・
     新高値≦新安値×2のすべてがそろったときだけ発生とする。条件を1つずつ外すと非発生になる"""

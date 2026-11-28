@@ -584,6 +584,16 @@ def generate_summary(tickers_data: Dict[str, Dict], existing_summary_path: str =
         for t, r in existing_tickers.items():
             r["tanuki"] = t in tanuki
 
+    # 一覧の「古い期末日の印」: 判定は common/sec_data/freshness.py の1か所（[[DUPLICATE-RULES-ZERO-EPIC-1]] 段3）。
+    # 銘柄を絞った実行でマージした古い行も、この実行の日で判定し直す。画面は書いた値を読むだけ
+    from common.sec_data import freshness as _freshness
+    try:
+        _stale_today = datetime.fromisoformat(default_generated_at).date()
+    except ValueError:
+        _stale_today = datetime.now(timezone.utc).date()
+    for _row in existing_tickers.values():
+        _row.update(_freshness.eps_stale_fields(_row.get("latest_filing_date"), _row.get("latest_fiscal_quarter"), _stale_today))
+
     summary = {
         "last_updated": datetime.now().isoformat(),
         **existing_top,

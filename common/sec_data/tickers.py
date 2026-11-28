@@ -62,21 +62,6 @@ def get_cik(ticker: str, csv_path: str | None = None) -> str | None:
     return None
 
 
-def get_tickers_by_flag(flag: str, csv_path: str | None = None) -> list[str]:
-    """
-    指定フラグが 'true' の銘柄リストを返す（statusは見ない）。
-
-    flag: 'hypecore' | 'tanuki' | 'eps' | 'stonks_silo'（stonks_silo は列ではなく common/stonks_target.py の判定。
-    [[DEFICIT-QUALITY-ADOPT-1]]、2026-11-12。statusは見ない扱いのため provisioning も含めて返す）
-    """
-    if flag == STONKS_FLAG:
-        return _stonks_targets(csv_path, include_provisioning=True)
-    return [
-        r["ticker"] for r in _load(csv_path)
-        if r.get(flag, "").strip().lower() == "true"
-    ]
-
-
 # statusのうち、フラグの値に関わらず対象外とすべき値。
 # 'retired'（登録抹消済み）に加え、2026-09-03より'provisioning'
 # （登録処理中・Step 8のNG=0確認前）も除外する（[[REGISTER-FLOW-

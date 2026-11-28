@@ -48,13 +48,13 @@
 - Python・保存済みファイル: `common/market_data/fetcher.py` 行 51・1245・1533・1548・1617・1630（経由 `common/market_data/fetcher.py::get_monitor_tickers`）
 - Python・保存済みファイル: `common/registration/register_ticker.py` 行 101
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 53・73・449・653・667・669（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
-- Python・保存済みファイル: `common/system_health.py` 行 790・1385・1473（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 960・1071（経由 `src/value/adjusted_eps_analyzer/pipeline.py::run`）
+- Python・保存済みファイル: `common/system_health.py` 行 785・1360・1448（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
+- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 970・1081（経由 `src/value/adjusted_eps_analyzer/pipeline.py::run`）
 - テスト・保存済みファイル: `tests/test_eps_run_status.py` 行 95・115・125・133・151・160・174（経由 `src/value/adjusted_eps_analyzer/pipeline.py::run`）
 - テスト・保存済みファイル: `tests/test_market_data_fetcher.py` 行 245・267・280・290・319・335・350・361・371・393・401・422 ほか17（経由 `common/market_data/fetcher.py::get_monitor_tickers`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
 - テスト・保存済みファイル: `tests/test_system_health_ticker_audit.py` 行 71・80・88・96・106・114・120・133・141・154・165・174 ほか4（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
-- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 295・303・435・448（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
+- テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 298・306・438・451（経由 `common/sec_data/registration_validator.py::_load_monitor_tickers`）
 - 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/index.html`
 - 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/stock.html`
 - 画面（経由（src/value/adjusted_eps_analyzer/pipeline.py → docs/value-monitor/adjusted_eps_analyzer/data/summary.json））: `docs/value-monitor/adjusted_eps_analyzer/tickers.html`
@@ -71,8 +71,8 @@
 - Python・保存済みファイル: `common/sector_master.py` 行 34・233・247・257・280・341・350・363（経由 `common/sector_master.py::_load_json`、`common/sector_master.py::load`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 335・355・361（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `common/stonks_target.py` 行 85・104（経由 `common/sector_master.py::load`）
-- Python・保存済みファイル: `common/system_health.py` 行 1111（経由 `common/sector_master.py::load`）
-- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 653（経由 `common/sector_master.py::load`）
+- Python・保存済みファイル: `common/system_health.py` 行 1091（経由 `common/sector_master.py::load`）
+- Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 663（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/sector_classifier_v2.py` 行 44（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/stonks_silo/analyzer.py` 行 468（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 483（経由 `common/sector_master.py::load`）
@@ -131,7 +131,7 @@
 - Python・保存済みファイル: `common/profitability.py` 行 47・545・598・625・657・670（経由 `common/profitability.py::_load`）
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 329・478（経由 `common/stonks_target.py::_load_profitability`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1858（経由 `common/stonks_target.py::_load_profitability`）
-- Python・保存済みファイル: `common/sec_data/tickers.py` 行 99（経由 `common/stonks_target.py::_load_profitability`）
+- Python・保存済みファイル: `common/sec_data/tickers.py` 行 84（経由 `common/stonks_target.py::_load_profitability`）
 - Python・保存済みファイル: `common/stonks_target.py` 行 28・63・75・95・103（経由 `common/stonks_target.py::_load_profitability`）
 - Python・保存済みファイル: `src/value/stonks_silo/analyzer.py` 行 187・576・671・758（経由 `common/profitability.py::load_entry`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 122（経由 `common/profitability.py::load_entry`）

@@ -719,11 +719,6 @@ def _check_j() -> dict:
     return result(f"{icon} {detail}", ok, detail, critical)
 
 
-def check_j_workflow_runs() -> tuple[str, bool, str]:
-    r = _check_j()
-    return r["label"], r["ok"], r["detail"]
-
-
 # ── K. 銘柄棚卸しレポート（[[QUALITY-GATES-EPIC-1]]ゲート4） ───────────
 def _portfolio_tickers() -> set[str]:
     """docs/portfolio/data/portfolio.jsonの全ブローカー・全ポジションから
@@ -972,11 +967,6 @@ def _check_m(path: Optional[str] = None, now: Optional[datetime] = None,
     return result(f"{icon} {detail}", ok, detail, critical)
 
 
-def check_m_sec_freshness() -> tuple[str, bool, str]:
-    r = _check_m()
-    return r["label"], r["ok"], r["detail"]
-
-
 # ── N. 見出しの積み足しの鮮度（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ①、2026-11-01） ──
 # docs/market-monitor/market-pulse/data/headlines/YYYY-MM-DD.json の fetches（取得の記録。新しい記事か変更があった回だけ書く）の
 # 最新の fetched_at を見る。6時間ごとの取得（Market_Pulse_Headlines.yml）と夜のMarket Pulseの回が書く。
@@ -1021,11 +1011,6 @@ def _check_n(data_dir: Optional[str] = None, now: Optional[datetime] = None) -> 
     if age_h > HEADLINES_WARN_HOURS:
         return result(f"⚠️  {detail}・{HEADLINES_WARN_HOURS}時間超", False, detail)
     return result(f"✅ {detail}", True, detail)
-
-
-def check_n_headlines() -> tuple[str, bool, str]:
-    r = _check_n()
-    return r["label"], r["ok"], r["detail"]
 
 
 # ── O. 5分足の日ごとの保存（[[MARKETPULSE-MOVE-POSTMORTEM-EPIC-1]] ②、2026-11-01） ──
@@ -1090,11 +1075,6 @@ def _intraday_missing_days(data_dir: str, date_et, ticker: str, max_back: int = 
     return max(1, n)
 
 
-def check_o_intraday() -> tuple[str, bool, str]:
-    r = _check_o()
-    return r["label"], r["ok"], r["detail"]
-
-
 # ── P. 外の変化・ばらつき（[[EXTERNAL-SOURCE-CHANGE-WATCH-1]]、2026-11-04） ──
 # 取得元の変化を直さずに検知して知らせる欄。件は common/external_watch.py が集める（SECのCIK・タグの途切れ・切り替え・候補外・
 # 期末の数日違い、先物の限月の欄の異常、yfinanceの業種の変化〈業種のマスター〉）。台帳（config/external_change_acknowledged.json）に無い新しい件があれば⚠️
@@ -1125,11 +1105,6 @@ def _check_p(today: Optional[date] = None, fomc_cache_path: Optional[str] = None
                 "new": new}
     return {"label": f"✅ {head} / {fomc_calendar.summary(today, **kw)}", "ok": True, "detail": "", "severity": 0,
             "critical": False, "new": []}
-
-
-def check_p_external_change() -> tuple[str, bool, str]:
-    r = _check_p()
-    return r["label"], r["ok"], r["detail"]
 
 
 # ── Q. 値の日付・鮮度（Market Pulse・MACRO PULSE。common/value_freshness.py の判定を読む） ───────────

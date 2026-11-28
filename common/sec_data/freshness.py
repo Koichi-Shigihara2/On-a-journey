@@ -80,6 +80,38 @@ def pending_filings(accn_to_filingdate: dict[str, str], latest_filed: str,
     return sorted(out, key=lambda x: (x["filing_date"], x["accn"]))
 
 
+# 直近の四半期の期末から数えて「新しい四半期が入っていない」とみなす日数（[[DUPLICATE-RULES-ZERO-EPIC-1]] 段3、2026-11-28）。
+# 判定（期末からの日数が上限を超えたか）はこのファイルの is_stale_period の1か所。上限は使う側の方針:
+#   STONKS SILO: 135日（src/value/stonks_silo/financial_as_of.py。layer3_builder の CURRENT_VALUE_MAX_LAG_DAYS と揃える）
+#   EPS ANALYZER: 次の提出が10-Q（直近がQ1・Q2・Q4）なら145日、10-K（直近がQ3）なら190日。四半期の長さの上限（14週＝98日）＋
+#     提出期限（非早期提出会社の10-Qは45日・10-Kは90日。大規模早期提出会社は40・60日）＋数日の余裕。1本の日数にしないのは、
+#     10-Kの時期（2〜3月）にQ3の期末から135〜150日を過ぎた正常な銘柄まで印が付くため（[[EPS-INDEX-STALE-PERIOD-UNMARKED-1]]）。
+#     直近の四半期が分からない行は190日
+STALE_PERIOD_DAYS_10Q = 145
+STALE_PERIOD_DAYS_10K = 190
+
+
+def is_stale_period(period_end: Optional[str], today: date, limit_days: int) -> Optional[bool]:
+    """期末から today までの日数が limit_days を超えていれば True。期末が読めなければ None。"""
+    try:
+        d = date.fromisoformat(period_end[:10])
+    except (TypeError, ValueError):
+        return None
+    return (today - d).days > limit_days
+
+
+def eps_stale_limit_days(fiscal_quarter: Optional[int]) -> int:
+    return STALE_PERIOD_DAYS_10Q if fiscal_quarter in (1, 2, 4) else STALE_PERIOD_DAYS_10K
+
+
+def eps_stale_fields(period_end: Optional[str], fiscal_quarter: Optional[int], today: date) -> dict[str, Any]:
+    """EPS ANALYZERの一覧の1行に書く古さの印。stale が None（期末が読めない）のときは日数も None。"""
+    limit = eps_stale_limit_days(fiscal_quarter)
+    stale = is_stale_period(period_end, today, limit)
+    days = (today - date.fromisoformat(period_end[:10])).days if stale is not None else None
+    return {"stale": stale, "stale_days": days, "stale_limit_days": limit}
+
+
 def lag_days(filing_date: str, today: Optional[date] = None) -> Optional[int]:
     try:
         d = date.fromisoformat(filing_date[:10])

@@ -802,17 +802,6 @@ def _build_kpi_trend_suffix(
     return " (" + "・".join(parts) + ")"
 
 
-def _lookup_layer2_value(kpi: Dict[str, Any], kpi_data_layer2: Dict[str, Any], quarter: str) -> Optional[Any]:
-    lookup_key = kpi.get("layer2_name") or kpi.get("name", "")
-    kpis = kpi_data_layer2.get("kpis", {})
-    for name, kinfo in kpis.items():
-        if name == lookup_key:
-            for dp in kinfo.get("data", []):
-                if dp.get("quarter") == quarter:
-                    return dp.get("value")
-    return None
-
-
 def _build_kpi_status_table(
     thesis_kpis: List[Dict[str, Any]],
     kpi_data_layer2: Optional[Dict[str, Any]],
@@ -1173,11 +1162,6 @@ def build_stage1_prompt(
   "exit_distance_reason": "...",
   "optimism_bias_warning": null
 }}"""
-
-
-def _calc_yoy_text_stage2(kpi_data: Optional[Dict[str, Any]]) -> str:
-    """Stage 2 プロンプト専用の YoY テキスト（_calc_yoy_text と同一ロジック）"""
-    return _calc_yoy_text(kpi_data)
 
 
 def build_stage2_prompt(

@@ -1382,7 +1382,7 @@ _REPO_ROOT_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 if _REPO_ROOT_DIR not in sys.path:
     sys.path.insert(0, _REPO_ROOT_DIR)
 
-from common.yfinance_utils import safe_yf_ticker, safe_yf_history
+from common.yfinance_utils import safe_yf_ticker
 
 
 class TestSafeYfTicker:
@@ -1418,39 +1418,6 @@ class TestSafeYfTicker:
             result = safe_yf_ticker("AAPL", retries=1, wait=0)
         assert result is None
         assert mock_sleep.call_count == 1  # retries=1 → 1回スリープ
-
-
-class TestSafeYfHistory:
-    def test_returns_empty_df_on_failure(self):
-        """例外が出たとき空 DataFrame を返す"""
-        import pandas as pd
-        with patch("common.yfinance_utils.yf.Ticker") as mock_cls:
-            mock_cls.return_value.history.side_effect = Exception("timeout")
-            result = safe_yf_history("AAPL", period="5d", retries=0)
-            assert isinstance(result, pd.DataFrame)
-            assert result.empty
-
-    def test_returns_data_on_success(self):
-        """正常時は DataFrame を返す"""
-        import pandas as pd
-        fake_df = pd.DataFrame({"Close": [100.0, 101.0]})
-        with patch("common.yfinance_utils.yf.Ticker") as mock_cls:
-            mock_cls.return_value.history.return_value = fake_df
-            result = safe_yf_history("AAPL", period="5d", retries=0)
-            assert not result.empty
-            assert "Close" in result.columns
-
-    def test_accepts_start_end_kwargs(self):
-        """start/end キーワード引数を history に渡せる"""
-        import pandas as pd
-        fake_df = pd.DataFrame({"Close": [150.0]})
-        with patch("common.yfinance_utils.yf.Ticker") as mock_cls:
-            mock_cls.return_value.history.return_value = fake_df
-            result = safe_yf_history("AAPL", period=None, start="2026-01-01", end="2026-01-05", retries=0)
-            mock_cls.return_value.history.assert_called_once_with(
-                period=None, start="2026-01-01", end="2026-01-05"
-            )
-            assert not result.empty
 
 
 # ─────────────────────────────────────────────

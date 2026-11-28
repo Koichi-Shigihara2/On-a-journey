@@ -1054,10 +1054,6 @@ def _calc_adjusted_per(
         return None
 
 
-def create_calculator(**kwargs) -> KoichiValuationCalculator:
-    return KoichiValuationCalculator(**kwargs)
-
-
 if __name__ == "__main__":
     calculator = KoichiValuationCalculator()
 
