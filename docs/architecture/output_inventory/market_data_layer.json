@@ -24,14 +24,6 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Daily_Update.yml",
-     "line": 78,
-     "func": "",
-     "how": "保存済みファイル",
-     "via": "grep",
-     "type": "ワークフロー"
-    },
-    {
-     "file": ".github/workflows/Market_Data_Daily_Update.yml",
      "line": 80,
      "func": "",
      "how": "保存済みファイル",
@@ -40,7 +32,23 @@
     },
     {
      "file": ".github/workflows/Market_Data_Daily_Update.yml",
-     "line": 82,
+     "line": 83,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": ".github/workflows/Market_Data_Daily_Update.yml",
+     "line": 85,
+     "func": "",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "ワークフロー"
+    },
+    {
+     "file": ".github/workflows/Market_Data_Daily_Update.yml",
+     "line": 87,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -153,7 +161,7 @@
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Daily_Update.yml",
-     "line": 139,
+     "line": 145,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -591,7 +599,7 @@
     },
     {
      "key": "analyst_count",
-     "reader_files": 4
+     "reader_files": 5
     },
     {
      "key": "analyst_recommendation_key",
@@ -630,12 +638,16 @@
      "reader_files": 4
     },
     {
+     "key": "estimates",
+     "reader_files": 1
+    },
+    {
      "key": "ev_to_ebitda",
      "reader_files": 4
     },
     {
      "key": "fetched_at",
-     "reader_files": 9
+     "reader_files": 10
     },
     {
      "key": "forward_eps",
@@ -687,7 +699,7 @@
     },
     {
      "key": "revenue_growth",
-     "reader_files": 1
+     "reader_files": 2
     },
     {
      "key": "sector",
@@ -746,6 +758,14 @@
     {
      "file": "common/earnings_pending.py",
      "line": 117,
+     "func": "build",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/guidance_gap.py",
+     "line": 49,
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -1057,7 +1077,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 403,
+     "line": 397,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -1065,7 +1085,15 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1003,
+     "line": 460,
+     "func": "TanukiValuationPipeline.run",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 995,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -1073,7 +1101,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 1088,
+     "line": 1080,
      "func": "TanukiValuationPipeline._save_result",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -1081,7 +1109,23 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3312,
+     "line": 1141,
+     "func": "TanukiValuationPipeline._save_result",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 1182,
+     "func": "TanukiValuationPipeline._save_result",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "src/value/tanuki_valuation/pipeline.py",
+     "line": 3397,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -1089,7 +1133,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3335,
+     "line": 3420,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -1097,7 +1141,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3896,
+     "line": 3981,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
@@ -2045,7 +2089,7 @@
     "理論株価・判定（TANUKI VALUATION）",
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
-   "reader_count": 17,
+   "reader_count": 18,
    "reader_count_test": 18,
    "reader_count_compute": 0,
    "group": "2件以上",
@@ -2072,17 +2116,17 @@
    "top_keys": [
     {
      "key": "records",
-     "reader_files": 14
+     "reader_files": 17
     },
     {
      "key": "symbol",
-     "reader_files": 11
+     "reader_files": 12
     }
    ],
    "readers": [
     {
      "file": ".github/workflows/Market_Data_Daily_Update.yml",
-     "line": 133,
+     "line": 139,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -2090,7 +2134,7 @@
     },
     {
      "file": "browser_checks/check_dependency_map.py",
-     "line": 194,
+     "line": 193,
      "func": "expected_hindenburg_active",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2098,7 +2142,7 @@
     },
     {
      "file": "browser_checks/check_dependency_map.py",
-     "line": 412,
+     "line": 411,
      "func": "main",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2106,7 +2150,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 806,
+     "line": 808,
      "func": "_real_rows",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2114,7 +2158,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 827,
+     "line": 829,
      "func": "run_derivation_checks",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2122,7 +2166,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 844,
+     "line": 846,
      "func": "run_derivation_checks",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2130,7 +2174,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 871,
+     "line": 873,
      "func": "run_derivation_checks",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2138,7 +2182,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 948,
+     "line": 950,
      "func": "classify_base_dates",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2150,6 +2194,54 @@
      "func": "collect",
      "how": "保存済みファイル",
      "via": "common/market_data/futures_roll.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/daily_guard.py",
+     "line": 71,
+     "func": "jpx_pending",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/daily_guard.py",
+     "line": 77,
+     "func": "jpx_pending",
+     "how": "保存済みファイル",
+     "via": "AST",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/daily_guard.py",
+     "line": 91,
+     "func": "decide",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/daily_guard.py",
+     "line": 101,
+     "func": "decide",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/daily_guard.py",
+     "line": 114,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/daily_guard.py",
+     "line": 121,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
      "type": "Python"
     },
     {
@@ -2721,6 +2813,14 @@
      "type": "Python"
     },
     {
+     "file": "scripts/migrate_market_data_latest.py",
+     "line": 57,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/reader.py::_load_daily_payload",
+     "type": "Python"
+    },
+    {
      "file": "src/market/market_pulse/breadth_calculator.py",
      "line": 144,
      "func": "compute_breadth",
@@ -2826,7 +2926,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 757,
+     "line": 768,
      "func": "_aligned_pair_closes",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2834,7 +2934,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 758,
+     "line": 769,
      "func": "_aligned_pair_closes",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2842,7 +2942,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 835,
+     "line": 846,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2850,7 +2950,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 865,
+     "line": 876,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2858,7 +2958,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 866,
+     "line": 877,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2866,7 +2966,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 914,
+     "line": 925,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2874,7 +2974,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 938,
+     "line": 949,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2882,7 +2982,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 950,
+     "line": 961,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2890,7 +2990,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 951,
+     "line": 962,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2898,7 +2998,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 987,
+     "line": 998,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2906,7 +3006,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 988,
+     "line": 999,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2914,7 +3014,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1017,
+     "line": 1028,
      "func": "get_realtime_data",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2922,7 +3022,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1212,
+     "line": 1251,
      "func": "collect_asset_flow",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2930,7 +3030,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1287,
+     "line": 1326,
      "func": "sp500_up_vs_50d",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2938,7 +3038,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1432,
+     "line": 1497,
      "func": "check_data_freshness",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2946,7 +3046,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1816,
+     "line": 1905,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2954,7 +3054,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1834,
+     "line": 1923,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2962,7 +3062,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1875,
+     "line": 1965,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2970,7 +3070,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1881,
+     "line": 1971,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2978,7 +3078,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1911,
+     "line": 2011,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -2986,7 +3086,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1924,
+     "line": 2024,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -3058,7 +3158,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 403,
+     "line": 397,
      "func": "TanukiValuationPipeline.run",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
@@ -3206,6 +3306,102 @@
      "func": "TestResetWindowSkip.test_fewer_missing_proceeds",
      "how": "保存済みファイル",
      "via": "common/market_data/fetcher.py::fetch_daily_prices",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 319,
+     "func": "TestDailyGuard._decide",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 322,
+     "func": "TestDailyGuard.test_before_close_plus_20min",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 323,
+     "func": "TestDailyGuard.test_before_close_plus_20min",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 326,
+     "func": "TestDailyGuard.test_holiday_and_early_close",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 328,
+     "func": "TestDailyGuard.test_holiday_and_early_close",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 336,
+     "func": "TestDailyGuard.test_insurance_runs_use_previous_us_trading_day",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 339,
+     "func": "TestDailyGuard.test_insurance_runs_use_previous_us_trading_day",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 342,
+     "func": "TestDailyGuard.test_insurance_runs_use_previous_us_trading_day",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 344,
+     "func": "TestDailyGuard.test_insurance_runs_use_previous_us_trading_day",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 353,
+     "func": "TestDailyGuard.test_insurance_runs_noop_when_evening_run_already_fetched",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 360,
+     "func": "TestDailyGuard.test_already_complete",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_close_missing_price.py",
+     "line": 364,
+     "func": "TestDailyGuard.test_already_complete",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
      "type": "テスト"
     },
     {
@@ -4295,6 +4491,78 @@
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::_load_daily_payload",
      "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 95,
+     "func": "test_daily_guard_retries_when_n225_expected_bar_is_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 96,
+     "func": "test_daily_guard_retries_when_n225_expected_bar_is_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 102,
+     "func": "test_daily_guard_retries_when_n225_expected_bar_is_missing",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 109,
+     "func": "test_daily_guard_gives_up_after_retry_window_and_without_file",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 111,
+     "func": "test_daily_guard_gives_up_after_retry_window_and_without_file",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 114,
+     "func": "test_daily_guard_gives_up_after_retry_window_and_without_file",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 151,
+     "func": "test_daily_guard_mode_jpx_only_vs_full",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 154,
+     "func": "test_daily_guard_mode_jpx_only_vs_full",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_value_freshness.py",
+     "line": 162,
+     "func": "test_daily_guard_jpx_only_when_us_closes_are_complete",
+     "how": "保存済みファイル",
+     "via": "common/market_data/daily_guard.py::jpx_pending",
+     "type": "テスト"
     }
    ],
    "readers_compute": [
@@ -4393,8 +4661,8 @@
     "理論株価・判定（TANUKI VALUATION）",
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
-   "reader_count": 20,
-   "reader_count_test": 14,
+   "reader_count": 22,
+   "reader_count_test": 15,
    "reader_count_compute": 1,
    "group": "2件以上",
    "note": "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
@@ -4437,7 +4705,7 @@
    "readers": [
     {
      "file": "browser_checks/check_dependency_map.py",
-     "line": 399,
+     "line": 398,
      "func": "run_browser_checks",
      "how": "保存済みファイル",
      "via": "browser_checks/market_pulse_elements.py::expected_holiday_rows",
@@ -4445,7 +4713,7 @@
     },
     {
      "file": "browser_checks/check_dependency_map.py",
-     "line": 409,
+     "line": 408,
      "func": "main",
      "how": "保存済みファイル",
      "via": "browser_checks/market_pulse_elements.py::expected_holiday_rows",
@@ -4453,7 +4721,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 218,
+     "line": 220,
      "func": "expected_holiday_rows",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4461,7 +4729,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 221,
+     "line": 223,
      "func": "expected_holiday_rows",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4469,7 +4737,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 539,
+     "line": 541,
      "func": "run_market_pulse_element_checks",
      "how": "保存済みファイル",
      "via": "browser_checks/market_pulse_elements.py::expected_holiday_rows",
@@ -4477,7 +4745,7 @@
     },
     {
      "file": "docs/market-monitor/market-pulse/index.html",
-     "line": 1392,
+     "line": 1422,
      "func": "",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4485,7 +4753,7 @@
     },
     {
      "file": "src/market/market_pulse/collect_and_send.py",
-     "line": 1929,
+     "line": 2030,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "grep",
@@ -4501,7 +4769,7 @@
     },
     {
      "page": "docs/value-monitor/tanuki_score/index.html",
-     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/market_data.json）"
+     "how": "経由（src/market/market_pulse/collect_and_send.py → docs/market-monitor/market-pulse/data/latest.json）"
     }
    ],
    "definitions": [],
@@ -4546,7 +4814,7 @@
    "readers": [
     {
      "file": "browser_checks/check_dependency_map.py",
-     "line": 412,
+     "line": 411,
      "func": "main",
      "how": "保存済みファイル",
      "via": "browser_checks/market_pulse_elements.py::run_derivation_checks",
@@ -4554,7 +4822,7 @@
     },
     {
      "file": "browser_checks/check_dependency_map.py",
-     "line": 448,
+     "line": 447,
      "func": "main",
      "how": "保存済みファイル",
      "via": "browser_checks/market_pulse_elements.py::classify_base_dates",
@@ -4562,7 +4830,7 @@
     },
     {
      "file": "browser_checks/check_dependency_map.py",
-     "line": 458,
+     "line": 457,
      "func": "<module>",
      "how": "保存済みファイル",
      "via": "browser_checks/market_pulse_elements.py::run_derivation_checks",
@@ -4578,7 +4846,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 864,
+     "line": 866,
      "func": "run_derivation_checks",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4586,7 +4854,7 @@
     },
     {
      "file": "browser_checks/market_pulse_elements.py",
-     "line": 944,
+     "line": 946,
      "func": "classify_base_dates",
      "how": "保存済みファイル",
      "via": "AST",
@@ -4738,6 +5006,7 @@
    "code": [
     "common/sec_data/report_consistency_check.py",
     "common/system_health.py",
+    "common/value_freshness.py",
     "src/market/macro_pulse/05_main.py",
     "src/market/market_pulse/breadth_calculator.py",
     "src/market/market_pulse/collect_and_send.py",
@@ -4764,7 +5033,7 @@
    "dir": "common/market_data",
    "file": "common/market_data/daily_guard.py",
    "decision": "残す（2026-10-22）",
-   "lines": 84,
+   "lines": 121,
    "workflows": [
     ".github/workflows/Market_Data_Daily_Update.yml"
    ],
@@ -4775,7 +5044,8 @@
    "tests": [
     "tests/test_close_missing_price.py",
     "tests/test_market_data_daily_dispatch_guard.py",
-    "tests/test_market_data_stale_provisional.py"
+    "tests/test_market_data_stale_provisional.py",
+    "tests/test_value_freshness.py"
    ]
   },
   {
@@ -4838,8 +5108,10 @@
     "browser_checks/check_dependency_map.py",
     "browser_checks/market_pulse_elements.py",
     "common/earnings_pending.py",
+    "common/guidance_gap.py",
     "common/sec_data/audit.py",
     "scripts/analysis/market_pulse_redesign.py",
+    "scripts/migrate_market_data_latest.py",
     "src/market/market_pulse/breadth_calculator.py",
     "src/market/market_pulse/collect_and_send.py",
     "src/value/adjusted_eps_analyzer/extract_key_facts.py",
@@ -4860,6 +5132,7 @@
     "tests/test_collect_and_send_market_data_switch.py",
     "tests/test_market_data_reader.py",
     "tests/test_market_data_stale_provisional.py",
+    "tests/test_market_pulse_latest.py",
     "tests/test_reference_check.py"
    ]
   },
@@ -4962,7 +5235,7 @@
   "outputs": 9,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [],
-  "python_read_sites_into_layer_resolved": 19,
+  "python_read_sites_into_layer_resolved": 20,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/market_data/fetcher.py",
@@ -4971,7 +5244,7 @@
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 34,
+  "name_hit_sites_resolved": 36,
   "name_hit_sites_undetermined": [
    {
     "file": "common/market_data/split_reconcile.py",
@@ -4999,7 +5272,7 @@
    }
   ],
   "ratio_writer": 0.0,
-  "ratio_reader": 0.086,
+  "ratio_reader": 0.082,
   "threshold": 0.1,
   "hit": false
  },
@@ -5007,12 +5280,12 @@
   {
    "workflow": ".github/workflows/Market_Data_Daily_Update.yml",
    "lines": [
-    129,
-    130,
-    131,
-    132,
-    134,
-    136
+    135,
+    136,
+    137,
+    138,
+    140,
+    142
    ],
    "keys": [
     {
@@ -5063,7 +5336,7 @@
     "sources": [
      "common/market_data/daily/{T}.json"
     ],
-    "note": ""
+    "note": "残す: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS の動的な読み）"
    },
    {
     "key": "_validation_warnings",
@@ -5079,6 +5352,13 @@
      "common/market_data/analyst_history/{T}.json"
     ],
     "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+   },
+   {
+    "key": "down_7d",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": ""
    },
    {
     "key": "eps_actual",
@@ -5106,7 +5386,7 @@
     "sources": [
      "common/market_data/daily/{T}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 足の訂正の前の値（_corrections の prev）。訂正が正しいかを、人（Claude Code）が日足の訂正の前後を比べて確かめる。テストも参照する"
    },
    {
     "key": "price_target_action",
@@ -5121,7 +5401,7 @@
      "common/market_data/attributes/{T}.json",
      "common/market_data/valuation_history/{T}.json"
     ],
-    "note": ""
+    "note": "残す（作り直せない履歴）: valuation_history は4つの倍率を同じ形で月ごとに溜める（Yahooは直近の値しか返さない）。人（Claude Code）が倍率の推移を調べるとき〈評価の見直し・バックテスト〉に読む"
    },
    {
     "key": "prior_price_target",
@@ -5135,7 +5415,7 @@
     "sources": [
      "common/market_data/daily/{T}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む"
    },
    {
     "key": "strong_buy",
@@ -5150,9 +5430,16 @@
      "common/market_data/analyst_history/{T}.json"
     ],
     "note": "残す: 溜まる履歴（analyst_history は追記型で、Yahooが返すのは直近の分だけ。過去の分は取り直せない）"
+   },
+   {
+    "key": "up_7d",
+    "sources": [
+     "common/market_data/attributes/{T}.json"
+    ],
+    "note": ""
    }
   ],
-  "written_key_count": 91,
+  "written_key_count": 100,
   "stale_keys": [
    {
     "key": "next_quarter_eps_date",

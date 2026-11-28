@@ -66,7 +66,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `_description`(3)・`_schema_version`(3)・`changes`(2)・`generated_at`(4)・`rules`(3)・`tickers`(15)
 - Python・保存済みファイル: `common/external_watch.py` 行 54（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `common/profitability.py` 行 596・657・670（経由 `common/sector_master.py::load`）
-- Python・保存済みファイル: `common/sec_data/reader.py` 行 818（経由 `common/sector_master.py::load`）
+- Python・保存済みファイル: `common/sec_data/reader.py` 行 838（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2774（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `common/sector_master.py` 行 33・253・267・277・300・362・371・384（経由 `common/sector_master.py::_load_json`、`common/sector_master.py::load`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 335・355・361（経由 `common/sector_master.py::load`）
@@ -74,14 +74,14 @@
 - Python・保存済みファイル: `common/system_health.py` 行 1111（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 653（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/sector_classifier_v2.py` 行 44（経由 `common/sector_master.py::load`）
-- Python・保存済みファイル: `src/value/stonks_silo/analyzer.py` 行 472（経由 `common/sector_master.py::load`）
+- Python・保存済みファイル: `src/value/stonks_silo/analyzer.py` 行 469（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 483（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/fcfe.py` 行 54・56（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/rice.py` 行 368（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 944（経由 `common/sector_master.py::load`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/growth_sanity.py` 行 180・198・209・214・288・472（経由 `src/value/tanuki_valuation/growth_sanity.py::_load_sector_tables`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/maturity_config.py` 行 213・216・249（経由 `src/value/tanuki_valuation/growth_sanity.py::_load_sector_tables`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 1619・2501・2871・3155・3304（経由 `common/sector_master.py::load`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 1619・2501・2871・3156・3305（経由 `common/sector_master.py::load`）
 - テスト・保存済みファイル: `tests/test_deficit_quality_adopt.py` 行 163（経由 `common/sector_master.py::load`）
 - テスト・保存済みファイル: `tests/test_eps_sector_classifier_master.py` 行 32・33・34・35・36・37・43・45・54（経由 `common/sector_master.py::load`）
 - テスト・保存済みファイル: `tests/test_financial_judgment_master.py` 行 27・28・29・34・35・36・37・41・46・47・48（経由 `common/sector_master.py::load`）
@@ -133,9 +133,9 @@
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1858（経由 `common/stonks_target.py::_load_profitability`）
 - Python・保存済みファイル: `common/sec_data/tickers.py` 行 99（経由 `common/stonks_target.py::_load_profitability`）
 - Python・保存済みファイル: `common/stonks_target.py` 行 28・63・75・95・103（経由 `common/stonks_target.py::_load_profitability`）
-- Python・保存済みファイル: `src/value/stonks_silo/analyzer.py` 行 190・594・692・779（経由 `common/profitability.py::load_entry`）
+- Python・保存済みファイル: `src/value/stonks_silo/analyzer.py` 行 187・577・672・759（経由 `common/profitability.py::load_entry`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 122（経由 `common/profitability.py::load_entry`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 460・1362・1414・2968・2980・3980（経由 `common/profitability.py::load_entry`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 460・1362・1414・2969・2981・3981（経由 `common/profitability.py::load_entry`）
 - テスト・保存済みファイル: `tests/test_dcf_phase1_taper.py` 行 91（経由 `common/profitability.py::load_entry`）
 - テスト・保存済みファイル: `tests/test_deficit_quality_adopt.py` 行 102・103・104・105・129・130・148・150・159・163・164（経由 `common/stonks_target.py::_load_profitability`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 211・233・253・266・285・289・294・299・304・309・642・662 ほか22（経由 `common/profitability.py::load_entry`）
@@ -180,7 +180,7 @@
 | `earnings_date` | — | `common/market_data/fetcher.py`<br>`src/value/tanuki_valuation/pipeline.py` | — |
 | `earnings_source`（**読み手なし**） | — | — | 残す（2026-11-27）: 予定日の出どころ（Yahoo／8-K Item 2.02）。部品のテストが検証する。8-Kを使い始めたら確かめに要る。画面・コードの読み手は無い |
 | `layer3_period_end` | `value-monitor/tanuki_score/index.html`<br>`value-monitor/tanuki_valuation/stock.html` | — | — |
-| `announced_period_end_est`（**読み手なし**） | — | — | — |
+| `announced_period_end_est`（**読み手なし**） | — | — | 残す（確認用）: 発表された期の期末の推定（status・label の根拠）。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる |
 | `label` | `portfolio/tail/detail.html`<br>`value-monitor/tanuki_score/index.html`<br>`value-monitor/tanuki_valuation/stock.html` | `src/value/tanuki_valuation/pipeline.py` | — |
 | `note` | `value-monitor/tanuki_score/index.html`<br>`value-monitor/tanuki_valuation/stock.html` | `common/market_data/fetcher.py`<br>`src/value/tanuki_valuation/pipeline.py` | — |
 
@@ -324,7 +324,7 @@
 - `etf_by_sector`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
 - `ev_gross_profit`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
 - `expected_factor`（`config/split_price_ledger.json`）: 残す: 分割の調整の台帳の根拠（人が確かめる記録。price_factor は multiples.py が台帳から読む〈動的〉）
-- `fair_value_change`（`docs/common/profitability.json`）
+- `fair_value_change`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
 - `fcf_points`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）
 - `financial_excluded_industries`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
 - `financial_sectors`（`config/sector_master.json`）: 残す: config/sector_master.json の rules の写し（業種の名前の規則。正は sector_master.py の定数で、JSON は人が読む控え。docstring「マスターにも写しを書く」）。これを読んで動くコードは無い（定数を直接使う）。JSON を正にするか写しをやめるかはチャット側の判断（FINDINGS）
@@ -334,7 +334,7 @@
 - `forward_pe_snapshot_date`（`docs/common/multiples/{T}.json`）: 残す: 倍率の根拠・時点の履歴（月末ごとの値は作り直せない。定義v2が倍率の種類を名前で選んで読む〈動的な読みは一覧が拾えない〉）
 - `g_f`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
 - `g_m`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
-- `impairment`（`docs/common/profitability.json`）
+- `impairment`（`docs/common/profitability.json`）: 残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる
 - `l_industry`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
 - `l_own`（`docs/common/stage_v2/{T}.json`）: 残す: 定義v2の並行計算の根拠（公開前。STAGE-V2-ROLLOUT-1 の切り替えで読み手ができる）
 - `margins`（`docs/common/profitability.json`）: 残す: 収益の段階・黒字化の見込みの根拠の記録（回帰の傾き・点・R²・基準の四半期。画面は段階と年数だけ読む。過去の時点の根拠は作り直せない）

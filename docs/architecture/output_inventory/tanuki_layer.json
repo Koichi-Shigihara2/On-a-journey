@@ -4069,6 +4069,14 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_output_inventory_check.py",
+     "line": 732,
+     "func": "test_inv6b_unread_key_without_note_is_counted_even_after_rebuild",
+     "how": "保存済みファイル",
+     "via": "tests/test_output_inventory_check.py::_tanuki_inventory",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_pipeline_logic.py",
      "line": 461,
      "func": "TestBsAdjustmentCashMissingPropagation.test_cprt_type_financial_health_flag_and_no_runway",
@@ -14982,7 +14990,7 @@
     "parents": [
      "handset_growth_age"
     ],
-    "note": ""
+    "note": "残す（確認用）: 手書きの成長率（handset_growth）の鮮度の日数。status が stale になった理由を、人（Claude Code）が latest.json で確かめる"
    },
    {
     "key": "announced_period_end_est",
@@ -14992,7 +15000,7 @@
     "parents": [
      "earnings_pending"
     ],
-    "note": ""
+    "note": "残す（確認用）: 決算は反映前の印（earnings_pending）の根拠。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる"
    },
    {
     "key": "calculation_steps",
@@ -15000,7 +15008,7 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/history/{filename_safe}.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す（監査用）: 履歴ファイルの計算過程。過去の理論株価が今と違うとき、人（Claude Code）が history/{日付}.json を開いて、当時の計算の各段を比べる"
    },
    {
     "key": "dilution_basis",
@@ -15010,7 +15018,7 @@
     "parents": [
      "financial_health"
     ],
-    "note": ""
+    "note": "残す（確認用）: 希薄化の率の取り方（3年／上場来）。希薄化の判定が動いたとき、人（Claude Code）が latest.json でどちらの基準だったかを確かめる"
    },
    {
     "key": "dupont_bs_period",
@@ -15030,7 +15038,7 @@
     "parents": [
      "earnings_pending"
     ],
-    "note": ""
+    "note": "残す（確認用）: 決算は反映前の印（earnings_pending）の根拠。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる"
    },
    {
     "key": "estimates_fetched_at",
@@ -15040,7 +15048,7 @@
     "parents": [
      "guidance_gap"
     ],
-    "note": ""
+    "note": "残す（確認用）: 成長率と予想の差（guidance_gap）の予想を取った時刻。Market Data Weekly の後の確認で、人（Claude Code）が予想の鮮度を確かめる"
    },
    {
     "key": "fallback",
@@ -15060,7 +15068,7 @@
     "parents": [
      "kpi_data"
     ],
-    "note": ""
+    "note": "残す（監査用）: 履歴ファイルの会計年度末。過去の行を読む人（Claude Code）が、その行が何年度の値かを確かめる"
    },
    {
     "key": "formula_verification",
@@ -15113,7 +15121,7 @@
      "docs/value-monitor/tanuki_valuation/data/{T}/score_history.json"
     ],
     "parents": [],
-    "note": ""
+    "note": "残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）"
    },
    {
     "key": "pt_shares_consistency",
@@ -15134,7 +15142,7 @@
     "parents": [
      "growth_sanity"
     ],
-    "note": ""
+    "note": "残す（確認用）: 成長率の健全性（growth_sanity）の根拠の重み。推奨成長率が動いたとき、人（Claude Code）が根拠の強さを latest.json で確かめる"
    },
    {
     "key": "segment_quarter",

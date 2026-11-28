@@ -828,7 +828,7 @@
     },
     {
      "file": "common/sec_data/reader.py",
-     "line": 818,
+     "line": 838,
      "func": "SECReader.get_net_cash",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -972,7 +972,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 472,
+     "line": 469,
      "func": "StonksAnalyzer._analyze_runway",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1116,7 +1116,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3155,
+     "line": 3156,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -1124,7 +1124,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3304,
+     "line": 3305,
      "func": "TanukiValuationPipeline._load_extra_data",
      "how": "保存済みファイル",
      "via": "common/sector_master.py::load",
@@ -2095,7 +2095,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 190,
+     "line": 187,
      "func": "StonksAnalyzer.analyze",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2103,7 +2103,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 594,
+     "line": 577,
      "func": "StonksAnalyzer._analyze_profitability_path",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2111,7 +2111,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 692,
+     "line": 672,
      "func": "StonksAnalyzer._analyze_profitability_path",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2119,7 +2119,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 779,
+     "line": 759,
      "func": "StonksAnalyzer._breakeven_estimate",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2159,7 +2159,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2968,
+     "line": 2969,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2167,7 +2167,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 2980,
+     "line": 2981,
      "func": "TanukiValuationPipeline._generate_report",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -2175,7 +2175,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3980,
+     "line": 3981,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "common/profitability.py::load_entry",
@@ -3533,7 +3533,7 @@
      "readers": [],
      "screens": [],
      "code": [],
-     "note": ""
+     "note": "残す（確認用）: 発表された期の期末の推定（status・label の根拠）。印が付いた・外れた理由を、決算の後の確認手順で、人（Claude Code）が latest.json を開いて確かめる"
     },
     {
      "key": "label",
@@ -4369,7 +4369,7 @@
     "sources": [
      "docs/common/profitability.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる"
    },
    {
     "key": "fcf_points",
@@ -4439,7 +4439,7 @@
     "sources": [
      "docs/common/profitability.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 黒字化の予測から除いた分の種類別の内訳（by_kind のキー名）。画面・report.txt は exclusions（文）を読む。除外の額が合わないとき、人（Claude Code）が種類別の額をこのファイルで確かめる"
    },
    {
     "key": "l_industry",

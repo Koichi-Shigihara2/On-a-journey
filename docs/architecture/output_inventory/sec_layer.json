@@ -5541,7 +5541,7 @@
     },
     {
      "file": "src/value/stonks_silo/analyzer.py",
-     "line": 486,
+     "line": 482,
      "func": "StonksAnalyzer._analyze_runway",
      "how": "保存済みファイル",
      "via": "common/sec_data/layer3_builder.py::load_company_facts",
@@ -15744,28 +15744,28 @@
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "accn_aligned_anchor",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "aligned_to_sibling_accn",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "annual_fill_max_days",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "bs_tag_sources",
@@ -15773,49 +15773,49 @@
      "common/sec_data/data/{T}/annual_{YYYY}.json",
      "common/sec_data/data/{T}/quarterly_{Q}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "computed_year",
     "sources": [
      "common/sec_data/data/{T}/fy_tag_mismatch_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
    },
    {
     "key": "cross_check",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "diff_base",
     "sources": [
      "common/sec_data/data/{T}/bs_identity_violations_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
    },
    {
     "key": "diff_base_pct",
     "sources": [
      "common/sec_data/data/{T}/bs_identity_violations_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
    },
    {
     "key": "diff_extended",
     "sources": [
      "common/sec_data/data/{T}/bs_identity_violations_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
    },
    {
     "key": "dimension_aggregate_applied",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "dividends_per_share",
@@ -15845,7 +15845,7 @@
     "sources": [
      "common/sec_data/data/{T}/bs_identity_violations_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
    },
    {
     "key": "finance_lease_payments",
@@ -15866,7 +15866,7 @@
     "sources": [
      "docs/common/sec_data/rotce/{T}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "gap_amount",
@@ -15874,7 +15874,7 @@
      "common/sec_data/data/{T}/annual_{YYYY}.json",
      "common/sec_data/data/{T}/quarterly_{Q}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "goodwill",
@@ -15891,14 +15891,14 @@
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "gp_anchor_realigned_tag",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "gp_estimate",
@@ -15912,7 +15912,7 @@
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "insurance_reserves",
@@ -15948,21 +15948,21 @@
     "sources": [
      "common/sec_data/data/{T}/cf_lines/{accn}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 貸借・CF の行の出所（どの申告のどの行〈lab・role〉から作ったか）。TCE・CapEx の値が疑わしいとき、人（Claude Code）が bs_lines・cf_lines を開いて元の行を辿る"
    },
    {
     "key": "last_quarter",
     "sources": [
      "docs/common/sec_data/rotce/{T}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "legacy_ciks_merged",
     "sources": [
      "common/sec_data/data/{T}/submissions.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 旧CIKを合併して取り込んだ銘柄の記録。取り込みの欠け・二重を調べるとき、人（Claude Code）が submissions.json を開いて読む"
    },
    {
     "key": "method_change_applied",
@@ -15970,14 +15970,14 @@
      "docs/common/sec_data/rotce/_summary.json",
      "docs/common/sec_data/rotce/{T}.json"
     ],
-    "note": ""
+    "note": "残す: 計算方法の変更の『前回読んだ ID』の記録。次の実行が common/method_change.py で前回の出力から読んで印を付ける（定数のキー名で読むので一覧の読みの形では拾えない）"
    },
    {
     "key": "min_quarters",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "n_periods",
@@ -16019,7 +16019,7 @@
     "sources": [
      "common/sec_data/data/{T}/fye_boundary_collision_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
    },
    {
     "key": "override_applied",
@@ -16027,21 +16027,21 @@
      "common/sec_data/data/{T}/annual_{YYYY}.json",
      "common/sec_data/data/{T}/fye_boundary_collision_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "override_reason",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "own_data_side",
     "sources": [
      "common/sec_data/data/{T}/fye_boundary_collision_log.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの検査ログ（*_log.json）。SEC_Data_Update の Summary や rcc に違反・衝突の件数が出たとき、人（Claude Code）がログを開いて、該当の銘柄・期の差〈diff_*・own_data_side など〉を調べる"
    },
    {
     "key": "pretax_raw",
@@ -16055,14 +16055,14 @@
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "ptbv_pctl_min",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "reference_only",
@@ -16070,7 +16070,7 @@
      "docs/common/sec_data/rotce/_summary.json",
      "docs/common/sec_data/rotce/{T}.json"
     ],
-    "note": ""
+    "note": "残す（確認用）: ROTCE が参考表示だけ（判定に使わない）の銘柄の印。ROTCE を判定に使う切り替え（STAGE-V2-ROLLOUT-1）のとき、人（Claude Code）が対象を確かめる"
    },
    {
     "key": "restricted_cash",
@@ -16085,28 +16085,28 @@
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "revenue_tag_realigned",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "revenue_tag_realigned_to",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "rich",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "role",
@@ -16114,28 +16114,28 @@
      "common/sec_data/data/{T}/bs_lines/{accn}.json",
      "common/sec_data/data/{T}/cf_lines/{accn}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 貸借・CF の行の出所（どの申告のどの行〈lab・role〉から作ったか）。TCE・CapEx の値が疑わしいとき、人（Claude Code）が bs_lines・cf_lines を開いて元の行を辿る"
    },
    {
     "key": "rotce_pctl_max",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "rotce_pctl_min",
     "sources": [
      "docs/common/sec_data/rotce/_summary.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "rotce_series",
     "sources": [
      "docs/common/sec_data/rotce/{T}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE・P/TBV のパーセンタイルの基準（何四半期の、どの系列で、どの範囲で出したか）。SOFI の『安い・高い』の判定（percentile.signal）を疑うとき、ROTCE の基準を変えた前後の比較のときに、人（Claude Code）が rotce/{T}.json・_summary.json を読む"
    },
    {
     "key": "sga_captured",
@@ -16143,7 +16143,7 @@
      "common/sec_data/data/{T}/annual_{YYYY}.json",
      "common/sec_data/data/{T}/quarterly_{Q}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "sga_total",
@@ -16159,14 +16159,14 @@
      "common/sec_data/data/{T}/bs_lines/{accn}.json",
      "common/sec_data/data/{T}/cf_lines/{accn}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 貸借・CF の行の出所（どの申告のどの行〈lab・role〉から作ったか）。TCE・CapEx の値が疑わしいとき、人（Claude Code）が bs_lines・cf_lines を開いて元の行を辿る"
    },
    {
     "key": "source_is_own_data",
     "sources": [
      "common/sec_data/data/{T}/annual_{YYYY}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: 取り込みの補正・突き合わせの印。『この年・四半期の値は補正されたか、どの補正か』を、rcc（report_consistency_check）の NG・WARN の原因調査や、PARSER-LAYER3 の段階の前後の比較のときに、人（Claude Code）が annual_{YYYY}.json・quarterly_{Q}.json を直接開いて読む"
    },
    {
     "key": "stock_issued_acquisitions",
@@ -16180,14 +16180,14 @@
     "sources": [
      "docs/common/sec_data/rotce/{T}.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: ROTCE の P/TBV の履歴の分母に使った『その期の最初の申告日までの TCE』（MULTIPLES-ADOPT-1 段4）。`ptbv`（読まれる値）の分母の時点を、人（Claude Code）が後から確かめるときに読む。再申告で `tce`（最新の値）と食い違う行が 1,226 行のうち 69 行ある"
    },
    {
     "key": "verification_command",
     "sources": [
      "common/sec_data/dimension_aggregate_registry.json"
     ],
-    "note": ""
+    "note": "残す（監査用）: dimension_aggregate_registry の登録の検証コマンド。新しい銘柄を登録する手順（register_ticker）や登録の見直しのとき、人（Claude Code）がこのコマンドをそのまま実行して確かめる"
    }
   ],
   "written_key_count": 478,

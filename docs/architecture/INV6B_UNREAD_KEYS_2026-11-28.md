@@ -129,3 +129,10 @@
 | `fair_value_change` | docs/common/profitability.json | B 残す | 黒字化の予測から除いた分の種類別の内訳（`by_kind` のキー名）。画面・report.txt は `exclusions`（文）を読む。内訳は検証用の記録 |
 | `impairment` | docs/common/profitability.json | B 残す | 同上（減損） |
 
+## 決定（2026-11-28、Koichi）と実施
+
+- **B（残す理由を注記）**: グループ単位で、「誰が、どの手順で読むか」を書いた（`scripts/inventory/inventory_layers.py` の `UNREAD_KEY_NOTES`）。`tce_first_val` も B（P/TBV の分母の時点を後から確かめる監査の記録）。読む場面が書けないキーは無かった（`fiscal_year_end` 〈履歴の会計年度末〉だけ読む場面が弱く、「過去の行を読む人が何年度の値かを確かめる」とした）。
+- **Market Pulse の3件**（`fred_daily`・`jpx`・`us_close`）: 「廃止（11-28）。過去のエントリに残るだけで、新しいエントリには出ない」と注記。
+- **STONKS の `core_profit`・`ocf_acceleration`・`ocf_yoy_change`**: 画面（`ocf_trend` だけを読む）・他のコード・動的な読み（`dataclasses.asdict` は書き出しだけ）のどれにも読み手が無かった → **C。書き出しごと消す**（コードの変更は pytest・rcc の結果を報告してから commit。`ocf_trend` を決める速度・加速度は、`_analyze_profitability` の中の変数として残す）。前後比較は STONKS 17銘柄で、3キーが消える以外の差 0。
+- **市場データの `prev`**: 日足の訂正の台帳（`_corrections`）の「訂正の前の値」。人が訂正の前後を比べて確かめる記録で、テストも参照する → **B**（C ではない）。検出漏れではないので FINDINGS は書いていない。
+- **SEC の C（11件）・D（5件）**: 段2a のブランチとぶつかるので触らない。BACKLOG の PARSER-LAYER3 の項に「段2a の公開（12-01）の後に仕分ける」と書いた。それまでは WARN のまま（注記しない）。

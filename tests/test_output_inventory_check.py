@@ -550,7 +550,7 @@ def test_market_pulse_layer_settings():
     assert mp["KNOWN_DUPLICATE_RULES"] == []  # fred_api・grok_endpoint は external_api.py の1か所に（R-E2）
     assert "market_holidays" in [r["id"] for r in mp["RULES"]]
     # 段階2（2026-10-23）: 手で動かすスクリプト4つを消し、誰も読まないキー48と、消したスクリプトだけが読んでいた true・false は理由を書いて残す
-    assert not mp["NON_PRODUCTION_FILES"] and len(mp["UNREAD_KEY_NOTES"]) == 50 and "過去の行の記録" in mp["UNREAD_KEY_NOTES"]["backfilled_at"]
+    assert not mp["NON_PRODUCTION_FILES"] and len(mp["UNREAD_KEY_NOTES"]) == 57 and "過去の行の記録" in mp["UNREAD_KEY_NOTES"]["backfilled_at"]
 
 
 def test_mail_notification_is_output(monkeypatch):
