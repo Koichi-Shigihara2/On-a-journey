@@ -13,7 +13,7 @@ Yahooの日足は分割・分社の後に過去の足も調整した値で返る
     CONTINUITY_ROWS 行のどこかに、1日の動きが CONTINUITY_MAX_MOVE（±50%）を超える所が出るなら、当てない（Yahooの値が一時的に二重に
     調整されている・境の判定が実際の分割の日とずれている疑い）。理由は skips に残し、走査の出力に [SKIP] として出す（人が確かめる）
 
-  - 当てなかった銘柄は、走査のたびに common/market_data/_split_reconcile_skips.json に残す（最初に見た日 first_seen つき。まだ無い: 1度も [SKIP] が出ていないため作っていない）。
+  - 当てなかった銘柄は、走査のたびに common/market_data/_split_reconcile_skips.json に残す（最初に見た日 first_seen つき。今は空の記録を置いてある）。
     System Health の [R] が「新しい [SKIP]」を ⚠️ で出す（2026-11-28）
 
 書き手は `correct_daily_rows` だけ（daily/ を書くのは fetcher.write_daily_rows だけの決まり）。銘柄名は手で書かない。
