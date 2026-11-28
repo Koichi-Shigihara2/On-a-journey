@@ -182,6 +182,42 @@ def audit_ticker(ticker: str) -> dict:
     return result
 
 
+# ── テキストのファイルに NUL バイトが無いこと（2026-11-28） ──
+# コードや設定に区切り文字の `\0` を書いたつもりが、実際の NUL バイトが入ると、Python は「source code string cannot contain
+# null bytes」で読めず、git も差分をバイナリの扱いにする（2026-11-28 に scripts/inventory/inventory_analysis.py で起きた）。
+# git に追加済みのファイルと未追跡のファイル（.gitignore で除いたものは除く）のうち、テキストの拡張子のものを調べる。
+# バイナリ（画像・フォント等）と、UTF-16 の BOM のあるファイルは対象外。
+_TEXT_EXT = (".py", ".js", ".mjs", ".html", ".htm", ".css", ".json", ".md", ".yml", ".yaml", ".csv", ".txt", ".toml", ".cfg", ".ini",
+             ".sh", ".xml", ".svg", ".tsx", ".ts", ".jsx")
+_TEXT_NAMES = (".gitignore", ".gitattributes")
+_NUL = bytes([0])
+_UTF16_BOMS = (bytes([0xFF, 0xFE]), bytes([0xFE, 0xFF]))
+
+
+def find_nul_files(root: str = None, files: list = None) -> list:
+    """テキストのファイルで NUL バイトを含むものを [(相対パス, 最初の行番号, NULの個数)] で返す。root は git のリポジトリ（既定はこのリポジトリ）"""
+    import subprocess
+    root = root or os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if files is None:
+        out = subprocess.run(["git", "-C", root, "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+                             capture_output=True, check=True).stdout.decode("utf-8", "replace")
+        files = sorted({f for f in out.split(chr(0)) if f})
+    found = []
+    for rel in files:
+        if not (rel.lower().endswith(_TEXT_EXT) or os.path.basename(rel) in _TEXT_NAMES):
+            continue
+        try:
+            with open(os.path.join(root, rel), "rb") as f:
+                data = f.read()
+        except OSError:
+            continue                       # 追跡しているが作業ツリーに無い（削除済み）
+        if _NUL not in data or data[:2] in _UTF16_BOMS:
+            continue                       # UTF-16 の BOM のあるファイルは NUL を含むのが普通
+        i = data.index(_NUL)
+        found.append((rel.replace(os.sep, "/"), data[:i].count(bytes([10])) + 1, data.count(_NUL)))
+    return found
+
+
 def run_audit(tickers: list[str]) -> tuple[list[dict], list[dict]]:
     """監査実行。(critical_list, warning_list) を返す"""
     critical_tickers = []
@@ -383,6 +419,15 @@ def main():
             for msg in r["warning"]:  # criticalと同一銘柄のwarningも表示
                 print(f"   {r['ticker']:6s}: ⚠ {msg}")
 
+    # ── テキストのファイルの NUL バイト（NG。ファイル名と行番号を出す）──
+    nul_files = find_nul_files()
+    if nul_files:
+        print(f"🔴 NUL バイトを含むテキストのファイル: {len(nul_files)}件")
+        for rel, line, n in nul_files:
+            print(f"   {rel}:{line}（NUL {n}個。区切り文字の `\\0` を書いたつもりが実際の NUL になっていないか）")
+    else:
+        print("🟢 テキストのファイルに NUL バイトなし")
+
     # ── β乖離チェック（--check-beta 指定時）──
     beta_drift = []
     if check_beta:
@@ -458,8 +503,8 @@ def main():
                     icon = "🔴" if d["level"] == "critical" else "🟡"
                     f.write(f"- {icon} `{d['ticker']}`: {d['msg']}\n")
 
-    # 重大問題があれば exit 1
-    if critical:
+    # 重大問題があれば exit 1（テキストのファイルの NUL バイトも NG）
+    if critical or nul_files:
         print("\n重大問題あり → exit 1")
         sys.exit(1)
 
