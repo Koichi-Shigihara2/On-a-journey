@@ -13072,12 +13072,24 @@
     {
       "date": "2026-10-15",
       "open": 396.760009765625,
-      "high": 406.1400146484375,
-      "low": 395.94500732421875,
+      "high": 406.30999755859375,
+      "low": 395.95001220703125,
       "close": 406.20001220703125,
-      "volume": 911381,
-      "_validation_warnings": [
-        "expected high >= close >= low (got high=406.1400146484375, close=406.20001220703125, low=395.94500732421875)"
+      "volume": 911800,
+      "_validation_warnings": [],
+      "_corrections": [
+        {
+          "at": "2026-11-28T05:43:54Z",
+          "reason": "manual",
+          "reason_label": "明示の修正",
+          "source": "correct_daily_rows:manual",
+          "prev": {
+            "high": 406.1400146484375,
+            "low": 395.94500732421875,
+            "volume": 911381
+          },
+          "note": "Yahooの取り直しで直った（2026-11-28）: high・low・volume が確定値に（取得時は high < close または low > close の印）。close・open は同じ"
+        }
       ]
     },
     {

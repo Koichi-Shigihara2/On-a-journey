@@ -28,7 +28,7 @@ def test_expected_volume_zero_marks_are_not_alerts(tmp_path):
     _write(tmp_path, "JPY=X", [_row("2026-11-26", ["volume must be > 0 (got 0)"])])
     _write(tmp_path, "AAPL", [_row("2026-11-26", [])])
     r = sh._check_r(TODAY, str(tmp_path))
-    assert r["ok"] and r["label"].startswith("✅") and "想定内の出来高0 2" in r["label"] and "それ以外 0行" in r["label"]
+    assert r["ok"] and r["label"].startswith("✅") and "想定内 2" in r["label"] and "それ以外 0行" in r["label"]
 
 
 def test_new_price_anomaly_in_last_7_days_warns_and_old_one_does_not(tmp_path):
@@ -50,3 +50,14 @@ def test_volume_zero_on_a_stock_is_not_expected(tmp_path):
 def test_main_wires_check_r_and_one_line():
     src = open(sh.__file__, encoding="utf-8").read()
     assert "_check_r()" in src and '"R": {"ok": ok_r' in src and '"R": "DailyVal"' in src
+
+
+def test_fx_high_close_low_violation_is_expected_but_not_for_stocks(tmp_path):
+    """為替（=X）の high ≥ close ≥ low の違反は想定内（Yahooの今の値でも出る）。株の同じ印は想定内にしない"""
+    hcl = "expected high >= close >= low (got high=1, close=2, low=0)"
+    _write(tmp_path, "JPY=X", [_row("2026-11-25", [hcl])])
+    r = sh._check_r(TODAY, str(tmp_path))
+    assert r["ok"] and "想定内 1" in r["label"] and "それ以外 0行" in r["label"]
+    _write(tmp_path, "HPE", [_row("2026-11-25", [hcl])])
+    r2 = sh._check_r(TODAY, str(tmp_path))
+    assert not r2["ok"] and "HPE 2026-11-25 expected high >= close >= low" in r2["label"]

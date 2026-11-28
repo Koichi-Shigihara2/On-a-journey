@@ -1271,9 +1271,17 @@ def _volume_zero_expected(symbol: str) -> bool:
     return symbol.startswith("^") or symbol.endswith(("=X", "=F")) or symbol.startswith("DX-Y")
 
 
+def _expected_warning(symbol: str, warning: str) -> bool:
+    """想定内の印: 出来高0が普通の銘柄の『volume must be > 0』、為替（=X）の high ≥ close ≥ low の違反
+    （為替は終値を別の気配で付けるため、Yahooの今の値でも high/low の外に終値が出る日がある。2026-11-28）"""
+    if warning.startswith("volume must be > 0") and _volume_zero_expected(symbol):
+        return True
+    return warning.startswith("expected high >= close >= low") and symbol.endswith("=X")
+
+
 def _check_r(today: Optional[date] = None, daily_dir: Optional[str] = None, window_days: int = 90, new_days: int = 7) -> dict:
     """日足の検証の印（common/market_data/daily/{T}.json の行の `_validation_warnings`。取得時の検証で、保存はするが印を付ける）。
-    直近 window_days 日の印の行数・銘柄数を数え、**想定内**（出来高0が普通の指数・為替・先物の volume の印）と**それ以外**に分ける。
+    直近 window_days 日の印の行数・銘柄数を数え、**想定内**（出来高0が普通の指数・為替・先物の volume の印、為替の high ≥ close ≥ low の違反）と**それ以外**に分ける。
     それ以外の印が直近 new_days 日の行に新しく出ていたら ⚠️（銘柄・日付・印の種類）。過去の日足は書き換えない（2026-11-28）"""
     today = today or date.today()
     ddir = daily_dir or _DAILY_DIR
@@ -1298,7 +1306,7 @@ def _check_r(today: Optional[date] = None, daily_dir: Optional[str] = None, wind
                     continue
                 if d < win_from:
                     continue
-                others = [w for w in warns if not (w.startswith("volume must be > 0") and _volume_zero_expected(sym))]
+                others = [w for w in warns if not _expected_warning(sym, w)]
                 if others:
                     other_rows += 1
                     syms_other.add(sym)
@@ -1309,7 +1317,7 @@ def _check_r(today: Optional[date] = None, daily_dir: Optional[str] = None, wind
                     expected_rows += 1
     except Exception as e:  # noqa: BLE001
         return {"label": f"⚠️  日足を読めない: {type(e).__name__}", "ok": False, "detail": "日足を読めない", "severity": 1, "critical": False}
-    head = (f"直近{window_days}日の印 {other_rows + expected_rows}行（想定内の出来高0 {expected_rows}・それ以外 {other_rows}行/{len(syms_other)}銘柄）")
+    head = (f"直近{window_days}日の印 {other_rows + expected_rows}行（想定内 {expected_rows}・それ以外 {other_rows}行/{len(syms_other)}銘柄）")
     if new_items:
         more = f" ほか{len(new_items) - 3}件" if len(new_items) > 3 else ""
         shown = "、".join(new_items[:3]) + more
