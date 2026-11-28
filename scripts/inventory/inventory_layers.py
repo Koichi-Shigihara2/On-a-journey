@@ -454,6 +454,8 @@ _MARKET.update(
             "銘柄・指数・先物・ETFごとの日次の株価（始値・高値・安値・終値・出来高）。暫定の足・Yahooに足の無い日の印を含む。TANUKI・HypeCore・STONKS・Market Pulse・Score Verifier等が読む",
         "common/market_data/valuation_history/{T}.json":
             "yfinanceの倍率（forward_pe等）の週1回の値を日付つきで積む履歴（追記だけ、[[HYPECORE-STAGE-TIMESCALE-1]] 段B-4）。読み手は倍率の部品（common/multiples.py）",
+        "common/market_data/estimates_history/{T}.json":
+            "アナリストのEPS予想の改定の週1回の履歴（追記だけ。4期間〔0q・+1q・0y・+1y〕の期末日・改定の件数〔7日・30日の上げ・下げ〕・予想EPS〔現在・7・30・60・90日前〕）。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を出すための元で、表示は履歴が回り始めた後（[[EPS-REVISION-OUTLOOK-MARK-1]]）。market_data.json には入れない",
         "common/market_data/attributes/{T}.json":
             "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算のEPSの予想等）",
         "common/market_data/analyst_history/{T}.json":
@@ -497,7 +499,8 @@ _MARKET.update(
         **{k: "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
            for k in ("up_7d", "down_7d")},
         **{k: "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-           for k in ("ago_7d", "ago_30d", "ago_60d", "ago_90d", "period_ends", "fiscal", "most_recent_quarter", "next_fiscal_year_end", "last_fiscal_year_end")},
+           for k in ("ago_7d", "ago_30d", "ago_60d", "ago_90d", "period_ends", "fiscal", "most_recent_quarter", "next_fiscal_year_end", "last_fiscal_year_end",
+                     "up7", "dn7", "up30", "dn30", "e30", "e60", "e90")},
         "_validation_warnings": "残す（確認用）: 取得時の検証の印（保存はするが印を付ける）。common/system_health.py の [R] が直近90日の行を数えて読み、直近7日に出来高0が普通でない銘柄の印が出ると ⚠️ にする。人（Claude Code）が、⚠️ が出たとき該当の日足の行を開いて確かめる",
         "_contract_roll": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）",
         "reason_label": "残す（監査用）: 足の訂正の理由の表示名（_corrections の台帳）。日足の訂正（分割の調整・平らな足の取り直し）を、人（Claude Code）が WARN-62 の確認や調整の検証で読む",

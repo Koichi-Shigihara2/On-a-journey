@@ -68,6 +68,106 @@
    "decision": "残す（2026-10-22）"
   },
   {
+   "path": "common/market_data/estimates_history/{T}.json",
+   "kind": "ファイル",
+   "writers": [
+    {
+     "file": "common/market_data/estimates_history.py",
+     "func": "_dump",
+     "line": 79
+    }
+   ],
+   "writers_outside_layer": [],
+   "launched_by": [
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "files_tracked": 83,
+   "top_keys_sampled_files": 83,
+   "top_keys": [
+    {
+     "key": "description",
+     "reader_files": 1
+    },
+    {
+     "key": "records",
+     "reader_files": 2
+    },
+    {
+     "key": "symbol",
+     "reader_files": 2
+    }
+   ],
+   "readers": [
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 88,
+     "func": "append",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 89,
+     "func": "append",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 107,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 114,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "Python"
+    },
+    {
+     "file": "tests/test_estimates_history.py",
+     "line": 41,
+     "func": "test_append_is_add_only_and_one_row_per_date",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_estimates_history.py",
+     "line": 42,
+     "func": "test_append_is_add_only_and_one_row_per_date",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_estimates_history.py",
+     "line": 44,
+     "func": "test_append_is_add_only_and_one_row_per_date",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "テスト"
+    }
+   ],
+   "readers_compute": [],
+   "producers": [],
+   "screens": [],
+   "definitions": [],
+   "decision_effect": [],
+   "reader_count": 1,
+   "reader_count_test": 1,
+   "reader_count_compute": 0,
+   "group": "1件",
+   "note": "アナリストのEPS予想の改定の週1回の履歴（追記だけ。4期間〔0q・+1q・0y・+1y〕の期末日・改定の件数〔7日・30日の上げ・下げ〕・予想EPS〔現在・7・30・60・90日前〕）。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を出すための元で、表示は履歴が回り始めた後（[[EPS-REVISION-OUTLOOK-MARK-1]]）。market_data.json には入れない",
+   "decision": "残す（2026-10-22）"
+  },
+  {
    "path": "common/market_data/valuation_history/{T}.json",
    "kind": "ファイル",
    "writers": [
@@ -639,7 +739,7 @@
     },
     {
      "key": "estimates",
-     "reader_files": 1
+     "reader_files": 3
     },
     {
      "key": "ev_to_ebitda",
@@ -647,7 +747,7 @@
     },
     {
      "key": "fetched_at",
-     "reader_files": 9
+     "reader_files": 11
     },
     {
      "key": "forward_eps",
@@ -719,7 +819,7 @@
     },
     {
      "key": "symbol",
-     "reader_files": 6
+     "reader_files": 8
     },
     {
      "key": "target_high_price",
@@ -769,6 +869,46 @@
      "func": "build",
      "how": "保存済みファイル",
      "via": "common/market_data/reader.py::get_attributes",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 85,
+     "func": "append",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 102,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "grep",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 105,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::_load",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 107,
+     "func": "main",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "Python"
+    },
+    {
+     "file": "common/market_data/estimates_history.py",
+     "line": 114,
+     "func": "<module>",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::main",
      "type": "Python"
     },
     {
@@ -1532,6 +1672,30 @@
      "type": "テスト"
     },
     {
+     "file": "tests/test_estimates_history.py",
+     "line": 41,
+     "func": "test_append_is_add_only_and_one_row_per_date",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_estimates_history.py",
+     "line": 42,
+     "func": "test_append_is_add_only_and_one_row_per_date",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "テスト"
+    },
+    {
+     "file": "tests/test_estimates_history.py",
+     "line": 44,
+     "func": "test_append_is_add_only_and_one_row_per_date",
+     "how": "保存済みファイル",
+     "via": "common/market_data/estimates_history.py::append",
+     "type": "テスト"
+    },
+    {
      "file": "tests/test_extract_key_facts_net_income_selection.py",
      "line": 107,
      "func": "TestNetIncomeLossPreferredOverProfitLoss.test_annual_prefers_net_income_loss",
@@ -2089,8 +2253,8 @@
     "理論株価・判定（TANUKI VALUATION）",
     "HypeCore（TANUKI のtiming・判定の入力）"
    ],
-   "reader_count": 18,
-   "reader_count_test": 18,
+   "reader_count": 19,
+   "reader_count_test": 19,
    "reader_count_compute": 0,
    "group": "2件以上",
    "note": "銘柄ごとの週次の属性（yfinanceの.infoのスナップショット: β・時価総額・PER・セクター・アナリストの目標株価・次の決算のEPSの予想等）",
@@ -5194,6 +5358,21 @@
   },
   {
    "dir": "common/market_data",
+   "file": "common/market_data/estimates_history.py",
+   "decision": "残す（2026-10-22）",
+   "lines": 114,
+   "workflows": [
+    ".github/workflows/Market_Data_Weekly_Update.yml"
+   ],
+   "code": [],
+   "same_dir": [],
+   "tests": [
+    "tests/test_estimates_history.py",
+    "tests/test_weekly_workflow_git_add.py"
+   ]
+  },
+  {
+   "dir": "common/market_data",
    "file": "common/market_data/fetcher.py",
    "decision": "残す（2026-10-22）",
    "lines": 1632,
@@ -5216,6 +5395,7 @@
    "tests": [
     "tests/conftest.py",
     "tests/test_close_missing_price.py",
+    "tests/test_estimates_history.py",
     "tests/test_futures_roll.py",
     "tests/test_market_data_daily_write.py",
     "tests/test_market_data_fetcher.py",
@@ -5377,7 +5557,7 @@
   }
  ],
  "stop_condition": {
-  "outputs": 9,
+  "outputs": 10,
   "outputs_with_writer_outside_layer": [],
   "unresolved_write_sites": [
    {
@@ -5387,7 +5567,7 @@
     "path": "<?>/_split_reconcile_skips.json"
    }
   ],
-  "python_read_sites_into_layer_resolved": 21,
+  "python_read_sites_into_layer_resolved": 24,
   "python_read_sites_unresolved_in_files_mentioning_sec_data": [
    {
     "file": "common/market_data/fetcher.py",
@@ -5396,7 +5576,7 @@
     "path": "<?>"
    }
   ],
-  "name_hit_sites_resolved": 37,
+  "name_hit_sites_resolved": 41,
   "name_hit_sites_undetermined": [
    {
     "file": "common/market_data/split_reconcile.py",
@@ -5423,8 +5603,8 @@
     "text": "sp500 = json.loads(subprocess.run([\"git\", \"-C\", REPO, \"show\", f\"{DATA_REV}:docs/market-monitor/market-pulse/data/sp500_t"
    }
   ],
-  "ratio_writer": 0.1,
-  "ratio_reader": 0.079,
+  "ratio_writer": 0.091,
+  "ratio_reader": 0.071,
   "threshold": 0.1,
   "hit": false
  },
@@ -5491,34 +5671,6 @@
     "note": "残す（動的な読み）: 先物の限月の切り替えの印。fetcher が既存の行の印を上書きしないために自分で読む（_MARK_KEYS）"
    },
    {
-    "key": "ago_30d",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
-    "key": "ago_60d",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
-    "key": "ago_7d",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
-    "key": "ago_90d",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
     "key": "current_price_target",
     "sources": [
      "common/market_data/analyst_history/{T}.json"
@@ -5526,11 +5678,46 @@
     "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
+    "key": "dn30",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "dn7",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
     "key": "down_7d",
     "sources": [
      "common/market_data/attributes/{T}.json"
     ],
     "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "e30",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "e60",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "e90",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
    },
    {
     "key": "eps_actual",
@@ -5552,41 +5739,6 @@
      "common/market_data/analyst_history/{T}.json"
     ],
     "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
-   },
-   {
-    "key": "fiscal",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
-    "key": "last_fiscal_year_end",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
-    "key": "most_recent_quarter",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
-    "key": "next_fiscal_year_end",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
-   },
-   {
-    "key": "period_ends",
-    "sources": [
-     "common/market_data/attributes/{T}.json"
-    ],
-    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
    },
    {
     "key": "prev",
@@ -5639,6 +5791,20 @@
     "note": "残す（記録）: 作り直せない。アナリストの目標株価・EPS予想と実績の履歴（Yahooは直近の分しか返さず、analyst_history は追記型で溜める）"
    },
    {
+    "key": "up30",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
+    "key": "up7",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ],
+    "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の履歴〈estimates_history/〉の元。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
+   },
+   {
     "key": "up_7d",
     "sources": [
      "common/market_data/attributes/{T}.json"
@@ -5646,8 +5812,26 @@
     "note": "これから作る: [[EPS-REVISION-OUTLOOK-MARK-1]]（EPS予想の改定の件数〈直近7日〉。見通しの悪化の確認の印〔遅れて追う印。予測ではない〕を、履歴が回り始めた後に stock.html の GUIDANCE のブロックの下の行と TANUKI SCORE の1列に出す。BUY チェックリストには出さない。読み手は画面）"
    }
   ],
-  "written_key_count": 113,
+  "written_key_count": 115,
   "stale_keys": [
+   {
+    "key": "last_fiscal_year_end",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ]
+   },
+   {
+    "key": "most_recent_quarter",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ]
+   },
+   {
+    "key": "next_fiscal_year_end",
+    "sources": [
+     "common/market_data/estimates_history/{T}.json"
+    ]
+   },
    {
     "key": "next_quarter_eps_date",
     "sources": [

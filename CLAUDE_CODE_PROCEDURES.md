@@ -222,6 +222,13 @@ grep -rn "[機能キーワード]" docs/ src/ --include="*.html" --include="*.py
 別バグを発見しその場で実装・30銘柄再生成まで行ってしまい、後日
 TANUKI-POLICYB-FIX-1として正式分離・再コミットした事例）。
 
+### 手順・記録に書く数字の決まり（2026-11-28追加）
+- 次回の確認手順・BACKLOG・STEP 0・PROJECT_STATUS・報告に書く**数字は、実測した値に、測った日付を添える**
+  （例: 「`[R]` の直近90日の『それ以外』が 1行/1銘柄〔2026-11-28 の実測〕」）。実測していない数字は**「見込み」**と書く
+  （例: 「約 2.2MB/年〔見込み〕」）。確認手順の合格の条件には、実測の値か、0件などの形を1行で書く
+- 理由: 手順に「7.3MB 前後」と書いた期待値が実測（5.1MB）と違い、確認のたびに食い違いを調べる手間が出た（2026-11-28）。
+  期待値が見込みなのか実測なのかが読み手に分からないと、合格・不合格の判断が揺れる
+
 ### 履歴JSONへの記録ルール
 - 記録キーは必ず日付ベース（YYYY-MM-DD）で重複排除する
   （タイムスタンプ全体を記録する場合でも重複排除キーはdate[:10]を使う）
@@ -295,6 +302,7 @@ git add [変更ファイル]
 git commit -m "feat/fix/docs: 変更内容の説明"
 git pull --rebase origin kaihatsu
 git push origin kaihatsu
+# push の前に、「作業完了時のチェックリスト」の「push の前のゲート」（pytest・rcc・audit・自動生成の一覧の作り直し）を通す
 
 # ※ パイプラインコード変更後の再生成コミット時は、pushの前に手動でも確認可能：
 # python common/sec_data/report_consistency_check.py --fail-on-ng
@@ -1314,6 +1322,13 @@ git push origin kaihatsu
   残っていた（2026-07-15判明）。
 - [ ] **複数銘柄への適用が必要な処理**: 全対象銘柄への実行完了を確認する
 - [ ] BACKLOG.mdから該当項目を削除し、BACKLOG_DONE.mdに完了記録を移動
+- [ ] **push の前のゲート**（2026-11-28追加）: 次の4つを通してから push する（通るまで push しない。docs だけの変更も同じ）
+  1. `env -u DISCORD_WEB_HOOK python -m pytest tests/ src/subport/day_trade/test_logic.py -q`（`PYTHONUTF8=1`。件数は実行したコマンドと一緒に記録する）
+  2. `python common/sec_data/report_consistency_check.py --fail-on-ng`（NG 0。WARN の件数は前回との増減の内訳を書く）
+  3. `python common/sec_data/audit.py`
+  4. **自動生成の一覧を作り直す**: ワークフローを変えたら `python scripts/gen_update_schedule.py`（`UPDATE_SCHEDULE.md`・`config/workflow_dependencies.json`）、
+     出力のキー・書き手・読み手を変えたら `python scripts/inventory/build_output_inventory.py --layer <層>`。作り直した結果も同じ commit に入れる
+     （入れ忘れると `tests/test_update_schedule.py` や CHECK-INV が落ちる。**新しい出力のファイルを作ったとき、また新しいファイルのパスを文書・一覧に書くときは、先にそのファイルを `git add` してから rcc・一覧の作り直しを回す**。出力の一覧の検査・WARN-68 は git に追加済みのファイルだけを見るので、未追跡のままだと rcc が NG 0 になり、push の後に NG が出る〔2026-11-28、`estimates_history/` の事例〕）
 - [ ] コミット・プッシュ完了
 
 ---

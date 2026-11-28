@@ -54,21 +54,34 @@
    - 期限: 2026-12-01
    - 確認の手順: ①`attributes/{T}.json` の `estimates.fetched_at` が日曜の定時の時刻に更新されている（監視銘柄84のうち取れない銘柄は一覧にして報告。CIXが取れない理由を確認）②`latest.json` の `guidance_gap.status` が82銘柄で `ok` か `no_estimate`（理由つき）、`report.txt` に `Guidance_Gap` 行がある ③TANUKI SCOREの「成長率−予想(pt)」列で並べ替えられ、stock.htmlに行が出る ④理論株価・判定が前日と同じ。合格したら`[[TANUKI-GUIDANCE-REVISION-BLIND-1]]`をBACKLOG_DONE.mdへ移設する
 
-49. **MARKETPULSE-REVIEW-EPIC-1 順2（型E）の残り: MACRO PULSE の週次AI解説**（実装は2026-11-27 kaihatsu。2026-11-28 に Market Pulse 側①〜④は合格・確認済み）
-   - 日時: 次の MACRO PULSE の週次の実行の後
+55a. **11-29（日）Market Data Weekly の後の確認**（EPS予想の改定の履歴・sector_master の写しの廃止・[SKIP] の記録。実測の値は 2026-11-28 に測った値）
+   - 日時: 2026-11-29（日）の Market Data Weekly（13:20 UTC）の後。`gh run list --workflow "Market Data Weekly Update"` で成功を先に確かめる
+   - 期限: 2026-11-30（55b の前に済ませる）
+   - ①**履歴が積まれた**（[[EPS-REVISION-OUTLOOK-MARK-1]]）: `common/market_data/estimates_history/{T}.json` の `records` が2行〔11-28・11-29〕の銘柄が83（CIX だけ無い）。合格: 83銘柄・CIX 以外の欠け 0
+   - ②**属性に新しい項目**: `attributes/{T}.json` の `estimates` に `eps_trend`・`period_ends`・`fiscal` がある。合格: 83銘柄（11-28 の実測 83）。RKLB の 0q だけ値が無いのは同じ（11-28 の実測）
+   - ③**Weekly の commit に全部入った**: 同じ commit に `estimates_history/`・`daily/`・`attributes/` が入る（`git add` の行が単独であること）。合格: `git show --stat <Weekly の commit>` に3つとも出る
+   - ④**sector_master の写し**: `config/sector_master.json` に `rules`・銘柄ごとの `attributes_fetched_at` が無い。合格: grep で 0件・`tickers` 84（11-28 の実測 84）
+   - ⑤**`split_reconcile`**: Weekly のログの「走査 N銘柄、当たり M銘柄」と `[SKIP]`。合格: 当たり 0・[SKIP] 0（11-28 の本番データでの走査の実測 0・0）。`_split_reconcile_skips.json` の `skips` が `{}`
+55b. **11-30（月）朝の定時の後の確認**（STONKS-DEFICIT-REALITY-EPIC-1 ② の2回目ほか。公開は 2026-11-28 手動: kaihatsu `3bc782822d`・Stonks `46092665726`・TANUKI `46092663177`→HypeCore `46093926925`→TANUKI `46094103217`。ID `STONKS-DEFICIT-REALITY-EPIC-1-2`、scope 1銘柄〔SOUN〕）
+   - 日時: 2026-11-30（月）06:30 JST ごろの定時の実行の後（11-29 の Weekly が `profitability.json` を作り直した後）
    - 期限: 2026-12-01
-   - 確認の手順: `05_weekly_analysis.csv` の次の行の `factor_analysis` が、寄与0の指標（点数が1週前と同じ）を理由にしていない（実行ログに「寄与0の指標を理由に挙げた」の警告が出ていれば言い直しの結果も見る）。合格したら手順51と合わせて `[[MARKETPULSE-REVIEW-EPIC-1]]` を BACKLOG_DONE.md へ移設（順1〜6・2-b は2026-11-28 に確認済み）
-
-51. **MARKETPULSE-REVIEW-EPIC-1 順4（型P）の残り: MACRO の週次**（実装は2026-11-27 kaihatsu。2026-11-28 に Market Pulse 側①〜③⑤⑥は合格・確認済み）
-   - 日時: 次の MACRO PULSE の週次の実行の後
+   - ①**印が付かない**: `stonks-silo/data/results.json` の `method_change` が無く、`method_change_applied` に `STONKS-DEFICIT-REALITY-EPIC-1-2`。合格: 印 0件
+   - ②**SOUN・AVAV**: SOUN の黒字化の予測が `TOO_FAR`・`op_breakeven_year` 2030・総合 10x_CANDIDATE 78.2、AVAV が `NO_TREND`（公開の直後〔11-28〕の実測）。合格: 4つとも同じ
+   - ③**`profitability.json`**: `noncash_adjustment` が applied 12・candidate 2〔IONQ・SITM〕・none 70、SOUN `loss` 14.99四半期・R² 0.964、RKLB 12.21・S 14.70・RCAT R² 0.001・AVAV R² 0.749（11-28 の実測）。合格: 同じ値（日曜の再計算で動く分は0.1以内）
+   - ④**理論株価・funda・stage**: `latest.json` の `intrinsic_value_per_share`・`funda_score`・HypeCore の stage が前日と同じ。合格: 変化 0件（82銘柄。`tanuki_score` が変わるのは `timing_score` の動きだけ。11-28 の実測は理論株価・funda の変化 0）。`docs/common/stage_v2/SOUN.json` の最新の月も変わらない
+   - ⑤**`expected_by_kind` の廃止**: 11-29・11-30 の Market Pulse の新しいエントリに `data_quality.expected_by_kind` が無い。合格: 0件。`freshness` の各要素に `expected` が出ている
+   - ⑥**System Health**: [Q]（値の日付・鮮度）・[D]（MACRO PULSE の鮮度の項。`05_fed_context.csv` の最後の commit から7日超で ⚠️。11-28 の実測は6日）・[R]（日足の検証の印）が出る。合格: [R] の直近90日の「それ以外」が 1行/1銘柄（WBD。11-28 の実測）・新しい印 0・新しい [SKIP] 0
+   - ⑦**Daily と下流**: Market Data Daily と下流4つ（Market Pulse・Stonks Silo・TANUKI・Portfolio）が成功。合格: すべて success（jpx_only の回は Daily が cancelled・下流が skipped で正）
+   - ⑧**本番の STONKS 画面**（「③ 黒字化パス · 詳細」）: SOUN は「営業利益(TTM) 報告値 −$69.3M → 調整後 −$221.0M」「評価益 +$151.7M を除外」、AVAV は「−$252.6M → −$101.3M」「減損 −$151.3M を除外」、ASTS は行なし、「runwayの基準」の行（SOUN は TTM 〜2026-09-30、RCAT は年次・営業CFの直近4四半期が揃わない）、右端が切れない。合格: 値が試算（11-28）と同じ
+   - ⑨**TANUKI の `report.txt`**: SOUN に `Breakeven_Noncash`・`Breakeven_OpIncome_TTM`・`Runway_Basis`（期末つき）。合格: ある。上限が効いた銘柄に `Moat_Phase1_Years: phase1 年数 N → 7（上限）`（11-28 の実測 17銘柄）
+   - ⑩**STONKS の出力の4キー**: `results.json` に `core_profit`・`ocf_acceleration`・`ocf_yoy_change`・`gross_margin_trend` が無い（次の STONKS の実行の後）。合格: 0件
+   - 合格したら `[[STONKS-DEFICIT-REALITY-EPIC-1]]` の②を済にする（③④は残す）
+55c. **MACRO PULSE の週次の実行の後の確認**（旧 手順49⑤・51④）と **MARKETPULSE-REVIEW-EPIC-1 の移設の判断**
+   - 日時: 次の MACRO PULSE の週次（土曜 22:11 UTC の weekly-analysis。11-28 の週次は 11-28 22:11 UTC）の実行の後
    - 期限: 2026-12-01
-   - 確認の手順: ④次の週次の行に `basis=STEP-RULES-1`、`score` は小数の点数を丸めた整数、`phase` は前の週の phase から2pt越えたときだけ変わる（前の週が拡張で今週スコア30・31なら拡張のまま、32以上で踊り場）。画面のスコア推移に縦線
-
-55. **STONKS-DEFICIT-REALITY-EPIC-1 ②（黒字化の予測から現金を伴わない評価損益・減損を除く）の、日曜の取り込みの後の確認**（公開は2026-11-28 手動: kaihatsu `3bc782822d`・Stonks `46092665726`・TANUKI `46092663177`→HypeCore `46093926925`→TANUKI `46094103217`。ID `STONKS-DEFICIT-REALITY-EPIC-1-2`、scope 1銘柄〔SOUN〕。理論株価・判定・funda・stageの変化0〔82銘柄〕）
-   - 日時: 2026-11-30（月）06:30 JST ごろの定時の実行の後（11-29 日曜の Market Data Weekly が `profitability.json` を作り直した後）
-   - 期限: 2026-12-01
-   - 確認の手順: ①`stonks-silo/data/results.json` に `method_change` の印が付かない（`method_change_applied` に `-1-2`）②SOUN の黒字化の予測が `TOO_FAR`・`op_breakeven_year` 2030・総合 10x_CANDIDATE 78.2 のまま、AVAV が `NO_TREND` のまま ③`docs/common/profitability.json` が公開の直後の値と同じ（`noncash_adjustment` applied 12・candidate 2〔IONQ・SITM〕・none 70、SOUN `loss` 14.99四半期・R² 0.964、RKLB 12.21・S 14.70・RCAT R² 0.001・AVAV R² 0.749）④理論株価・判定・funda・stage が前日と同じ ⑤`docs/common/stage_v2/SOUN.json` の最新の月が変わらない。⑥（Market Pulse の `expected_by_kind` の書き出し廃止の確認）11-29・11-30 の Market Pulse の新しいエントリに `data_quality.expected_by_kind` が無い ⑦`freshness` の各要素に `expected` が出ていて、画面（値ごとの日付と「古い」の印）と System Health [Q]・[D]（MACRO PULSE の鮮度の項を含む）が正しく表示されている ⑧Market Data Daily と下流4つ（Market Pulse・Stonks Silo・TANUKI・Portfolio）が成功している（jpx_only の回は cancelled・下流 skipped が正）。⑨**本番の STONKS 画面**（「③ 黒字化パス · 詳細」）で SOUN と AVAV の「営業利益(TTM) 報告値 → 調整後」と除外の行が試算と同じ値で出ている（SOUN 報告値 −$69.3M → 調整後 −$221.0M・評価益 +$151.7M を除外、AVAV −$252.6M → −$101.3M・減損 −$151.3M を除外）。差のない銘柄（ASTS）には行が出ない。「runwayの基準」の行（SOUN は TTM 〜2026-09-30、RCAT は年次・理由 ocf_ttm_incomplete）。詳細欄が右端で切れていない ⑩TANUKI の `report.txt`（SOUN）に `Breakeven_Noncash`・`Breakeven_OpIncome_TTM`・`Runway_Basis`（期末つき）があり、上限が効いた17銘柄に `Moat_Phase1_Years: phase1 年数 N → 7（上限）` が出ている ⑫System Health の新しい項 **[R] DailyValidation**（日足の検証の印。`split_reconcile` の連続性の確認で止めた銘柄の [SKIP] も、新しければ ⚠️）が出ていて、直近90日の印の行数（想定内の出来高0の指数・為替・先物と、それ以外）と、直近7日の新しい印が表示される（11-28 に HPE・TECH の 11-25 の行〈high ≥ close ≥ low の印〉は、Yahoo の取り直しで high・volume が確定値に直っていたため差し替えた〔`_corrections` に記録〕。残りの印 〈直近7日以外の17行と ^NYA・^VIX9D の open/high/low=0 など〉は件数に残る）⑬`config/sector_master.json` に `rules` と銘柄ごとの `attributes_fetched_at` が無い（Market Data Weekly・SEC_Data_Update が作り直した後も）。TANUKI の `latest.json` の判定・理論株価・funda・stage は前日と同じ ⑮**EPS予想の改定の履歴**（[[EPS-REVISION-OUTLOOK-MARK-1]]）: 11-29 の Market Data Weekly の後、`common/market_data/estimates_history/{T}.json` に 11-29 の行が積まれ（83銘柄。`records` が2行）、`attributes/{T}.json` の `estimates` に `eps_trend`・`period_ends`・`fiscal` があり、Weekly の commit に `estimates_history/` が入っている。`daily/` など他の commit も入っている（`git add` の行は単独にしてある）。判定・理論株価は前日と同じ ⑭STONKS の `results.json` に `core_profit`・`ocf_acceleration`・`ocf_yoy_change`・`gross_margin_trend` が無い（次の STONKS の実行の後）。⑪System Health [D]「ワークフロー」の項が MACRO PULSE の鮮度（`05_fed_context.csv` の最後の commit からの日数、7日超で⚠️）も見ていること。11-28 の時点では6日で ✅（11-28 土曜の週次の実行で更新される）。合格したら `[[STONKS-DEFICIT-REALITY-EPIC-1]]` の②を済にする（③④は残す）
-
+   - ①**EPIC 順2（旧 49⑤）**: `05_weekly_analysis.csv` の次の行の `factor_analysis` が、寄与0の指標（点数が1週前と同じ）を理由にしていない。合格: 寄与0の指標を理由に挙げた行 0件（実行ログの「寄与0の指標を理由に挙げた」の警告 0）
+   - ②**EPIC 順4（旧 51④）**: 次の週次の行に `basis=STEP-RULES-1`、`score` は小数の点数を丸めた整数、`phase` は前の週から2pt越えたときだけ変わる（前の週が拡張で今週スコア30・31なら拡張のまま、32以上で踊り場）。画面のスコア推移に縦線。合格: `basis` 列が `STEP-RULES-1`・整数の `score`・局面の変化が2ptの幅どおり
+   - ③**移設の判断**: ①②が合格し、手順48〜54 の残りは 2026-11-28 に合格済み（記録は `docs/history/CLAUDE_CODE_START_HISTORY.md`）。合格: ①②とも合格なら `[[MARKETPULSE-REVIEW-EPIC-1]]` を BACKLOG_DONE.md へ移設（移設しない間は BACKLOG に残す）
 ## 決まりへの参照（本文は `CLAUDE_CODE_PROCEDURES.md` の同名の節）
 
 | 知りたいこと | 節 |
