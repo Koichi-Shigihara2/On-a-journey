@@ -72,7 +72,7 @@
 - Python・保存済みファイル: `src/value/tanuki_valuation/beta_fetcher.py` 行 40・71・155・288・319（経由 `src/value/tanuki_valuation/beta_fetcher.py::load_config`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 301・1078（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 513・519・533・588（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 424・460・1058・1129・1153・1414・1947・1948・3980（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 424・460・1058・1129・1153・1414・1947・1948・3981（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._generate_report`）
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 87・95・99・104・111（経由 `common/sec_data/audit.py::audit_beta_drift`）
 - テスト・保存済みファイル: `tests/test_core_calculator_rf_reference.py` 行 23（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
 - テスト・保存済みファイル: `tests/test_core_calculator_v0_note.py` 行 47・54・63・72（経由 `src/value/tanuki_valuation/data_fetcher.py::resolve_beta_config_path`）
@@ -157,7 +157,7 @@
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 146・148・150・325・327・1636・1637・1844・1856・1880（経由 `src/tail/quarterly_review_generator.py::load_layer1_financials`、`src/tail/quarterly_review_generator.py::load_tanuki_valuation`、`src/tail/tail_dcf_bridge.py::_load_latest_valuation`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 73・76・159・161・194・207・337・349（経由 `src/tail/tail_dcf_bridge.py::_load_latest_valuation`、`src/tail/tail_dcf_bridge.py::_load_layer1_financials`）
 - Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 356・358・542・1084・1293（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 487・3419・3965・3980（経由 `common/earnings_pending.py::_load_prev`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 487・3420・3966・3981（経由 `common/earnings_pending.py::_load_prev`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._save_tickers_index`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_watcher.py` 行 79・82・113・369・406（経由 `src/value/tanuki_valuation/score_watcher.py::load_latest`）
 - Python・保存済みファイル: `tools/sim/sim.py` 行 114（経由 `src/value/hypecore/hypecore.py::fetch_tanuki_iv`）
 - JS・HTML・保存済みファイル: `docs/portfolio/index.html` 行 335
@@ -845,7 +845,7 @@ HTMLの`<!-- 見出し -->`の行で区切った区画ごとに、画面が読�
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | いいえ |
 | 理論株価の割安・割高の判定のしきい値（upsideの比較） | 5 | `docs/portfolio/index.html:650`<br>`docs/value-monitor/tanuki_score/index.html:358`<br>`docs/value-monitor/tanuki_score/index.html:617`<br>`docs/value-monitor/tanuki_score/index.html:1140`<br>`docs/value-monitor/tanuki_score/index.html:1364`<br>`docs/value-monitor/tanuki_valuation/index.html:468`<br>`docs/value-monitor/tanuki_valuation/stock.html:1108`<br>`docs/value-monitor/tanuki_valuation/stock.html:1176`<br>`docs/value-monitor/tanuki_valuation/stock.html:1177`<br>`src/value/tanuki_valuation/pipeline.py:590`<br>`src/value/tanuki_valuation/pipeline.py:592`<br>`src/value/tanuki_valuation/pipeline.py:594`<br>`src/value/tanuki_valuation/pipeline.py:864`<br>`src/value/tanuki_valuation/pipeline.py:877`<br>`src/value/tanuki_valuation/pipeline.py:897`<br>`src/value/tanuki_valuation/pipeline.py:899`<br>`src/value/tanuki_valuation/pipeline.py:971`<br>`src/value/tanuki_valuation/pipeline.py:972`<br>`src/value/tanuki_valuation/pipeline.py:973`<br>`src/value/tanuki_valuation/pipeline.py:974`<br>`src/value/tanuki_valuation/pipeline.py:1446`<br>`src/value/tanuki_valuation/pipeline.py:1473`<br>`src/value/tanuki_valuation/pipeline.py:1478`<br>`src/value/tanuki_valuation/pipeline.py:1524`<br>`src/value/tanuki_valuation/pipeline.py:1830`<br>`src/value/tanuki_valuation/pipeline.py:2008` | はい |
 | β・WACCの作り方 | 3 | `src/value/tanuki_valuation/beta_fetcher.py:110`<br>`src/value/tanuki_valuation/calculator/wacc.py:47`<br>`src/value/tanuki_valuation/calculator/wacc.py:54`<br>`src/value/tanuki_valuation/data_fetcher.py:1194` | はい |
-| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:275`<br>`src/value/tanuki_valuation/calculator/adjustments.py:199`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1178` | はい |
+| FCFの基準の選び方・推定のフォールバック | 3 | `common/sec_data/reader.py:295`<br>`src/value/tanuki_valuation/calculator/adjustments.py:199`<br>`src/value/tanuki_valuation/data_fetcher.py:126`<br>`src/value/tanuki_valuation/data_fetcher.py:1178` | はい |
 
 1か所だけのもの: 成長率の上限・下限（1）・EPSの分母の株式数（期間の利益＝期間の加重平均の株式数〈最大EPSはEPS ANALYZERのTTMの値、無ければ今の株式数〉・1株あたりの理論株価・時価総額＝今の完全希薄化後の株式数）（1）
 

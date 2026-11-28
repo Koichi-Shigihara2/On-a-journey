@@ -101,6 +101,26 @@ def get_runway_cash(net_cash_data: Optional[dict]) -> Optional[float]:
 RUNWAY_BURN_BASIS_TTM = "ttm"                    # 直近4四半期（営業CF − 設備投資）
 RUNWAY_BURN_BASIS_ANNUAL = "annual_fallback"     # TTMが取れない・期末がずれる → 呼び出し元が今の年次に戻す
 
+# get_runway_burn の reason（コード）の日本語の説明。理由のコードの種類はここに全部ある（画面・report.txt はこの表だけを読む）。
+# コードを足したら、ここに日本語を足す（tests/test_runway_ttm.py が get_runway_burn の出す reason の全種類を検査する）
+RUNWAY_BURN_REASON_JA = {
+    "ocf_ttm_incomplete": "営業CFの直近4四半期が揃わない",
+    "ttm_unavailable": "TTMを作れない",
+    "cash_end_unverified": "現金の期末を確かめられない（TTMは使う）",
+    "no_ticker": "銘柄が特定できない",
+}
+
+
+def runway_burn_reason_ja(reason: Optional[str]) -> str:
+    """reason のコードを日本語の説明にする。`cash_end_mismatch:A!=B`・`ttm_unavailable:詳細` は先頭のコードで引く。無ければ空、未知のコードはそのまま"""
+    if not reason:
+        return ""
+    code, _, detail = reason.partition(":")
+    if code == "cash_end_mismatch":
+        a, _, b = detail.partition("!=")
+        return f"現金の期末（{a or '—'}）がTTMの期末（{b or '—'}）とずれる"
+    return RUNWAY_BURN_REASON_JA.get(code, reason)
+
 
 def get_runway_burn(ticker: str, store: Optional[dict] = None) -> dict:
     """資金の持ち（runway）の流出側: Layer3の直近4四半期の営業CF − 設備投資（TTMのFCF）。

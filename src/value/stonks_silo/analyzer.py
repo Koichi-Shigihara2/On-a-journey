@@ -101,6 +101,7 @@ class RunwayAnalysis:
     burn_basis: str = "annual"
     burn_ttm_end: Optional[str] = None
     burn_reason: Optional[str] = None
+    burn_reason_ja: str = ""                # burn_reason の日本語の説明（common/sec_data/reader.py::RUNWAY_BURN_REASON_JA。画面が読む）
 
 
 @dataclass
@@ -481,7 +482,7 @@ class StonksAnalyzer:
         # 今の最新の年次（CapEx は正・負どちらで格納されていても abs() で正規化して差し引く）
         # 式は common/sec_data/fcf.py の1か所（[[FCF-DEFINITION-SINGLE-SOURCE-1]]）。CapExの欠けは0とみなす（今の扱い。段5）
         from common.sec_data.fcf import free_cash_flow
-        from common.sec_data.reader import get_runway_burn, RUNWAY_BURN_BASIS_TTM
+        from common.sec_data.reader import get_runway_burn, runway_burn_reason_ja, RUNWAY_BURN_BASIS_TTM
         burn = get_runway_burn(ticker) if ticker else {"basis": "annual_fallback", "fcf_ttm": None, "ttm_end": None,
                                                          "reason": "no_ticker"}
         monthly_burn = None
@@ -515,6 +516,7 @@ class StonksAnalyzer:
             burn_basis=burn["basis"] if burn["basis"] == RUNWAY_BURN_BASIS_TTM else "annual_fallback",
             burn_ttm_end=burn.get("ttm_end"),
             burn_reason=burn.get("reason"),
+            burn_reason_ja=runway_burn_reason_ja(burn.get("reason")),
         )
 
     def _runway_verdict(

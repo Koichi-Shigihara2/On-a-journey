@@ -554,7 +554,7 @@ function render() {
 
     // 流出の基準（[[STONKS-DEFICIT-REALITY-EPIC-1]] ①）: ttm＝直近4四半期、annual_fallback＝TTMが取れない・期末がずれる、financial_excluded＝金融は対象外
     const burnTitle = ra.burn_basis === 'ttm' ? `流出＝直近4四半期（期末 ${ra.burn_ttm_end || '—'}）の営業CF−設備投資`
-      : ra.burn_basis === 'annual_fallback' ? `流出＝最新の年次（直近4四半期が取れない／現金の期末とずれる: ${ra.burn_reason || '—'}）`
+      : ra.burn_basis === 'annual_fallback' ? `流出＝最新の年次（直近4四半期が取れない／現金の期末とずれる: ${ra.burn_reason_ja || ra.burn_reason || '—'}）`
       : ra.burn_basis === 'financial_excluded' ? '金融は資金の持ちの対象外' : '';
     if (burnTitle) runwayHtml = `<span title="${burnTitle}">${runwayHtml}${ra.burn_basis === 'annual_fallback' ? '<sup style="color:var(--mut)">年</sup>' : ''}</span>`;
 
@@ -1570,7 +1570,7 @@ function buildNoncashRow(na) {
 function buildRunwayBasisRow(ra) {
   if (!ra || !ra.burn_basis) return '';
   const txt = ra.burn_basis === 'ttm' ? `TTM 〜${ra.burn_ttm_end || '—'}`
-    : ra.burn_basis === 'annual_fallback' ? `年次・理由 ${ra.burn_reason || '—'}`
+    : ra.burn_basis === 'annual_fallback' ? `年次（${ra.burn_reason_ja || ra.burn_reason || '—'}ため）`
     : ra.burn_basis === 'financial_excluded' ? '対象外（金融）' : ra.burn_basis;
   return `<div class="detail-row"><span class="detail-key"><span class="tip-wrap">runwayの基準<span class="tip-icon">?</span><span class="tip-box">資金の持ち（月）の流出の取り方。TTM＝直近4四半期（期末つき）の営業CF−設備投資が基本。年次＝直近4四半期が取れない・現金の期末とずれるとき（理由つき）。金融は対象外</span></span></span><span class="detail-val">${txt}</span></div>`;
 }

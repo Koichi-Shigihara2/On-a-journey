@@ -9,16 +9,16 @@
 
 **件数**: 出力 24（ファイル 22・人が見るもの 2）／読み手0件 0／テストだけ 0／1件 6／2件以上 16／規則の二重 6（検出式 6種のうち。SEC層のファイルを含むもの 5）
 
-**誰も読まないキー**: **63**（この段階のJSONのキーで今の書き手のコードにある 482 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 82 は数えない）
+**誰も読まないキー**: **62**（この段階のJSONのキーで今の書き手のコードにある 478 のうち。下の「誰も読まないキー」。今の書き手のコードに無いキー 76 は数えない）
 
-**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋1件（4.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 4件／解決できた読み込み 68件＋ファイル名で当たった行 85件（3.2%）→ 当たらない
+**止める条件**（1割）: 書き手が外にもある・書き手のパスを決めきれない 0＋1件（4.0%）、読み方を決めきれない読み込み 1件＋ファイル名で当たった行 4件／解決できた読み込み 70件＋ファイル名で当たった行 87件（3.1%）→ 当たらない
 
 読み手の照合（2026-10-21から）: ファイル名で当たった行は、その行のパスを組み立て（os.path.join・f文字列・Path の /・モジュールの定数・JS の + と定数・ワークフローの代入）までたどって解決し、出力のパスの型と全体で照合する。同じ名前の別のフォルダのファイルを読む行・ファイル名を比べるだけの行は読み手にしない。ワークフローの cp・rsync で写したファイルを読む行は、元の出力の読み手とする
 
 フォルダを決めきれない行（ファイル名で当たった行）:
 - `.github/workflows/SEC_Data_Update.yml` 行 140（`common/sec_data/data/{T}/annual_{YYYY}.json`）: `annual_count=$(ls -1 $dir/annual_*.json 2>/dev/null \| wc -l)`
 - `common/method_change.py` 行 47（`docs/common/sec_data/rotce/_summary.json`）: `"rotce_summary": ("docs/common/sec_data/rotce", "_summary.json"),`
-- `common/sec_data/quarterly_bs.py` 行 154（`common/sec_data/data/{T}/quarterly_{Q}.json`）: `tickers = tickers or sorted(os.path.basename(d) for d in glob.glob(os.path.join(data_dir, "*")) if glob.glob(os.path.joi`
+- `common/sec_data/quarterly_bs.py` 行 160（`common/sec_data/data/{T}/quarterly_{Q}.json`）: `tickers = tickers or sorted(os.path.basename(d) for d in glob.glob(os.path.join(data_dir, "*")) if glob.glob(os.path.joi`
 - `tools/sim/parser_l3/parser_vs_l3.py` 行 138（`common/sec_data/data/{T}/annual_{YYYY}.json`）: `tk = sys.argv[1:] or sorted(os.path.basename(x) for x in glob.glob("common/sec_data/data/*") if glob.glob(x + "/annual_*`
 
 ## 消したもの（段階2、2026-10-20）
@@ -35,27 +35,27 @@
 | 区分 | 出力（パスの型） | 何か | 書き手 | 読み手の数（その場で計算） | 画面 | 投資判断 | 定義 | 残す／消す |
 |---|---|---|---|---|---|---|---|---|
 | 1件 | `common/sec_data/data/_cik_cache.json`<br>（0ファイル） | 銘柄とCIKの対応の控え | `fetcher.py:SECFetcher._save_cik_cache` | 1 | — | — | — | 残す（2026-10-20） |
-| 1件 | `common/sec_data/data/{T}/bs_identity_violations_log.json`<br>（98ファイル） | 貸借対照表の資産＝負債＋資本が合わない期の記録 | `parser.py:SECParser._save_bs_identity_violations_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
-| 1件 | `common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`<br>（4ファイル） | 社名・CIKが変わった銘柄の、旧CIKのXBRLの生データ | `fetcher.py:SECFetcher._fetch_legacy_company_facts` | 1 | — | — | — | 残す（2026-10-20） |
-| 1件 | `common/sec_data/data/{T}/fy_collision_log.json`<br>（98ファイル） | 同じ会計年度に2つの年次が当たった記録（解析の内部の記録） | `parser.py:SECParser._save_fy_collision_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
-| 1件 | `common/sec_data/data/{T}/fy_tag_mismatch_log.json`<br>（98ファイル） | 申告の会計年度のタグと期末日が合わない記録（解析の内部の記録） | `parser.py:SECParser._save_fy_tag_mismatch_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
-| 1件 | `common/sec_data/data/{T}/fye_boundary_collision_log.json`<br>（98ファイル） | 会計年度末の境目で期がぶつかった記録（解析の内部の記録） | `parser.py:SECParser._save_fye_boundary_collision_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
+| 1件 | `common/sec_data/data/{T}/bs_identity_violations_log.json`<br>（84ファイル） | 貸借対照表の資産＝負債＋資本が合わない期の記録 | `parser.py:SECParser._save_bs_identity_violations_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
+| 1件 | `common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`<br>（3ファイル） | 社名・CIKが変わった銘柄の、旧CIKのXBRLの生データ | `fetcher.py:SECFetcher._fetch_legacy_company_facts` | 1 | — | — | — | 残す（2026-10-20） |
+| 1件 | `common/sec_data/data/{T}/fy_collision_log.json`<br>（84ファイル） | 同じ会計年度に2つの年次が当たった記録（解析の内部の記録） | `parser.py:SECParser._save_fy_collision_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
+| 1件 | `common/sec_data/data/{T}/fy_tag_mismatch_log.json`<br>（84ファイル） | 申告の会計年度のタグと期末日が合わない記録（解析の内部の記録） | `parser.py:SECParser._save_fy_tag_mismatch_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
+| 1件 | `common/sec_data/data/{T}/fye_boundary_collision_log.json`<br>（84ファイル） | 会計年度末の境目で期がぶつかった記録（解析の内部の記録） | `parser.py:SECParser._save_fye_boundary_collision_log` | 1・テスト2 | — | — | — | 残す（2026-10-20） |
 | 2件以上 | `${RUNNER_TEMP}/sec_update_result.json` | SEC_Data_Updateの1回の実行の結果（成功・失敗の銘柄）。後の段の通知が読む | `update.py:_finalize` | 2（2） | — | — | — | 残す（2026-10-20） |
 | 2件以上 | `common/sec_data/data/_freshness.json`<br>（1ファイル） | 銘柄ごとのSECデータの新しさ（REFRESHED・SEC_LAG・FAILED等） | `freshness.py:write` | 3・テスト5 | — | — | — | 残す（2026-10-20） |
 | 2件以上 | `common/sec_data/data/_source_watch.json`<br>（1ファイル） | SECの取得元の変化・ばらつきの検知の結果（CIKの照合・タグの途切れ・切り替え・候補外・期末の数日違い）。SEC_Data_Updateが書き、System Healthの[P]が台帳と比べて読む（source_watch.py・external_watch.py） | `source_watch.py:write` | 3・テスト3 | — | — | — | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/data/{T}/annual_{YYYY}.json`<br>（1395ファイル） | 生データから1年分ずつ取り出した年次の財務（損益・貸借・CF） | `parser.py:SECParser.save_parsed_data` | 15・テスト24 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-019・AS-IS-023・AS-IS-027・AS-IS-045・AS-IS-047 | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/data/{T}/bs_lines/{accn}.json`<br>（2276ファイル） | 申告ごとの貸借対照表の行（借入金・短期投資・優先株・のれん・無形資産・非支配持分、独自タグを含む）。Layer3の欠けの補いとTANUKIの純有利子負債の補いで使う（bs_lines.py） | `bs_lines.py:save_record` | 26・テスト8 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL） | — | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/data/{T}/cf_lines/{accn}.json`<br>（2276ファイル） | 申告ごとのCF計算書の投資CFの区分の行（2021年以降の10-K・10-Q。CapExの欠けの規則・独自タグの行で使う、cf_lines.py） | `cf_lines.py:save_record` | 24・テスト3 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL） | — | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/data/{T}/company_facts.json`<br>（98ファイル） | SECから取った、その銘柄の全XBRLの申告の生データ | `fetcher.py:SECFetcher.fetch_company_facts` | 31・テスト23 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL） | — | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/data/{T}/quarterly_{Q}.json`<br>（3499ファイル） | 生データから1四半期分ずつ取り出した四半期の財務 | `parser.py:SECParser.save_parsed_data` | 8・テスト14 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-046・AS-IS-071・AS-IS-093・AS-IS-096 | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/data/{T}/submissions.json`<br>（98ファイル） | SECから取った、その銘柄の提出書類の一覧（提出日・対象期末） | `fetcher.py:SECFetcher.fetch_submissions` | 15・テスト12 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | — | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/data/{T}/submissions_legacy_{CIK}.json`<br>（4ファイル） | 社名・CIKが変わった銘柄の、旧CIKの提出書類の一覧 | `fetcher.py:SECFetcher._fetch_legacy_submissions` | 2 | — | — | — | 残す（2026-10-20。fetcher.py の _fetch_legacy_submissions が旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読む） |
+| 2件以上 | `common/sec_data/data/{T}/annual_{YYYY}.json`<br>（1195ファイル） | 生データから1年分ずつ取り出した年次の財務（損益・貸借・CF） | `parser.py:SECParser.save_parsed_data` | 15・テスト25 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-019・AS-IS-023・AS-IS-027・AS-IS-045・AS-IS-047 | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/data/{T}/bs_lines/{accn}.json`<br>（1924ファイル） | 申告ごとの貸借対照表の行（借入金・短期投資・優先株・のれん・無形資産・非支配持分、独自タグを含む）。Layer3の欠けの補いとTANUKIの純有利子負債の補いで使う（bs_lines.py） | `bs_lines.py:save_record` | 26・テスト9 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL） | — | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/data/{T}/cf_lines/{accn}.json`<br>（1924ファイル） | 申告ごとのCF計算書の投資CFの区分の行（2021年以降の10-K・10-Q。CapExの欠けの規則・独自タグの行で使う、cf_lines.py） | `cf_lines.py:save_record` | 24・テスト4 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL） | — | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/data/{T}/company_facts.json`<br>（84ファイル） | SECから取った、その銘柄の全XBRLの申告の生データ | `fetcher.py:SECFetcher.fetch_company_facts` | 33・テスト25 | index.html（経由）<br>portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/hypecore/index.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・HypeCore（TANUKI のtiming・判定の入力）・保有銘柄の監視（TANUKI TAIL） | — | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/data/{T}/quarterly_{Q}.json`<br>（2986ファイル） | 生データから1四半期分ずつ取り出した四半期の財務 | `parser.py:SECParser.save_parsed_data` | 8・テスト15 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-046・AS-IS-071・AS-IS-093・AS-IS-096 | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/data/{T}/submissions.json`<br>（84ファイル） | SECから取った、その銘柄の提出書類の一覧（提出日・対象期末） | `fetcher.py:SECFetcher.fetch_submissions` | 15・テスト12 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | — | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/data/{T}/submissions_legacy_{CIK}.json`<br>（3ファイル） | 社名・CIKが変わった銘柄の、旧CIKの提出書類の一覧 | `fetcher.py:SECFetcher._fetch_legacy_submissions` | 2 | — | — | — | 残す（2026-10-20。fetcher.py の _fetch_legacy_submissions が旧CIKの取得の24時間キャッシュと、取得に失敗したときの代わりとして読む） |
 | 2件以上 | `common/sec_data/dimension_aggregate_registry.json`<br>（1ファイル） | セグメント等の内訳タグを合計して使う銘柄・項目の登録簿 | `dimension_aggregate_fetcher.py:_save_dimension_aggregate_registry` | 2（1） | — | — | — | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/normalized/{T}_quarterly_normalized.json`<br>（98ファイル） | 四半期の財務を項目ごとの時系列に並べ直し、Q4の逆算を足したもの | `normalizer.py:save_normalized` | 8・テスト16 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-071・AS-IS-093・AS-IS-096 | 残す（2026-10-20） |
-| 2件以上 | `common/sec_data/ttm/{T}_ttm_series.json`<br>（98ファイル） | 直近4四半期の合計（TTM）の時系列 | `ttm_calculator.py:save_ttm_series` | 9・テスト12（2） | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-046 | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/normalized/{T}_quarterly_normalized.json`<br>（84ファイル） | 四半期の財務を項目ごとの時系列に並べ直し、Q4の逆算を足したもの | `normalizer.py:save_normalized` | 9・テスト19 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（直接） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-071・AS-IS-093・AS-IS-096 | 残す（2026-10-20） |
+| 2件以上 | `common/sec_data/ttm/{T}_ttm_series.json`<br>（84ファイル） | 直近4四半期の合計（TTM）の時系列 | `ttm_calculator.py:save_ttm_series` | 9・テスト12（2） | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION） | AS-IS-046 | 残す（2026-10-20） |
 | 2件以上 | `config/cik_lookup.csv`<br>（1ファイル） | 登録銘柄の一覧（CIK・状態・各システムに載せるかの印）。新規登録の検証で状態を書き換える | `registration_validator.py:promote_ticker_status` | 35・テスト19 | portfolio/index.html（経由）<br>portfolio/tail/detail.html（経由）<br>portfolio/tail/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/index.html（経由）<br>value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/adjusted_eps_analyzer/tickers.html（経由）<br>value-monitor/hypecore/detail.html（経由）<br>value-monitor/stonks-silo/index.html（経由）<br>value-monitor/tanuki_score/index.html（経由）<br>value-monitor/tanuki_valuation/index.html（経由）<br>value-monitor/tanuki_valuation/stock.html（経由） | 効く: 理論株価・判定（TANUKI VALUATION）・保有銘柄の監視（TANUKI TAIL） | AS-IS-264・AS-IS-273 | 残す（2026-10-20） |
 | 2件以上 | `docs/common/sec_data/rotce/_summary.json`<br>（1ファイル） | ROTCEの全銘柄のまとめ | `rotce.py:build_all` | 2 | value-monitor/adjusted_eps_analyzer/stock.html（経由）<br>value-monitor/tanuki_score/index.html（直接） | — | — | 残す（2026-10-20） |
-| 2件以上 | `docs/common/sec_data/rotce/{T}.json`<br>（98ファイル） | 銘柄ごとのROTCE（有形自己資本利益率）の計算結果 | `rotce.py:build_all` | 3・テスト3 | value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/tanuki_score/index.html（経由） | — | — | 残す（2026-10-20） |
+| 2件以上 | `docs/common/sec_data/rotce/{T}.json`<br>（84ファイル） | 銘柄ごとのROTCE（有形自己資本利益率）の計算結果 | `rotce.py:build_all` | 3・テスト3 | value-monitor/adjusted_eps_analyzer/stock.html（直接）<br>value-monitor/tanuki_score/index.html（経由） | — | — | 残す（2026-10-20） |
 
 ### 人が見るもの（Step Summary・Discord）
 
@@ -75,7 +75,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `ticker`(3)・`violations`(1)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2424・2428・3262・3466・3752（経由 `common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::_read_bs_identity_violations_log`）
 
 ### `common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`（1件）
 - 起動元: .github/workflows/SEC_Data_Update.yml
@@ -87,21 +87,21 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `collisions`(1)・`ticker`(3)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2364・2368・3066・3466・3752（経由 `common/sec_data/report_consistency_check.py::_read_fy_collision_log`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_read_fy_collision_log`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_read_fy_collision_log`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::_read_fy_collision_log`）
 
 ### `common/sec_data/data/{T}/fy_tag_mismatch_log.json`（1件）
 - 起動元: .github/workflows/SEC_Data_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `mismatches`(1)・`ticker`(3)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2384・2388・3085・3466・3752（経由 `common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::_read_fy_tag_mismatch_log`）
 
 ### `common/sec_data/data/{T}/fye_boundary_collision_log.json`（1件）
 - 起動元: .github/workflows/SEC_Data_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `collisions`(1)・`ticker`(3)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 2404・2408・3103・3466・3752（経由 `common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::_read_fye_boundary_collision_log`）
 
 ### `${RUNNER_TEMP}/sec_update_result.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
@@ -116,9 +116,9 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `counts`(3)・`generated_at`(4)・`tickers`(5)
 - Python・保存済みファイル: `common/sec_data/freshness.py` 行 19・115
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1795・3674・3752（経由 `common/sec_data/freshness.py::load`）
-- Python・保存済みファイル: `common/system_health.py` 行 893・976・1227・1303（経由 `common/sec_data/freshness.py::load`）
+- Python・保存済みファイル: `common/system_health.py` 行 893・976・1291・1372（経由 `common/sec_data/freshness.py::load`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/freshness.py::load`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/freshness.py::load`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/freshness.py::load`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 396・407・428・433・439・445・454・457・460・480・483・505 ほか3（経由 `common/sec_data/freshness.py::load`）
 - テスト・保存済みファイル: `tests/test_sec_update_ticker_failure.py` 行 238・253・270・300・306・312・317（経由 `common/sec_data/freshness.py::load`）
 - テスト・保存済みファイル: `tests/test_system_health_workflow_monitor.py` 行 293・301・433・446（経由 `common/sec_data/freshness.py::load`）
@@ -135,29 +135,29 @@
 
 ### `common/sec_data/data/{T}/annual_{YYYY}.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `bs`(15)・`bs_provenance`(8)・`bs_tag_sources`(1)・`cf`(12)・`cf_provenance`(5)・`data_quality`(3)・`form`(8)・`other`(4)・`other_provenance`(0)・`period`(14)・`pl`(21)・`pl_provenance`(5)・`shares`(4)・`shares_provenance`(0)・`ticker`(17)
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `bs`(15)・`bs_provenance`(8)・`bs_tag_sources`(1)・`cf`(12)・`cf_provenance`(5)・`data_quality`(3)・`form`(8)・`other`(4)・`other_provenance`(0)・`period`(14)・`pl`(21)・`pl_provenance`(5)・`shares`(5)・`shares_provenance`(0)・`ticker`(17)
 - Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 66・79・80・166・203・226・254・364・367・368・369・370 ほか2（経由 `common/screening/dcf_validity_checker.py::_load_annual`、`common/screening/dcf_validity_checker.py::_load_json`）
 - Python・保存済みファイル: `common/sec_data/parser.py` 行 509・818・4043・4049・4126（経由 `common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze`）
-- Python・保存済みファイル: `common/sec_data/reader.py` 行 134・135・160・185・209・223・235・244・275・297・323・339 ほか12（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- Python・保存済みファイル: `common/sec_data/reader.py` 行 208・209・234・259・283・297・309・318・349・371・397・413 ほか12（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 412・429・606・608・680・761・763・1021・1111・1118・1279・1333 ほか21（経由 `common/screening/dcf_validity_checker.py::_load_annual`、`common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/report_consistency_check.py::_check_annual_da_partial_concept` ほか）
 - Python・保存済みファイル: `common/sec_data/roic.py` 行 85
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/execution_metrics.py` 行 85・123（経由 `common/sec_data/roic.py::calc_roic_wacc_ratio`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 815（経由 `common/sec_data/roic.py::calc_roic_wacc_ratio`）
 - Python・保存済みファイル: `src/value/stonks_silo/fetcher.py` 行 56・283（経由 `src/value/stonks_silo/fetcher.py::load_annual_data`）
 - Python・保存済みファイル: `src/value/stonks_silo/financial_as_of.py` 行 52・54・87（経由 `src/value/stonks_silo/financial_as_of.py::scoring_fy_end`）
-- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 114・121・175・265（経由 `common/sec_data/reader.py::SECReader._load_json`、`src/value/stonks_silo/fetcher.py::load_annual_data`、`src/value/stonks_silo/financial_as_of.py::scoring_fy_end`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 1372
-- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 337・469・1046（経由 `common/sec_data/reader.py::SECReader._load_json`、`src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 616・619・637・640・644・648・732・938（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 403・421・427・430・466・1003・1016・1017・1066・1088・1134・2930 ほか7（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/roic.py::calc_roic_wacc_ratio`、`src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd` ほか）
+- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 114・121・177・267（経由 `common/sec_data/reader.py::SECReader._load_json`、`src/value/stonks_silo/fetcher.py::load_annual_data`、`src/value/stonks_silo/financial_as_of.py::scoring_fy_end`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/calculator/adjustments.py` 行 1384
+- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 337・469・1078（経由 `common/sec_data/reader.py::SECReader._load_json`、`src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 628・631・649・652・656・660・746・960（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 397・415・421・424・460・995・1008・1009・1058・1080・1129・1141 ほか9（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/roic.py::calc_roic_wacc_ratio`、`src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd` ほか）
 - Python・保存済みファイル: `tools/sim/parser_l3/parser_vs_l3.py` 行 72・139（経由 `tools/sim/parser_l3/parser_vs_l3.py::main`）
 - テスト・保存済みファイル: `tests/test_bs_field_cross_year_misselect.py` 行 304・314（経由 `common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze`）
 - テスト・保存済みファイル: `tests/test_check31_fields_snapshot_hash.py` 行 63・67・75・82・96・105（経由 `common/sec_data/report_consistency_check.py::_check_fixed_registry_integrity`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 40・89（経由 `common/sec_data/report_consistency_check.py::_check_operating_income_reconstruction_scope`、`common/sec_data/report_consistency_check.py::_check_revenue_net_income_reconciliation`）
-- テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 105（経由 `common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze`）
+- テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 109（経由 `common/sec_data/parser.py::SECParser._apply_fixed_registry_freeze`）
 - テスト・保存済みファイル: `tests/test_core_calculator_rf_reference.py` 行 23・27・28・41（経由 `src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
 - テスト・保存済みファイル: `tests/test_core_calculator_v0_note.py` 行 47・54・63・72（経由 `src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
-- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - テスト・保存済みファイル: `tests/test_dcf_validity_checker.py` 行 46・64・77・86・95・107・118・128・133・143・155・165（経由 `common/screening/dcf_validity_checker.py::_load_annual`、`common/screening/dcf_validity_checker.py::_load_json`）
 - テスト・保存済みファイル: `tests/test_execution_metrics.py` 行 78・84・96・98・102・139（経由 `common/sec_data/roic.py::calc_roic_wacc_ratio`）
 - テスト・保存済みファイル: `tests/test_financial_judgment_master.py` 行 71・73（経由 `common/sec_data/reader.py::SECReader._load_json`）
@@ -168,12 +168,13 @@
 - テスト・保存済みファイル: `tests/test_policy_a_floor_end_to_end.py` 行 55・63・74（経由 `src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
 - テスト・保存済みファイル: `tests/test_reader_fcf_list_with_dates.py` 行 22・37・44（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - テスト・保存済みファイル: `tests/test_reference_check.py` 行 23
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_check_operating_income_reconstruction_scope`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::_check_operating_income_reconstruction_scope`）
+- テスト・保存済みファイル: `tests/test_reverse_growth.py` 行 43・50（経由 `src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
 - テスト・保存済みファイル: `tests/test_roic_shared_module.py` 行 40・50・56・65・76・88・97・107・118・129・148・149 ほか2（経由 `common/sec_data/roic.py::calc_roic_wacc_ratio`）
 - テスト・保存済みファイル: `tests/test_runway_cash_unify.py` 行 149・158・169・170・172（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/report_consistency_check.py::_read_latest_annual_bs`）
 - テスト・保存済みファイル: `tests/test_sec_update_ticker_failure.py` 行 235・250・252・265
-- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 60・65（経由 `src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
-- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 132・135・144（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`）
+- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 61・66（経由 `src/value/tanuki_valuation/calculator/adjustments.py::capitalize_rd`）
+- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 131・134・143（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`）
 - テスト・保存済みファイル: `tests/test_stonks_silo_financial_as_of.py` 行 68・72・73・75（経由 `src/value/stonks_silo/financial_as_of.py::scoring_fy_end`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -189,18 +190,18 @@
 
 ### `common/sec_data/data/{T}/bs_lines/{accn}.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accn`(13)・`concepts`(3)・`filed`(16)・`form`(15)・`lines`(5)・`reason`(13)・`role`(4)・`source_files`(2)・`status`(10)
-- Python・保存済みファイル: `common/multiples.py` 行 311（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `common/profitability.py` 行 426（経由 `common/sec_data/bs_lines.py::load_records`）
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accn`(14)・`concepts`(4)・`filed`(17)・`form`(17)・`lines`(6)・`reason`(14)・`role`(4)・`source_files`(2)・`status`(13)
+- Python・保存済みファイル: `common/multiples.py` 行 402（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `common/profitability.py` 行 574（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/basis_mix.py` 行 186（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/bs_lines.py` 行 193・297・363・392（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/bs_lines.py` 行 213・240・344・410・439・470（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/cf_lines.py` 行 379（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/layer3_builder.py` 行 1510・1512（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/layer3_builder.py` 行 1621・1623（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/newfield_q4_cutoff_check.py` 行 133（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 129（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/reader.py` 行 56・671（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 135（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/reader.py` 行 56・143・745（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1118（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/rotce.py` 行 422（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/rotce.py` 行 424（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/update.py` 行 193・259・358（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/val_guard.py` 行 118（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 327（経由 `common/sec_data/bs_lines.py::load_records`）
@@ -208,12 +209,12 @@
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 280・1626（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 137（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `src/tail/xbrl_segment_fetcher.py` 行 411（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 262（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 270（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `src/value/stonks_silo/financial_trend_calculator.py` 行 388（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 121・147（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py` 行 218（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 938（経由 `common/sec_data/bs_lines.py::load_records`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 378（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 960（経由 `common/sec_data/bs_lines.py::load_records`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 372（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `tools/sim/parser_l3/parser_vs_l3.py` 行 66（経由 `common/sec_data/bs_lines.py::load_records`）
 - Python・保存済みファイル: `tools/sim/regen_derived.py` 行 33（経由 `common/sec_data/bs_lines.py::load_records`）
 - テスト・保存済みファイル: `tests/test_bs_lines.py` 行 84・98・99・105・109・115・135・140・150・161（経由 `common/sec_data/bs_lines.py::load_records`）
@@ -224,6 +225,7 @@
 - テスト・保存済みファイル: `tests/test_layer3_val_guard_stage1.py` 行 109・117（経由 `common/sec_data/bs_lines.py::load_records`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 2074・2087・2108・2127・2154・2170・2183（経由 `common/sec_data/bs_lines.py::load_records`）
 - テスト・保存済みファイル: `tests/test_runway_cash_unify.py` 行 149・158（経由 `common/sec_data/bs_lines.py::load_records`）
+- テスト・保存済みファイル: `tests/test_sec_retag_reconcile.py` 行 41（経由 `common/sec_data/bs_lines.py::load_records`）
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/portfolio/index.html`
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
@@ -239,17 +241,17 @@
 
 ### `common/sec_data/data/{T}/cf_lines/{accn}.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accn`(10)・`filed`(13)・`form`(11)・`lines`(2)・`reason`(9)・`role`(2)・`source_files`(1)・`status`(6)
-- Python・保存済みファイル: `common/multiples.py` 行 311（経由 `common/sec_data/cf_lines.py::load_records`）
-- Python・保存済みファイル: `common/profitability.py` 行 426（経由 `common/sec_data/cf_lines.py::load_records`）
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accn`(11)・`filed`(14)・`form`(13)・`lines`(3)・`reason`(10)・`role`(2)・`source_files`(1)・`status`(9)
+- Python・保存済みファイル: `common/multiples.py` 行 402（経由 `common/sec_data/cf_lines.py::load_records`）
+- Python・保存済みファイル: `common/profitability.py` 行 574（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/basis_mix.py` 行 186（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/cf_lines.py` 行 268・379・526・568（経由 `common/sec_data/cf_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/layer3_builder.py` 行 1505（経由 `common/sec_data/cf_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/layer3_builder.py` 行 1616（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/newfield_q4_cutoff_check.py` 行 133（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/parser.py` 行 810・3971（経由 `common/sec_data/cf_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 129（経由 `common/sec_data/cf_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/reader.py` 行 56（経由 `common/sec_data/cf_lines.py::load_records`）
-- Python・保存済みファイル: `common/sec_data/rotce.py` 行 422（経由 `common/sec_data/cf_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 135（経由 `common/sec_data/cf_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/reader.py` 行 56・143（経由 `common/sec_data/cf_lines.py::load_records`）
+- Python・保存済みファイル: `common/sec_data/rotce.py` 行 424（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/update.py` 行 193・259・358（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `common/sec_data/val_guard.py` 行 118（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 327（経由 `common/sec_data/cf_lines.py::load_records`）
@@ -257,16 +259,17 @@
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 280・1626（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 137（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `src/tail/xbrl_segment_fetcher.py` 行 411（経由 `common/sec_data/cf_lines.py::load_records`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 262（経由 `common/sec_data/cf_lines.py::load_records`）
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 270（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `src/value/stonks_silo/financial_trend_calculator.py` 行 388（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 147（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py` 行 218（経由 `common/sec_data/cf_lines.py::load_records`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 378（経由 `common/sec_data/cf_lines.py::load_records`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 372（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `tools/sim/parser_l3/parser_vs_l3.py` 行 66（経由 `common/sec_data/cf_lines.py::load_records`）
 - Python・保存済みファイル: `tools/sim/regen_derived.py` 行 33（経由 `common/sec_data/cf_lines.py::load_records`）
-- テスト・保存済みファイル: `tests/test_cf_lines.py` 行 109・162・175・190・202・219・231・241・242・263・266・294 ほか6（経由 `common/sec_data/cf_lines.py::load_records`）
+- テスト・保存済みファイル: `tests/test_cf_lines.py` 行 109・162・175・190・202・219・231・241・242・263・266・294 ほか5（経由 `common/sec_data/cf_lines.py::load_records`）
 - テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 50・89（経由 `common/sec_data/cf_lines.py::load_records`）
 - テスト・保存済みファイル: `tests/test_layer3_capital_allocation.py` 行 82（経由 `common/sec_data/cf_lines.py::load_records`）
+- テスト・保存済みファイル: `tests/test_sec_retag_reconcile.py` 行 41（経由 `common/sec_data/cf_lines.py::load_records`）
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/tickers.json））: `docs/index.html`
 - 画面（経由（src/value/hypecore/hypecore.py → docs/value-monitor/hypecore/data/{T}_poc.json））: `docs/portfolio/index.html`
 - 画面（経由（src/tail/quarterly_review_generator.py → docs/portfolio/tail/data/review_queue.json））: `docs/portfolio/tail/detail.html`
@@ -282,36 +285,38 @@
 
 ### `common/sec_data/data/{T}/company_facts.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `cik`(6)・`entityName`(3)・`facts`(15)
-- Python・保存済みファイル: `common/multiples.py` 行 296・311（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- Python・保存済みファイル: `common/profitability.py` 行 426（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `cik`(6)・`entityName`(3)・`facts`(18)
+- Python・保存済みファイル: `common/multiples.py` 行 379・392・402・436・462（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- Python・保存済みファイル: `common/profitability.py` 行 574・582（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 157・160・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `common/sec_data/basis_mix.py` 行 186（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- Python・保存済みファイル: `common/sec_data/bs_lines.py` 行 207・210・470（経由 `common/sec_data/bs_lines.py::backfill_ticker`）
 - Python・保存済みファイル: `common/sec_data/fetcher.py` 行 512・516
 - Python・保存済みファイル: `common/sec_data/fye_change_candidate_scan.py` 行 100・151・168（経由 `common/sec_data/fetcher.py::load_company_facts`）
-- Python・保存済みファイル: `common/sec_data/layer3_builder.py` 行 216・220・1350（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- Python・保存済みファイル: `common/sec_data/layer3_builder.py` 行 218・222・1461（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `common/sec_data/newfield_q4_cutoff_check.py` 行 133・178（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `common/sec_data/parser.py` 行 486・493・4126・4139（経由 `common/sec_data/parser.py::SECParser.parse_company_facts`）
-- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 129・141・157（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- Python・保存済みファイル: `common/sec_data/reader.py` 行 56・486・772（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
+- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 135・147・163（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- Python・保存済みファイル: `common/sec_data/reader.py` 行 56・143・560・846（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 395・484・653・667・669（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1118・1378・1384・1497・1500・1742・1910・2032・2642・2644・2656・3226 ほか4（経由 `common/sec_data/fetcher.py::load_company_facts`、`common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease` ほか）
 - Python・保存済みファイル: `common/sec_data/revenue_tag_conflict_check.py` 行 91・176・188（経由 `common/sec_data/fetcher.py::load_company_facts`）
-- Python・保存済みファイル: `common/sec_data/rotce.py` 行 422・428・674・714（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- Python・保存済みファイル: `common/sec_data/rotce.py` 行 424・430・703・743（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `common/sec_data/update.py` 行 59・124・179・201・209・248・259・358・488・491（経由 `common/sec_data/fetcher.py::load_company_facts`、`common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/parser.py::SECParser.parse_company_facts`）
 - Python・保存済みファイル: `common/sec_data/val_guard.py` 行 118（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 327（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- Python・保存済みファイル: `common/system_health.py` 行 89・791・1214・1225・1303（経由 `common/sec_data/audit.py::audit_ticker`、`common/sec_data/registration_validator.py::check_p4_orphan_configs`）
+- Python・保存済みファイル: `common/system_health.py` 行 89・791・1278・1289・1372（経由 `common/sec_data/audit.py::audit_ticker`、`common/sec_data/registration_validator.py::check_p4_orphan_configs`）
 - Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 190・553・723・781・822（経由 `common/sec_data/fetcher.py::load_company_facts`、`common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `src/tail/quarterly_review_generator.py` 行 280・1626・1637・1844（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `src/tail/tail_dcf_bridge.py` 行 137・207（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `src/tail/xbrl_segment_fetcher.py` 行 411・541（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 262・531（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- Python・保存済みファイル: `src/value/hypecore/hypecore.py` 行 270・539（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
+- Python・保存済みファイル: `src/value/stonks_silo/analyzer.py` 行 486（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `src/value/stonks_silo/financial_trend_calculator.py` 行 388（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 121・147・150・212・265（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
+- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 121・147・150・214・267（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/segment_growth_xbrl.py` 行 218・262・313・372（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 706・717・938（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 378・403・1197・3059・3214・3436・3576・3612（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 720・731・960（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 372・397・1238・3161・3184・3338・3567・3707・3743（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
 - Python・保存済みファイル: `tools/sim/parser_l3/parser_vs_l3.py` 行 66・139（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - Python・保存済みファイル: `tools/sim/regen_derived.py` 行 27・33・48・49（経由 `common/sec_data/fetcher.py::load_company_facts`、`common/sec_data/layer3_builder.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_audit_market_data_switch.py` 行 66・71・78（経由 `common/sec_data/audit.py::audit_ticker`）
@@ -320,18 +325,20 @@
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::check_ticker`）
 - テスト・保存済みファイル: `tests/test_close_missing_price.py` 行 185・190・195（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_common_path_guard.py` 行 137・140・152・153（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 50・69・80・86・89・94・101・105・115・164（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/parser.py::SECParser.parse_company_facts`）
-- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/sec_data/reader.py::SECReader._finance_lease`）
+- テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 50・69・80・86・89・96・109・121・171（経由 `common/sec_data/layer3_builder.py::load_company_facts`、`common/sec_data/parser.py::SECParser.parse_company_facts`）
+- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `common/sec_data/reader.py::SECReader._finance_lease`）
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_financial_judgment_master.py` 行 71・73（経由 `common/sec_data/reader.py::SECReader._finance_lease`）
 - テスト・保存済みファイル: `tests/test_layer3_capital_allocation.py` 行 82・90・102・107（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 2074・2087・2108・2127・2154・2170・2183・2633・2639（経由 `common/sec_data/parser.py::SECParser.parse_company_facts`、`common/sec_data/reader.py::SECReader._finance_lease`）
 - テスト・保存済みファイル: `tests/test_pl_field_cross_accn_alignment.py` 行 414・431（経由 `common/sec_data/parser.py::SECParser.parse_company_facts`）
 - テスト・保存済みファイル: `tests/test_quarterly_bs.py` 行 77（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::check_ticker`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::check_ticker`）
 - テスト・保存済みファイル: `tests/test_rotce.py` 行 64・70・81・94・96・101・110・119・130・138・145・153 ほか20（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_runway_cash_unify.py` 行 149・158・169・170・172（経由 `common/sec_data/reader.py::SECReader._finance_lease`）
+- テスト・保存済みファイル: `tests/test_runway_ttm.py` 行 26・34・37・42・48・56（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 120・148・160・173・185・198・212・224・240・252・264・332 ほか2（経由 `common/sec_data/fetcher.py::load_company_facts`、`common/sec_data/registration_validator.py::check_p4_orphan_configs`）
+- テスト・保存済みファイル: `tests/test_sec_retag_reconcile.py` 行 41・100・109・121・126・132（経由 `common/sec_data/layer3_builder.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_sec_update_ticker_failure.py` 行 99・234・247・251・262・268・274・278（経由 `common/sec_data/fetcher.py::load_company_facts`）
 - テスト・保存済みファイル: `tests/test_share_count_outlier_check.py` 行 40・46・53・62・69・74（経由 `common/sec_data/report_consistency_check.py::_check_share_count_outliers`）
 - テスト・保存済みファイル: `tests/test_system_health_ticker_audit.py` 行 71・80・88・96・106・114・120・133・141・154・165・174 ほか4（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`）
@@ -352,19 +359,19 @@
 
 ### `common/sec_data/data/{T}/quarterly_{Q}.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `bs`(8)・`bs_tag_sources`(0)・`cf`(9)・`cf_provenance`(2)・`data_quality`(2)・`form`(5)・`other`(4)・`period`(11)・`pl`(10)・`shares`(4)・`ticker`(10)
-- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 156・175（経由 `common/sec_data/quarterly_bs.py::regenerate`）
-- Python・保存済みファイル: `common/sec_data/reader.py` 行 135・160・184・185・209・223・235・244・275・297・323・339 ほか12（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_quarterly`）
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `bs`(8)・`bs_tag_sources`(0)・`cf`(9)・`data_quality`(2)・`form`(5)・`other`(4)・`period`(11)・`pl`(10)・`shares`(5)・`ticker`(10)
+- Python・保存済みファイル: `common/sec_data/quarterly_bs.py` 行 162・181（経由 `common/sec_data/quarterly_bs.py::regenerate`）
+- Python・保存済みファイル: `common/sec_data/reader.py` 行 209・234・258・259・283・297・309・318・349・371・397・413 ほか12（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_quarterly`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1118・2902・3466・3752（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/report_consistency_check.py::check_ticker`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 121（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 469・1046（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 616・619・637・640・644・648・732・938（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 403・430・1066・1134（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 469・1078（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 628・631・649・652・656・660・746・960（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 397・424・1058・1129・1153（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - Python・保存済みファイル: `tools/sim/parser_l3/parser_vs_l3.py` 行 72・139（経由 `tools/sim/parser_l3/parser_vs_l3.py::main`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/report_consistency_check.py::check_ticker`）
 - テスト・保存済みファイル: `tests/test_core_calculator_rf_reference.py` 行 23（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - テスト・保存済みファイル: `tests/test_core_calculator_v0_note.py` 行 47・54・63・72（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - テスト・保存済みファイル: `tests/test_fcf_definition_single_source.py` 行 157
 - テスト・保存済みファイル: `tests/test_financial_judgment_master.py` 行 71・73（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - テスト・保存済みファイル: `tests/test_gate2_phase3b1_reader_integration.py` 行 123・133（経由 `common/sec_data/reader.py::SECReader._load_json`）
@@ -372,9 +379,10 @@
 - テスト・保存済みファイル: `tests/test_policy_a_floor_end_to_end.py` 行 55（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - テスト・保存済みファイル: `tests/test_quarterly_bs.py` 行 79
 - テスト・保存済みファイル: `tests/test_reader_fcf_list_with_dates.py` 行 22・37・44（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::check_ticker`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::check_ticker`）
+- テスト・保存済みファイル: `tests/test_reverse_growth.py` 行 43・50（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - テスト・保存済みファイル: `tests/test_runway_cash_unify.py` 行 149・158（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 60・65（経由 `common/sec_data/reader.py::SECReader._load_json`）
+- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 61・66（経由 `common/sec_data/reader.py::SECReader._load_json`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/index.html`
@@ -391,7 +399,7 @@
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `accn_to_filingdate`(4)・`accn_to_reportdate`(5)・`cik`(6)・`entity_name`(3)・`former_names`(1)・`legacy_ciks_merged`(1)・`sic`(3)・`sic_description`(3)・`ticker`(17)
 - Python・保存済みファイル: `common/dilution.py` 行 51
 - Python・保存済みファイル: `common/external_watch.py` 行 54（経由 `common/sector_master.py::_load_json`）
-- Python・保存済みファイル: `common/profitability.py` 行 439・498（経由 `common/sector_master.py::_load_json`）
+- Python・保存済みファイル: `common/profitability.py` 行 596・657（経由 `common/sector_master.py::_load_json`）
 - Python・保存済みファイル: `common/sec_data/fetcher.py` 行 532・536・554・558
 - Python・保存済みファイル: `common/sec_data/parser.py` 行 502・507・4126・4139（経由 `common/sec_data/fetcher.py::load_former_names`、`common/sec_data/fetcher.py::load_submissions`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 462・615・768・2627・2633・3242・3466・3752（経由 `common/sec_data/fetcher.py::load_submissions`）
@@ -401,20 +409,20 @@
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 653・1007（経由 `common/sector_master.py::build_entry`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/sector_classifier_v2.py` 行 44・47（経由 `common/sector_master.py::_load_json`、`common/sector_master.py::build_entry`）
 - Python・保存済みファイル: `src/value/stonks_silo/financial_as_of.py` 行 64・87（経由 `common/sec_data/fetcher.py::load_submissions`）
-- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 175（経由 `common/sec_data/fetcher.py::load_submissions`）
+- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 177（経由 `common/sec_data/fetcher.py::load_submissions`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/calculator/fcfe.py` 行 56（経由 `common/sector_master.py::_load_json`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 466・1003・1088・3073（経由 `common/dilution.py::first_report_end`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 460・995・1080・1141・3198（経由 `common/dilution.py::first_report_end`）
 - テスト・保存済みファイル: `tests/test_bs_field_cross_year_misselect.py` 行 304・314（経由 `common/sec_data/fetcher.py::load_submissions`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 40・89（経由 `common/sec_data/fetcher.py::load_submissions`）
-- テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 105（経由 `common/sec_data/fetcher.py::load_submissions`）
+- テスト・保存済みファイル: `tests/test_conditional_tags_and_stale_latest.py` 行 109（経由 `common/sec_data/fetcher.py::load_submissions`）
 - テスト・保存済みファイル: `tests/test_dilution.py` 行 164・165（経由 `common/dilution.py::first_report_end`）
-- テスト・保存済みファイル: `tests/test_eps_sector_classifier_master.py` 行 32・33・34・35・36・37・38・44・46・55（経由 `common/sector_master.py::build_entry`）
+- テスト・保存済みファイル: `tests/test_eps_sector_classifier_master.py` 行 32・33・34・35・36・37・43・45・54（経由 `common/sector_master.py::build_entry`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 461・500・522・2323・2340・2383・2408・2437・2460・2472・2485・2496 ほか13（経由 `common/dilution.py::first_report_end`、`common/sec_data/fetcher.py::load_submissions`）
 - テスト・保存済みファイル: `tests/test_pl_field_cross_accn_alignment.py` 行 414・431（経由 `common/sec_data/fetcher.py::load_submissions`）
 - テスト・保存済みファイル: `tests/test_profitability.py` 行 157・159・161（経由 `common/sector_master.py::_load_json`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/fetcher.py::load_submissions`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/fetcher.py::load_submissions`）
 - テスト・保存済みファイル: `tests/test_sector_master.py` 行 49・67・68・69・75・81・84・85・88・89・95・133 ほか4（経由 `common/sector_master.py::_load_json`、`common/sector_master.py::build_entry`）
-- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 132・135・144（経由 `common/dilution.py::first_report_end`）
+- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 131・134・143（経由 `common/dilution.py::first_report_end`）
 - テスト・保存済みファイル: `tests/test_stonks_silo_financial_as_of.py` 行 68・72・73・75（経由 `common/sec_data/fetcher.py::load_submissions`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -443,14 +451,15 @@
 
 ### `common/sec_data/normalized/{T}_quarterly_normalized.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `basis_mix`(6)・`fields`(15)・`generated_at`(2)・`ticker`(13)
-- Python・保存済みファイル: `common/sec_data/reader.py` 行 135・160・185・209・223・235・244・275・297・323・339・344 ほか16（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`、`common/sec_data/reader.py::SECReader.get_rpo_series`）
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `basis_mix`(6)・`fields`(17)・`generated_at`(2)・`ticker`(13)
+- Python・保存済みファイル: `common/earnings_pending.py` 行 63・65・128（経由 `common/earnings_pending.py::layer3_latest_period_end`）
+- Python・保存済みファイル: `common/sec_data/reader.py` 行 209・234・259・283・297・309・318・349・371・397・413・418 ほか16（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`、`common/sec_data/reader.py::SECReader.get_rpo_series`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 875・878・1118・1755・2641・2656・3466・3634・3752（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`、`common/sec_data/report_consistency_check.py::_check_basis_mix`、`common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation`）
 - Python・保存済みファイル: `common/sec_data/rollback_failed.py` 行 45・57・95・112（経由 `common/sec_data/rollback_failed.py::ticker_paths`）
-- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 121・265（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 469・1046（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 616・619・637・640・644・648・732・938（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 403・430・466・1066・1134・3850（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`、`common/sec_data/reader.py::SECReader.get_rpo_context`）
+- Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 121・267（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/core_calculator.py` 行 469・1078（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 628・631・649・652・656・660・746・960（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 397・424・460・995・1058・1080・1129・1141・1153・3420・3981（経由 `common/earnings_pending.py::layer3_latest_period_end`、`common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`、`common/sec_data/reader.py::SECReader.get_rpo_context`）
 - JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_valuation/stock.html` 行 336
 - テスト・その場で計算: `tests/test_capex_sign.py` 行 54（経由 `common/sec_data/quarterly.py::build_raw_table`）
 - テスト・その場で計算: `tests/test_fcf_definition_single_source.py` 行 175（経由 `common/sec_data/normalizer.py::normalize`）
@@ -463,17 +472,20 @@
 - テスト・保存済みファイル: `tests/test_check47_contiguous_window.py` 行 49・55・59・63（経由 `common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation`）
 - テスト・保存済みファイル: `tests/test_core_calculator_rf_reference.py` 行 23・27・28・41（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
 - テスト・保存済みファイル: `tests/test_core_calculator_v0_note.py` 行 47・54・63・72（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
-- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
+- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
+- テスト・保存済みファイル: `tests/test_earnings_pending.py` 行 43・68（経由 `common/earnings_pending.py::layer3_latest_period_end`）
 - テスト・保存済みファイル: `tests/test_fcf_definition_single_source.py` 行 166
 - テスト・保存済みファイル: `tests/test_financial_judgment_master.py` 行 71・73（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
 - テスト・保存済みファイル: `tests/test_gate2_phase3b1_reader_integration.py` 行 123・133（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
-- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 2012・2074・2087・2108・2127・2154・2170・2183・3313（経由 `common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
+- テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 461・500・522・2012・2074・2087・2108・2127・2154・2170・2183・2323 ほか21（経由 `common/earnings_pending.py::layer3_latest_period_end`、`common/sec_data/reader.py::SECReader._load_json`、`common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
 - テスト・保存済みファイル: `tests/test_policy_a_floor_end_to_end.py` 行 55・63・74（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
 - テスト・保存済みファイル: `tests/test_reader_fcf_list_with_dates.py` 行 22・37・44（経由 `common/sec_data/reader.py::SECReader._load_json`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/report_consistency_check.py::_check_basis_mix`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/report_consistency_check.py::_check_basis_mix`）
+- テスト・保存済みファイル: `tests/test_reverse_growth.py` 行 43・50（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
 - テスト・保存済みファイル: `tests/test_runway_cash_unify.py` 行 149・158・169・170・172（経由 `common/sec_data/reader.py::SECReader.get_lt_debt_from_normalized`）
 - テスト・保存済みファイル: `tests/test_sec_update_ticker_failure.py` 行 236・248・260・263・277・282（経由 `common/sec_data/rollback_failed.py::ticker_paths`）
-- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 60・65（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
+- テスト・保存済みファイル: `tests/test_sensitivity_tapering.py` 行 61・66（経由 `common/sec_data/reader.py::SECReader.get_rpo_context`）
+- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 131（経由 `common/earnings_pending.py::layer3_latest_period_end`）
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/index.html`
@@ -486,18 +498,19 @@
 
 ### `common/sec_data/ttm/{T}_ttm_series.json`（2件以上）
 - 起動元: .github/workflows/SEC_Data_Update.yml
-- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `basis_mix`(5)・`generated_at`(2)・`n_periods`(0)・`series`(10)・`ticker`(13)
-- Python・その場で計算: `common/sec_data/reader.py` 行 57（経由 `common/sec_data/ttm_calculator.py::calc_ttm_series`）
+- 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `basis_mix`(5)・`generated_at`(2)・`n_periods`(0)・`series`(11)・`ticker`(13)
+- Python・その場で計算: `common/sec_data/reader.py` 行 57・144（経由 `common/sec_data/ttm_calculator.py::calc_ttm_series`）
 - Python・その場で計算: `src/value/stonks_silo/financial_as_of.py` 行 40（経由 `common/sec_data/ttm_calculator.py::calc_ttm_series`）
 - Python・保存済みファイル: `common/sec_data/audit.py` 行 81・86・191・369・468（経由 `common/sec_data/audit.py::audit_ticker`）
 - Python・保存済みファイル: `common/sec_data/basis_mix.py` 行 177・179
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 79・100・101・108・194・222・239・287・335・452・468・476 ほか5（経由 `common/sec_data/registration_validator.py::_load_json`、`common/sec_data/registration_validator.py::_ttm_end`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 876・883・1742・2641・3466・3634・3752（経由 `common/sec_data/basis_mix.py::load`、`common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation`）
 - Python・保存済みファイル: `common/sec_data/rollback_failed.py` 行 46・57・95・112（経由 `common/sec_data/rollback_failed.py::ticker_paths`）
-- Python・保存済みファイル: `common/system_health.py` 行 89・1214（経由 `common/sec_data/audit.py::audit_ticker`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 253・706（経由 `common/sec_data/basis_mix.py::load`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 403・466・1003・1019・1088・1338・1342・3098・3113・3354・3359・3417 ほか2（経由 `common/sec_data/basis_mix.py::load`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_ttm_revenue_yoy` ほか）
+- Python・保存済みファイル: `common/system_health.py` 行 89・1278（経由 `common/sec_data/audit.py::audit_ticker`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 265・720（経由 `common/sec_data/basis_mix.py::load`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 397・460・995・1011・1080・1141・1379・1383・3222・3237・3485・3490 ほか3（経由 `common/sec_data/basis_mix.py::load`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_ttm_revenue_yoy` ほか）
 - ワークフロー・保存済みファイル: `.github/workflows/SEC_Data_Update.yml` 行 141
+- テスト・その場で計算: `tests/test_capex_no_cf_line_note.py` 行 40・46（経由 `common/sec_data/ttm_calculator.py::calc_ttm_series`）
 - テスト・その場で計算: `tests/test_capex_sign.py` 行 68（経由 `common/sec_data/ttm_calculator.py::calc_ttm_series`）
 - テスト・その場で計算: `tests/test_ttm_anchor_reach.py` 行 47・60・67・78・91（経由 `common/sec_data/ttm_calculator.py::calc_ttm_series`）
 - テスト・その場で計算: `tests/test_ttm_calculator.py` 行 95・121（経由 `common/sec_data/ttm_calculator.py::calc_ttm_series`）
@@ -506,12 +519,12 @@
 - テスト・保存済みファイル: `tests/test_capex_sign.py` 行 93
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/basis_mix.py::load`）
 - テスト・保存済みファイル: `tests/test_check47_contiguous_window.py` 行 49・55・59・63（経由 `common/sec_data/report_consistency_check.py::_check_ttm_parser_layer3_reconciliation`）
-- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `common/sec_data/basis_mix.py::load`）
+- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `common/sec_data/basis_mix.py::load`）
 - テスト・保存済みファイル: `tests/test_discord_user_agent.py` 行 96（経由 `common/sec_data/audit.py::audit_ticker`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 461・500・522・2323・2340・2383・2408・2437・2460・2472・2485・2496 ほか24（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`、`tests/test_pipeline_logic.py::_write_dupont_ttm`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82・163（経由 `common/sec_data/basis_mix.py::load`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/basis_mix.py::load`）
 - テスト・保存済みファイル: `tests/test_sec_update_ticker_failure.py` 行 237・249・260・264・269・277・282（経由 `common/sec_data/rollback_failed.py::ticker_paths`）
-- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 132・135・144（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`）
+- テスト・保存済みファイル: `tests/test_split_adjust.py` 行 131・134・143（経由 `src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_extra_data`）
 - テスト・保存済みファイル: `tests/test_ttm_flow_key_names.py` 行 39
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/tickers.json））: `docs/portfolio/index.html`
 - 画面（経由（src/value/tanuki_valuation/pipeline.py → docs/value-monitor/tanuki_valuation/data/{T}/latest.json））: `docs/portfolio/tail/detail.html`
@@ -529,8 +542,8 @@
 - Python・保存済みファイル: `browser_checks/check_signal_consistency_section.py` 行 65（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `browser_checks/check_valuation_chart_basis.py` 行 184（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/market_data/valuation_history.py` 行 63・70（経由 `common/sec_data/tickers.py::_load`）
-- Python・保存済みファイル: `common/multiples.py` 行 324（経由 `common/sec_data/tickers.py::_load`）
-- Python・保存済みファイル: `common/profitability.py` 行 440（経由 `common/sec_data/tickers.py::_load`）
+- Python・保存済みファイル: `common/multiples.py` 行 415（経由 `common/sec_data/tickers.py::_load`）
+- Python・保存済みファイル: `common/profitability.py` 行 597（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/registration/preflight_check.py` 行 158・207（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/registration/register_ticker.py` 行 99・115・413・426・501・512（経由 `common/registration/register_ticker.py::_load_cik_row`、`common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/screening/dcf_validity_checker.py` 行 393（経由 `common/sec_data/tickers.py::_load`）
@@ -542,14 +555,14 @@
 - Python・保存済みファイル: `common/sec_data/registration_validator.py` 行 52・377・455・460・469・484・653・667・669（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`、`common/sec_data/registration_validator.py::run`、`common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1858・3425・3426・3702・3752（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sec_data/revenue_tag_conflict_check.py` 行 165（経由 `common/sec_data/tickers.py::_load`）
-- Python・保存済みファイル: `common/sec_data/rotce.py` 行 713（経由 `common/sec_data/tickers.py::_load`）
+- Python・保存済みファイル: `common/sec_data/rotce.py` 行 742（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sec_data/source_watch.py` 行 28・135（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sec_data/tickers.py` 行 13・19・25・38・58・75・99・116・124・129・134・139 ほか1（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sec_data/update.py` 行 392・485（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/sector_master.py` 行 249・304（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/stage_v2.py` 行 336（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `common/stonks_target.py` 行 81・95（経由 `common/sec_data/tickers.py::_load`）
-- Python・保存済みファイル: `common/system_health.py` 行 296・297・373・759・791・1221・1225・1303（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`、`common/sec_data/tickers.py::_load`）
+- Python・保存済みファイル: `common/system_health.py` 行 296・297・373・759・791・1285・1289・1372（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`、`common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/kpi_proposer.py` 行 719・822（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/sec_ctrl_fetcher.py` 行 407・459（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/tail/sec_items_fetcher.py` 行 636・668（経由 `common/sec_data/tickers.py::_load`）
@@ -558,24 +571,24 @@
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/extract_key_facts.py` 行 50・155・427（経由 `common/sec_data/tickers.py::_load`）
 - Python・保存済みファイル: `src/value/adjusted_eps_analyzer/pipeline.py` 行 391・394・645・957・974・981・1050・1051・1071（経由 `common/sec_data/tickers.py::_load`、`src/value/adjusted_eps_analyzer/pipeline.py::load_cik_data`）
 - Python・保存済みファイル: `src/value/stonks_silo/pipeline.py` 行 46（経由 `common/sec_data/tickers.py::_load`）
-- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 969
-- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 388・390・403・504・513・514・543・3829・3850（経由 `common/sec_data/tickers.py::_load`、`src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher.get_financials`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_tickers_from_csv`）
+- Python・保存済みファイル: `src/value/tanuki_valuation/data_fetcher.py` 行 991
+- Python・保存済みファイル: `src/value/tanuki_valuation/pipeline.py` 行 382・384・397・498・507・508・537・3960・3981（経由 `common/sec_data/tickers.py::_load`、`src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher.get_financials`、`src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._load_tickers_from_csv`）
 - Python・保存済みファイル: `src/value/tanuki_valuation/score_verifier.py` 行 112（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/tickers.py::_load`）
-- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 68・76・83・91・112・121・129・137・165・177・184・191（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher.get_financials`）
+- テスト・保存済みファイル: `tests/test_data_fetcher_market_data_switch.py` 行 73・81・88・96・120・130・139・150・158・187・199・206 ほか1（経由 `src/value/tanuki_valuation/data_fetcher.py::TanukiDataFetcher.get_financials`）
 - テスト・保存済みファイル: `tests/test_deficit_quality_adopt.py` 行 102・103・129・148・150・154・159・163・164（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_eps_get_cik_registry_only.py` 行 35・36・47（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_eps_run_status.py` 行 95・115・125・133・151・160・174（経由 `src/value/adjusted_eps_analyzer/pipeline.py::load_cik_data`）
-- テスト・保存済みファイル: `tests/test_eps_sector_classifier_master.py` 行 18・53・66
+- テスト・保存済みファイル: `tests/test_eps_sector_classifier_master.py` 行 18・52・65
 - テスト・保存済みファイル: `tests/test_external_watch.py` 行 23（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_flag_consumer_audit_3.py` 行 59・87（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_iv_formula.py` 行 42（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_pipeline_logic.py` 行 3948・3953・3959・3964（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_preflight_check.py` 行 179・192・205・218・229（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_register_ticker_preflight.py` 行 68・90・106・124・141（経由 `common/registration/register_ticker.py::_load_cik_row`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82・150（経由 `common/registration/register_ticker.py::_load_cik_row`、`common/sec_data/tickers.py::_load`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83・151（経由 `common/registration/register_ticker.py::_load_cik_row`、`common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_score_verifier.py` 行 47・70（経由 `common/sec_data/tickers.py::_load`）
-- テスト・保存済みファイル: `tests/test_sec_data_config.py` 行 66・74・86・95・98（経由 `common/sec_data/tickers.py::_load`）
+- テスト・保存済みファイル: `tests/test_sec_data_config.py` 行 66・74・86・96・97・100（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_sec_freshness.py` 行 505（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`）
 - テスト・保存済みファイル: `tests/test_sector_master.py` 行 114・134（経由 `common/sec_data/tickers.py::_load`）
 - テスト・保存済みファイル: `tests/test_system_health_ticker_audit.py` 行 71・80・88・96・106・114・120・133・141・154・165・174 ほか4（経由 `common/sec_data/registration_validator.py::check_p4_orphan_configs`）
@@ -595,18 +608,18 @@
 ### `docs/common/sec_data/rotce/_summary.json`（2件以上）
 - 起動元: .github/workflows/Market_Data_Daily_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `generated_at`(2)・`method_change`(0)・`method_change_applied`(0)・`reference_only`(1)・`thresholds`(1)・`tickers`(2)
-- Python・保存済みファイル: `common/sec_data/rotce.py` 行 656
-- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 241
+- Python・保存済みファイル: `common/sec_data/rotce.py` 行 685
+- JS・HTML・保存済みファイル: `docs/value-monitor/tanuki_score/index.html` 行 242
 - 画面（経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/{T}.json））: `docs/value-monitor/adjusted_eps_analyzer/stock.html`
 
 ### `docs/common/sec_data/rotce/{T}.json`（2件以上）
 - 起動元: .github/workflows/Market_Data_Daily_Update.yml
 - 最上位のキー（括弧はキーの名前が出てくる読み手のファイルの数）: `company_reported`(2)・`current`(3)・`generated_at`(1)・`history`(3)・`method_change`(0)・`method_change_applied`(0)・`notes`(3)・`percentile`(3)・`reference_only`(1)・`tags`(1)・`ticker`(6)
 - Python・保存済みファイル: `common/sec_data/report_consistency_check.py` 行 1833・3686・3752（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
-- Python・保存済みファイル: `common/sec_data/rotce.py` 行 624・628
+- Python・保存済みファイル: `common/sec_data/rotce.py` 行 653・657
 - JS・HTML・保存済みファイル: `docs/value-monitor/adjusted_eps_analyzer/stock.html` 行 756
 - テスト・保存済みファイル: `tests/test_check41_registration_ng.py` 行 89（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
-- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 64・71・77・82（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
+- テスト・保存済みファイル: `tests/test_registration_consistency_gate.py` 行 65・72・78・83（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
 - テスト・保存済みファイル: `tests/test_rotce.py` 行 345・350・365（経由 `common/sec_data/rotce.py::unregistered_latest_quarters`）
 - 画面（経由（common/sec_data/rotce.py → docs/common/sec_data/rotce/_summary.json））: `docs/value-monitor/tanuki_score/index.html`
 
@@ -645,7 +658,6 @@
 - `lab`（`common/sec_data/data/{T}/cf_lines/{accn}.json`）
 - `last_quarter`（`docs/common/sec_data/rotce/{T}.json`）
 - `legacy_ciks_merged`（`common/sec_data/data/{T}/submissions.json`）
-- `mark`（`common/sec_data/data/{T}/annual_{YYYY}.json`）: 残す: 年次の cf_provenance.capital_expenditure の印「CF計算書にCapExの行なし」（cf_lines.py、[[FCF-DEFINITION-SINGLE-SOURCE-1]] 段5b、2026-11-04）。0が欠けでなく申告の行の無いことを人が確かめるための出所の記録
 - `method_change_applied`（`docs/common/sec_data/rotce/_summary.json`、`docs/common/sec_data/rotce/{T}.json`）
 - `min_quarters`（`docs/common/sec_data/rotce/_summary.json`）
 - `n_periods`（`common/sec_data/ttm/{T}_ttm_series.json`）
@@ -672,10 +684,10 @@
 - `rotce_series`（`docs/common/sec_data/rotce/{T}.json`）
 - `sga_captured`（`common/sec_data/data/{T}/annual_{YYYY}.json`、`common/sec_data/data/{T}/quarterly_{Q}.json`）
 - `sga_total`（`common/sec_data/data/{T}/annual_{YYYY}.json`、`common/sec_data/data/{T}/quarterly_{Q}.json`）
-- `shares_source`（`docs/common/sec_data/rotce/{T}.json`）
 - `source_files`（`common/sec_data/data/{T}/bs_lines/{accn}.json`、`common/sec_data/data/{T}/cf_lines/{accn}.json`）
 - `source_is_own_data`（`common/sec_data/data/{T}/annual_{YYYY}.json`）
 - `stock_issued_acquisitions`（`common/sec_data/ttm/{T}_ttm_series.json`）: 残す: 定義v2の資本の使い方（[[HYPECORE-STAGE-TIMESCALE-1]] 段B-3、2026-11-05）。読み手は段Cと[[STAGE-V2-ROLLOUT-1]]で作る
+- `tce_first_val`（`docs/common/sec_data/rotce/{T}.json`）
 - `verification_command`（`common/sec_data/dimension_aggregate_registry.json`）
 
 ### 今の書き手のコードに無いキー（古いファイル・古いエントリに残るだけ。誰も読まないキーに数えない）
@@ -687,7 +699,6 @@
 - `appeal`（`common/sec_data/data/{T}/company_facts.json`）
 - `business`（`common/sec_data/data/{T}/company_facts.json`）
 - `business_combination`（`common/sec_data/data/{T}/company_facts.json`）
-- `business_unit`（`common/sec_data/data/{T}/company_facts.json`）
 - `businesscombinations`（`common/sec_data/data/{T}/company_facts.json`）
 - `case_filed`（`common/sec_data/data/{T}/company_facts.json`）
 - `charge`（`common/sec_data/data/{T}/company_facts.json`）
@@ -704,11 +715,10 @@
 - `defendant`（`common/sec_data/data/{T}/company_facts.json`）
 - `derivative`（`common/sec_data/data/{T}/company_facts.json`）
 - `derivativeInstrument`（`common/sec_data/data/{T}/company_facts.json`）
-- `ecd`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
+- `ecd`（`common/sec_data/data/{T}/company_facts.json`）
 - `employee`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
 - `entity`（`common/sec_data/data/{T}/company_facts.json`）
 - `exclusion_reason`（`config/cik_lookup.csv`）
-- `facility`（`common/sec_data/data/{T}/company_facts.json`）
 - `ffd`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
 - `former_employee`（`common/sec_data/data/{T}/company_facts.json`）
 - `frame`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
@@ -720,7 +730,6 @@
 - `investment`（`common/sec_data/data/{T}/company_facts.json`）
 - `judicialCase`（`common/sec_data/data/{T}/company_facts.json`）
 - `lender`（`common/sec_data/data/{T}/company_facts.json`）
-- `mmbtu`（`common/sec_data/data/{T}/company_facts.json`）
 - `numberOfCompany`（`common/sec_data/data/{T}/company_facts.json`）
 - `numberOfSegment`（`common/sec_data/data/{T}/company_facts.json`）
 - `operating_segment`（`common/sec_data/data/{T}/company_facts.json`）
@@ -729,9 +738,7 @@
 - `patent`（`common/sec_data/data/{T}/company_facts.json`）
 - `percentage`（`common/sec_data/data/{T}/company_facts.json`）
 - `plaintiff`（`common/sec_data/data/{T}/company_facts.json`）
-- `plantiff`（`common/sec_data/data/{T}/company_facts.json`）
 - `position`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
-- `project`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
 - `pure`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
 - `registration_note`（`config/cik_lookup.csv`）
 - `reportableSegment`（`common/sec_data/data/{T}/company_facts.json`）
@@ -744,15 +751,14 @@
 - `restaurant`（`common/sec_data/data/{T}/company_facts.json`）
 - `retiree`（`common/sec_data/data/{T}/company_facts.json`）
 - `rotce_ttm_tce_avg`（`docs/common/sec_data/rotce/{T}.json`）
-- `rxp`（`common/sec_data/data/{T}/company_facts.json`）
 - `securities`（`common/sec_data/data/{T}/company_facts.json`）
 - `security`（`common/sec_data/data/{T}/company_facts.json`）
 - `segement`（`common/sec_data/data/{T}/company_facts.json`）
 - `segments`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
+- `shareholder`（`common/sec_data/data/{T}/company_facts.json`）
 - `shares_provenance`（`common/sec_data/data/{T}/annual_{YYYY}.json`）
 - `shares_quarter_end`（`docs/common/sec_data/rotce/{T}.json`）
 - `sqft`（`common/sec_data/data/{T}/company_facts.json`）
-- `sqm`（`common/sec_data/data/{T}/company_facts.json`）
 - `srt`（`common/sec_data/data/{T}/company_facts.json`）
 - `store`（`common/sec_data/data/{T}/company_facts.json`）
 - `stores`（`common/sec_data/data/{T}/company_facts.json`）
@@ -763,13 +769,13 @@
 - `upscale`（`common/sec_data/data/{T}/company_facts.json`）
 - `vote`（`common/sec_data/data/{T}/company_facts.json`）
 - `votePerShare`（`common/sec_data/data/{T}/company_facts.json`）
-- `years`（`common/sec_data/data/{T}/company_facts.json`、`common/sec_data/data/{T}/company_facts_legacy_{CIK}.json`）
+- `years`（`common/sec_data/data/{T}/company_facts.json`）
 
 ## ワークフローが自分で書く出力（.pyの外）
 
 段階の.pyを動かすワークフローの中で、`$GITHUB_STEP_SUMMARY`に書く段。`.get()`で読むキーが、この段階のJSON（全ファイル）にあるか。
 
-- `.github/workflows/Market_Data_Daily_Update.yml`（行 129・130・131・132・134・136）: `entries`（**無い**）
+- `.github/workflows/Market_Data_Daily_Update.yml`（行 135・136・137・138・140・142）: `entries`（**無い**）
 - `.github/workflows/SEC_Data_Update.yml`（行 133・134・135・136・142）: 
 - `.github/workflows/Stonks_Silo_Update.yml`（行 75・76・77・78・87）: `overall_score`（**無い**）・`overall_verdict`（**無い**）・`tickers`（ある）
 - `.github/workflows/TANUKI_VALUATION_Update.yml`（行 104・105・106・107・112）: `intrinsic_value_per_share`（**無い**）・`overall`（**無い**）・`validation`（**無い**）
@@ -780,7 +786,7 @@
 |---|---|---|---|
 | `spac_shell_detection_log` | いいえ（後の段階） | — | — |
 | `share_unit_fix_log` | いいえ（後の段階） | — | — |
-| `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1066`<br>`src/value/hypecore/hypecore.py:1111` |
+| `low_base_effect` | いいえ（後の段階） | — | `src/value/hypecore/hypecore.py:1074`<br>`src/value/hypecore/hypecore.py:1119` |
 | `fields_missing` | いいえ（後の段階） | — | — |
 | `maturity_monitor` | いいえ（後の段階） | — | `src/value/adjusted_eps_analyzer/pipeline.py:21` |
 | `market_data_violations_log` | いいえ（後の段階） | — | — |
@@ -791,10 +797,10 @@
 
 | 規則 | ファイル数 | 場所 | SEC層を含む |
 |---|---|---|---|
-| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:185`<br>`common/sec_data/q4_implied.py:194`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | はい |
-| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:245`<br>`common/sec_data/bs_lines.py:264`<br>`common/sec_data/bs_lines.py:396`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:920`<br>`common/sec_data/layer3_builder.py:1143`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:125`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | はい |
+| Q4の逆算（年次−Q1〜Q3） | 3 | `common/sec_data/parser.py:2325`<br>`common/sec_data/q4_implied.py:191`<br>`common/sec_data/q4_implied.py:200`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:720`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:863`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:891` | はい |
+| 同じ期の値が複数あるときの選び方（提出日が最新のもの） | 10 | `common/sec_data/bs_lines.py:292`<br>`common/sec_data/bs_lines.py:311`<br>`common/sec_data/bs_lines.py:443`<br>`common/sec_data/cf_lines.py:457`<br>`common/sec_data/cf_lines.py:461`<br>`common/sec_data/cf_lines.py:471`<br>`common/sec_data/fact_selection.py:19`<br>`common/sec_data/fact_selection.py:35`<br>`common/sec_data/layer3_builder.py:1031`<br>`common/sec_data/layer3_builder.py:1254`<br>`common/sec_data/normalizer.py:168`<br>`common/sec_data/normalizer.py:431`<br>`common/sec_data/share_unit_fix.py:104`<br>`common/sec_data/split_adjust.py:156`<br>`src/tail/edgar_rss_monitor.py:219`<br>`src/tail/edgar_rss_monitor.py:419`<br>`src/value/adjusted_eps_analyzer/extract_key_facts.py:602`<br>`tools/sim/parser_l3/val_guard_proto.py:138`<br>`tools/sim/parser_l3/val_guard_proto.py:139` | はい |
 | データの古さ・遅れの判定 | 7 | `common/sec_data/freshness.py:83`<br>`common/sec_data/parser.py:3048`<br>`common/sec_data/report_consistency_check.py:1579`<br>`common/sec_data/report_consistency_check.py:1776`<br>`common/system_health.py:975`<br>`docs/portfolio/tail/index.html:943`<br>`docs/value-monitor/adjusted_eps_analyzer/index.html:192`<br>`src/value/stonks_silo/financial_as_of.py:70` | はい |
-| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:239`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:285` | はい |
+| TTM（直近4四半期の合計）の作り方 | 3 | `common/sec_data/ttm_calculator.py:242`<br>`src/value/adjusted_eps_analyzer/pipeline.py:402`<br>`src/value/hypecore/hypecore.py:293` | はい |
 | 期の名前（四半期のラベル）の付け方 | 3 | `src/tail/edgar_rss_monitor.py:375`<br>`src/tail/xbrl_segment_fetcher.py:180`<br>`src/value/tanuki_valuation/calculator/segment_growth_xbrl.py:144` | いいえ |
 | 会計年度・会計年度末の決め方 | 3 | `common/sec_data/parser.py:455`<br>`common/sec_data/parser.py:464`<br>`common/sec_data/utils.py:112`<br>`common/sec_data/utils.py:293`<br>`common/sec_data/utils.py:328`<br>`common/sec_data/utils.py:368`<br>`src/tail/edgar_rss_monitor.py:137` | はい |
 
@@ -810,11 +816,11 @@
 |---|---|---|---|---|---|---|
 | `market_pulse_redesign.py` | 478 | — | — | — | — | 残す（2026-10-20。Market Pulse の作り直しの検討中。src/market/market_pulse/stage_conclusions.py が同じ値を使う） |
 
-### `browser_checks`（5ファイル・2,328行）
+### `browser_checks`（5ファイル・2,327行）
 
 | ファイル | 行数 | ワークフロー | ほかのコード | 同じフォルダ | テスト | 残す／消す／移す |
 |---|---|---|---|---|---|---|
-| `check_dependency_map.py` | 458 | — | — | — | — | 残す（2026-10-20） |
+| `check_dependency_map.py` | 457 | — | — | — | `tests/test_market_pulse_latest.py` | 残す（2026-10-20） |
 | `check_macro_pulse.py` | 1,365 | — | — | — | `tests/test_check_macro_pulse_reference.py` | 残す（2026-10-20） |
 | `check_signal_consistency_section.py` | 206 | — | — | — | — | 残す（2026-10-20） |
 | `check_tanuki_score_undetermined.py` | 86 | — | — | — | — | 残す（2026-10-20） |
@@ -824,6 +830,6 @@
 
 - `outputs_with_writer_outside_layer`: 0件
 - `unresolved_write_sites`: 1件
-  - `common/sec_data/quarterly_bs.py:166` regenerate → `{p}`
+  - `common/sec_data/quarterly_bs.py:172` regenerate → `{p}`
 - `python_read_sites_unresolved_in_files_mentioning_sec_data`: 1件
-  - `common/method_change.py:163` previous_output → `docs/common/sec_data/rotce/<?>`
+  - `common/method_change.py:203` previous_output → `docs/common/sec_data/rotce/<?>`

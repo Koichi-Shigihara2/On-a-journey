@@ -88,3 +88,19 @@ def test_financial_is_excluded_from_runway(monkeypatch):
     ra = A.StonksAnalyzer()._analyze_runway([2025], _records(), nc, ticker="SOFI", sector="Financial Services", industry="Credit Services")
     assert ra.burn_basis == "financial_excluded" and ra.runway_months is None and ra.verdict == "UNKNOWN"
     assert "金融" in ra.verdict_reason
+
+
+def test_every_runway_burn_reason_code_has_japanese_text():
+    """get_runway_burn（と STONKS の analyzer）が出す reason のコードの全種類が、日本語の対応表（RUNWAY_BURN_REASON_JA）にある"""
+    import re
+    from common.sec_data import reader as rd
+    src = open(rd.__file__, encoding="utf-8").read()
+    codes = set(re.findall(r'out\["reason"\] = f?"([a-z_]+)', src))
+    codes |= {"no_ticker"}      # analyzer.py: 銘柄が特定できないときの reason
+    assert codes >= {"ocf_ttm_incomplete", "ttm_unavailable", "cash_end_mismatch", "cash_end_unverified"}
+    for c in codes:
+        ja = rd.runway_burn_reason_ja(c + (":2026-01-31!=2026-03-31" if c == "cash_end_mismatch" else ""))
+        assert ja and ja != c and not re.fullmatch(r"[a-z_]+", ja), c
+    assert rd.runway_burn_reason_ja("cash_end_mismatch:2023-04-30!=2026-07-31") == "現金の期末（2023-04-30）がTTMの期末（2026-07-31）とずれる"
+    assert rd.runway_burn_reason_ja("ttm_unavailable:KeyError('x')") == "TTMを作れない"
+    assert rd.runway_burn_reason_ja(None) == ""

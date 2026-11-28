@@ -2957,9 +2957,10 @@ class TanukiValuationPipeline:
         if _rb in ("ttm", "annual_fallback", "financial_excluded"):
             _rb_txt = {"ttm": "直近4四半期（営業CF−設備投資）", "annual_fallback": "最新の年次（直近4四半期が取れない・現金の期末とずれる）",
                        "financial_excluded": "金融は資金の持ちの対象外"}[_rb]
+            from common.sec_data.reader import runway_burn_reason_ja
             _rb_end = (stonks_data.get("runway", {}).get("burn_ttm_end") if stonks_data else None) or (extra or {}).get("computed_runway_ttm_end")
             _rb_why = (stonks_data.get("runway", {}).get("burn_reason") if stonks_data else None) or (extra or {}).get("computed_runway_basis_reason")
-            _rb_note = f"・期末 {_rb_end}" if (_rb == "ttm" and _rb_end) else (f"・理由 {_rb_why}" if (_rb == "annual_fallback" and _rb_why) else "")
+            _rb_note = f"・期末 {_rb_end}" if (_rb == "ttm" and _rb_end) else (f"・理由 {runway_burn_reason_ja(_rb_why)}" if (_rb == "annual_fallback" and _rb_why) else "")
             L.append(f"Runway_Basis: {_rb_txt}{_rb_note}")
         L.append(f"Revenue_Growth_YoY: {rev_growth_str}%")
         L.append(f"Next_Earnings_Date: {next_earnings}")

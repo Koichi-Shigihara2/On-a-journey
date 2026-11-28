@@ -276,7 +276,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3649,
+     "line": 3650,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "grep",
@@ -284,7 +284,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3653,
+     "line": 3654,
      "func": "TanukiValuationPipeline._inject_ttm_for_general_segment",
      "how": "保存済みファイル",
      "via": "AST",
@@ -292,7 +292,7 @@
     },
     {
      "file": "src/value/tanuki_valuation/pipeline.py",
-     "line": 3980,
+     "line": 3981,
      "func": "TanukiValuationPipeline.run_single",
      "how": "保存済みファイル",
      "via": "src/value/tanuki_valuation/pipeline.py::TanukiValuationPipeline._inject_ttm_for_general_segment",
@@ -1643,7 +1643,7 @@
    "sites": [
     {
      "file": "common/sec_data/reader.py",
-     "line": 275,
+     "line": 295,
      "text": "def get_fcf_5yr_avg(self, ticker: str) -> float:"
     },
     {
@@ -1696,7 +1696,7 @@
    "dir": "src/value/stonks_silo",
    "file": "src/value/stonks_silo/analyzer.py",
    "decision": "残す（2026-10-21）",
-   "lines": 1190,
+   "lines": 1192,
    "workflows": [],
    "code": [],
    "same_dir": [
@@ -1936,7 +1936,22 @@
     "sources": [
      "docs/value-monitor/stonks-silo/data/results.json"
     ],
-    "label": "流出＝最新の年次（直近4四半期が取れない／現金の期末とずれる: ${ra.bur",
+    "label": "流出＝直近4四半期（期末 ${ra.burn_ttm_end ||",
+    "lines": [
+     557,
+     1573
+    ],
+    "decision": "残す（2026-10-21）"
+   },
+   {
+    "page": "docs/value-monitor/stonks-silo/index.html",
+    "key": "burn_reason_ja",
+    "has_writer": true,
+    "status": "この段階の書き手あり",
+    "sources": [
+     "docs/value-monitor/stonks-silo/data/results.json"
+    ],
+    "label": "流出＝直近4四半期（期末 ${ra.burn_ttm_end ||",
     "lines": [
      557,
      1573
@@ -3699,6 +3714,13 @@
       ]
      },
      {
+      "key": "burn_reason_ja",
+      "status": "この段階の書き手あり",
+      "lines": [
+       557
+      ]
+     },
+     {
       "key": "burn_ttm_end",
       "status": "この段階の書き手あり",
       "lines": [
@@ -4334,6 +4356,13 @@
      },
      {
       "key": "burn_reason",
+      "status": "この段階の書き手あり",
+      "lines": [
+       1573
+      ]
+     },
+     {
+      "key": "burn_reason_ja",
       "status": "この段階の書き手あり",
       "lines": [
        1573
